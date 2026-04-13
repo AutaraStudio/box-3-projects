@@ -15,4 +15,7 @@
 
 import type { SchemaTypeDefinition } from "sanity";
 
-export const schemaTypes: SchemaTypeDefinition[] = [];
+/* Pages */
+import homePage from "./pages/homePage";
+
+export const schemaTypes: SchemaTypeDefinition[] = [homePage];

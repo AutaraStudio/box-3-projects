@@ -8,9 +8,9 @@
 
 ## Tech Stack
 - Framework: Next.js 14 (App Router, TypeScript strict mode)
-- Styling: Tailwind CSS + CSS custom properties
+- Styling: Tailwind CSS v4 + CSS custom properties
 - Animation: GSAP + ScrollTrigger + SplitText, Lenis smooth scroll, Framer Motion (UI transitions only)
-- CMS: Sanity (next-sanity)
+- CMS: Sanity (next-sanity) — Project ID: uwutffn5
 - Hosting: Netlify
 - Version Control: GitHub
 
@@ -24,6 +24,7 @@
 - 8 themes available: light, dark, pink, cream, rose, mauve, sage, sand
 - Themes applied via data-theme="[name]" on outer section wrapper only
 - Never apply data-theme to individual child elements unless explicitly instructed
+- color-mix(in srgb, ...) for transparent variants — never rgba() with hardcoded values
 
 ### Styling
 - Tailwind utility classes handle 95% of styling
@@ -39,6 +40,7 @@
 - All sizing uses rem so it scales fluidly with the viewport
 - Container variants: .container, .container.is--m, .container.is--sm, .container.is--s
 - 4 breakpoints: Desktop (1440), Tablet (850), Mobile Landscape (390), Mobile Portrait (390)
+- Conversion: rem = px / 16
 
 ### Animations
 - All DOM targeting uses data-* attributes, never classes or IDs
@@ -47,6 +49,7 @@
 - All GSAP easings and durations imported from /src/config/animations.config.ts
 - All CSS transitions use tokens from globals.css (--ease-*, --duration-*, --animation-*, --transition-*)
 - Never hardcode animation values in components
+- Smooth, modern, editorial — never bouncy or gratuitous
 
 ### Components
 - Every component is fully prop-based with TypeScript
@@ -54,6 +57,12 @@
 - Global naming conventions — components are portable across the entire site
 - No hardcoded strings — all text content comes from Sanity via props
 - No hardcoded image paths — all images served from Sanity assets
+- When converting external HTML/CSS/JS:
+  - Fully convert ALL colors to --theme-* tokens
+  - Fully convert ALL fonts to --font-* tokens
+  - Fully convert ALL spacing to --space-* or --section-space-* tokens
+  - Fully convert ALL animations to data attributes + GSAP config
+  - No foreign values from the original source ever
 
 ### Sanity CMS
 - Every piece of text on the site comes from Sanity
@@ -72,24 +81,36 @@
 
 ## Folder Structure
 
-```
 src/
-  app/                    # Next.js App Router pages
+  app/
+    globals.css                    # shared CSS — imported by site layout only
+    (site)/
+      layout.tsx                   # root layout — Providers, globals.css, data-theme="light"
+      page.tsx                     # home page
+    (studio)/
+      layout.tsx                   # isolated layout — no styles, no providers
+      studio/[[...tool]]/
+        page.tsx                   # Sanity Studio
   components/
-    ui/                   # Reusable primitive components
-    sections/             # Page section components
-    layout/               # Nav, footer, wrappers
-  hooks/                  # Custom React hooks
-  lib/                    # Utility functions and helpers
-  types/                  # TypeScript type definitions
-  config/                 # animations.config.ts and other config
-  styles/                 # Additional global stylesheets
+    ui/                            # Reusable primitive components
+    sections/                      # Page section components
+    layout/                        # Nav, footer, wrappers
+  hooks/                           # Custom React hooks
+  lib/                             # Utility functions and helpers
+  types/                           # TypeScript type definitions
+  config/                          # animations.config.ts and other config
+  styles/                          # Additional global stylesheets
   sanity/
-    schemas/              # Sanity schema definitions
-    queries/              # GROQ queries
-    lib/                  # Sanity client config
+    schemas/
+      pages/                       # Page documents (homePage, etc.)
+      sections/                    # Reusable section schemas
+      collections/                 # Repeatable content types
+      globals/                     # Nav, footer, site settings
+      components/                  # Shared component schemas
+    queries/                       # GROQ queries — one file per page/type
+    lib/                           # Sanity client, image builder, fetch helper
 
-docs/                     # Project documentation (read these for full context)
+docs/                              # Project documentation (read these for full context)
   STACK.md
   COLORS.md
   ANIMATIONS.md
@@ -97,7 +118,12 @@ docs/                     # Project documentation (read these for full context)
   SPACING.md
   COMPONENTS.md
   SANITY.md
-```
+
+reference/                         # Original Webflow source — read for intent only
+  ref.html                         # Replace per section, delete after build
+  ref.css
+  ref.js
+
 
 ## Global Systems — Completed & Active
 
@@ -105,7 +131,8 @@ docs/                     # Project documentation (read these for full context)
 - SmoothScroll.tsx — Lenis smooth scroll + GSAP ScrollTrigger integration
 - AnimationProvider.tsx — global data-animate observer
 - SplitTextObserver.tsx — global data-split-text observer
-- Providers.tsx — single wrapper, imported in layout.tsx
+- LineRevealObserver.tsx — data-line-reveal and data-line-reveal-hero observer
+- Providers.tsx — single wrapper, imported in (site)/layout.tsx
 
 ### Data Attribute Animations — Ready To Use
 Add these to any element and animations trigger automatically:
@@ -120,22 +147,83 @@ Add these to any element and animations trigger automatically:
 - data-split-text="words"
 - data-split-text="chars"
 - data-split-delay="0.2" (optional delay)
+- data-line-reveal-hero="top|bottom" — line scales in on page load
+- data-line-reveal="top|bottom" — line scales in on scroll
+- data-line-duration="0.8" — optional per-element duration override
+- data-line-delay="0.2" — optional per-element delay override
+- data-hero-scroll-fade — fades out on hero scroll
+- data-hero-scroll-fade-scale — fades and scales down on hero scroll
 
 ### Theming — Ready To Use
 - Add data-theme="[name]" to any outer section wrapper
 - Available: light, dark, pink, cream, rose, mauve, sage, sand
-- Default theme: light (set on body in layout.tsx)
+- Default theme: light (set on body in (site)/layout.tsx)
 
 ### Utility
 - cn() helper available at @/lib/utils for conditional classNames
 
-## Reference Files
-- `/src/config/animations.config.ts` — all GSAP easings, durations, stagger values, scroll trigger defaults, animation presets
-- `/src/app/globals.css` — all CSS tokens, scaling system, color palette, animation tokens
-- `/docs/*` — detailed documentation for each system area
+### Reference Files Workflow
+- Drop original Webflow HTML/CSS/JS into /reference/ before each build
+- Claude Code reads these for structural intent only — never copies values
+- Delete reference files after each section is built
+
+## Sanity Setup
+- Project ID: uwutffn5
+- Studio at: /studio (isolated route group — no global styles)
+- Schemas live in: src/sanity/schemas/pages/, /sections/, /collections/, /globals/, /components/
+- Queries live in: src/sanity/queries/
+- All queries use sanityFetch helper from src/sanity/lib/fetch.ts
+- Image URLs resolved via urlFor() from src/sanity/lib/image.ts
+- Dither engine reads image URL from data-src attribute on img elements
+
+## Current Build Status
+- Project scaffolded ✅
+- Dependencies installed ✅
+- Folder structure created ✅
+- CLAUDE.md + all /docs files complete ✅
+- animations.config.ts complete ✅
+- globals.css complete ✅
+- tailwind.config.ts complete ✅
+- Sanity client + Studio route complete ✅
+- Studio isolated from global styles via route groups ✅
+- Global animation providers complete ✅
+- Root layout updated ✅
+- Typography system complete ✅
+- Spacing system complete ✅
+- Hero section complete ✅
+  - HomeHero.tsx — fully prop-based, Sanity wired
+  - HomeHero.css — 12-column named-area grid
+  - homePage schema — src/sanity/schemas/pages/homePage.ts
+  - HOME_PAGE_QUERY — src/sanity/queries/homePage.ts
+- Component library — pending ⏳
+- Nav component — pending ⏳
+- Footer component — pending ⏳
+- All other pages/sections — pending ⏳
+
+## Upcoming Next Steps
+1. Component library (Button, Link, Tag)
+2. Nav component
+3. Footer component
+4. Remaining page sections
+5. Sanity schemas per section
+
+## Key Reference Files
+- /src/config/animations.config.ts — all GSAP easings, durations, stagger values, scroll trigger defaults, animation presets
+- /src/app/globals.css — all CSS tokens, scaling system, color palette, animation tokens
+- /docs/* — detailed documentation for each system area
+
+## Known Gotchas
+
+### Tailwind v4
+- Project runs Tailwind CSS v4 — NOT v3
+- Use @import "tailwindcss" and @config "../../tailwind.config.ts" in globals.css
+- Never use @tailwind base/components/utilities — these are v3 directives and will
+  silently break the entire token system
+- tailwind.config.ts is still used and must be loaded via @config directive
 
 ## When Starting Any Task
 1. Read this file first
-2. Read the relevant `/docs` MD file for the system area you are working in
-3. Follow all rules above without exception
-4. If uncertain about structure or approach — ask before building
+2. Read the relevant /docs MD file for the system area you are working in
+3. Read reference/ref.html, ref.css, ref.js if they exist
+4. Follow all rules above without exception
+5. If uncertain about structure or approach — ask before building
