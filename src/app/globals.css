@@ -55,7 +55,8 @@
    SECTION 2 — FLUID SCALING SYSTEM
    ==========================================================================
    Based on Osmo Supply scaling approach.
-   body font-size is driven by --size-font so all rem values scale fluidly.
+   html and body font-size are both driven by --size-font so all rem values scale fluidly.
+   IMPORTANT: --size-font must be on html — rem is relative to html, not body.
    Four breakpoints: Desktop, Tablet, Mobile Landscape, Mobile Portrait.
    ========================================================================== */
 
@@ -150,7 +151,7 @@
    SECTION 3b — TYPOGRAPHY TOKENS
    ==========================================================================
    All font sizing in rem — the Osmo fluid scaling system (--size-font on
-   body) automatically scales every rem value across breakpoints.
+   html + body) automatically scales every rem value across breakpoints.
    Never use clamp() or vw for font sizes — Osmo handles it.
    ========================================================================== */
 
@@ -221,8 +222,8 @@
 /* ==========================================================================
    SECTION 3c — SPACING TOKENS
    ==========================================================================
-   All values in rem — the Osmo fluid scaling system (--size-font on body)
-   automatically scales every rem value across breakpoints.
+   All values in rem — the Osmo fluid scaling system (--size-font on
+   html + body) automatically scales every rem value across breakpoints.
    Never use clamp() or vw for spacing — Osmo handles it.
 
    Three scales:
@@ -1329,6 +1330,7 @@
 }
 
 html {
+  font-size: var(--size-font);
   scroll-behavior: smooth;
 }
 

@@ -17,6 +17,7 @@ import SmoothScroll from "./SmoothScroll";
 import AnimationProvider from "./AnimationProvider";
 import SplitTextObserver from "./SplitTextObserver";
 import LineRevealObserver from "./LineRevealObserver";
+import HeroDitherProvider from "./HeroDitherProvider";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -27,7 +28,9 @@ export default function Providers({ children }: ProvidersProps) {
     <SmoothScroll>
       <AnimationProvider>
         <SplitTextObserver>
-          <LineRevealObserver>{children}</LineRevealObserver>
+          <LineRevealObserver>
+            <HeroDitherProvider>{children}</HeroDitherProvider>
+          </LineRevealObserver>
         </SplitTextObserver>
       </AnimationProvider>
     </SmoothScroll>

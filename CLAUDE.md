@@ -214,6 +214,12 @@ Add these to any element and animations trigger automatically:
 
 ## Known Gotchas
 
+### Osmo Fluid Scaling
+- --size-font must be applied to html, not just body
+- rem units are relative to html font-size, not body
+- Both html and body must have font-size: var(--size-font)
+- If scaling stops working, check html element first
+
 ### Tailwind v4
 - Project runs Tailwind CSS v4 — NOT v3
 - Use @import "tailwindcss" and @config "../../tailwind.config.ts" in globals.css
