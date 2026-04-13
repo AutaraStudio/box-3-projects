@@ -107,6 +107,7 @@ class TextureManager {
   private async _fetchAndQueue(url: string, tex: THREE.Texture): Promise<void> {
     try {
       const res  = await fetch(url, { mode: "cors" });
+      if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
       const blob = await res.blob();
       const bmp  = await createImageBitmap(blob, {
         imageOrientation: "flipY",
@@ -116,9 +117,32 @@ class TextureManager {
       tex.needsUpdate = true;
       this._enqueue(tex);
     } catch (e) {
-      console.warn("[DitherEngine] texture load failed:", url, e);
-      tex.needsUpdate = true;
+      console.warn("[DitherEngine] fetch() failed, trying Image fallback:", url);
+      /* Fallback: use an HTMLImageElement with crossOrigin, which bypasses
+         fetch-specific issues (CSP, service-worker interception, etc.). */
+      try {
+        const img = await this._loadImageFallback(url);
+        tex.image       = img;
+        tex.needsUpdate = true;
+        this._enqueue(tex);
+      } catch (fallbackErr) {
+        console.warn("[DitherEngine] texture load failed completely:", url, fallbackErr);
+        /* Do NOT set tex.needsUpdate — there is no image data.
+           Leaving the texture inert prevents THREE.js from warning
+           "Texture marked for update but no image data found" every frame. */
+      }
     }
+  }
+
+  /** Fallback loader using HTMLImageElement (handles CORS differently to fetch). */
+  private _loadImageFallback(url: string): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload  = () => resolve(img);
+      img.onerror = () => reject(new Error(`Image fallback failed: ${url}`));
+      img.src     = url;
+    });
   }
 
   private _enqueue(tex: THREE.Texture): void {
@@ -198,10 +222,10 @@ class DitherMedia {
       uZoom:                      { value: 1 },
       uBias:                      { value: 0.1 },
       uPixelSize:                 { value: 1.0 },
-      uPixelSizeMultiplier:       { value: 7.7 },
+      uPixelSizeMultiplier:       { value: 5.0 },
       uTime:                      { value: 0.0 },
       uTrail:                     { value: null },
-      uTrailIntensityMultiplier:  { value: 1.02 },
+      uTrailIntensityMultiplier:  { value: 0.75 },
       uBiasNoiseScale:            { value: 1.4 },
       uBiasNoiseSpeed:            { value: 94.0 },
       uBiasPulseSpeed:            { value: 3.1 },
@@ -408,10 +432,17 @@ export class DitherEngine {
   private readonly _onLeaveBound:  () => void;
   private readonly _tickBound:     (time: number) => void;
 
-  constructor(canvas: HTMLCanvasElement, sectionEl: HTMLElement) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    sectionEl: HTMLElement,
+    options: { inkColor?: string; bgColor?: string } = {},
+  ) {
     this.canvas    = canvas;
     this.sectionEl = sectionEl;
-    this.themeColors = this._readThemeColors(sectionEl);
+    this.themeColors = {
+      ink: options.inkColor ?? "#b48d8b",
+      bg:  options.bgColor  ?? "#fdcdcd",
+    };
 
     this.vp = {
       w: Math.max(1, canvas.clientWidth),
@@ -465,29 +496,6 @@ export class DitherEngine {
     window.addEventListener("blur",           this._onLeaveBound, { passive: true });
   }
 
-  // ── Theme color reader ─────────────────────────────────────────────────────
-
-  private _readThemeColors(el: HTMLElement): { ink: string; bg: string } {
-    /* Create a temporary element inside the themed section so it inherits
-       the correct data-theme scope. Setting a standard color property
-       forces the browser to fully resolve the CSS variable chain —
-       getComputedStyle then returns an rgb() string that THREE.Color
-       can parse via setStyle(). */
-    const tmp = document.createElement("div");
-    tmp.style.display = "none";
-    el.appendChild(tmp);
-
-    tmp.style.color = "var(--theme-dither-ink)";
-    const ink = getComputedStyle(tmp).color;
-
-    tmp.style.color = "var(--theme-dither-bg)";
-    const bg = getComputedStyle(tmp).color;
-
-    el.removeChild(tmp);
-
-    return { ink, bg };
-  }
-
   // ── Camera ─────────────────────────────────────────────────────────────────
 
   private _updateCameraFov(): void {
@@ -531,7 +539,7 @@ export class DitherEngine {
       uInitialRadiusMultiplier: { value: 0.015 },
       uBorderSize:              { value: 0.129 },
       uBorderSizeMultiplier:    { value: 0.054 },
-      uDecayRate:               { value: 0.057 },
+      uDecayRate:               { value: 0.065 },
     };
 
     const trailMat = new THREE.RawShaderMaterial({
@@ -919,6 +927,20 @@ export class DitherEngine {
 
   private _tick(gsapTime: number): void {
     this.textureManager.processQueue(this.renderer);
+
+    /* Skip rendering when there is nothing useful to draw.
+       – No media instances registered at all, OR
+       – Media instances exist but none have a loaded texture yet.
+       This prevents the THREE.js "Texture marked for update but no image
+       data found" warning from flooding the console. */
+    if (this.mediaInstances.size === 0) return;
+
+    let anyLoaded = false;
+    for (const m of this.mediaInstances.values()) {
+      if (m.uniforms.tMap.value?.image) { anyLoaded = true; break; }
+    }
+    if (!anyLoaded) return;
+
     this._tickTrail();
     for (const m of this.mediaInstances.values()) {
       m.uniforms.uTrail.value = this.trailTexture;

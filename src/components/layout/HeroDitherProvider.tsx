@@ -23,6 +23,22 @@ interface HeroDitherProviderProps {
   children: ReactNode;
 }
 
+/**
+ * Resolve a CSS custom property token to its computed rgb() value.
+ * Appends a temporary element to the given parent (which should be
+ * the themed section) so it inherits the correct data-theme scope.
+ */
+function resolveColor(token: string, parent: HTMLElement): string {
+  const el = document.createElement("div");
+  el.style.cssText = "position:absolute;visibility:hidden;width:1px;height:1px";
+  parent.appendChild(el);
+  el.style.color = `var(${token})`;
+  const resolved = getComputedStyle(el).color;
+  parent.removeChild(el);
+  console.log(`[DitherEngine] ${token} →`, resolved);
+  return resolved;
+}
+
 export default function HeroDitherProvider({ children }: HeroDitherProviderProps) {
   const engineRef = useRef<DitherEngine | null>(null);
 
@@ -36,7 +52,10 @@ export default function HeroDitherProvider({ children }: HeroDitherProviderProps
       if (!canvas || !section) return false;
       if (engineRef.current) return true; // already initialised
 
-      const engine       = new DitherEngine(canvas, section);
+      const inkColor = resolveColor("--theme-dither-ink", section);
+      const bgColor  = resolveColor("--theme-dither-bg", section);
+
+      const engine       = new DitherEngine(canvas, section, { inkColor, bgColor });
       engineRef.current  = engine;
 
       engine.registerAll().catch(err => {

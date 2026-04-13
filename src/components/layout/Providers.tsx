@@ -3,7 +3,8 @@
  * =========
  * Single wrapper that composes all global providers in the correct order.
  * Import this once in the root layout — it handles smooth scrolling,
- * scroll-triggered animations, SplitText observers, and line reveals.
+ * scroll-triggered animations, SplitText observers, line reveals,
+ * nav theme detection, and the hero dither engine.
  *
  * Order matters:
  *   SmoothScroll (Lenis + ScrollTrigger) must wrap everything so
@@ -17,6 +18,7 @@ import SmoothScroll from "./SmoothScroll";
 import AnimationProvider from "./AnimationProvider";
 import SplitTextObserver from "./SplitTextObserver";
 import LineRevealObserver from "./LineRevealObserver";
+import NavThemeObserver from "./NavThemeObserver";
 import HeroDitherProvider from "./HeroDitherProvider";
 
 interface ProvidersProps {
@@ -29,7 +31,9 @@ export default function Providers({ children }: ProvidersProps) {
       <AnimationProvider>
         <SplitTextObserver>
           <LineRevealObserver>
-            <HeroDitherProvider>{children}</HeroDitherProvider>
+            <NavThemeObserver>
+              <HeroDitherProvider>{children}</HeroDitherProvider>
+            </NavThemeObserver>
           </LineRevealObserver>
         </SplitTextObserver>
       </AnimationProvider>

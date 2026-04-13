@@ -612,8 +612,8 @@
   --theme-focus: var(--color-pink-500);
 
   /* Dither */
-  --theme-dither-ink: var(--color-white-500);
-  --theme-dither-bg: var(--color-charcoal-700);
+  --theme-dither-ink: var(--color-rose-300);
+  --theme-dither-bg: var(--color-pink-500);
 
   /* Nav */
   --theme-nav-bg: var(--color-charcoal-500);

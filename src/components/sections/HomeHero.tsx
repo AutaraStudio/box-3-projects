@@ -111,6 +111,7 @@ export default function HomeHero({
     <section
       ref={sectionRef}
       data-theme="dark"
+      data-nav-theme="dark"
       data-hero-sticky=""
       className="relative h-[100svh] overflow-hidden"
     >
@@ -124,7 +125,6 @@ export default function HomeHero({
       {/* --- Dither Background Image --- */}
       <div
         data-dither=""
-        data-dither-full=""
         className="absolute inset-0 h-full w-full"
       >
         {imageUrl && (
