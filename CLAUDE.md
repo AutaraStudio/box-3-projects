@@ -99,6 +99,36 @@ docs/                     # Project documentation (read these for full context)
   SANITY.md
 ```
 
+## Global Systems — Completed & Active
+
+### Animation Providers (initialised in root layout)
+- SmoothScroll.tsx — Lenis smooth scroll + GSAP ScrollTrigger integration
+- AnimationProvider.tsx — global data-animate observer
+- SplitTextObserver.tsx — global data-split-text observer
+- Providers.tsx — single wrapper, imported in layout.tsx
+
+### Data Attribute Animations — Ready To Use
+Add these to any element and animations trigger automatically:
+- data-animate="fade-up"
+- data-animate="fade-in"
+- data-animate="fade-down"
+- data-animate="clip-reveal"
+- data-animate="scale-reveal"
+- data-animate-delay="0.2" (optional delay in seconds)
+- data-animate-stagger="0.1" (on parent, staggers children)
+- data-split-text="lines"
+- data-split-text="words"
+- data-split-text="chars"
+- data-split-delay="0.2" (optional delay)
+
+### Theming — Ready To Use
+- Add data-theme="[name]" to any outer section wrapper
+- Available: light, dark, pink, cream, rose, mauve, sage, sand
+- Default theme: light (set on body in layout.tsx)
+
+### Utility
+- cn() helper available at @/lib/utils for conditional classNames
+
 ## Reference Files
 - `/src/config/animations.config.ts` — all GSAP easings, durations, stagger values, scroll trigger defaults, animation presets
 - `/src/app/globals.css` — all CSS tokens, scaling system, color palette, animation tokens

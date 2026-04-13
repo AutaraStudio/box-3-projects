@@ -1,26 +1,1413 @@
-@import "tailwindcss";
+/* ==========================================================================
+   GLOBALS.CSS — Production Global Stylesheet
+   ==========================================================================
+   Table of Contents:
+   0. @font-face Declarations
+   1. Tailwind Directives
+   2. Fluid Scaling System
+   3. Container System
+   3b. Typography Tokens
+   3c. Spacing Tokens
+   4. Primitive Color Palette
+   5. Semantic Color Tokens (8 themes)
+   6. Animation Tokens
+   7. Selection & Focus Styles
+   8. Base Reset, Global Element Styles & Base Typography
+   ========================================================================== */
+
+
+/* ==========================================================================
+   SECTION 0 — @FONT-FACE DECLARATIONS
+   ==========================================================================
+   Variable fonts loaded from /public/fonts/.
+   font-display: block prevents flash of unstyled text (FOUT).
+   Weight ranges cover the full 300–900 variable axis.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/satoshi-variable.woff2') format('woff2'),
+       url('/fonts/satoshi-variable.woff') format('woff');
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Instrument Sans';
+  src: url('/fonts/instrument-sans-variable.woff2') format('woff2'),
+       url('/fonts/instrument-sans-variable.woff') format('woff');
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: block;
+}
+
+
+/* ==========================================================================
+   SECTION 1 — TAILWIND DIRECTIVES
+   ========================================================================== */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* ==========================================================================
+   SECTION 2 — FLUID SCALING SYSTEM
+   ==========================================================================
+   Based on Osmo Supply scaling approach.
+   body font-size is driven by --size-font so all rem values scale fluidly.
+   Four breakpoints: Desktop, Tablet, Mobile Landscape, Mobile Portrait.
+   ========================================================================== */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --size-unit: 16;
+  --size-container-ideal: 1440;
+  --size-container-min: 992px;
+  --size-container-max: 1920px;
+  --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
+  --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+/* Tablet — 768px to 991px */
+@media (max-width: 991px) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --size-container-ideal: 850;
+    --size-container-min: 768px;
+    --size-container-max: 991px;
   }
 }
 
+/* Mobile Landscape — 480px to 767px */
+@media (max-width: 767px) {
+  :root {
+    --size-container-ideal: 390;
+    --size-container-min: 480px;
+    --size-container-max: 767px;
+  }
+}
+
+/* Mobile Portrait — 320px to 479px */
+@media (max-width: 479px) {
+  :root {
+    --size-container-ideal: 390;
+    --size-container-min: 320px;
+    --size-container-max: 479px;
+    --container-padding: 1rem;
+  }
+}
+
+/* ==========================================================================
+   SECTION 3 — CONTAINER SYSTEM
+   ==========================================================================
+   Responsive container with size variants.
+   Desktop uses max-width scaling; mobile collapses to full-width with padding.
+   Container padding is defined here and reduced on mobile portrait.
+   ========================================================================== */
+
+:root {
+  --container-padding: 2rem;
+}
+
+/* Desktop containers — min-width 992px */
+@media (min-width: 992px) {
+  .container {
+    max-width: var(--size-container);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--container-padding);
+    padding-right: var(--container-padding);
+  }
+
+  /* Medium container — 82.5% of full */
+  .container.is--m {
+    max-width: calc(var(--size-container) * 0.825);
+  }
+
+  /* Small-medium container — 65% of full */
+  .container.is--sm {
+    max-width: calc(var(--size-container) * 0.65);
+  }
+
+  /* Small container — 50% of full */
+  .container.is--s {
+    max-width: calc(var(--size-container) * 0.5);
+  }
+}
+
+/* Mobile containers — max-width 991px */
+@media (max-width: 991px) {
+  .container {
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--container-padding);
+    padding-right: var(--container-padding);
+  }
+}
+
+
+/* ==========================================================================
+   SECTION 3b — TYPOGRAPHY TOKENS
+   ==========================================================================
+   All font sizing in rem — the Osmo fluid scaling system (--size-font on
+   body) automatically scales every rem value across breakpoints.
+   Never use clamp() or vw for font sizes — Osmo handles it.
+   ========================================================================== */
+
+:root {
+
+  /* --- Font Families ---
+     Primary: Satoshi — headings, display, UI elements
+     Secondary: Instrument Sans — body copy, captions, labels */
+  --font-primary: 'Satoshi', Arial, sans-serif;
+  --font-secondary: 'Instrument Sans', Arial, sans-serif;
+
+
+  /* --- Font Weights ---
+     Full variable font axis from light (300) to bold (700). */
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+
+  /* --- Font Size Scale ---
+     All values in rem. At the 1440px design width, 1rem = 16px.
+     Osmo scales these automatically at every breakpoint. */
+  --font-size-display: 10rem;       /* 160px at 1440 */
+  --font-size-h1: 8rem;             /* 128px at 1440 */
+  --font-size-h2: 6rem;             /* 96px at 1440  */
+  --font-size-h3: 4.5rem;           /* 72px at 1440  */
+  --font-size-h4: 3.75rem;          /* 60px at 1440  */
+  --font-size-h5: 3rem;             /* 48px at 1440  */
+  --font-size-h6: 2.25rem;          /* 36px at 1440  */
+  --font-size-text-lg: 1.875rem;    /* 30px at 1440  */
+  --font-size-text-md: 1.125rem;    /* 18px at 1440  */
+  --font-size-text-sm: 1rem;        /* 16px at 1440  */
+  --font-size-text-xs: 0.875rem;    /* 14px at 1440  */
+  --font-size-text-xxs: 0.75rem;    /* 12px at 1440  */
+
+
+  /* --- Line Heights --- */
+  --line-height-none: 1;
+  --line-height-tight: 1.05;
+  --line-height-snug: 1.15;
+  --line-height-normal: 1.3;
+  --line-height-relaxed: 1.55;
+  --line-height-loose: 1.75;
+
+
+  /* --- Letter Spacing --- */
+  --letter-spacing-display: -0.04em;
+  --letter-spacing-tight: -0.03em;
+  --letter-spacing-snug: -0.015em;
+  --letter-spacing-normal: 0em;
+  --letter-spacing-wide: 0.04em;
+  --letter-spacing-wider: 0.08em;
+
+
+  /* --- Border Radius --- */
+  --radius-sm: 0.5rem;
+  --radius-md: 1rem;
+  --radius-full: 100vw;
+
+
+  /* --- Border Width --- */
+  --border-width: 0.08rem;
+}
+
+
+/* ==========================================================================
+   SECTION 3c — SPACING TOKENS
+   ==========================================================================
+   All values in rem — the Osmo fluid scaling system (--size-font on body)
+   automatically scales every rem value across breakpoints.
+   Never use clamp() or vw for spacing — Osmo handles it.
+
+   Three scales:
+   - Base (--space-*): component-level spacing
+   - Section (--section-space-*): vertical padding between page sections
+   - Gap (--gap-*): grid column gaps, flex gaps, layout spacing
+   ========================================================================== */
+
+:root {
+
+  /* --- Base Spacing Scale ---
+     General-purpose spacing for margins, padding, and layout. */
+  --space-1: 0.5rem;     /* 8px at 1440   */
+  --space-2: 0.75rem;    /* 12px at 1440  */
+  --space-3: 1rem;       /* 16px at 1440  */
+  --space-4: 1.5rem;     /* 24px at 1440  */
+  --space-5: 2rem;       /* 32px at 1440  */
+  --space-6: 2.5rem;     /* 40px at 1440  */
+  --space-7: 3rem;       /* 48px at 1440  */
+  --space-8: 4rem;       /* 64px at 1440  */
+  --space-9: 5rem;       /* 80px at 1440  */
+  --space-10: 6rem;      /* 96px at 1440  */
+  --space-11: 7rem;      /* 112px at 1440 */
+  --space-12: 8rem;      /* 128px at 1440 */
+
+
+  /* --- Section Spacing Scale ---
+     Vertical padding for page sections.
+     none: remove spacing
+     xs:   tight sections, small gaps between related content
+     sm:   standard tight section padding
+     md:   standard section padding — most common
+     lg:   spacious sections, feature areas
+     xl:   page top padding (accounts for nav height) */
+  --section-space-none: 0rem;
+  --section-space-xs: 3rem;      /* 48px at 1440  */
+  --section-space-sm: 5rem;      /* 80px at 1440  */
+  --section-space-md: 7rem;      /* 112px at 1440 */
+  --section-space-lg: 10rem;     /* 160px at 1440 */
+  --section-space-xl: 14rem;     /* 224px at 1440 */
+
+
+  /* --- Gap Scale ---
+     For grid column gaps, flex gaps, and layout spacing. */
+  --gap-1: 0.5rem;       /* 8px at 1440  */
+  --gap-2: 0.75rem;      /* 12px at 1440 */
+  --gap-3: 1rem;         /* 16px at 1440 */
+  --gap-4: 1.5rem;       /* 24px at 1440 */
+  --gap-5: 2rem;         /* 32px at 1440 */
+  --gap-6: 2.5rem;       /* 40px at 1440 */
+  --gap-7: 3rem;         /* 48px at 1440 */
+  --gap-8: 4rem;         /* 64px at 1440 */
+}
+
+
+/* ==========================================================================
+   SECTION 4 — PRIMITIVE COLOR PALETTE
+   ==========================================================================
+   All variables prefixed --color-
+   Scales 100-900 for every colour family.
+   These are NEVER referenced directly in components.
+   Only semantic tokens (--theme-*) reference these primitives.
+   ========================================================================== */
+
+:root {
+
+  /* --- Pink (brand primary — pink-500 is the logo colour) --- */
+  --color-pink-100: #fff5f5;
+  --color-pink-200: #feebeb;
+  --color-pink-300: #fedfdf;
+  --color-pink-400: #fdd5d5;
+  --color-pink-500: #fdcdcd;
+  --color-pink-600: #d7aeae;
+  --color-pink-700: #b19090;
+  --color-pink-800: #7f6767;
+  --color-pink-900: #4c3e3e;
+
+  /* --- White --- */
+  --color-white-100: #fffefe;
+  --color-white-200: #fefdfd;
+  --color-white-300: #fefcfb;
+  --color-white-400: #fdfbfa;
+  --color-white-500: #fdfaf9;
+  --color-white-600: #d7d5d4;
+  --color-white-700: #b1afae;
+  --color-white-800: #7f7d7d;
+  --color-white-900: #4c4b4b;
+
+  /* --- Cream --- */
+  --color-cream-100: #fbfaf9;
+  --color-cream-200: #f8f5f4;
+  --color-cream-300: #f3eeed;
+  --color-cream-400: #f0e9e7;
+  --color-cream-500: #ede5e3;
+  --color-cream-600: #c9c3c1;
+  --color-cream-700: #a6a09f;
+  --color-cream-800: #777372;
+  --color-cream-900: #474544;
+
+  /* --- Charcoal (base text colour) --- */
+  --color-charcoal-100: #d5d3d3;
+  --color-charcoal-200: #aba8a7;
+  --color-charcoal-300: #767171;
+  --color-charcoal-400: #4c4645;
+  --color-charcoal-500: #2c2524;
+  --color-charcoal-600: #251f1f;
+  --color-charcoal-700: #1f1a19;
+  --color-charcoal-800: #161312;
+  --color-charcoal-900: #0d0b0b;
+
+  /* --- Grey --- */
+  --color-grey-100: #e8e5e5;
+  --color-grey-200: #d1cccb;
+  --color-grey-300: #b4acab;
+  --color-grey-400: #9d9291;
+  --color-grey-500: #8c7f7e;
+  --color-grey-600: #776c6b;
+  --color-grey-700: #625958;
+  --color-grey-800: #46403f;
+  --color-grey-900: #2a2626;
+
+  /* --- Black --- */
+  --color-black-100: #d2d0d0;
+  --color-black-200: #a4a2a1;
+  --color-black-300: #6b6867;
+  --color-black-400: #3e3938;
+  --color-black-500: #1c1615;
+  --color-black-600: #181312;
+  --color-black-700: #140f0f;
+  --color-black-800: #0e0b0b;
+  --color-black-900: #080706;
+
+  /* --- Brown --- */
+  --color-brown-100: #d6d3d2;
+  --color-brown-200: #ada6a5;
+  --color-brown-300: #7a6f6d;
+  --color-brown-400: #524241;
+  --color-brown-500: #33211f;
+  --color-brown-600: #2b1c1a;
+  --color-brown-700: #241716;
+  --color-brown-800: #1a1110;
+  --color-brown-900: #0f0a09;
+
+  /* --- Rose --- */
+  --color-rose-100: #e8dcdb;
+  --color-rose-200: #d1b9b8;
+  --color-rose-300: #b48d8b;
+  --color-rose-400: #9c6968;
+  --color-rose-500: #8b4f4d;
+  --color-rose-600: #764341;
+  --color-rose-700: #613736;
+  --color-rose-800: #462827;
+  --color-rose-900: #2a1817;
+
+  /* --- Dusty --- */
+  --color-dusty-100: #f4e5e4;
+  --color-dusty-200: #e9cbca;
+  --color-dusty-300: #dcaba9;
+  --color-dusty-400: #d1918e;
+  --color-dusty-500: #c97d7a;
+  --color-dusty-600: #ab6a68;
+  --color-dusty-700: #8d5855;
+  --color-dusty-800: #653f3d;
+  --color-dusty-900: #3c2625;
+
+  /* --- Mauve --- */
+  --color-mauve-100: #f1ebeb;
+  --color-mauve-200: #e3d7d6;
+  --color-mauve-300: #d1bdbd;
+  --color-mauve-400: #c3a9a8;
+  --color-mauve-500: #b89a99;
+  --color-mauve-600: #9c8382;
+  --color-mauve-700: #816c6b;
+  --color-mauve-800: #5c4d4d;
+  --color-mauve-900: #372e2e;
+
+  /* --- Sage (warm muted green — organic and fresh) --- */
+  --color-sage-100: #eef1ec;
+  --color-sage-200: #dde3da;
+  --color-sage-300: #c6d0c2;
+  --color-sage-400: #b0bcab;
+  --color-sage-500: #9eac98;
+  --color-sage-600: #869380;
+  --color-sage-700: #6e7a69;
+  --color-sage-800: #4f574b;
+  --color-sage-900: #2f342d;
+
+  /* --- Sand (warm tan — earthy and grounding) --- */
+  --color-sand-100: #f5ede3;
+  --color-sand-200: #ebdbc7;
+  --color-sand-300: #ddc4a4;
+  --color-sand-400: #d0b085;
+  --color-sand-500: #c6a06f;
+  --color-sand-600: #a8875e;
+  --color-sand-700: #8b6f4d;
+  --color-sand-800: #634f37;
+  --color-sand-900: #3b2f21;
+
+  /* --- Utility --- */
+  --color-transparent: transparent;
+  --color-pure-white: #ffffff;
+  --color-pure-black: #000000;
+}
+
+
+/* ==========================================================================
+   SECTION 5 — SEMANTIC COLOR TOKENS
+   ==========================================================================
+   All variables prefixed --theme-
+   Applied via data-theme="[name]" on outer section wrapper ONLY.
+   Never applied to individual child elements.
+
+   All transparent variants use color-mix(in srgb, ...) — never rgba().
+   Every semantic token references a --color- primitive — never raw hex.
+
+   8 themes: light, dark, pink, cream, rose, mauve, sage, sand
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   Theme: Light (default)
+   Character: Clean, open, warm white
+   -------------------------------------------------------------------------- */
+[data-theme="light"],
+:root {
+  /* Backgrounds */
+  --theme-bg: var(--color-white-500);
+  --theme-bg-2: var(--color-white-600);
+  --theme-bg-3: var(--color-cream-300);
+  --theme-bg-4: var(--color-grey-100);
+  --theme-bg-card: var(--color-pure-white);
+  --theme-bg-card-hover: var(--color-cream-200);
+
+  /* Text */
+  --theme-text: var(--color-charcoal-500);
+  --theme-text-muted: var(--color-charcoal-300);
+  --theme-text-subtle: var(--color-grey-500);
+  --theme-text-inverse: var(--color-white-500);
+  --theme-text-accent: var(--color-rose-500);
+
+  /* Borders */
+  --theme-border: var(--color-grey-200);
+  --theme-border-strong: var(--color-grey-400);
+  --theme-border-subtle: color-mix(in srgb, var(--color-grey-200) 50%, transparent);
+
+  /* Accent */
+  --theme-accent: var(--color-pink-500);
+  --theme-accent-hover: var(--color-rose-500);
+  --theme-accent-subtle: color-mix(in srgb, var(--color-pink-500) 20%, transparent);
+
+  /* SVG */
+  --theme-svg: var(--color-charcoal-500);
+  --theme-svg-hover: var(--color-rose-500);
+  --theme-svg-muted: color-mix(in srgb, var(--color-charcoal-500) 40%, transparent);
+
+  /* Selection */
+  --theme-selection-bg: var(--color-pink-500);
+  --theme-selection-text: var(--color-charcoal-500);
+
+  /* Tags */
+  --theme-tag-bg: var(--color-white-500);
+  --theme-tag-border: var(--color-grey-200);
+  --theme-tag-text: var(--color-rose-500);
+
+  /* Button — Primary */
+  --theme-btn-primary-text: var(--color-white-500);
+  --theme-btn-primary-text-hover: var(--color-white-500);
+  --theme-btn-primary-bg: var(--color-black-500);
+  --theme-btn-primary-bg-hover: var(--color-rose-400);
+  --theme-btn-primary-border: var(--color-black-500);
+  --theme-btn-primary-border-hover: var(--color-rose-400);
+
+  /* Button — Secondary */
+  --theme-btn-secondary-text: var(--color-charcoal-500);
+  --theme-btn-secondary-text-hover: var(--color-white-500);
+  --theme-btn-secondary-bg: var(--color-transparent);
+  --theme-btn-secondary-bg-hover: var(--color-charcoal-500);
+  --theme-btn-secondary-border: var(--color-charcoal-500);
+  --theme-btn-secondary-border-hover: var(--color-charcoal-500);
+
+  /* Links */
+  --theme-link-text: var(--color-charcoal-500);
+  --theme-link-border: var(--color-charcoal-300);
+  --theme-link-text-hover: var(--color-charcoal-500);
+  --theme-link-border-hover: var(--color-charcoal-500);
+
+  /* Inputs */
+  --theme-input-bg: var(--color-pure-white);
+  --theme-input-border: var(--color-grey-200);
+  --theme-input-border-focus: var(--color-rose-500);
+  --theme-input-text: var(--color-charcoal-500);
+  --theme-input-placeholder: var(--color-grey-400);
+
+  /* Misc */
+  --theme-overlay: color-mix(in srgb, var(--color-black-500) 40%, transparent);
+  --theme-shadow: color-mix(in srgb, var(--color-charcoal-500) 10%, transparent);
+  --theme-focus: var(--color-rose-400);
+
+  /* Dither */
+  --theme-dither-ink: var(--color-charcoal-500);
+  --theme-dither-bg: var(--color-pink-500);
+
+  /* Nav */
+  --theme-nav-bg: var(--color-white-500);
+  --theme-nav-text: var(--color-charcoal-500);
+  --theme-nav-border: var(--color-grey-200);
+}
+
+
+/* --------------------------------------------------------------------------
+   Theme: Dark
+   Character: Sophisticated, bold, deep charcoal
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] {
+  /* Backgrounds */
+  --theme-bg: var(--color-charcoal-500);
+  --theme-bg-2: var(--color-charcoal-600);
+  --theme-bg-3: var(--color-charcoal-700);
+  --theme-bg-4: var(--color-black-500);
+  --theme-bg-card: var(--color-charcoal-600);
+  --theme-bg-card-hover: var(--color-charcoal-700);
+
+  /* Text */
+  --theme-text: var(--color-white-500);
+  --theme-text-muted: var(--color-white-700);
+  --theme-text-subtle: var(--color-grey-400);
+  --theme-text-inverse: var(--color-charcoal-500);
+  --theme-text-accent: var(--color-pink-500);
+
+  /* Borders */
+  --theme-border: var(--color-charcoal-400);
+  --theme-border-strong: var(--color-grey-600);
+  --theme-border-subtle: color-mix(in srgb, var(--color-white-500) 10%, transparent);
+
+  /* Accent */
+  --theme-accent: var(--color-pink-500);
+  --theme-accent-hover: var(--color-dusty-400);
+  --theme-accent-subtle: color-mix(in srgb, var(--color-pink-500) 15%, transparent);
+
+  /* SVG */
+  --theme-svg: var(--color-white-500);
+  --theme-svg-hover: var(--color-pink-500);
+  --theme-svg-muted: color-mix(in srgb, var(--color-white-500) 40%, transparent);
+
+  /* Selection */
+  --theme-selection-bg: var(--color-rose-500);
+  --theme-selection-text: var(--color-white-500);
+
+  /* Tags */
+  --theme-tag-bg: var(--color-charcoal-600);
+  --theme-tag-border: var(--color-charcoal-400);
+  --theme-tag-text: var(--color-pink-400);
+
+  /* Button — Primary */
+  --theme-btn-primary-text: var(--color-charcoal-500);
+  --theme-btn-primary-text-hover: var(--color-charcoal-500);
+  --theme-btn-primary-bg: var(--color-pink-500);
+  --theme-btn-primary-bg-hover: var(--color-pink-400);
+  --theme-btn-primary-border: var(--color-pink-500);
+  --theme-btn-primary-border-hover: var(--color-pink-400);
+
+  /* Button — Secondary */
+  --theme-btn-secondary-text: var(--color-white-500);
+  --theme-btn-secondary-text-hover: var(--color-charcoal-500);
+  --theme-btn-secondary-bg: var(--color-transparent);
+  --theme-btn-secondary-bg-hover: var(--color-white-500);
+  --theme-btn-secondary-border: var(--color-white-600);
+  --theme-btn-secondary-border-hover: var(--color-white-500);
+
+  /* Links */
+  --theme-link-text: var(--color-white-500);
+  --theme-link-border: var(--color-white-700);
+  --theme-link-text-hover: var(--color-pink-500);
+  --theme-link-border-hover: var(--color-pink-500);
+
+  /* Inputs */
+  --theme-input-bg: var(--color-charcoal-600);
+  --theme-input-border: var(--color-charcoal-400);
+  --theme-input-border-focus: var(--color-pink-500);
+  --theme-input-text: var(--color-white-500);
+  --theme-input-placeholder: var(--color-grey-500);
+
+  /* Misc */
+  --theme-overlay: color-mix(in srgb, var(--color-black-900) 60%, transparent);
+  --theme-shadow: color-mix(in srgb, var(--color-black-900) 30%, transparent);
+  --theme-focus: var(--color-pink-500);
+
+  /* Dither */
+  --theme-dither-ink: var(--color-white-500);
+  --theme-dither-bg: var(--color-charcoal-700);
+
+  /* Nav */
+  --theme-nav-bg: var(--color-charcoal-500);
+  --theme-nav-text: var(--color-white-500);
+  --theme-nav-border: var(--color-charcoal-400);
+}
+
+
+/* --------------------------------------------------------------------------
+   Theme: Pink
+   Character: Brand-forward, blush, feminine
+   -------------------------------------------------------------------------- */
+[data-theme="pink"] {
+  /* Backgrounds */
+  --theme-bg: var(--color-pink-500);
+  --theme-bg-2: var(--color-pink-400);
+  --theme-bg-3: var(--color-pink-300);
+  --theme-bg-4: var(--color-pink-200);
+  --theme-bg-card: var(--color-pink-400);
+  --theme-bg-card-hover: var(--color-pink-300);
+
+  /* Text */
+  --theme-text: var(--color-charcoal-500);
+  --theme-text-muted: var(--color-charcoal-400);
+  --theme-text-subtle: var(--color-charcoal-300);
+  --theme-text-inverse: var(--color-white-500);
+  --theme-text-accent: var(--color-rose-500);
+
+  /* Borders */
+  --theme-border: color-mix(in srgb, var(--color-rose-500) 20%, transparent);
+  --theme-border-strong: color-mix(in srgb, var(--color-rose-500) 40%, transparent);
+  --theme-border-subtle: color-mix(in srgb, var(--color-pink-700) 15%, transparent);
+
+  /* Accent */
+  --theme-accent: var(--color-rose-500);
+  --theme-accent-hover: var(--color-rose-600);
+  --theme-accent-subtle: color-mix(in srgb, var(--color-rose-500) 20%, transparent);
+
+  /* SVG */
+  --theme-svg: var(--color-charcoal-500);
+  --theme-svg-hover: var(--color-rose-500);
+  --theme-svg-muted: color-mix(in srgb, var(--color-charcoal-500) 40%, transparent);
+
+  /* Selection */
+  --theme-selection-bg: var(--color-rose-500);
+  --theme-selection-text: var(--color-white-500);
+
+  /* Tags */
+  --theme-tag-bg: var(--color-pink-400);
+  --theme-tag-border: color-mix(in srgb, var(--color-rose-500) 25%, transparent);
+  --theme-tag-text: var(--color-rose-500);
+
+  /* Button — Primary */
+  --theme-btn-primary-text: var(--color-white-500);
+  --theme-btn-primary-text-hover: var(--color-white-500);
+  --theme-btn-primary-bg: var(--color-charcoal-500);
+  --theme-btn-primary-bg-hover: var(--color-rose-500);
+  --theme-btn-primary-border: var(--color-charcoal-500);
+  --theme-btn-primary-border-hover: var(--color-rose-500);
+
+  /* Button — Secondary */
+  --theme-btn-secondary-text: var(--color-charcoal-500);
+  --theme-btn-secondary-text-hover: var(--color-white-500);
+  --theme-btn-secondary-bg: var(--color-transparent);
+  --theme-btn-secondary-bg-hover: var(--color-charcoal-500);
+  --theme-btn-secondary-border: var(--color-charcoal-500);
+  --theme-btn-secondary-border-hover: var(--color-charcoal-500);
+
+  /* Links */
+  --theme-link-text: var(--color-charcoal-500);
+  --theme-link-border: var(--color-charcoal-300);
+  --theme-link-text-hover: var(--color-rose-500);
+  --theme-link-border-hover: var(--color-rose-500);
+
+  /* Inputs */
+  --theme-input-bg: var(--color-pink-400);
+  --theme-input-border: color-mix(in srgb, var(--color-rose-500) 30%, transparent);
+  --theme-input-border-focus: var(--color-rose-500);
+  --theme-input-text: var(--color-charcoal-500);
+  --theme-input-placeholder: var(--color-charcoal-300);
+
+  /* Misc */
+  --theme-overlay: color-mix(in srgb, var(--color-charcoal-500) 40%, transparent);
+  --theme-shadow: color-mix(in srgb, var(--color-rose-500) 15%, transparent);
+  --theme-focus: var(--color-rose-500);
+
+  /* Dither */
+  --theme-dither-ink: var(--color-charcoal-500);
+  --theme-dither-bg: var(--color-pink-400);
+
+  /* Nav */
+  --theme-nav-bg: var(--color-pink-500);
+  --theme-nav-text: var(--color-charcoal-500);
+  --theme-nav-border: color-mix(in srgb, var(--color-rose-500) 20%, transparent);
+}
+
+
+/* --------------------------------------------------------------------------
+   Theme: Cream
+   Character: Soft, editorial, warm
+   -------------------------------------------------------------------------- */
+[data-theme="cream"] {
+  /* Backgrounds */
+  --theme-bg: var(--color-cream-500);
+  --theme-bg-2: var(--color-cream-400);
+  --theme-bg-3: var(--color-cream-300);
+  --theme-bg-4: var(--color-cream-200);
+  --theme-bg-card: var(--color-cream-300);
+  --theme-bg-card-hover: var(--color-cream-200);
+
+  /* Text */
+  --theme-text: var(--color-charcoal-500);
+  --theme-text-muted: var(--color-charcoal-400);
+  --theme-text-subtle: var(--color-grey-600);
+  --theme-text-inverse: var(--color-white-500);
+  --theme-text-accent: var(--color-rose-500);
+
+  /* Borders */
+  --theme-border: var(--color-cream-700);
+  --theme-border-strong: var(--color-grey-400);
+  --theme-border-subtle: color-mix(in srgb, var(--color-cream-700) 40%, transparent);
+
+  /* Accent */
+  --theme-accent: var(--color-pink-500);
+  --theme-accent-hover: var(--color-rose-500);
+  --theme-accent-subtle: color-mix(in srgb, var(--color-pink-500) 20%, transparent);
+
+  /* SVG */
+  --theme-svg: var(--color-charcoal-500);
+  --theme-svg-hover: var(--color-rose-500);
+  --theme-svg-muted: color-mix(in srgb, var(--color-charcoal-500) 40%, transparent);
+
+  /* Selection */
+  --theme-selection-bg: var(--color-pink-500);
+  --theme-selection-text: var(--color-charcoal-500);
+
+  /* Tags */
+  --theme-tag-bg: var(--color-cream-400);
+  --theme-tag-border: var(--color-cream-700);
+  --theme-tag-text: var(--color-rose-500);
+
+  /* Button — Primary */
+  --theme-btn-primary-text: var(--color-white-500);
+  --theme-btn-primary-text-hover: var(--color-white-500);
+  --theme-btn-primary-bg: var(--color-charcoal-500);
+  --theme-btn-primary-bg-hover: var(--color-rose-500);
+  --theme-btn-primary-border: var(--color-charcoal-500);
+  --theme-btn-primary-border-hover: var(--color-rose-500);
+
+  /* Button — Secondary */
+  --theme-btn-secondary-text: var(--color-charcoal-500);
+  --theme-btn-secondary-text-hover: var(--color-white-500);
+  --theme-btn-secondary-bg: var(--color-transparent);
+  --theme-btn-secondary-bg-hover: var(--color-charcoal-500);
+  --theme-btn-secondary-border: var(--color-charcoal-400);
+  --theme-btn-secondary-border-hover: var(--color-charcoal-500);
+
+  /* Links */
+  --theme-link-text: var(--color-charcoal-500);
+  --theme-link-border: var(--color-charcoal-300);
+  --theme-link-text-hover: var(--color-rose-500);
+  --theme-link-border-hover: var(--color-rose-500);
+
+  /* Inputs */
+  --theme-input-bg: var(--color-cream-300);
+  --theme-input-border: var(--color-cream-700);
+  --theme-input-border-focus: var(--color-rose-500);
+  --theme-input-text: var(--color-charcoal-500);
+  --theme-input-placeholder: var(--color-grey-500);
+
+  /* Misc */
+  --theme-overlay: color-mix(in srgb, var(--color-charcoal-500) 40%, transparent);
+  --theme-shadow: color-mix(in srgb, var(--color-cream-800) 15%, transparent);
+  --theme-focus: var(--color-rose-500);
+
+  /* Dither */
+  --theme-dither-ink: var(--color-charcoal-500);
+  --theme-dither-bg: var(--color-cream-400);
+
+  /* Nav */
+  --theme-nav-bg: var(--color-cream-500);
+  --theme-nav-text: var(--color-charcoal-500);
+  --theme-nav-border: var(--color-cream-700);
+}
+
+
+/* --------------------------------------------------------------------------
+   Theme: Rose
+   Character: Intimate, warm, muted rose
+   -------------------------------------------------------------------------- */
+[data-theme="rose"] {
+  /* Backgrounds */
+  --theme-bg: var(--color-rose-500);
+  --theme-bg-2: var(--color-rose-600);
+  --theme-bg-3: var(--color-rose-700);
+  --theme-bg-4: var(--color-rose-400);
+  --theme-bg-card: var(--color-rose-600);
+  --theme-bg-card-hover: var(--color-rose-700);
+
+  /* Text */
+  --theme-text: var(--color-white-500);
+  --theme-text-muted: var(--color-rose-100);
+  --theme-text-subtle: var(--color-rose-200);
+  --theme-text-inverse: var(--color-charcoal-500);
+  --theme-text-accent: var(--color-pink-400);
+
+  /* Borders */
+  --theme-border: color-mix(in srgb, var(--color-white-500) 20%, transparent);
+  --theme-border-strong: color-mix(in srgb, var(--color-white-500) 40%, transparent);
+  --theme-border-subtle: color-mix(in srgb, var(--color-white-500) 10%, transparent);
+
+  /* Accent */
+  --theme-accent: var(--color-pink-500);
+  --theme-accent-hover: var(--color-pink-400);
+  --theme-accent-subtle: color-mix(in srgb, var(--color-pink-500) 20%, transparent);
+
+  /* SVG */
+  --theme-svg: var(--color-white-500);
+  --theme-svg-hover: var(--color-pink-500);
+  --theme-svg-muted: color-mix(in srgb, var(--color-white-500) 50%, transparent);
+
+  /* Selection */
+  --theme-selection-bg: var(--color-pink-500);
+  --theme-selection-text: var(--color-charcoal-500);
+
+  /* Tags */
+  --theme-tag-bg: var(--color-rose-600);
+  --theme-tag-border: color-mix(in srgb, var(--color-white-500) 20%, transparent);
+  --theme-tag-text: var(--color-pink-400);
+
+  /* Button — Primary */
+  --theme-btn-primary-text: var(--color-rose-500);
+  --theme-btn-primary-text-hover: var(--color-rose-500);
+  --theme-btn-primary-bg: var(--color-white-500);
+  --theme-btn-primary-bg-hover: var(--color-pink-500);
+  --theme-btn-primary-border: var(--color-white-500);
+  --theme-btn-primary-border-hover: var(--color-pink-500);
+
+  /* Button — Secondary */
+  --theme-btn-secondary-text: var(--color-white-500);
+  --theme-btn-secondary-text-hover: var(--color-rose-500);
+  --theme-btn-secondary-bg: var(--color-transparent);
+  --theme-btn-secondary-bg-hover: var(--color-white-500);
+  --theme-btn-secondary-border: color-mix(in srgb, var(--color-white-500) 50%, transparent);
+  --theme-btn-secondary-border-hover: var(--color-white-500);
+
+  /* Links */
+  --theme-link-text: var(--color-white-500);
+  --theme-link-border: color-mix(in srgb, var(--color-white-500) 40%, transparent);
+  --theme-link-text-hover: var(--color-pink-400);
+  --theme-link-border-hover: var(--color-pink-400);
+
+  /* Inputs */
+  --theme-input-bg: var(--color-rose-600);
+  --theme-input-border: color-mix(in srgb, var(--color-white-500) 25%, transparent);
+  --theme-input-border-focus: var(--color-pink-400);
+  --theme-input-text: var(--color-white-500);
+  --theme-input-placeholder: var(--color-rose-200);
+
+  /* Misc */
+  --theme-overlay: color-mix(in srgb, var(--color-rose-900) 50%, transparent);
+  --theme-shadow: color-mix(in srgb, var(--color-rose-900) 20%, transparent);
+  --theme-focus: var(--color-pink-400);
+
+  /* Dither */
+  --theme-dither-ink: var(--color-white-500);
+  --theme-dither-bg: var(--color-rose-600);
+
+  /* Nav */
+  --theme-nav-bg: var(--color-rose-500);
+  --theme-nav-text: var(--color-white-500);
+  --theme-nav-border: color-mix(in srgb, var(--color-white-500) 15%, transparent);
+}
+
+
+/* --------------------------------------------------------------------------
+   Theme: Mauve
+   Character: Gentle contrast, dusty warmth
+   -------------------------------------------------------------------------- */
+[data-theme="mauve"] {
+  /* Backgrounds */
+  --theme-bg: var(--color-mauve-500);
+  --theme-bg-2: var(--color-mauve-600);
+  --theme-bg-3: var(--color-mauve-400);
+  --theme-bg-4: var(--color-mauve-300);
+  --theme-bg-card: var(--color-mauve-400);
+  --theme-bg-card-hover: var(--color-mauve-300);
+
+  /* Text */
+  --theme-text: var(--color-charcoal-500);
+  --theme-text-muted: var(--color-charcoal-400);
+  --theme-text-subtle: var(--color-mauve-800);
+  --theme-text-inverse: var(--color-white-500);
+  --theme-text-accent: var(--color-rose-600);
+
+  /* Borders */
+  --theme-border: color-mix(in srgb, var(--color-mauve-800) 30%, transparent);
+  --theme-border-strong: var(--color-mauve-700);
+  --theme-border-subtle: color-mix(in srgb, var(--color-mauve-800) 15%, transparent);
+
+  /* Accent */
+  --theme-accent: var(--color-pink-500);
+  --theme-accent-hover: var(--color-rose-500);
+  --theme-accent-subtle: color-mix(in srgb, var(--color-pink-500) 20%, transparent);
+
+  /* SVG */
+  --theme-svg: var(--color-charcoal-500);
+  --theme-svg-hover: var(--color-rose-500);
+  --theme-svg-muted: color-mix(in srgb, var(--color-charcoal-500) 40%, transparent);
+
+  /* Selection */
+  --theme-selection-bg: var(--color-rose-500);
+  --theme-selection-text: var(--color-white-500);
+
+  /* Tags */
+  --theme-tag-bg: var(--color-mauve-400);
+  --theme-tag-border: color-mix(in srgb, var(--color-mauve-800) 25%, transparent);
+  --theme-tag-text: var(--color-rose-600);
+
+  /* Button — Primary */
+  --theme-btn-primary-text: var(--color-white-500);
+  --theme-btn-primary-text-hover: var(--color-white-500);
+  --theme-btn-primary-bg: var(--color-charcoal-500);
+  --theme-btn-primary-bg-hover: var(--color-rose-500);
+  --theme-btn-primary-border: var(--color-charcoal-500);
+  --theme-btn-primary-border-hover: var(--color-rose-500);
+
+  /* Button — Secondary */
+  --theme-btn-secondary-text: var(--color-charcoal-500);
+  --theme-btn-secondary-text-hover: var(--color-white-500);
+  --theme-btn-secondary-bg: var(--color-transparent);
+  --theme-btn-secondary-bg-hover: var(--color-charcoal-500);
+  --theme-btn-secondary-border: var(--color-charcoal-400);
+  --theme-btn-secondary-border-hover: var(--color-charcoal-500);
+
+  /* Links */
+  --theme-link-text: var(--color-charcoal-500);
+  --theme-link-border: var(--color-mauve-700);
+  --theme-link-text-hover: var(--color-rose-500);
+  --theme-link-border-hover: var(--color-rose-500);
+
+  /* Inputs */
+  --theme-input-bg: var(--color-mauve-400);
+  --theme-input-border: color-mix(in srgb, var(--color-mauve-800) 30%, transparent);
+  --theme-input-border-focus: var(--color-rose-500);
+  --theme-input-text: var(--color-charcoal-500);
+  --theme-input-placeholder: var(--color-mauve-700);
+
+  /* Misc */
+  --theme-overlay: color-mix(in srgb, var(--color-charcoal-500) 40%, transparent);
+  --theme-shadow: color-mix(in srgb, var(--color-mauve-800) 20%, transparent);
+  --theme-focus: var(--color-rose-500);
+
+  /* Dither */
+  --theme-dither-ink: var(--color-charcoal-500);
+  --theme-dither-bg: var(--color-mauve-400);
+
+  /* Nav */
+  --theme-nav-bg: var(--color-mauve-500);
+  --theme-nav-text: var(--color-charcoal-500);
+  --theme-nav-border: color-mix(in srgb, var(--color-mauve-800) 25%, transparent);
+}
+
+
+/* --------------------------------------------------------------------------
+   Theme: Sage
+   Character: Fresh, organic, warm muted green
+   -------------------------------------------------------------------------- */
+[data-theme="sage"] {
+  /* Backgrounds */
+  --theme-bg: var(--color-sage-400);
+  --theme-bg-2: var(--color-sage-300);
+  --theme-bg-3: var(--color-sage-200);
+  --theme-bg-4: var(--color-sage-100);
+  --theme-bg-card: var(--color-sage-300);
+  --theme-bg-card-hover: var(--color-sage-200);
+
+  /* Text */
+  --theme-text: var(--color-charcoal-500);
+  --theme-text-muted: var(--color-charcoal-400);
+  --theme-text-subtle: var(--color-sage-800);
+  --theme-text-inverse: var(--color-white-500);
+  --theme-text-accent: var(--color-rose-500);
+
+  /* Borders */
+  --theme-border: color-mix(in srgb, var(--color-sage-700) 30%, transparent);
+  --theme-border-strong: var(--color-sage-600);
+  --theme-border-subtle: color-mix(in srgb, var(--color-sage-700) 15%, transparent);
+
+  /* Accent */
+  --theme-accent: var(--color-pink-500);
+  --theme-accent-hover: var(--color-rose-500);
+  --theme-accent-subtle: color-mix(in srgb, var(--color-pink-500) 20%, transparent);
+
+  /* SVG */
+  --theme-svg: var(--color-charcoal-500);
+  --theme-svg-hover: var(--color-rose-500);
+  --theme-svg-muted: color-mix(in srgb, var(--color-charcoal-500) 40%, transparent);
+
+  /* Selection */
+  --theme-selection-bg: var(--color-pink-500);
+  --theme-selection-text: var(--color-charcoal-500);
+
+  /* Tags */
+  --theme-tag-bg: var(--color-sage-300);
+  --theme-tag-border: color-mix(in srgb, var(--color-sage-700) 25%, transparent);
+  --theme-tag-text: var(--color-rose-500);
+
+  /* Button — Primary */
+  --theme-btn-primary-text: var(--color-white-500);
+  --theme-btn-primary-text-hover: var(--color-white-500);
+  --theme-btn-primary-bg: var(--color-charcoal-500);
+  --theme-btn-primary-bg-hover: var(--color-rose-500);
+  --theme-btn-primary-border: var(--color-charcoal-500);
+  --theme-btn-primary-border-hover: var(--color-rose-500);
+
+  /* Button — Secondary */
+  --theme-btn-secondary-text: var(--color-charcoal-500);
+  --theme-btn-secondary-text-hover: var(--color-white-500);
+  --theme-btn-secondary-bg: var(--color-transparent);
+  --theme-btn-secondary-bg-hover: var(--color-charcoal-500);
+  --theme-btn-secondary-border: var(--color-charcoal-400);
+  --theme-btn-secondary-border-hover: var(--color-charcoal-500);
+
+  /* Links */
+  --theme-link-text: var(--color-charcoal-500);
+  --theme-link-border: var(--color-sage-700);
+  --theme-link-text-hover: var(--color-rose-500);
+  --theme-link-border-hover: var(--color-rose-500);
+
+  /* Inputs */
+  --theme-input-bg: var(--color-sage-300);
+  --theme-input-border: color-mix(in srgb, var(--color-sage-700) 30%, transparent);
+  --theme-input-border-focus: var(--color-rose-500);
+  --theme-input-text: var(--color-charcoal-500);
+  --theme-input-placeholder: var(--color-sage-700);
+
+  /* Misc */
+  --theme-overlay: color-mix(in srgb, var(--color-charcoal-500) 40%, transparent);
+  --theme-shadow: color-mix(in srgb, var(--color-sage-800) 15%, transparent);
+  --theme-focus: var(--color-rose-500);
+
+  /* Dither */
+  --theme-dither-ink: var(--color-charcoal-500);
+  --theme-dither-bg: var(--color-sage-300);
+
+  /* Nav */
+  --theme-nav-bg: var(--color-sage-400);
+  --theme-nav-text: var(--color-charcoal-500);
+  --theme-nav-border: color-mix(in srgb, var(--color-sage-700) 25%, transparent);
+}
+
+
+/* --------------------------------------------------------------------------
+   Theme: Sand
+   Character: Earthy, calm, warm tan
+   -------------------------------------------------------------------------- */
+[data-theme="sand"] {
+  /* Backgrounds */
+  --theme-bg: var(--color-sand-400);
+  --theme-bg-2: var(--color-sand-300);
+  --theme-bg-3: var(--color-sand-200);
+  --theme-bg-4: var(--color-sand-100);
+  --theme-bg-card: var(--color-sand-300);
+  --theme-bg-card-hover: var(--color-sand-200);
+
+  /* Text */
+  --theme-text: var(--color-charcoal-500);
+  --theme-text-muted: var(--color-charcoal-400);
+  --theme-text-subtle: var(--color-sand-800);
+  --theme-text-inverse: var(--color-white-500);
+  --theme-text-accent: var(--color-rose-500);
+
+  /* Borders */
+  --theme-border: color-mix(in srgb, var(--color-sand-700) 35%, transparent);
+  --theme-border-strong: var(--color-sand-600);
+  --theme-border-subtle: color-mix(in srgb, var(--color-sand-700) 15%, transparent);
+
+  /* Accent */
+  --theme-accent: var(--color-pink-500);
+  --theme-accent-hover: var(--color-rose-500);
+  --theme-accent-subtle: color-mix(in srgb, var(--color-pink-500) 20%, transparent);
+
+  /* SVG */
+  --theme-svg: var(--color-charcoal-500);
+  --theme-svg-hover: var(--color-rose-500);
+  --theme-svg-muted: color-mix(in srgb, var(--color-charcoal-500) 40%, transparent);
+
+  /* Selection */
+  --theme-selection-bg: var(--color-pink-500);
+  --theme-selection-text: var(--color-charcoal-500);
+
+  /* Tags */
+  --theme-tag-bg: var(--color-sand-300);
+  --theme-tag-border: color-mix(in srgb, var(--color-sand-700) 30%, transparent);
+  --theme-tag-text: var(--color-rose-500);
+
+  /* Button — Primary */
+  --theme-btn-primary-text: var(--color-white-500);
+  --theme-btn-primary-text-hover: var(--color-white-500);
+  --theme-btn-primary-bg: var(--color-charcoal-500);
+  --theme-btn-primary-bg-hover: var(--color-rose-500);
+  --theme-btn-primary-border: var(--color-charcoal-500);
+  --theme-btn-primary-border-hover: var(--color-rose-500);
+
+  /* Button — Secondary */
+  --theme-btn-secondary-text: var(--color-charcoal-500);
+  --theme-btn-secondary-text-hover: var(--color-white-500);
+  --theme-btn-secondary-bg: var(--color-transparent);
+  --theme-btn-secondary-bg-hover: var(--color-charcoal-500);
+  --theme-btn-secondary-border: var(--color-charcoal-400);
+  --theme-btn-secondary-border-hover: var(--color-charcoal-500);
+
+  /* Links */
+  --theme-link-text: var(--color-charcoal-500);
+  --theme-link-border: var(--color-sand-700);
+  --theme-link-text-hover: var(--color-rose-500);
+  --theme-link-border-hover: var(--color-rose-500);
+
+  /* Inputs */
+  --theme-input-bg: var(--color-sand-300);
+  --theme-input-border: color-mix(in srgb, var(--color-sand-700) 35%, transparent);
+  --theme-input-border-focus: var(--color-rose-500);
+  --theme-input-text: var(--color-charcoal-500);
+  --theme-input-placeholder: var(--color-sand-700);
+
+  /* Misc */
+  --theme-overlay: color-mix(in srgb, var(--color-charcoal-500) 40%, transparent);
+  --theme-shadow: color-mix(in srgb, var(--color-sand-800) 15%, transparent);
+  --theme-focus: var(--color-rose-500);
+
+  /* Dither */
+  --theme-dither-ink: var(--color-charcoal-500);
+  --theme-dither-bg: var(--color-sand-300);
+
+  /* Nav */
+  --theme-nav-bg: var(--color-sand-400);
+  --theme-nav-text: var(--color-charcoal-500);
+  --theme-nav-border: color-mix(in srgb, var(--color-sand-700) 25%, transparent);
+}
+
+
+/* ==========================================================================
+   SECTION 6 — ANIMATION TOKENS
+   ==========================================================================
+   Easing curves, duration scale, compound animation tokens, and
+   transition presets for consistent motion across the entire site.
+
+   Components should reference these tokens — never hardcode
+   easing or duration values directly.
+   ========================================================================== */
+
+:root {
+
+  /* --- Easing Curves ---
+     Each curve has a distinct personality and intended use case. */
+  --ease-brand: cubic-bezier(0.76, 0, 0.24, 1);       /* Site signature — smooth S-curve */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);           /* Entrances — quick decel */
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);            /* Exits — quick accel */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);       /* Bidirectional moves */
+  --ease-gentle: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Micro-interactions */
+  --ease-expressive: cubic-bezier(0.34, 1.28, 0.64, 1);/* Subtle overshoot */
+  --ease-snappy: cubic-bezier(0.4, 0, 0.2, 1);         /* UI feedback */
+  --ease-bounce: linear(                                 /* Refined bounce — use sparingly */
+    0, 0.5737 7.6%, 0.8382 11.87%, 0.9463 14.19%,
+    1.0292 16.54%, 1.0886 18.97%, 1.1258 21.53%,
+    1.137 22.97%, 1.1424 24.48%, 1.1423 26.1%,
+    1.1366 27.86%, 1.1165 31.01%, 1.0507 38.62%,
+    1.0219 42.57%, 0.9995 46.99%, 0.9872 51.63%,
+    0.9842 58.77%, 1.0011 81.26%, 1
+  );
+
+
+  /* --- Duration Scale ---
+     Seven-step scale from instant feedback to slow reveals. */
+  --duration-instant: 0.1s;
+  --duration-fast: 0.2s;
+  --duration-normal: 0.4s;
+  --duration-moderate: 0.6s;
+  --duration-slow: 0.9s;
+  --duration-slower: 1.2s;
+  --duration-slowest: 1.8s;
+
+
+  /* --- Compound Animation Tokens ---
+     Pre-paired duration + easing for consistent motion.
+     Format: duration easing — ready to drop into transition shorthand. */
+
+  /* Brand (smooth S-curve) */
+  --animation-brand-fast: var(--duration-fast) var(--ease-brand);
+  --animation-brand: var(--duration-normal) var(--ease-brand);
+  --animation-brand-moderate: var(--duration-moderate) var(--ease-brand);
+  --animation-brand-slow: var(--duration-slow) var(--ease-brand);
+  --animation-brand-slower: var(--duration-slower) var(--ease-brand);
+
+  /* Out (entrances) */
+  --animation-out-fast: var(--duration-fast) var(--ease-out);
+  --animation-out: var(--duration-normal) var(--ease-out);
+  --animation-out-moderate: var(--duration-moderate) var(--ease-out);
+  --animation-out-slow: var(--duration-slow) var(--ease-out);
+
+  /* In (exits) */
+  --animation-in-fast: var(--duration-fast) var(--ease-in);
+  --animation-in: var(--duration-normal) var(--ease-in);
+  --animation-in-moderate: var(--duration-moderate) var(--ease-in);
+
+  /* In-Out (bidirectional) */
+  --animation-inout-fast: var(--duration-fast) var(--ease-in-out);
+  --animation-inout: var(--duration-normal) var(--ease-in-out);
+  --animation-inout-moderate: var(--duration-moderate) var(--ease-in-out);
+  --animation-inout-slow: var(--duration-slow) var(--ease-in-out);
+
+  /* Gentle (micro-interactions) */
+  --animation-gentle-fast: var(--duration-fast) var(--ease-gentle);
+  --animation-gentle: var(--duration-normal) var(--ease-gentle);
+  --animation-gentle-moderate: var(--duration-moderate) var(--ease-gentle);
+
+  /* Snappy (UI feedback) */
+  --animation-snappy: var(--duration-normal) var(--ease-snappy);
+  --animation-snappy-fast: var(--duration-fast) var(--ease-snappy);
+
+  /* Expressive (overshoot) */
+  --animation-expressive: var(--duration-normal) var(--ease-expressive);
+  --animation-expressive-slow: var(--duration-slow) var(--ease-expressive);
+
+  /* Bounce (refined) */
+  --animation-bounce: var(--duration-moderate) var(--ease-bounce);
+  --animation-bounce-fast: var(--duration-normal) var(--ease-bounce);
+
+
+  /* --- Transition Presets ---
+     Drop-in transition values for common interactive patterns.
+     Usage: transition: var(--transition-btn); */
+
+  /* Single-property hover transitions */
+  --transition-hover-color: color var(--animation-snappy-fast);
+  --transition-hover-bg: background-color var(--animation-gentle);
+  --transition-hover-border: border-color var(--animation-gentle);
+  --transition-hover-opacity: opacity var(--animation-gentle-fast);
+  --transition-hover-transform: transform var(--animation-brand);
+  --transition-hover-shadow: box-shadow var(--animation-gentle);
+
+  /* Multi-property component transitions */
+  --transition-btn:
+    color var(--animation-snappy-fast),
+    background-color var(--animation-gentle),
+    border-color var(--animation-gentle),
+    box-shadow var(--animation-gentle),
+    transform var(--animation-brand);
+
+  --transition-link:
+    color var(--animation-snappy-fast),
+    border-color var(--animation-gentle),
+    opacity var(--animation-gentle-fast);
+
+  --transition-card:
+    transform var(--animation-brand),
+    box-shadow var(--animation-gentle),
+    background-color var(--animation-gentle);
+
+  --transition-image:
+    transform var(--animation-brand),
+    filter var(--animation-gentle);
+
+  --transition-icon:
+    color var(--animation-snappy-fast),
+    fill var(--animation-snappy-fast),
+    transform var(--animation-brand);
+
+  --transition-nav:
+    background-color var(--animation-gentle),
+    border-color var(--animation-gentle),
+    backdrop-filter var(--animation-gentle);
+
+  --transition-overlay:
+    opacity var(--animation-gentle),
+    visibility var(--animation-gentle);
+}
+
+
+/* ==========================================================================
+   SECTION 7 — GLOBAL SELECTION & FOCUS STYLES
+   ==========================================================================
+   Theme-aware selection highlighting and focus-visible outlines.
+   ========================================================================== */
+
+::selection {
+  background-color: var(--theme-selection-bg);
+  color: var(--theme-selection-text);
+}
+
+:focus-visible {
+  outline: 2px solid var(--theme-focus);
+  outline-offset: 3px;
+}
+
+
+/* ==========================================================================
+   SECTION 8 — BASE RESET, GLOBAL ELEMENT STYLES & BASE TYPOGRAPHY
+   ==========================================================================
+   Minimal reset that complements Tailwind's preflight, plus global
+   typographic defaults applied to semantic HTML elements.
+   All values reference tokens — never hardcoded.
+   ========================================================================== */
+
+/* --- Reset --- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+}
+
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+
+/* --- Base Typography --- */
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-secondary);
+  font-size: var(--size-font);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-relaxed);
+  color: var(--theme-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-primary);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--theme-text);
+}
+
+h1 { font-size: var(--font-size-h1); }
+h2 { font-size: var(--font-size-h2); }
+h3 { font-size: var(--font-size-h3); }
+h4 { font-size: var(--font-size-h4); }
+h5 { font-size: var(--font-size-h5); }
+h6 { font-size: var(--font-size-h6); }
+
+p {
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-text-md);
+  line-height: var(--line-height-relaxed);
+  color: var(--theme-text);
+}
+
+/* Display text — for hero headlines and oversized typographic moments */
+.text-display {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-none);
+  letter-spacing: var(--letter-spacing-display);
 }
