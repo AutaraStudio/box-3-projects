@@ -190,8 +190,8 @@ class DitherMedia {
       uTextureSize:               { value: new THREE.Vector2(0, 0) },
       uPlaneSize:                 { value: new THREE.Vector2(0, 0) },
       uResolution:                engine.resolution,
-      uColorInk:                  { value: new THREE.Color(ink) },
-      uColorBg:                   { value: new THREE.Color(bg) },
+      uColorInk:                  { value: new THREE.Color().setStyle(ink) },
+      uColorBg:                   { value: new THREE.Color().setStyle(bg) },
       uOpacity:                   { value: 0.0 },
       uWipe:                      { value: this.isFull ? 0.0 : 1.0 },
       uSubtle:                    { value: this.isFull ? 0.0 : 1.0 },
@@ -468,11 +468,24 @@ export class DitherEngine {
   // ── Theme color reader ─────────────────────────────────────────────────────
 
   private _readThemeColors(el: HTMLElement): { ink: string; bg: string } {
-    const style = getComputedStyle(el);
-    return {
-      ink: style.getPropertyValue("--theme-dither-ink").trim(),
-      bg:  style.getPropertyValue("--theme-dither-bg").trim(),
-    };
+    /* Create a temporary element inside the themed section so it inherits
+       the correct data-theme scope. Setting a standard color property
+       forces the browser to fully resolve the CSS variable chain —
+       getComputedStyle then returns an rgb() string that THREE.Color
+       can parse via setStyle(). */
+    const tmp = document.createElement("div");
+    tmp.style.display = "none";
+    el.appendChild(tmp);
+
+    tmp.style.color = "var(--theme-dither-ink)";
+    const ink = getComputedStyle(tmp).color;
+
+    tmp.style.color = "var(--theme-dither-bg)";
+    const bg = getComputedStyle(tmp).color;
+
+    el.removeChild(tmp);
+
+    return { ink, bg };
   }
 
   // ── Camera ─────────────────────────────────────────────────────────────────
