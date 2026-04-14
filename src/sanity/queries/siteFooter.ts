@@ -35,6 +35,7 @@ export const FOOTER_QUERY = groq`
       href
     },
     phone,
+    stayInTouchLabel,
     newsletterPlaceholder,
     madeByLabel,
     madeByUrl,
@@ -57,6 +58,7 @@ export interface SiteFooterData {
   socialLinks: FooterLink[];
   legalLinks: FooterLink[];
   phone: string;
+  stayInTouchLabel: string;
   newsletterPlaceholder: string;
   madeByLabel: string;
   madeByUrl: string;

@@ -35,6 +35,7 @@ interface FooterProps {
   socialLinks: FooterLink[];
   legalLinks: FooterLink[];
   phone: string;
+  stayInTouchLabel: string;
   newsletterPlaceholder: string;
   madeByLabel: string;
   madeByUrl: string;
@@ -52,6 +53,7 @@ export default function Footer({
   socialLinks,
   legalLinks,
   phone,
+  stayInTouchLabel,
   newsletterPlaceholder,
   madeByLabel,
   madeByUrl,
@@ -162,7 +164,7 @@ export default function Footer({
               <span>
                 <a
                   href={link.href}
-                  className="footer-link font-primary text-text-sm leading-relaxed uppercase"
+                  className="footer-link font-primary text-text-sm leading-relaxed uppercase tracking-caps"
                   data-footer-link=""
                   role="menuitem"
                 >
@@ -180,7 +182,7 @@ export default function Footer({
               <span>
                 <a
                   href={link.href}
-                  className="footer-link font-primary text-text-sm leading-relaxed uppercase"
+                  className="footer-link font-primary text-text-sm leading-relaxed uppercase tracking-caps"
                   data-footer-link=""
                   role="menuitem"
                 >
@@ -198,7 +200,7 @@ export default function Footer({
               <span>
                 <a
                   href={link.href}
-                  className="footer-link font-primary text-text-sm leading-relaxed uppercase"
+                  className="footer-link font-primary text-text-sm leading-relaxed uppercase tracking-caps"
                   data-footer-link=""
                   role="menuitem"
                 >
@@ -211,13 +213,13 @@ export default function Footer({
 
         {/* Contact + Newsletter */}
         <div className="footer-contact-col">
-          <div className="footer-contact-row font-primary text-text-sm leading-relaxed uppercase">
+          <div className="footer-contact-row font-primary text-text-sm leading-relaxed uppercase tracking-caps">
             <span
               className="footer-link"
               data-footer-link=""
-              data-original-text="Stay In Touch"
+              data-original-text={stayInTouchLabel}
             >
-              Stay In Touch
+              {stayInTouchLabel}
             </span>
             <span className="footer-pipe">|</span>
             <a
@@ -275,7 +277,7 @@ export default function Footer({
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="footer-link font-primary text-text-sm leading-relaxed uppercase"
+                  className="footer-link font-primary text-text-sm leading-relaxed uppercase tracking-caps"
                   data-footer-link=""
                 >
                   {link.label}
@@ -292,7 +294,7 @@ export default function Footer({
               <span>
                 <a
                   href={link.href}
-                  className="footer-link font-primary text-text-sm leading-relaxed uppercase"
+                  className="footer-link font-primary text-text-sm leading-relaxed uppercase tracking-caps"
                   data-footer-link=""
                   role="menuitem"
                 >
@@ -307,7 +309,7 @@ export default function Footer({
                 href={madeByUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="footer-link font-primary text-text-sm leading-relaxed uppercase"
+                className="footer-link font-primary text-text-sm leading-relaxed uppercase tracking-caps"
                 data-footer-link=""
               >
                 {madeByLabel}
@@ -324,7 +326,7 @@ export default function Footer({
             href={madeByUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="footer-link font-primary text-text-sm leading-relaxed uppercase"
+            className="footer-link font-primary text-text-sm leading-relaxed uppercase tracking-caps"
             data-footer-link=""
           >
             {madeByLabel}
@@ -333,7 +335,7 @@ export default function Footer({
       </div>
 
       {/* Copyright */}
-      <div className="footer-copyright font-primary text-text-sm leading-relaxed uppercase">
+      <div className="footer-copyright font-primary text-text-sm leading-relaxed uppercase tracking-caps">
         {copyright}
       </div>
     </footer>

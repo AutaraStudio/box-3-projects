@@ -159,6 +159,12 @@ export default defineType({
       type: "string",
     }),
     defineField({
+      name: "stayInTouchLabel",
+      title: "Stay in touch label",
+      description: "Label shown before the phone number e.g. Stay In Touch",
+      type: "string",
+    }),
+    defineField({
       name: "newsletterPlaceholder",
       title: "Newsletter input placeholder",
       type: "string",

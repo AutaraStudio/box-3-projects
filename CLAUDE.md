@@ -16,6 +16,86 @@
 
 ## Project Rules — Must Follow Always
 
+## Converting External Resources
+
+When building any component, section, or animation from an external 
+source (Webflow HTML, reference CSS/JS, CodePen, design files, or 
+any third-party code), the following conversion rules are absolute 
+and non-negotiable. Every single value must be converted. No 
+exceptions. If uncertain about how to convert something — ask before 
+building.
+
+### What Must Always Be Converted
+
+**Colors**
+- Every hex, rgb, rgba, hsl, or named color → nearest --theme-* token
+- Transparent variants → color-mix(in srgb, var(--color-*) X%, transparent)
+- Never rgba() with hardcoded values — ever
+- If no exact token exists → ask which theme token is semantically correct
+
+**Typography**
+- Every font-family → var(--font-primary) or var(--font-secondary)
+- Every font-size → nearest --font-size-* token (rem only)
+- Every font-weight → nearest --font-weight-* token
+- Every line-height → nearest --line-height-* token
+- Every letter-spacing → nearest --letter-spacing-* token
+- text-transform: uppercase → also add letter-spacing: var(--letter-spacing-caps)
+- Never put typography in CSS classes — always Tailwind utility classes in JSX
+
+**Spacing**
+- Every px margin, padding, gap → nearest --space-*, --section-space-*, or --gap-* token
+- Convert px → rem (÷16), then match nearest token
+- Section vertical padding → --section-space-* tokens
+- Never hardcode px values for layout or typography
+
+**Borders**
+- Every border-width → var(--border-width)
+- Every border-color → nearest --theme-border* token
+- Every border-radius → nearest --radius-* token
+
+**Animation**
+- Every easing string → nearest ease from animations.config.ts
+- Every duration value → nearest duration from animations.config.ts
+- Every stagger value → nearest stagger from animations.config.ts
+- All DOM targeting → data-* attributes, never classes or IDs
+- CSS transitions → var(--transition-*) or var(--animation-*) tokens
+
+**Layout**
+- All sizing in rem — never px for layout
+- Grid/flex gaps → --gap-* tokens
+- Container widths → .container system variants
+
+### What Cannot Always Be Converted
+
+Some values have no token equivalent and require custom CSS. When 
+this happens:
+
+1. Write the custom CSS in the component-level stylesheet (not globals.css 
+   unless it is truly global)
+2. Add an approval comment explaining why no token exists:
+```css
+   /* 29px at 1440 — no token equivalent, pixel-perfect logo size */
+   height: 1.8125rem;
+```
+3. Use rem not px — the Osmo scaling system still applies
+4. Reference the nearest brand aesthetic — colors from the primitive 
+   palette via color-mix, spacing proportional to the token scale
+5. Never copy foreign values verbatim — always convert to rem and 
+   reference tokens wherever possible
+
+### Rule of Thumb
+
+If you are about to write a hardcoded value — stop.
+Ask yourself: is there a token for this?
+If yes → use the token.
+If no → write custom CSS with an approval comment.
+If unsure → ask before building.
+
+The goal is zero foreign values in the codebase. A senior engineer 
+reading any file should never encounter a mystery hex code, an 
+arbitrary px value, or an unknown font string. Everything must 
+trace back to the token system.
+
 ### Colors
 - ZERO hardcoded color values anywhere in the codebase
 - All colors reference CSS custom property tokens only
