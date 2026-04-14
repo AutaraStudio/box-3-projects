@@ -153,6 +153,9 @@ Add these to any element and animations trigger automatically:
 - data-line-delay="0.2" — optional per-element delay override
 - data-hero-scroll-fade — fades out on hero scroll
 - data-hero-scroll-fade-scale — fades and scales down on hero scroll
+- data-nav-theme="dark|light|[theme]" — tells NavThemeObserver what
+  theme the nav should use when this section is in view. Add to every
+  page section that needs to change the nav appearance.
 
 ### Theming — Ready To Use
 - Add data-theme="[name]" to any outer section wrapper
@@ -196,7 +199,12 @@ Add these to any element and animations trigger automatically:
   - homePage schema — src/sanity/schemas/pages/homePage.ts
   - HOME_PAGE_QUERY — src/sanity/queries/homePage.ts
 - Component library — pending ⏳
-- Nav component — pending ⏳
+- Nav component — complete ✅
+  - Nav.tsx — full mega menu, ScrambleText, scroll-hide behaviour
+  - Nav.css — 12-column grid, mega menu layout, button hover effects
+  - NavThemeObserver.tsx — swaps nav data-theme on scroll per section
+  - siteNav schema — src/sanity/schemas/globals/siteNav.ts
+  - NAV_QUERY — src/sanity/queries/siteNav.ts
 - Footer component — pending ⏳
 - All other pages/sections — pending ⏳
 
@@ -226,6 +234,14 @@ Add these to any element and animations trigger automatically:
 - Never use @tailwind base/components/utilities — these are v3 directives and will
   silently break the entire token system
 - tailwind.config.ts is still used and must be loaded via @config directive
+
+### Nav Theme Observer
+- Every page section needs data-nav-theme="[theme]" for the nav to
+  respond correctly as the user scrolls
+- The nav header element has data-nav="" — NavThemeObserver targets this
+- Nav vertical lines use data-line-reveal-hero="top" — fires immediately
+  on load, not on scroll
+- Mega menu overflow requires is-open class on mega-menu-container
 
 ## When Starting Any Task
 1. Read this file first

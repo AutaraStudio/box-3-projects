@@ -138,6 +138,7 @@ export default function HomeHero({
             data-src={imageUrl}
           />
         )}
+        <div className="u-overlay" aria-hidden="true" />
       </div>
 
       {/* --- Container --- */}

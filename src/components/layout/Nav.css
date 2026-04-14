@@ -53,6 +53,7 @@
   display: grid;
   grid-template-columns: 60vw 1fr;
   gap: var(--border-width) var(--space-1);
+  align-items: start;
   align-content: flex-start;
   color: var(--theme-text);
 }
@@ -72,7 +73,8 @@
    ========================================================================== */
 
 .header-logo-block {
-  border: var(--border-width) solid var(--theme-accent);
+  border: var(--border-width) solid var(--theme-btn-primary-bg);
+  align-self: start;
   will-change: transform;
 }
 
@@ -80,7 +82,7 @@
   .header-logo-block {
     grid-column: span 6;
     justify-self: start;
-    width: 100%;
+    width: auto;
   }
 }
 
@@ -91,21 +93,24 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
+  height: var(--space-7);
   padding-block: var(--space-2);
-  padding-left: var(--space-4);
+  padding-left: var(--space-3);
   overflow: hidden;
 }
 
 .header-logo-container {
-  height: var(--space-7);
-  width: var(--space-7);
+  height: 1.8125rem;
+  width: 1.8125rem;
   display: block;
   flex-shrink: 0;
 }
 
 .header-logo-container svg {
-  height: 100%;
   width: 100%;
+  height: 100%;
+  color: var(--theme-text);
+  transition: color var(--animation-gentle);
 }
 
 .header-text-container {
@@ -134,7 +139,7 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  background-color: var(--theme-accent);
+  background-color: var(--theme-btn-primary-bg);
   transition: background-color var(--animation-gentle);
 }
 
@@ -158,18 +163,6 @@
   }
 }
 
-.nav-vertical-line {
-  width: var(--border-width);
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 9.5rem;
-  margin-top: calc(var(--space-3) * -1);
-  background-color: var(--theme-text);
-  transform-origin: 50% 0%;
-  transform: scaleY(0);
-}
-
 .primary-nav-list {
   position: absolute;
   list-style: none;
@@ -190,6 +183,11 @@
   font-size: var(--font-size-text-sm);
   line-height: var(--line-height-normal);
   color: var(--theme-text);
+}
+
+.nav-link:hover,
+.nav-link:focus {
+  color: var(--theme-text-muted);
 }
 
 
@@ -232,6 +230,11 @@
   color: var(--theme-text);
 }
 
+.nav-link-secondary:hover,
+.nav-link-secondary:focus {
+  color: var(--theme-text-muted);
+}
+
 
 /* ==========================================================================
    Buttons
@@ -241,6 +244,7 @@
   pointer-events: auto;
   display: flex;
   gap: var(--space-1);
+  overflow: hidden;
 }
 
 @media (min-width: 992px) {
@@ -259,8 +263,9 @@
 
 @media (min-width: 992px) {
   .menu-btn-wrap {
-    width: 5rem;
-    height: 3rem;
+    min-width: var(--space-10);
+    width: auto;
+    height: var(--space-7);
     flex: none;
     flex-shrink: 0;
   }
@@ -268,7 +273,7 @@
 
 .menu-btn-border {
   border: var(--border-width) solid transparent;
-  overflow: hidden;
+  overflow: visible;
   height: 100%;
   width: 100%;
 }
@@ -276,11 +281,11 @@
 .menu-btn {
   position: relative;
   z-index: 1;
-  color: var(--theme-accent);
+  color: var(--theme-btn-primary-text);
   font-weight: var(--font-weight-regular);
   height: 100%;
   width: 100%;
-  background-color: var(--theme-text);
+  background-color: var(--theme-btn-primary-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -291,12 +296,14 @@
   line-height: var(--line-height-none);
   cursor: pointer;
   border: none;
+  padding-inline: var(--space-4);
+  white-space: nowrap;
 }
 
 .menu-btn-bg {
   position: absolute;
   inset: 0;
-  background-color: var(--theme-bg-3);
+  background-color: var(--theme-bg-2);
   z-index: -1;
 }
 
@@ -322,8 +329,8 @@
 
 @media (min-width: 992px) {
   .contact-link-btn {
-    width: 3rem;
-    height: 3rem;
+    width: var(--space-7);
+    height: var(--space-7);
     flex: none;
     flex-shrink: 0;
   }
@@ -356,6 +363,7 @@
   overflow-x: hidden;
   pointer-events: auto;
   display: none;
+  max-height: calc(100vh - var(--space-3) * 2);
 }
 
 @media (min-width: 992px) {
@@ -366,7 +374,8 @@
 }
 
 .mega-menu-container.is-open {
-  height: 100%;
+  display: block;
+  height: calc(100vh - var(--space-3) * 2);
 }
 
 .mega-menu-inner {
@@ -376,11 +385,14 @@
   padding-bottom: var(--space-7);
   background-color: var(--theme-bg-card);
   color: var(--theme-accent);
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .mega-menu-container.is-open .mega-menu-inner {
   height: 100%;
   overflow-y: auto;
+  max-height: 100%;
 }
 
 

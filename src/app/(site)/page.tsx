@@ -15,6 +15,11 @@ export default async function Home() {
         image={data?.heroImage ?? null}
         imageAlt={data?.heroImage?.alt ?? "Hero background"}
       />
+      <section
+        data-nav-theme="light"
+        style={{ height: "200vh", background: "var(--color-cream-300)" }}
+        aria-hidden="true"
+      />
     </main>
   );
 }

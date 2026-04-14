@@ -114,7 +114,6 @@ export default function Nav({
       const _menuBtnText = menuBtnText;
 
       /* ── DOM queries ───────────────────────────── */
-      const lineArray = Array.from(header.querySelectorAll<HTMLElement>("[data-nav-line]"));
       const primaryLinksArray = Array.from(header.querySelectorAll<HTMLElement>("[data-primary-link]"));
       const secondaryLinksArray = Array.from(header.querySelectorAll<HTMLElement>("[data-secondary-link]"));
 
@@ -201,10 +200,7 @@ export default function Nav({
         navShowTl.current?.kill();
         menuSlideTl.current?.kill();
 
-        gsap.set(lineArray, { transformOrigin: "top center" });
-
-        navShowTl.current = gsap.timeline({ paused: true, defaults: { ease: ease.brand, duration: duration.slow } })
-          .fromTo(lineArray, { scaleY: 0 }, { scaleY: 1 }, 0);
+        navShowTl.current = gsap.timeline({ paused: true, defaults: { ease: ease.brand, duration: duration.slow } });
 
         primaryLinksArray.forEach((link, i) => {
           const txt = link.textContent?.trim() || "";
@@ -247,6 +243,8 @@ export default function Nav({
       /* ── Open Menu ─────────────────────────────── */
       function openMenu() {
         menuCloseTl.current?.pause();
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden';
         const n = duration.slower;
         const e = ease.entrance;
 
@@ -314,6 +312,8 @@ export default function Nav({
             if (companyTitle) gsap.set(companyTitle, { scrambleText: { text: "" } });
             if (contactTitle) gsap.set(contactTitle, { scrambleText: { text: "" } });
             if (menuContactForm) gsap.set(menuContactForm, { opacity: 0, yPercent: 100 });
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
           },
         });
 
@@ -448,7 +448,6 @@ export default function Nav({
                 aria-hidden="true"
                 fill="none"
                 viewBox="0 0 31 30"
-                style={{ color: "var(--theme-text)", width: "100%", height: "100%" }}
               >
                 <path d="M15.3 28.07a12.825 12.825 0 0 0 .714.001V30H15.3v-1.93Zm13.172-12.713c-.049 6.916-5.576 12.529-12.458 12.714v-3.196c5.118-.184 9.216-4.366 9.263-9.518h3.195Zm-22.427 0c.048 5.15 4.14 9.33 9.255 9.518v3.195c-6.877-.19-12.4-5.8-12.447-12.713h3.192Zm9.969-9.7v8.986h9.243c.013.206.022.414.022.624l-.002.09h-9.263v9.518c-.117.004-.235.009-.353.009-.12 0-.241-.005-.361-.009v-9.518H6.045l-.002-.09c0-.21.01-.418.022-.624H15.3V5.657c.12-.004.24-.009.361-.009.118 0 .236.005.353.01Zm14.643 8.986v.714h-2.185v-.091c0-.21-.005-.417-.015-.623h2.2Zm-27.79 0c-.01.206-.015.414-.015.623v.091H.657v-.714h2.211ZM16.014 2.46c6.704.18 12.123 5.513 12.443 12.182h-3.2a9.615 9.615 0 0 0-9.243-8.986V2.461ZM15.3 5.657a9.616 9.616 0 0 0-9.235 8.986H2.867C3.187 7.977 8.6 2.648 15.3 2.462v3.195Zm.714-3.196a13.081 13.081 0 0 0-.714 0V0h.714v2.46Z" fill="currentColor" />
               </svg>
@@ -462,7 +461,6 @@ export default function Nav({
 
         {/* Primary Nav (desktop) */}
         <div className="header-primary-nav">
-          <div className="nav-vertical-line" data-nav-line="" data-line-reveal="top" />
           <ul className="primary-nav-list" role="menu">
             {primaryLinks.map((link) => (
               <li key={link._key} className="primary-nav-item" role="none">
@@ -476,7 +474,6 @@ export default function Nav({
 
         {/* Secondary Nav (desktop) */}
         <div className="header-secondary-nav">
-          <div className="nav-vertical-line" data-nav-line="" data-line-reveal="top" />
           <ul className="secondary-nav-list" role="menu">
             {secondaryLinks.map((link) => (
               <li key={link._key} className="secondary-nav-item" role="none">

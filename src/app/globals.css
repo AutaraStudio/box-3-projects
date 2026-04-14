@@ -1364,6 +1364,16 @@ select {
 }
 
 
+/* --- Image Overlay Utility --- */
+.u-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: var(--theme-overlay);
+  pointer-events: none;
+  z-index: 1;
+}
+
+
 /* --- Base Typography --- */
 
 body {
