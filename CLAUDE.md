@@ -151,6 +151,62 @@ trace back to the token system.
 - Field names and descriptions written in plain English
 - If schema structure is ambiguous — ask before building
 
+### Sanity — Production Readiness Rule
+
+Every time a Sanity schema is created or modified, the following
+must happen in the same task — never deferred to later:
+
+1. Schema is registered in `src/sanity/schemas/index.ts`
+2. Schema uses field **groups** so the Studio UI is tabbed and
+   readable — never a single flat list of fields
+3. All field titles and descriptions are plain English, client-facing,
+   and action-oriented (no dev jargon)
+4. Singleton document types are added to the `SINGLETONS` list in
+   `src/sanity/lib/structure.ts` AND to the `SINGLETON_TYPES` set
+   in `src/sanity/lib/studio.ts`, then added to the custom desk
+   structure so they open directly (no intermediate list view)
+5. `scripts/seed-sanity.ts` is updated with default content for
+   the new or modified document type — singletons use a fixed
+   `_id` matching the schema type name (e.g. `_id: "siteNav"`)
+6. `npm run seed` is executed to write the document to the dataset
+7. The client can log into `/studio` immediately and see a clean,
+   tabbed, labelled document ready to edit
+
+This is non-negotiable. Sanity Studio must never show
+"No documents of this type" or a raw document list after a build
+task is complete.
+
+Rules for schema authoring:
+- Every schema declares `groups` when it has more than ~4 fields,
+  grouped by real-world category (e.g. Links, Contact, Credits)
+- Every field has a client-facing `description` explaining where
+  the value is used on the site
+- Reusable object shapes (e.g. link = {label, href}) are defined
+  once at the top of the schema file and reused via spread or const
+- Image and file fields use `options.accept` where applicable and
+  carry a description telling the client to upload via Studio
+- `validation: (rule) => rule.required()` is NOT added to image
+  or file fields — documents must be creatable without assets so
+  the seed can run
+
+Rules for seed content:
+- All singleton documents use a fixed `_id` equal to the schema
+  type name (e.g. `_id: "homePage"`)
+- All text fields get sensible real-world placeholder values
+- All link fields get correct href paths
+- All array fields get at least 2–3 items so the UI is representative
+- `image` and `file` fields are NOT seeded — client uploads via Studio
+- The seed script is idempotent — it checks for an existing document
+  at the fixed `_id` before creating, and cleans up any legacy
+  auto-ID duplicates of that type in the same pass
+- `SANITY_API_TOKEN` must be an Editor token set in `.env.local`
+
+When modifying an existing schema (adding or renaming fields):
+- Patch the existing singleton document by fixed `_id` using
+  `client.patch(_id).setIfMissing({...}).commit()` — do not
+  create a duplicate
+- Only patch fields that are new — leave existing content untouched
+
 ### Code Quality Standard
 - Written as a senior frontend engineer at a top-tier tech company would write it
 - Clean, semantic HTML
@@ -315,6 +371,18 @@ Add these to any element and animations trigger automatically:
   silently break the entire token system
 - tailwind.config.ts is still used and must be loaded via @config directive
 
+### Sanity Seeding
+- Every time a new schema type is added, scripts/seed-sanity.ts
+  must be updated with default content for that type
+- Run npm run seed after adding new schemas
+- The script is idempotent — existing documents are never
+  overwritten or duplicated
+- logo/image fields cannot be seeded programmatically —
+  clients upload these via Studio
+- SANITY_API_TOKEN must be an Editor token (not Viewer)
+- After seeding, the client can log in to /studio and edit
+  all content immediately
+
 ### Nav Theme Observer
 - Every page section needs data-nav-theme="[theme]" for the nav to
   respond correctly as the user scrolls
@@ -329,3 +397,18 @@ Add these to any element and animations trigger automatically:
 3. Read reference/ref.html, ref.css, ref.js if they exist
 4. Follow all rules above without exception
 5. If uncertain about structure or approach — ask before building
+
+## When Completing Any Task That Touches Sanity
+1. Confirm the schema is registered in `src/sanity/schemas/index.ts`
+2. Confirm the schema uses `groups` and every field has a
+   client-facing description
+3. If the schema is a singleton — confirm it's listed in both
+   `src/sanity/lib/structure.ts` and `src/sanity/lib/studio.ts`
+   and opens directly from the Studio sidebar
+4. Confirm `scripts/seed-sanity.ts` has been updated — singletons
+   use fixed `_id` equal to the type name
+5. Run `npm run seed`
+6. Confirm the document appears in `/studio` with a clean,
+   tabbed UI before marking the task complete
+7. If the seed fails — fix it before finishing. Do not leave
+   Studio in a broken state.

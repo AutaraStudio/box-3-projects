@@ -578,6 +578,11 @@
   --theme-nav-accent: var(--color-charcoal-500);
   --theme-nav-icon-bg: var(--color-charcoal-500);
   --theme-nav-icon-text: var(--color-white-500);
+
+  /* Partner Cards */
+  --theme-partner-card-bg: var(--color-charcoal-500);
+  --theme-partner-card-svg: var(--color-pink-500);
+  --theme-partner-card-svg-hover: var(--color-pure-white);
 }
 
 
@@ -767,6 +772,11 @@
   --theme-nav-accent: var(--color-pink-500);
   --theme-nav-icon-bg: var(--color-pink-500);
   --theme-nav-icon-text: var(--color-charcoal-500);
+
+  /* Partner Cards */
+  --theme-partner-card-bg: var(--color-charcoal-700);
+  --theme-partner-card-svg: var(--color-pink-500);
+  --theme-partner-card-svg-hover: var(--color-white-500);
 }
 
 

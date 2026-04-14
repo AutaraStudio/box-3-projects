@@ -18,8 +18,16 @@ import type { SchemaTypeDefinition } from "sanity";
 /* Pages */
 import homePage from "./pages/homePage";
 
+/* Sections */
+import partnersSection from "./sections/partnersSection";
+
 /* Globals */
 import siteNav from "./globals/siteNav";
 import siteFooter from "./globals/siteFooter";
 
-export const schemaTypes: SchemaTypeDefinition[] = [homePage, siteNav, siteFooter];
+export const schemaTypes: SchemaTypeDefinition[] = [
+  homePage,
+  partnersSection,
+  siteNav,
+  siteFooter,
+];

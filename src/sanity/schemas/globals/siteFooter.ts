@@ -1,189 +1,147 @@
 /**
  * Site Footer Schema
  * ==================
- * Global document for the site footer.
- * Controls navigation links, social links, legal links,
- * contact details, newsletter, and copyright.
+ * Singleton document for the site footer. Organised into tabs
+ * for clarity:
+ *   1. Links       — the navigation columns at the top of the footer
+ *   2. Social      — social media icons row
+ *   3. Legal       — privacy / terms / legal links
+ *   4. Contact     — phone number and newsletter signup
+ *   5. Credits     — copyright and "Made by" credit line
  */
 
 import { defineField, defineType } from "sanity";
+
+/** Reusable link object — a label plus a URL path or full URL. */
+const footerLink = {
+  type: "object",
+  fields: [
+    defineField({
+      name: "label",
+      title: "Link text",
+      description: "The text the visitor sees",
+      type: "string",
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: "href",
+      title: "Link destination",
+      description:
+        "Where this link goes — a page path e.g. /about or a full URL e.g. https://instagram.com/...",
+      type: "string",
+      validation: (rule) => rule.required(),
+    }),
+  ],
+  preview: { select: { title: "label", subtitle: "href" } },
+};
 
 export default defineType({
   name: "siteFooter",
   title: "Footer",
   type: "document",
+  groups: [
+    { name: "links", title: "Links", default: true },
+    { name: "social", title: "Social" },
+    { name: "legal", title: "Legal" },
+    { name: "contact", title: "Contact" },
+    { name: "credits", title: "Credits" },
+  ],
   fields: [
+    /* ── Links ─────────────────────────────────────────────── */
     defineField({
       name: "primaryLinks",
-      title: "Primary Links",
-      description: "Main navigation links (e.g. About, Services, Projects, Clients)",
+      title: "Main Links",
+      description:
+        "The first column of footer links (e.g. About, Services, Projects, Clients)",
       type: "array",
-      of: [
-        {
-          type: "object",
-          fields: [
-            defineField({
-              name: "label",
-              title: "Link text",
-              type: "string",
-              validation: (rule) => rule.required(),
-            }),
-            defineField({
-              name: "href",
-              title: "URL path e.g. /about",
-              type: "string",
-              validation: (rule) => rule.required(),
-            }),
-          ],
-          preview: {
-            select: { title: "label", subtitle: "href" },
-          },
-        },
-      ],
+      group: "links",
+      of: [footerLink],
     }),
     defineField({
       name: "secondaryLinks",
       title: "Secondary Links",
-      description: "Secondary navigation links (e.g. Culture, Blog, Contact)",
+      description:
+        "The second column of footer links (e.g. Culture & Careers, Blog, Contact)",
       type: "array",
-      of: [
-        {
-          type: "object",
-          fields: [
-            defineField({
-              name: "label",
-              title: "Link text",
-              type: "string",
-              validation: (rule) => rule.required(),
-            }),
-            defineField({
-              name: "href",
-              title: "URL path e.g. /contact",
-              type: "string",
-              validation: (rule) => rule.required(),
-            }),
-          ],
-          preview: {
-            select: { title: "label", subtitle: "href" },
-          },
-        },
-      ],
+      group: "links",
+      of: [footerLink],
     }),
     defineField({
       name: "miscLinks",
-      title: "Miscellaneous Links",
-      description: "Additional links (e.g. FAQ)",
+      title: "Additional Links",
+      description: "Any extra links (e.g. FAQ)",
       type: "array",
-      of: [
-        {
-          type: "object",
-          fields: [
-            defineField({
-              name: "label",
-              title: "Link text",
-              type: "string",
-              validation: (rule) => rule.required(),
-            }),
-            defineField({
-              name: "href",
-              title: "URL path e.g. /faq",
-              type: "string",
-              validation: (rule) => rule.required(),
-            }),
-          ],
-          preview: {
-            select: { title: "label", subtitle: "href" },
-          },
-        },
-      ],
+      group: "links",
+      of: [footerLink],
     }),
+
+    /* ── Social ────────────────────────────────────────────── */
     defineField({
       name: "socialLinks",
-      title: "Social Links",
-      description: "Social media links (open in new tab)",
+      title: "Social Media Links",
+      description:
+        "Social channels — these open in a new tab. Use the full URL e.g. https://instagram.com/...",
       type: "array",
-      of: [
-        {
-          type: "object",
-          fields: [
-            defineField({
-              name: "label",
-              title: "Link text",
-              type: "string",
-              validation: (rule) => rule.required(),
-            }),
-            defineField({
-              name: "href",
-              title: "Full URL e.g. https://instagram.com/...",
-              type: "string",
-              validation: (rule) => rule.required(),
-            }),
-          ],
-          preview: {
-            select: { title: "label", subtitle: "href" },
-          },
-        },
-      ],
+      group: "social",
+      of: [footerLink],
     }),
+
+    /* ── Legal ─────────────────────────────────────────────── */
     defineField({
       name: "legalLinks",
       title: "Legal Links",
-      description: "Legal page links (e.g. Privacy Policy, Terms)",
+      description: "Legal pages (e.g. Privacy Policy, Terms & Conditions)",
       type: "array",
-      of: [
-        {
-          type: "object",
-          fields: [
-            defineField({
-              name: "label",
-              title: "Link text",
-              type: "string",
-              validation: (rule) => rule.required(),
-            }),
-            defineField({
-              name: "href",
-              title: "URL path e.g. /privacy-policy",
-              type: "string",
-              validation: (rule) => rule.required(),
-            }),
-          ],
-          preview: {
-            select: { title: "label", subtitle: "href" },
-          },
-        },
-      ],
+      group: "legal",
+      of: [footerLink],
+    }),
+
+    /* ── Contact ───────────────────────────────────────────── */
+    defineField({
+      name: "stayInTouchLabel",
+      title: '"Stay In Touch" label',
+      description: "The label shown before the phone number",
+      type: "string",
+      group: "contact",
     }),
     defineField({
       name: "phone",
       title: "Phone number",
+      description: "Shown in the footer contact row",
       type: "string",
-    }),
-    defineField({
-      name: "stayInTouchLabel",
-      title: "Stay in touch label",
-      description: "Label shown before the phone number e.g. Stay In Touch",
-      type: "string",
+      group: "contact",
     }),
     defineField({
       name: "newsletterPlaceholder",
       title: "Newsletter input placeholder",
+      description:
+        "The hint text inside the newsletter email input e.g. Your email...",
       type: "string",
+      group: "contact",
     }),
+
+    /* ── Credits ───────────────────────────────────────────── */
     defineField({
       name: "madeByLabel",
-      title: "Made by label",
-      description: "Credit line e.g. Made by Autara Studio",
+      title: '"Made by" credit line',
+      description: "Credit line shown at the bottom e.g. Made by Autara Studio",
       type: "string",
+      group: "credits",
     }),
     defineField({
       name: "madeByUrl",
-      title: "Made by URL",
+      title: '"Made by" link',
+      description: "Where the credit line links to (full URL)",
       type: "string",
+      group: "credits",
     }),
     defineField({
       name: "copyright",
-      title: "Copyright text",
+      title: "Copyright line",
+      description:
+        "The copyright text at the very bottom e.g. © 2026. Box 3 Projects Ltd. All Rights Reserved.",
       type: "string",
+      group: "credits",
     }),
   ],
   preview: {
