@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Footer — Outsource Consultants Inc.</title>
+<style>
+  /* ── Reset ───────────────────────────────────────────── */
+  *, ::before, ::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  /* ── Tokens ──────────────────────────────────────────── */
+  :root {
+    --blue:    #1925aa;
+    --mercury: #e5e5e2;
+    --spacing: 1.3333px;
+    --font-mono: "GT America Mono", "Space Mono", ui-monospace, monospace;
+    --font-neue: "PP Neue Montreal", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  html, body {
+    background: #111;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── FOOTER ROOT ─────────────────────────────────────── */
+  footer {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: 20px;
+    background-color: var(--blue);
+    padding: 26.67px 20px 34.67px;
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  /* ── LOGO WRAPPER ────────────────────────────────────── */
+  .footer-logo-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    grid-column: 1 / span 6;
+    grid-row: 1 / 2;
+  }
+
+  svg.footer-logo {
+    display: block;
+    width: 29vw;
+    height: 29vw;
+    overflow: hidden;
+  }
+
+  /* ── COPYRIGHT ───────────────────────────────────────── */
+  .footer-copyright {
+    grid-column: 1 / span 6;
+    grid-row: 1 / 2;
+    align-self: flex-end;
+    padding-left: 20px;
+    margin-top: 34.67px;
+    font-family: var(--font-mono);
+    font-size: 16px;
+    line-height: 21.28px;
+    text-transform: uppercase;
+    color: var(--mercury);
+  }
+
+  /* ── FOOTER NAV (subgrid) ────────────────────────────── */
+  footer nav {
+    display: grid;
+    grid-column: 7 / span 6;
+    grid-row: 1;
+    /* subgrid inherits the 6 right columns */
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: 379.98px 211.23px 246.66px;
+    align-content: flex-start;
+    row-gap: 0;
+    column-gap: 20px;
+  }
+
+  /* ── ALL LINK LISTS (shared base) ────────────────────── */
+  footer ul {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    list-style: none;
+    grid-column: span 3;
+    border-left: 1px solid var(--mercury);
+    padding-left: 16px;
+  }
+
+  footer li {
+    overflow: hidden;
+    list-style: none;
+  }
+
+  footer a,
+  footer span.label {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 16px;
+    line-height: 21.28px;
+    text-transform: uppercase;
+    color: var(--mercury);
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  /* ── LIST 1 & 2: primary nav (row 1, 380px tall) ─────── */
+  ul.list-primary {
+    padding-top: 20px;
+    height: 379.98px;
+    align-content: flex-start;
+  }
+
+  /* ── LIST 3: FAQ (row 2, no border) ─────────────────── */
+  ul.list-faq {
+    margin-top: 42.67px;
+    border-left: none;
+    padding-left: 16px;
+    height: auto;
+    align-self: start;
+  }
+
+  /* ── CONTACT + NEWSLETTER COL (row 2) ────────────────── */
+  .footer-contact-col {
+    grid-column: span 3;
+    margin-top: 42.67px;
+    margin-bottom: 45.33px;
+    margin-left: 16px;
+    align-self: start;
+  }
+
+  /* "Stay In Touch | 1-212-732-0555" */
+  .contact-row {
+    display: flex;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: 16px;
+    line-height: 21.28px;
+    text-transform: uppercase;
+    color: var(--mercury);
+  }
+
+  .contact-row a {
+    font-family: var(--font-mono);
+    font-size: 16px;
+    line-height: 21.28px;
+    text-transform: uppercase;
+    color: var(--mercury);
+    text-decoration: none;
+  }
+
+  .pipe {
+    display: block;
+    margin-inline: 21.33px;
+  }
+
+  /* Newsletter form */
+  .newsletter-form {
+    width: 100%;
+    margin-top: 26.67px;
+  }
+
+  .newsletter-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 17.36vw;
+    background-color: var(--blue);
+    border: 1px solid var(--mercury);
+    padding-left: 26.67px;
+  }
+
+  .newsletter-inner label {
+    display: block;
+    flex: 1 1 0%;
+    height: 21.27px;
+    cursor: default;
+  }
+
+  .newsletter-inner input[type="email"] {
+    display: block;
+    width: 100%;
+    height: 19px;
+    font-family: var(--font-neue);
+    font-size: 16px;
+    line-height: 16px;
+    color: var(--mercury);
+    background: transparent;
+    border: none;
+    outline: none;
+  }
+
+  .newsletter-inner input::placeholder {
+    color: var(--mercury);
+    opacity: 1;
+  }
+
+  .newsletter-inner button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 66.63px;
+    height: 73.33px;
+    padding-inline: 20px;
+    background: transparent;
+    border: none;
+    color: var(--mercury);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .newsletter-inner button svg {
+    display: block;
+    width: 26.67px;
+    height: 12px;
+    margin-top: -4.8px;
+    overflow: hidden;
+  }
+
+  /* ── SOCIAL LIST (row 3, order 1) ────────────────────── */
+  ul.list-social {
+    order: 1;
+    justify-content: flex-end;
+    height: 246.66px;
+    padding-top: 0;
+    align-items: flex-start;
+    padding-bottom: 0;
+  }
+
+  /* ── LEGAL LIST (row 3, order 1) ─────────────────────── */
+  ul.list-legal {
+    order: 1;
+    justify-content: flex-end;
+    height: 246.66px;
+  }
+
+  /* "Made by buzzworthy" inside legal — shown on desktop */
+  .made-by {
+    display: block;
+    margin-top: 26.67px;
+  }
+
+  /* ── MOBILE MADE-BY (hidden on desktop) ──────────────── */
+  .footer-madeby-mobile {
+    display: none;
+    grid-column: 1 / -1;
+    margin-top: 26.67px;
+    font-family: var(--font-mono);
+    font-size: 16px;
+    line-height: 21.28px;
+    text-transform: uppercase;
+    color: var(--mercury);
+  }
+
+  /* ── MOBILE HR (hidden on desktop) ──────────────────── */
+  footer hr.mobile-divider {
+    display: none;
+    grid-column: 1 / -1;
+    margin-top: 66.67px;
+    border-top: 1px solid var(--mercury);
+  }
+
+  /* ── MOBILE ──────────────────────────────────────────── */
+  @media (max-width: 1023px) {
+    footer {
+      grid-template-columns: 60vw 1fr;
+      padding-top: 66.67px;
+      padding-bottom: 26.67px;
+    }
+
+    .footer-logo-wrap {
+      grid-column: 1 / -1;
+      grid-row: auto;
+    }
+
+    svg.footer-logo {
+      width: 71.6vw;
+      height: 71.6vw;
+    }
+
+    footer hr.mobile-divider {
+      display: block;
+    }
+
+    footer nav {
+      grid-column: 1 / -1;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto;
+      margin-top: 66.67px;
+      row-gap: 40px;
+    }
+
+    footer ul {
+      grid-column: span 1;
+      border-left: none;
+      padding-left: 0;
+      height: auto !important;
+    }
+
+    ul.list-social,
+    ul.list-legal { order: 0; }
+
+    .footer-contact-col {
+      grid-column: 1 / -1;
+      margin-left: 0;
+      margin-top: 0;
+    }
+
+    .newsletter-inner {
+      width: 100%;
+    }
+
+    .made-by { display: none; }
+
+    .footer-madeby-mobile { display: block; }
+
+    .footer-copyright {
+      grid-column: 1 / -1;
+      grid-row: auto;
+      padding-left: 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<footer>
+
+  <!-- ── Logo ─────────────────────────────────────────── -->
+  <div class="footer-logo-wrap">
+    <svg viewBox="0 0 421 420" fill="none" xmlns="http://www.w3.org/2000/svg" class="footer-logo">
+      <defs>
+        <rect id="plusV" x="205" width="11" height="420"/>
+        <rect id="plusH" x="420.5" y="204.5" width="11" height="420" transform="rotate(90 420.5 204.5)"/>
+        <path id="plus" d="M216 204.5H420.5V215.5H216V420H205V215.5H0.5V204.5H205V0H216V204.5Z"/>
+        <path id="circle" d="M210.756 34.2979C309.804 34.2979 390.098 114.592 390.098 213.64C390.098 312.688 309.804 392.981 210.756 392.981C111.708 392.981 31.4141 312.687 31.4141 213.64C31.4141 114.592 111.708 34.2979 210.756 34.2979ZM210.75 78.9922C136.385 78.9924 76.1008 139.277 76.1006 213.642C76.1006 288.007 136.385 348.292 210.75 348.292C285.115 348.292 345.4 288.007 345.4 213.642C345.4 139.277 285.115 78.9922 210.75 78.9922Z"/>
+        <mask id="maskForPlusV" maskUnits="userSpaceOnUse">
+          <rect width="100%" height="100%" fill="white"/>
+          <use href="#circle" fill="black"/>
+        </mask>
+        <mask id="maskForPlusH" maskUnits="userSpaceOnUse">
+          <rect width="100%" height="100%" fill="white"/>
+          <use href="#circle" fill="black"/>
+        </mask>
+        <mask id="maskForCircle" maskUnits="userSpaceOnUse">
+          <rect width="100%" height="100%" fill="white"/>
+          <use href="#plusV" fill="black"/>
+          <use href="#plusH" fill="black"/>
+        </mask>
+      </defs>
+      <use href="#plusV"  fill="#E8E6E0" mask="url(#maskForPlusV)"/>
+      <use href="#plusH"  fill="#E8E6E0" mask="url(#maskForPlusH)"/>
+      <use href="#circle" fill="#E8E6E0" mask="url(#maskForCircle)"/>
+    </svg>
+  </div>
+
+  <!-- ── Mobile HR ─────────────────────────────────────── -->
+  <hr class="mobile-divider">
+
+  <!-- ── Nav grid ──────────────────────────────────────── -->
+  <nav aria-label="Footer Navigation">
+
+    <!-- List 1: About / Services / Projects / Clients -->
+    <ul class="list-primary" role="menu">
+      <li role="none"><span><a href="/about"    role="menuitem">About</a></span></li>
+      <li role="none"><span><a href="/services"  role="menuitem">Services</a></span></li>
+      <li role="none"><span><a href="/projects"  role="menuitem">Projects</a></span></li>
+      <li role="none"><span><a href="/clients"   role="menuitem">Clients</a></span></li>
+    </ul>
+
+    <!-- List 2: Culture / Blog / Contact -->
+    <ul class="list-primary" role="menu">
+      <li role="none"><span><a href="/culture-and-careers" role="menuitem">Culture &amp; Careers</a></span></li>
+      <li role="none"><span><a href="/blog"    role="menuitem">Blog</a></span></li>
+      <li role="none"><span><a href="/contact" role="menuitem">Contact</a></span></li>
+    </ul>
+
+    <!-- List 3: FAQ (no border, row 2) -->
+    <ul class="list-faq" role="menu">
+      <li role="none"><span><a href="/faq" role="menuitem">FAQ</a></span></li>
+    </ul>
+
+    <!-- Contact + Newsletter (row 2) -->
+    <div class="footer-contact-col">
+      <div class="contact-row">
+        <span class="label">Stay In Touch</span>
+        <span class="pipe">|</span>
+        <a href="tel:+12127320555">1-212-732-0555</a>
+      </div>
+      <div class="newsletter-form">
+        <div class="newsletter-inner">
+          <label for="footer-email">
+            <input id="footer-email" type="email" placeholder="Your email..." required>
+          </label>
+          <button type="submit" aria-label="Subscribe to newsletter">
+            <!-- Arrow right SVG -->
+            <svg viewBox="0 0 20 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15.5 1L19 4.5M19 4.5L15.5 8M19 4.5H1" stroke="#E8E6E0" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Social (row 3, order 1) -->
+    <ul class="list-social">
+      <li><span><a href="https://www.facebook.com/outsourcenyc"                      target="_blank">Facebook</a></span></li>
+      <li><span><a href="https://www.instagram.com/outsource_consultants/"           target="_blank">Instagram</a></span></li>
+      <li><span><a href="https://www.linkedin.com/company/outsource-consultants-inc." target="_blank">LinkedIn</a></span></li>
+      <li><span><a href="https://x.com/outsourcenyc"                                 target="_blank">X</a></span></li>
+    </ul>
+
+    <!-- Legal (row 3, order 1) -->
+    <ul class="list-legal" role="menu">
+      <li role="none"><span><a href="/privacy-policy"       role="menuitem">Privacy Policy</a></span></li>
+      <li role="none"><span><a href="/terms-and-conditions" role="menuitem">Terms and Conditions</a></span></li>
+      <li role="none">
+        <span class="made-by">
+          <a href="https://buzzworthystudio.com/" target="_blank" rel="noopener">Made by buzzworthy</a>
+        </span>
+      </li>
+    </ul>
+
+  </nav>
+
+  <!-- ── Mobile made-by ────────────────────────────────── -->
+  <div class="footer-madeby-mobile">
+    <span><a href="https://buzzworthystudio.com/" target="_blank" rel="noopener">Made by buzzworthy</a></span>
+  </div>
+
+  <!-- ── Copyright ─────────────────────────────────────── -->
+  <div class="footer-copyright">
+    © 2026. Outsource Consultants, Inc. All Rights Reserved.
+  </div>
+
+</footer>
+
+</body>
+</html>

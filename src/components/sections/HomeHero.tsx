@@ -125,6 +125,7 @@ export default function HomeHero({
       {/* --- Dither Background Image --- */}
       <div
         data-dither=""
+        data-dither-texture=""
         className="absolute inset-0 h-full w-full"
       >
         {imageUrl && (
@@ -138,8 +139,11 @@ export default function HomeHero({
             data-src={imageUrl}
           />
         )}
-        <div className="u-overlay" aria-hidden="true" />
+
       </div>
+
+      {/* --- Dark Overlay --- */}
+      <div data-overlay="dark" aria-hidden="true" />
 
       {/* --- Container --- */}
       <div className="container relative z-[30] h-full">
@@ -171,19 +175,19 @@ export default function HomeHero({
             />
           </div>
 
-          {/* Tagline */}
-          <div className="hero-tagline">
+          {/* Tagline — temporarily hidden */}
+          {/* <div className="hero-tagline">
             <p
               data-hero-scroll-fade-scale=""
               data-split-text="lines"
-              className="font-secondary text-text-lg uppercase font-bold leading-snug text-[var(--theme-text)]"
+              className="u-max-w-ch-20 font-secondary text-text-lg uppercase font-regular leading-snug text-[var(--theme-text)]"
             >
               {tagline}
             </p>
-          </div>
+          </div> */}
 
-          {/* Title */}
-          <div
+          {/* Title — temporarily hidden */}
+          {/* <div
             data-hero-scroll-fade-scale=""
             className="hero-title flex flex-col justify-end"
           >
@@ -193,7 +197,7 @@ export default function HomeHero({
             >
               {heading}
             </h1>
-          </div>
+          </div> */}
 
           {/* Line 3 — static, bottom-aligned */}
           <div

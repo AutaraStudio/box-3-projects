@@ -64,6 +64,8 @@ interface DitherUniforms {
   uBiasNoiseWeight:           THREE.IUniform<number>;
   uBiasPulseWeight:           THREE.IUniform<number>;
   uBiasAnimationStrength:     THREE.IUniform<number>;
+  uTextureMode:               THREE.IUniform<number>;
+  uTextureStrength:           THREE.IUniform<number>;
 }
 
 /** Typed uniforms for the ping-pong trail RawShaderMaterial. */
@@ -204,6 +206,8 @@ class DitherMedia {
     this.isFull      = containerEl.hasAttribute("data-dither-full");
     this.hasHover    = containerEl.hasAttribute("data-dither-hover");
 
+    const isTexture = containerEl.hasAttribute("data-dither-texture");
+
     this._wipe       = this.isFull ? 0.0 : 1.0;
     this._targetWipe = this.isFull ? 0.0 : 1.0;
 
@@ -232,7 +236,14 @@ class DitherMedia {
       uBiasNoiseWeight:           { value: 0.77 },
       uBiasPulseWeight:           { value: 0.87 },
       uBiasAnimationStrength:     { value: 0.29 },
+      uTextureMode:               { value: 0.0 },
+      uTextureStrength:           { value: 0.25 },
     };
+
+    if (isTexture) {
+      this.uniforms.uTextureMode.value = 1.0;
+      /* Keep wipe at 1.0 — texture mode ignores wipe entirely */
+    }
 
     this.material   = engine.makeDitherMaterial(this.uniforms);
     this.mesh       = new THREE.Mesh(engine.planeGeo, this.material);
@@ -630,6 +641,8 @@ export class DitherEngine {
         uniform float uBiasNoiseWeight;
         uniform float uBiasPulseWeight;
         uniform float uBiasAnimationStrength;
+        uniform float uTextureMode;
+        uniform float uTextureStrength;
 
         varying vec2 vUv;
 
@@ -743,36 +756,54 @@ export class DitherEngine {
           float timePulse = sin(uTime * uBiasPulseSpeed) * 0.5 + 0.5;
           float animBias  = uBias + (noiseVal * uBiasNoiseWeight + timePulse * uBiasPulseWeight) * uBiasAnimationStrength;
 
-          vec3 dithered = orderedDither(lum, trail, animBias);
+          vec3 baseCol;
 
-          vec2 uvOrig   = coverUv(vUv, uTextureSize, uPlaneSize, 1.0);
-          vec3 original = texture2D(tMap, uvOrig).rgb;
+          if (uTextureMode > 0.5) {
+            /* Texture mode — blend dither pattern with original image.
+               uTextureStrength controls how much dither shows through:
+               0.0 = full original, 1.0 = full dither. Default 0.25. */
 
-          float wipeAxis = vUv.x * 0.9 + vUv.y * 0.2;
-          float wipeTh   = (1.0 - uWipe) * 1.4 - 0.15;
-          float wipeMask = smoothstep(wipeTh - 0.12, wipeTh + 0.12, wipeAxis);
-          vec3 baseCol = mix(dithered, original, wipeMask);
+            vec3 dithered = orderedDither(lum, trail, animBias);
 
-          float subtleTrail = trail * uSubtle;
+            vec2 uvOrig  = coverUv(vUv, uTextureSize, uPlaneSize, 1.0);
+            vec3 origCol = texture2D(tMap, uvOrig).rgb;
 
-          vec2 subtleDrift = (vec2(
-            cnoise(vec3(vUv * 3.5,             uTime * uBiasNoiseSpeed * 0.001)),
-            cnoise(vec3(vUv * 3.5 + vec2(7.3), uTime * uBiasNoiseSpeed * 0.001))
-          ) - 0.5) * subtleTrail * 0.018;
+            baseCol = mix(origCol, dithered, uTextureStrength);
 
-          vec2 uvSubtle = coverUv(vUv + subtleDrift, uTextureSize, uPlaneSize, 1.0);
-          float blurAmt = subtleTrail * 0.012;
-          vec3 blurred  =
-            texture2D(tMap, coverUv(uvSubtle + vec2(-blurAmt, 0.0),     uTextureSize, uPlaneSize, 1.0)).rgb +
-            texture2D(tMap, coverUv(uvSubtle + vec2( blurAmt, 0.0),     uTextureSize, uPlaneSize, 1.0)).rgb +
-            texture2D(tMap, coverUv(uvSubtle + vec2(0.0, -blurAmt),     uTextureSize, uPlaneSize, 1.0)).rgb +
-            texture2D(tMap, coverUv(uvSubtle + vec2(0.0,  blurAmt),     uTextureSize, uPlaneSize, 1.0)).rgb;
-          blurred *= 0.25;
+          } else {
+            /* Normal mode — existing dither + wipe behaviour unchanged */
+            vec3 dithered = orderedDither(lum, trail, animBias);
 
-          vec3 subtleCol = mix(original, mix(blurred, blurred * 0.82 + uColorInk * 0.18, subtleTrail * 0.5), subtleTrail);
+            vec2 uvOrig   = coverUv(vUv, uTextureSize, uPlaneSize, 1.0);
+            vec3 original = texture2D(tMap, uvOrig).rgb;
 
-          baseCol = mix(baseCol, subtleCol, uSubtle * wipeMask * subtleTrail);
+            float wipeAxis = vUv.x * 0.9 + vUv.y * 0.2;
+            float wipeTh   = (1.0 - uWipe) * 1.4 - 0.15;
+            float wipeMask = smoothstep(wipeTh - 0.12, wipeTh + 0.12, wipeAxis);
+            baseCol = mix(dithered, original, wipeMask);
 
+            float subtleTrail = trail * uSubtle;
+
+            vec2 subtleDrift = (vec2(
+              cnoise(vec3(vUv * 3.5,             uTime * uBiasNoiseSpeed * 0.001)),
+              cnoise(vec3(vUv * 3.5 + vec2(7.3), uTime * uBiasNoiseSpeed * 0.001))
+            ) - 0.5) * subtleTrail * 0.018;
+
+            vec2 uvSubtle = coverUv(vUv + subtleDrift, uTextureSize, uPlaneSize, 1.0);
+            float blurAmt = subtleTrail * 0.012;
+            vec3 blurred  =
+              texture2D(tMap, coverUv(uvSubtle + vec2(-blurAmt, 0.0),     uTextureSize, uPlaneSize, 1.0)).rgb +
+              texture2D(tMap, coverUv(uvSubtle + vec2( blurAmt, 0.0),     uTextureSize, uPlaneSize, 1.0)).rgb +
+              texture2D(tMap, coverUv(uvSubtle + vec2(0.0, -blurAmt),     uTextureSize, uPlaneSize, 1.0)).rgb +
+              texture2D(tMap, coverUv(uvSubtle + vec2(0.0,  blurAmt),     uTextureSize, uPlaneSize, 1.0)).rgb;
+            blurred *= 0.25;
+
+            vec3 subtleCol = mix(original, mix(blurred, blurred * 0.82 + uColorInk * 0.18, subtleTrail * 0.5), subtleTrail);
+            baseCol = mix(baseCol, subtleCol, uSubtle * wipeMask * subtleTrail);
+          }
+
+          /* Final output — same as before */
+          float subtleTrailFinal = trail * uSubtle;
           colorSample.rgb = baseCol;
           colorSample.a   = uOpacity;
           gl_FragColor    = colorSample;

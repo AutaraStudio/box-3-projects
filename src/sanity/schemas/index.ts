@@ -20,5 +20,6 @@ import homePage from "./pages/homePage";
 
 /* Globals */
 import siteNav from "./globals/siteNav";
+import siteFooter from "./globals/siteFooter";
 
-export const schemaTypes: SchemaTypeDefinition[] = [homePage, siteNav];
+export const schemaTypes: SchemaTypeDefinition[] = [homePage, siteNav, siteFooter];

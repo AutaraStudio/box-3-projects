@@ -217,8 +217,19 @@ const config: Config = {
         tight: "var(--letter-spacing-tight)",
         snug: "var(--letter-spacing-snug)",
         normal: "var(--letter-spacing-normal)",
+        caps: "var(--letter-spacing-caps)",
         wide: "var(--letter-spacing-wide)",
         wider: "var(--letter-spacing-wider)",
+      },
+
+      /* --------------------------------------------------------------------
+         Typography — Word Spacing
+         Usage: className="word-tight" or "word-wide"
+         -------------------------------------------------------------------- */
+      wordSpacing: {
+        tight: "var(--word-spacing-tight)",
+        normal: "var(--word-spacing-normal)",
+        wide: "var(--word-spacing-wide)",
       },
 
       /* --------------------------------------------------------------------

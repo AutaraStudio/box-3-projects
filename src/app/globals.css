@@ -25,10 +25,46 @@
    ========================================================================== */
 
 @font-face {
-  font-family: 'Satoshi';
-  src: url('/fonts/satoshi-variable.woff2') format('woff2'),
-       url('/fonts/satoshi-variable.woff') format('woff');
-  font-weight: 300 900;
+  font-family: 'Neue Montreal';
+  src: url('/fonts/NeueMontreal-Light.woff2') format('woff2'),
+       url('/fonts/NeueMontreal-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Neue Montreal';
+  src: url('/fonts/NeueMontreal-Regular.woff2') format('woff2'),
+       url('/fonts/NeueMontreal-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Neue Montreal';
+  src: url('/fonts/NeueMontreal-Italic.woff2') format('woff2'),
+       url('/fonts/NeueMontreal-Italic.woff') format('woff');
+  font-weight: 400;
+  font-style: italic;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Neue Montreal';
+  src: url('/fonts/NeueMontreal-Medium.woff2') format('woff2'),
+       url('/fonts/NeueMontreal-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Neue Montreal';
+  src: url('/fonts/NeueMontreal-Bold.woff2') format('woff2'),
+       url('/fonts/NeueMontreal-Bold.woff') format('woff');
+  font-weight: 700;
   font-style: normal;
   font-display: block;
 }
@@ -158,9 +194,9 @@
 :root {
 
   /* --- Font Families ---
-     Primary: Satoshi — headings, display, UI elements
+     Primary: Neue Montreal — headings, display, UI elements
      Secondary: Instrument Sans — body copy, captions, labels */
-  --font-primary: 'Satoshi', Arial, sans-serif;
+  --font-primary: 'Neue Montreal', Arial, sans-serif;
   --font-secondary: 'Instrument Sans', Arial, sans-serif;
 
 
@@ -176,25 +212,25 @@
   /* --- Font Size Scale ---
      All values in rem. At the 1440px design width, 1rem = 16px.
      Osmo scales these automatically at every breakpoint. */
-  --font-size-display: 10rem;       /* 160px at 1440 */
-  --font-size-h1: 8rem;             /* 128px at 1440 */
-  --font-size-h2: 6rem;             /* 96px at 1440  */
-  --font-size-h3: 4.5rem;           /* 72px at 1440  */
-  --font-size-h4: 3.75rem;          /* 60px at 1440  */
-  --font-size-h5: 3rem;             /* 48px at 1440  */
-  --font-size-h6: 2.25rem;          /* 36px at 1440  */
-  --font-size-text-lg: 1.875rem;    /* 30px at 1440  */
-  --font-size-text-md: 1.125rem;    /* 18px at 1440  */
-  --font-size-text-sm: 1rem;        /* 16px at 1440  */
-  --font-size-text-xs: 0.875rem;    /* 14px at 1440  */
-  --font-size-text-xxs: 0.75rem;    /* 12px at 1440  */
+  --font-size-display: 8rem;        /* 128px at 1440 */
+  --font-size-h1: 6.5rem;           /* 104px at 1440 */
+  --font-size-h2: 5rem;             /* 80px at 1440  */
+  --font-size-h3: 3.75rem;          /* 60px at 1440  */
+  --font-size-h4: 3rem;             /* 48px at 1440  */
+  --font-size-h5: 2.25rem;          /* 36px at 1440  */
+  --font-size-h6: 1.75rem;          /* 28px at 1440  */
+  --font-size-text-lg: 1.5rem;      /* 24px at 1440  */
+  --font-size-text-md: 1rem;        /* 16px at 1440  */
+  --font-size-text-sm: 0.875rem;    /* 14px at 1440  */
+  --font-size-text-xs: 0.75rem;     /* 12px at 1440  */
+  --font-size-text-xxs: 0.625rem;   /* 10px at 1440  */
 
 
   /* --- Line Heights --- */
   --line-height-none: 1;
   --line-height-tight: 1.05;
   --line-height-snug: 1.15;
-  --line-height-normal: 1.3;
+  --line-height-normal: 1.25;
   --line-height-relaxed: 1.55;
   --line-height-loose: 1.75;
 
@@ -202,10 +238,17 @@
   /* --- Letter Spacing --- */
   --letter-spacing-display: -0.04em;
   --letter-spacing-tight: -0.03em;
-  --letter-spacing-snug: -0.015em;
+  --letter-spacing-snug: -0.02em;
   --letter-spacing-normal: 0em;
-  --letter-spacing-wide: 0.04em;
-  --letter-spacing-wider: 0.08em;
+  --letter-spacing-caps: 0.06em;
+  --letter-spacing-wide: 0.08em;
+  --letter-spacing-wider: 0.12em;
+
+
+  /* --- Word Spacing --- */
+  --word-spacing-tight: -0.05em;
+  --word-spacing-normal: 0em;
+  --word-spacing-wide: 0.1em;
 
 
   /* --- Border Radius --- */
@@ -439,7 +482,7 @@
    All transparent variants use color-mix(in srgb, ...) — never rgba().
    Every semantic token references a --color- primitive — never raw hex.
 
-   8 themes: light, dark, pink, cream, rose, mauve, sage, sand
+   9 themes: light, dark, brand, pink, cream, rose, mauve, sage, sand
    ========================================================================== */
 
 
@@ -518,7 +561,7 @@
   --theme-input-placeholder: var(--color-grey-400);
 
   /* Misc */
-  --theme-overlay: color-mix(in srgb, var(--color-black-500) 40%, transparent);
+  --theme-overlay: color-mix(in srgb, var(--color-black-500) 45%, transparent);
   --theme-shadow: color-mix(in srgb, var(--color-charcoal-500) 10%, transparent);
   --theme-focus: var(--color-rose-400);
 
@@ -530,6 +573,11 @@
   --theme-nav-bg: var(--color-white-500);
   --theme-nav-text: var(--color-charcoal-500);
   --theme-nav-border: var(--color-grey-200);
+
+  /* Nav extended */
+  --theme-nav-accent: var(--color-charcoal-500);
+  --theme-nav-icon-bg: var(--color-charcoal-500);
+  --theme-nav-icon-text: var(--color-white-500);
 }
 
 
@@ -607,7 +655,7 @@
   --theme-input-placeholder: var(--color-grey-500);
 
   /* Misc */
-  --theme-overlay: color-mix(in srgb, var(--color-black-900) 60%, transparent);
+  --theme-overlay: color-mix(in srgb, var(--color-black-500) 55%, transparent);
   --theme-shadow: color-mix(in srgb, var(--color-black-900) 30%, transparent);
   --theme-focus: var(--color-pink-500);
 
@@ -619,6 +667,106 @@
   --theme-nav-bg: var(--color-charcoal-500);
   --theme-nav-text: var(--color-white-500);
   --theme-nav-border: var(--color-charcoal-400);
+
+  /* Nav extended */
+  --theme-nav-accent: var(--color-pink-500);
+  --theme-nav-icon-bg: var(--color-pink-500);
+  --theme-nav-icon-text: var(--color-charcoal-500);
+}
+
+
+/* --------------------------------------------------------------------------
+   Theme: Brand
+   Character: Deep charcoal base, pink as the hero colour — bold and
+   distinctive. The signature dark brand aesthetic.
+   -------------------------------------------------------------------------- */
+[data-theme="brand"] {
+  /* Backgrounds */
+  --theme-bg: var(--color-charcoal-500);
+  --theme-bg-2: var(--color-charcoal-600);
+  --theme-bg-3: var(--color-charcoal-700);
+  --theme-bg-4: var(--color-black-500);
+  --theme-bg-card: var(--color-charcoal-600);
+  --theme-bg-card-hover: var(--color-charcoal-700);
+
+  /* Text */
+  --theme-text: var(--color-pink-500);
+  --theme-text-muted: var(--color-pink-600);
+  --theme-text-subtle: var(--color-pink-700);
+  --theme-text-inverse: var(--color-charcoal-500);
+  --theme-text-accent: var(--color-pink-400);
+
+  /* Borders */
+  --theme-border: color-mix(in srgb, var(--color-pink-500) 25%, transparent);
+  --theme-border-strong: color-mix(in srgb, var(--color-pink-500) 50%, transparent);
+  --theme-border-subtle: color-mix(in srgb, var(--color-pink-500) 10%, transparent);
+
+  /* Accent */
+  --theme-accent: var(--color-pink-500);
+  --theme-accent-hover: var(--color-pink-400);
+  --theme-accent-subtle: color-mix(in srgb, var(--color-pink-500) 15%, transparent);
+
+  /* SVG */
+  --theme-svg: var(--color-pink-500);
+  --theme-svg-hover: var(--color-pink-400);
+  --theme-svg-muted: color-mix(in srgb, var(--color-pink-500) 40%, transparent);
+
+  /* Selection */
+  --theme-selection-bg: var(--color-pink-500);
+  --theme-selection-text: var(--color-charcoal-500);
+
+  /* Tags */
+  --theme-tag-bg: var(--color-charcoal-600);
+  --theme-tag-border: color-mix(in srgb, var(--color-pink-500) 25%, transparent);
+  --theme-tag-text: var(--color-pink-400);
+
+  /* Button — Primary */
+  --theme-btn-primary-text: var(--color-charcoal-500);
+  --theme-btn-primary-text-hover: var(--color-charcoal-500);
+  --theme-btn-primary-bg: var(--color-pink-500);
+  --theme-btn-primary-bg-hover: var(--color-pink-400);
+  --theme-btn-primary-border: var(--color-pink-500);
+  --theme-btn-primary-border-hover: var(--color-pink-400);
+
+  /* Button — Secondary */
+  --theme-btn-secondary-text: var(--color-pink-500);
+  --theme-btn-secondary-text-hover: var(--color-charcoal-500);
+  --theme-btn-secondary-bg: var(--color-transparent);
+  --theme-btn-secondary-bg-hover: var(--color-pink-500);
+  --theme-btn-secondary-border: color-mix(in srgb, var(--color-pink-500) 50%, transparent);
+  --theme-btn-secondary-border-hover: var(--color-pink-500);
+
+  /* Links */
+  --theme-link-text: var(--color-pink-500);
+  --theme-link-border: color-mix(in srgb, var(--color-pink-500) 40%, transparent);
+  --theme-link-text-hover: var(--color-pink-400);
+  --theme-link-border-hover: var(--color-pink-400);
+
+  /* Inputs */
+  --theme-input-bg: var(--color-charcoal-600);
+  --theme-input-border: color-mix(in srgb, var(--color-pink-500) 30%, transparent);
+  --theme-input-border-focus: var(--color-pink-500);
+  --theme-input-text: var(--color-pink-500);
+  --theme-input-placeholder: var(--color-pink-700);
+
+  /* Misc */
+  --theme-overlay: color-mix(in srgb, var(--color-black-900) 55%, transparent);
+  --theme-shadow: color-mix(in srgb, var(--color-black-900) 30%, transparent);
+  --theme-focus: var(--color-pink-500);
+
+  /* Dither */
+  --theme-dither-ink: var(--color-pink-500);
+  --theme-dither-bg: var(--color-charcoal-500);
+
+  /* Nav */
+  --theme-nav-bg: var(--color-charcoal-500);
+  --theme-nav-text: var(--color-pink-500);
+  --theme-nav-border: color-mix(in srgb, var(--color-pink-500) 20%, transparent);
+
+  /* Nav extended */
+  --theme-nav-accent: var(--color-pink-500);
+  --theme-nav-icon-bg: var(--color-pink-500);
+  --theme-nav-icon-text: var(--color-charcoal-500);
 }
 
 
@@ -708,6 +856,11 @@
   --theme-nav-bg: var(--color-pink-500);
   --theme-nav-text: var(--color-charcoal-500);
   --theme-nav-border: color-mix(in srgb, var(--color-rose-500) 20%, transparent);
+
+  /* Nav extended */
+  --theme-nav-accent: var(--color-rose-500);
+  --theme-nav-icon-bg: var(--color-rose-500);
+  --theme-nav-icon-text: var(--color-white-500);
 }
 
 
@@ -797,6 +950,11 @@
   --theme-nav-bg: var(--color-cream-500);
   --theme-nav-text: var(--color-charcoal-500);
   --theme-nav-border: var(--color-cream-700);
+
+  /* Nav extended */
+  --theme-nav-accent: var(--color-charcoal-500);
+  --theme-nav-icon-bg: var(--color-charcoal-500);
+  --theme-nav-icon-text: var(--color-white-500);
 }
 
 
@@ -886,6 +1044,11 @@
   --theme-nav-bg: var(--color-rose-500);
   --theme-nav-text: var(--color-white-500);
   --theme-nav-border: color-mix(in srgb, var(--color-white-500) 15%, transparent);
+
+  /* Nav extended */
+  --theme-nav-accent: var(--color-white-500);
+  --theme-nav-icon-bg: var(--color-white-500);
+  --theme-nav-icon-text: var(--color-rose-500);
 }
 
 
@@ -975,6 +1138,11 @@
   --theme-nav-bg: var(--color-mauve-500);
   --theme-nav-text: var(--color-charcoal-500);
   --theme-nav-border: color-mix(in srgb, var(--color-mauve-800) 25%, transparent);
+
+  /* Nav extended */
+  --theme-nav-accent: var(--color-charcoal-500);
+  --theme-nav-icon-bg: var(--color-charcoal-500);
+  --theme-nav-icon-text: var(--color-white-500);
 }
 
 
@@ -1064,6 +1232,11 @@
   --theme-nav-bg: var(--color-sage-400);
   --theme-nav-text: var(--color-charcoal-500);
   --theme-nav-border: color-mix(in srgb, var(--color-sage-700) 25%, transparent);
+
+  /* Nav extended */
+  --theme-nav-accent: var(--color-charcoal-500);
+  --theme-nav-icon-bg: var(--color-charcoal-500);
+  --theme-nav-icon-text: var(--color-white-500);
 }
 
 
@@ -1153,6 +1326,11 @@
   --theme-nav-bg: var(--color-sand-400);
   --theme-nav-text: var(--color-charcoal-500);
   --theme-nav-border: color-mix(in srgb, var(--color-sand-700) 25%, transparent);
+
+  /* Nav extended */
+  --theme-nav-accent: var(--color-charcoal-500);
+  --theme-nav-icon-bg: var(--color-charcoal-500);
+  --theme-nav-icon-text: var(--color-white-500);
 }
 
 
@@ -1319,6 +1497,39 @@
    All values reference tokens — never hardcoded.
    ========================================================================== */
 
+/* --- Global Scrollbar — hidden --- */
+* {
+  scrollbar-width: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* --- Custom Scrollbar — mega menu inner only --- */
+.mega-menu-inner {
+  scrollbar-width: thin;
+  scrollbar-color: var(--theme-nav-accent) transparent;
+}
+
+.mega-menu-inner::-webkit-scrollbar {
+  width: 0.2rem;
+  background: transparent;
+}
+
+.mega-menu-inner::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mega-menu-inner::-webkit-scrollbar-thumb {
+  background-color: var(--theme-nav-accent);
+  border-radius: var(--radius-full);
+}
+
+.mega-menu-inner::-webkit-scrollbar-thumb:hover {
+  background-color: var(--theme-text-muted);
+}
+
+
 /* --- Reset --- */
 
 *,
@@ -1385,19 +1596,37 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2 {
   font-family: var(--font-primary);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   line-height: var(--line-height-tight);
   letter-spacing: var(--letter-spacing-tight);
+  text-wrap: balance;
   color: var(--theme-text);
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+h3, h4 {
+  font-family: var(--font-primary);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--letter-spacing-snug);
+  text-wrap: balance;
+  color: var(--theme-text);
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+h5, h6 {
+  font-family: var(--font-primary);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-normal);
+  text-wrap: balance;
+  color: var(--theme-text);
+  font-feature-settings: "kern" 1, "liga" 1;
 }
 
 h1 { font-size: var(--font-size-h1); }
@@ -1412,13 +1641,153 @@ p {
   font-size: var(--font-size-text-md);
   line-height: var(--line-height-relaxed);
   color: var(--theme-text);
+  text-wrap: pretty;
 }
 
 /* Display text — for hero headlines and oversized typographic moments */
 .text-display {
   font-family: var(--font-primary);
   font-size: var(--font-size-display);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-none);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
   letter-spacing: var(--letter-spacing-display);
+  text-wrap: balance;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+
+/* --- Typography Utilities --- */
+
+/* Uppercase caps tracking — apply to all uppercase small text */
+.u-caps {
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-caps);
+}
+
+/* Text balance — headings and short display text */
+.u-text-balance {
+  text-wrap: balance;
+}
+
+/* Text pretty — body paragraphs, prevents orphans */
+.u-text-pretty {
+  text-wrap: pretty;
+}
+
+/* Word spacing utilities */
+.u-word-tight   { word-spacing: var(--word-spacing-tight); }
+.u-word-wide    { word-spacing: var(--word-spacing-wide); }
+
+/* Tabular numbers — phone numbers, dates, prices */
+.u-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Optical size — body text blocks */
+.u-text-body {
+  font-size: var(--font-size-text-md);
+  line-height: var(--line-height-relaxed);
+  font-family: var(--font-secondary);
+  text-wrap: pretty;
+}
+
+
+/* --- Dither Texture Overlay ---
+   Built-in darker overlay for data-dither-texture containers.
+   Replaces the need for a separate .u-overlay div inside the hero.
+   Sits above the canvas (z-index 4) but below page content (z-30). */
+
+
+/* --- Max Width Utilities ---
+   ch units: ideal for constraining text — scales with font size.
+   rem units: ideal for layout blocks — scales with the Osmo system.
+   Usage: className="u-max-w-ch-60" or "u-max-w-48" */
+
+/* --- ch scale (text) --- */
+.u-max-w-ch-5  { max-width: 5ch;  }
+.u-max-w-ch-10 { max-width: 10ch; }
+.u-max-w-ch-15 { max-width: 15ch; }
+.u-max-w-ch-20 { max-width: 20ch; }
+.u-max-w-ch-25 { max-width: 25ch; }
+.u-max-w-ch-30 { max-width: 30ch; }
+.u-max-w-ch-35 { max-width: 35ch; }
+.u-max-w-ch-40 { max-width: 40ch; }
+.u-max-w-ch-45 { max-width: 45ch; }
+.u-max-w-ch-50 { max-width: 50ch; }
+.u-max-w-ch-55 { max-width: 55ch; }
+.u-max-w-ch-60 { max-width: 60ch; }
+.u-max-w-ch-65 { max-width: 65ch; }
+.u-max-w-ch-70 { max-width: 70ch; }
+.u-max-w-ch-75 { max-width: 75ch; }
+.u-max-w-ch-80 { max-width: 80ch; }
+.u-max-w-ch-85 { max-width: 85ch; }
+.u-max-w-ch-90 { max-width: 90ch; }
+.u-max-w-ch-95 { max-width: 95ch; }
+.u-max-w-ch-100 { max-width: 100ch; }
+
+/* --- rem scale (layout) --- */
+.u-max-w-5  { max-width: 5rem;  }
+.u-max-w-8  { max-width: 8rem;  }
+.u-max-w-10 { max-width: 10rem; }
+.u-max-w-12 { max-width: 12rem; }
+.u-max-w-16 { max-width: 16rem; }
+.u-max-w-20 { max-width: 20rem; }
+.u-max-w-24 { max-width: 24rem; }
+.u-max-w-28 { max-width: 28rem; }
+.u-max-w-32 { max-width: 32rem; }
+.u-max-w-36 { max-width: 36rem; }
+.u-max-w-40 { max-width: 40rem; }
+.u-max-w-44 { max-width: 44rem; }
+.u-max-w-48 { max-width: 48rem; }
+.u-max-w-52 { max-width: 52rem; }
+.u-max-w-56 { max-width: 56rem; }
+.u-max-w-60 { max-width: 60rem; }
+.u-max-w-64 { max-width: 64rem; }
+.u-max-w-72 { max-width: 72rem; }
+.u-max-w-80 { max-width: 80rem; }
+.u-max-w-96 { max-width: 96rem; }
+
+
+/* --- Overlay Utilities ---
+   Apply to any element that needs a colour overlay.
+   Parent must be position: relative (or absolute/fixed/sticky).
+   Overlay sits at z-index 2 — above bg images and canvas elements
+   but below content. Increase z-index on content as needed.
+
+   Usage:
+     <section class="relative">
+       <img ... />
+       <div data-overlay="dark"></div>
+       <div class="relative z-10">content</div>
+     </section>
+
+   Variants:
+     data-overlay="dark"   — 65% black, strong contrast
+     data-overlay="medium" — 45% black, balanced
+     data-overlay="light"  — 25% black, subtle tint        */
+
+[data-overlay] {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+[data-overlay="dark"] {
+  background-color: color-mix(
+    in srgb, var(--color-black-900) 65%, transparent
+  );
+}
+
+[data-overlay="medium"] {
+  background-color: color-mix(
+    in srgb, var(--color-black-900) 45%, transparent
+  );
+}
+
+[data-overlay="light"] {
+  background-color: color-mix(
+    in srgb, var(--color-black-900) 25%, transparent
+  );
 }

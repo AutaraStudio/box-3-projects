@@ -56,6 +56,7 @@ export default function Nav({
   const headerRef = useRef<HTMLElement>(null);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
   const menuBtnWrapRef = useRef<HTMLDivElement>(null);
+  const menuBtnBorderRef = useRef<HTMLDivElement>(null);
   const menuBtnBgRef = useRef<HTMLSpanElement>(null);
   const menuBtnTextRef = useRef<HTMLSpanElement>(null);
   const contactBtnRef = useRef<HTMLAnchorElement>(null);
@@ -97,6 +98,7 @@ export default function Nav({
       const header = headerRef.current;
       const menuBtn = menuBtnRef.current;
       const menuBtnWrap = menuBtnWrapRef.current;
+      const menuBtnBorder = menuBtnBorderRef.current;
       const menuBtnBg = menuBtnBgRef.current;
       const menuBtnText = menuBtnTextRef.current;
       const contactBtn = contactBtnRef.current;
@@ -104,7 +106,7 @@ export default function Nav({
       const megaMenu = megaMenuRef.current;
       const megaMenuInner = megaMenuInnerRef.current;
 
-      if (!header || !menuBtn || !menuBtnWrap || !menuBtnBg || !menuBtnText ||
+      if (!header || !menuBtn || !menuBtnWrap || !menuBtnBorder || !menuBtnBg || !menuBtnText ||
           !contactBtn || !contactBtnBg || !megaMenu || !megaMenuInner) return;
 
       /* Non-null aliases for use in closures (guard above ensures safety) */
@@ -126,7 +128,8 @@ export default function Nav({
       const menuContactForm = megaMenu.querySelector<HTMLElement>("[data-menu-form]");
 
       /* ── Initial States ────────────────────────── */
-      gsap.set(menuBtnWrap, { opacity: 0, xPercent: 101 });
+      gsap.set(menuBtnWrap, { opacity: 0 });
+      gsap.set(menuBtnBorder, { xPercent: 101 });
       gsap.set(contactBtn, { opacity: 0 });
       gsap.set(megaMenu, { display: "none" });
       gsap.set(megaMenuInner, { xPercent: 101 });
@@ -223,7 +226,7 @@ export default function Nav({
         });
 
         menuSlideTl.current = gsap.timeline({ paused: true, defaults: { ease: ease.brand, duration: duration.slow } })
-          .fromTo(menuBtnWrap, { xPercent: 101 }, { xPercent: 0 }, 0);
+          .fromTo(menuBtnBorder, { xPercent: 101 }, { xPercent: 0 }, 0);
       }
 
       function showHeaderNav() { navShowTl.current?.play(); menuSlideTl.current?.reverse(); }
@@ -488,7 +491,7 @@ export default function Nav({
         {/* Buttons */}
         <div className="header-buttons">
           <div className="menu-btn-wrap" ref={menuBtnWrapRef}>
-            <div className="menu-btn-border">
+            <div className="menu-btn-border" ref={menuBtnBorderRef}>
               <button
                 className="menu-btn"
                 ref={menuBtnRef}
@@ -512,7 +515,7 @@ export default function Nav({
 
         {/* Mega Menu */}
         <div className="mega-menu-container" ref={megaMenuRef}>
-          <div className="mega-menu-inner" ref={megaMenuInnerRef}>
+          <div className="mega-menu-inner" ref={megaMenuInnerRef} data-lenis-prevent="">
 
             {/* Primary links */}
             <ul className="menu-primary-list" role="menubar">
@@ -555,7 +558,7 @@ export default function Nav({
               </div>
               <div className="menu-contact-details">
                 <div className="menu-contact-item">
-                  <a className="menu-contact-link" data-menu-contact="" href={`tel:${phone}`}>{phone}</a>
+                  <a className="menu-contact-link u-nums" data-menu-contact="" href={`tel:${phone}`}>{phone}</a>
                 </div>
                 <div className="menu-contact-item">
                   <a className="menu-contact-link" data-menu-contact="" href={`mailto:${email}`}>{email}</a>
