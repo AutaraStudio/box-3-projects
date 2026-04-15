@@ -1,444 +1,1743 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="is-loading is-first-loaded">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Footer — Outsource Consultants Inc.</title>
+<title>Tamperguard — Manufacturing Centre · GKC Architecture</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <style>
-  /* ── Reset ───────────────────────────────────────────── */
-  *, ::before, ::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    border: 0;
+
+/* ─────────────────────────────────────────────────────────
+   CSS CUSTOM PROPERTIES
+   Faithfully matching GKC's design token system
+───────────────────────────────────────────────────────── */
+:root {
+  /* Colors */
+  --color:           rgb(21, 31, 38);
+  --color-bg:        rgb(255, 255, 255);
+  --color-light:     rgb(217, 217, 217);
+  --color-alt:       rgb(162, 162, 162);
+  --color-alt2:      rgb(162, 162, 162);
+  --color-accent:    rgb(20, 68, 240);
+  --color-hover:     rgb(20, 68, 240);
+
+  /* Grid */
+  --grid-margin:     20px;
+  --grid-gutter:     20px;
+  --half-offset:     calc(var(--grid-gutter) / 2);
+
+  /* Navbar / anchors */
+  --navbar-height:   70px;
+  --project-anchors-height: 2.8125rem; /* 45px */
+
+  /* Typography */
+  --font-size-h1:    clamp(48px, 5vw, 75px);
+  --font-size-h2:    clamp(35px, 3.33vw, 48px);
+  --font-size-h3:    clamp(24px, 2.5vw, 35px);
+  --font-size-h4:    22px;
+  --font-size-huge:  clamp(64px, 6vw, 96px);
+  --font-size-text-t1: 18px;
+  --font-size-text-t2: 16px;
+  --font-size-text-t3: 14px;
+  --font-size-text-t4: 12px;
+
+  /* Spacing — clamp(mobile, desktop) matching site's formula */
+  --spacing-xs-mobile:  8;  --spacing-xs-desktop:  16;
+  --spacing-sm-mobile:  16; --spacing-sm-desktop:  32;
+  --spacing-md-mobile:  24; --spacing-md-desktop:  48;
+  --spacing-lg-mobile:  32; --spacing-lg-desktop:  64;
+  --spacing-xl-mobile:  48; --spacing-xl-desktop:  96;
+  --spacing-2xl-mobile: 64; --spacing-2xl-desktop: 128;
+  --spacing-3xl-mobile: 80; --spacing-3xl-desktop: 176;
+
+  --sp-xs:  clamp(calc(0.0625rem * var(--spacing-xs-mobile)),  calc(var(--spacing-xs-desktop)  / 14.4 * 1vw), calc(0.0625rem * var(--spacing-xs-desktop)));
+  --sp-sm:  clamp(calc(0.0625rem * var(--spacing-sm-mobile)),  calc(var(--spacing-sm-desktop)  / 14.4 * 1vw), calc(0.0625rem * var(--spacing-sm-desktop)));
+  --sp-md:  clamp(calc(0.0625rem * var(--spacing-md-mobile)),  calc(var(--spacing-md-desktop)  / 14.4 * 1vw), calc(0.0625rem * var(--spacing-md-desktop)));
+  --sp-lg:  clamp(calc(0.0625rem * var(--spacing-lg-mobile)),  calc(var(--spacing-lg-desktop)  / 14.4 * 1vw), calc(0.0625rem * var(--spacing-lg-desktop)));
+  --sp-xl:  clamp(calc(0.0625rem * var(--spacing-xl-mobile)),  calc(var(--spacing-xl-desktop)  / 14.4 * 1vw), calc(0.0625rem * var(--spacing-xl-desktop)));
+  --sp-2xl: clamp(calc(0.0625rem * var(--spacing-2xl-mobile)), calc(var(--spacing-2xl-desktop) / 14.4 * 1vw), calc(0.0625rem * var(--spacing-2xl-desktop)));
+  --sp-3xl: clamp(calc(0.0625rem * var(--spacing-3xl-mobile)), calc(var(--spacing-3xl-desktop) / 14.4 * 1vw), calc(0.0625rem * var(--spacing-3xl-desktop)));
+
+  /* Transitions — from real site */
+  --transition:         0.3s;
+  --transition-fast:    0.2s;
+  --transition-slow:    0.6s;
+  --transition-slower:  0.9s;
+  --transition-slowest: 1.2s;
+  --transition-mask:    1s;
+  --leave-translate-menu-duration: 1s;
+  --enter-translate-menu-duration: 0.6s;
+
+  /* Button */
+  --button-height:    56px;
+  --button-padding:   18px;
+  --button-gap:       20px;
+  --button-width:     auto;
+  --button-transition-duration: 0.4s;
+  --button-clip:      inset(100% 0 0 0);
+
+  /* Media wire (placeholder borders on unloaded images) */
+  --media-wire-width: 1px;
+  --media-wire-color: var(--color-light);
+
+  /* Viewport units */
+  --vw:  1px;
+  --svh: 1svh;
+
+  /* Panel delays */
+  --panel-delay-in:  0.25s;
+  --panel-delay-out: 0.25s;
+}
+
+/* ─────────────────────────────────────────────────────────
+   RESET
+───────────────────────────────────────────────────────── */
+*, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: auto; -webkit-font-smoothing: antialiased; }
+body { font-family: "Helvetica Neue", helvetica, Arial, sans-serif; color: var(--color); background: var(--color-bg); font-size: 16px; }
+img  { display: block; max-width: 100%; }
+a    { color: inherit; text-decoration: none; }
+ul, ol { list-style: none; }
+button { border: none; background: none; cursor: pointer; font: inherit; color: inherit; padding: 0; }
+
+/* Loading state */
+html.is-loading body { visibility: hidden; }
+html.is-ready body   { visibility: visible; }
+
+/* ─────────────────────────────────────────────────────────
+   TYPE SYSTEM — exact from extracted CSS
+───────────────────────────────────────────────────────── */
+.c-heading {
+  font-family: "Helvetica Neue", helvetica, Arial, sans-serif;
+  font-weight: 400;
+}
+.c-heading.-h1 { font-size: var(--font-size-h1); line-height: 1; letter-spacing: -0.04em; }
+.c-heading.-h2 { font-size: var(--font-size-h2); line-height: 1; letter-spacing: -0.04em; }
+.c-heading.-h3 { font-size: var(--font-size-h3); line-height: 1; letter-spacing: -0.02em; }
+.c-heading.-h4 { font-size: var(--font-size-h4); line-height: 1.2; }
+
+.c-text { font-family: "Helvetica Neue", helvetica, Arial, sans-serif; font-weight: 400; }
+.c-text-condensed {
+  font-family: "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 400; text-transform: uppercase;
+}
+.c-text.-t1, .c-text-condensed.-t1 { font-size: var(--font-size-text-t1); line-height: 1.23; }
+.c-text.-t2, .c-text-condensed.-t2 { font-size: var(--font-size-text-t2); line-height: 1.23; }
+.c-text.-t3, .c-text-condensed.-t3 { font-size: var(--font-size-text-t3); line-height: 1.05; letter-spacing: .01em; }
+
+/* ─────────────────────────────────────────────────────────
+   UTILITIES
+───────────────────────────────────────────────────────── */
+.u-screen-reader-text {
+  position: absolute !important; overflow: hidden;
+  clip: rect(0 0 0 0); margin: 0; padding: 0;
+  width: 1px; height: 1px; border: 0;
+}
+
+/* ─────────────────────────────────────────────────────────
+   CONTAINER
+───────────────────────────────────────────────────────── */
+.o-container {
+  margin-right: auto; margin-left: auto;
+  padding-left: var(--grid-margin); padding-right: var(--grid-margin);
+}
+
+/* ─────────────────────────────────────────────────────────
+   ICON
+───────────────────────────────────────────────────────── */
+.o-icon { display: inline-block; vertical-align: middle; }
+.o-icon svg { display: block; fill: currentColor; }
+.o-icon.-large svg { width: 1.875rem; height: 1.875rem; }
+@media (max-width: 699px) { .o-icon.-large svg { width: 1rem; height: 1rem; } }
+@media (min-width: 700px) and (max-width: 999px) { .o-icon.-large svg { width: 1.5rem; height: 1.5rem; } }
+
+/* ─────────────────────────────────────────────────────────
+   IMAGE COMPONENT — faithful from extracted CSS
+───────────────────────────────────────────────────────── */
+.c-image { position: relative; }
+.c-image.-cover, .c-image.-contain { width: 100%; height: 100%; }
+.c-image.-cover { position: absolute; top: 0; left: 0; }
+.c-image.-cover .c-image_inner,
+.c-image.-contain .c-image_inner { position: absolute; top: 0; left: 0; height: 100%; width: 100%; }
+.c-image[data-wire] .c-image_inner { position: relative; }
+.c-image[data-wire] .c-image_inner::before {
+  content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  box-sizing: border-box; z-index: 0;
+  border: var(--media-wire-width) solid var(--media-wire-color);
+}
+.c-image[data-wire] .c-image_inner::after {
+  content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(to bottom right,
+    transparent calc(50% - var(--media-wire-width)),
+    var(--media-wire-color) calc(50% - var(--media-wire-width)),
+    var(--media-wire-color) 50%, transparent 50%);
+}
+.c-image_anim { position: relative; z-index: 2; }
+.c-image.-cover .c-image_anim { object-fit: cover; height: 100%; width: 100%; }
+.c-image.-overlay .c-image_anim::before {
+  content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  opacity: 0; background-color: #151f26; z-index: 2;
+}
+.c-image.-overlay.is-loaded.is-inview .c-image_anim::before { opacity: .2; }
+.c-image_img { width: 100%; }
+.c-image.-cover .c-image_img { object-fit: cover; height: 100%; width: 100%; }
+.c-image.-lazy-load .c-image_img { opacity: 0; }
+html.is-ready .c-image.-lazy-load .c-image_img { transition: opacity var(--transition-fast) linear; }
+.c-image.-lazy-load .c-image_img.is-loaded { opacity: 1; transition: opacity var(--transition-fast) linear; }
+html.is-ready .c-image[data-wire] .c-image_img { transition: opacity var(--leave-translate-menu-duration) cubic-bezier(0.23, 1, 0.32, 1); }
+.c-image[data-wire] .c-image_img { position: relative; z-index: 1; }
+.c-image[data-wire].-lazy-load .c-image_img { opacity: 0; }
+.c-image[data-wire].-lazy-load.is-inview .c-image_img.is-loaded,
+.c-image[data-wire]:not(.-lazy-load).is-inview .c-image_img.is-loaded { opacity: 1; }
+
+/* ─────────────────────────────────────────────────────────
+   ANIM UTILITIES — exact from extracted CSS
+───────────────────────────────────────────────────────── */
+
+/* Image mask reveal */
+.u-anim-img-mask { overflow: hidden; }
+.u-anim-img-mask .c-image_anim { clip-path: inset(100% 100% 0% 0%); }
+.u-anim-img-mask .c-image_anim::before {
+  content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background-color: #151f26;
+  transition: opacity var(--transition-mask) cubic-bezier(0.23, 1, 0.32, 1);
+  z-index: 2;
+}
+html.is-first-loaded .u-anim-img-mask .c-image_anim {
+  transition: clip-path var(--transition-mask) cubic-bezier(0.23, 1, 0.32, 1);
+}
+.u-anim-img-mask .c-image_img {
+  opacity: 0 !important;
+  transform: scale3d(1.3, 1.3, 1) !important;
+}
+html.is-first-loaded .u-anim-img-mask .c-image_img {
+  transition: transform var(--transition-mask) cubic-bezier(0.23, 1, 0.32, 1),
+              opacity   var(--transition-mask) cubic-bezier(0.23, 1, 0.32, 1) !important;
+}
+.u-anim-img-mask.is-inview .c-image_anim::before { opacity: .2; }
+html.is-ready .u-anim-img-mask.is-inview .c-image_anim { clip-path: inset(0% 0% 0% 0%) !important; }
+html.is-ready .u-anim-img-mask.is-inview .c-image_img { transform: scale3d(1, 1, 1) !important; }
+html.is-ready:not(.has-menu-open) .u-anim-img-mask.is-inview .c-image_img { opacity: 1 !important; }
+
+/* Title entrance: translate3d(80px, 80px, 0) → (0,0,0) */
+.u-anim-title { transform: translate3d(80px, 80px, 0); opacity: 0; }
+html.is-first-loaded .u-anim-title {
+  transition: transform var(--transition-slowest) var(--transition) cubic-bezier(0.23, 1, 0.32, 1),
+              opacity   var(--transition-slowest) var(--transition) cubic-bezier(0.23, 1, 0.32, 1);
+}
+html.is-ready .u-anim-title { transform: translate3d(0, 0, 0); opacity: 1; }
+
+/* Translate-Y entrance */
+.u-anim-translate-y { transform: translate3d(0, 30px, 0); opacity: 0; }
+html.is-first-loaded .u-anim-translate-y {
+  transition: transform var(--transition-slowest) var(--transition) cubic-bezier(0.23, 1, 0.32, 1),
+              opacity   var(--transition-slowest) var(--transition) cubic-bezier(0.23, 1, 0.32, 1);
+}
+html.is-ready .u-anim-translate-y { transform: translate3d(0, 0, 0); opacity: 1; }
+
+/* ─────────────────────────────────────────────────────────
+   PROJECT ANCHORS — exact from extracted CSS
+───────────────────────────────────────────────────────── */
+.c-project-anchors_wrap { position: relative; }
+
+.c-project-anchors {
+  --project-anchors-height: 2.8125rem;
+  position: absolute; top: 0; left: 0; bottom: 0;
+  width: 100%; z-index: 199; pointer-events: none;
+}
+
+.c-project-anchors_toggler {
+  position: absolute;
+  top: calc(100vh + 300px); bottom: 0; left: 0;
+  width: 10px; z-index: 1000; pointer-events: none;
+}
+
+.c-project-anchors_sticky {
+  position: sticky; top: 0; left: 0;
+  transform: translate3d(0, -100%, 0);
+  visibility: hidden;
+}
+
+html.is-first-loaded .c-project-anchors_sticky {
+  transition:
+    top       var(--leave-translate-menu-duration) cubic-bezier(0.23, 1, 0.32, 1),
+    transform var(--leave-translate-menu-duration) cubic-bezier(0.23, 1, 0.32, 1),
+    visibility 0s var(--leave-translate-menu-duration) cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+html.has-project-anchors-inview .c-project-anchors_sticky {
+  transform: translate3d(0, 0%, 0);
+  visibility: visible;
+  transition:
+    top       var(--leave-translate-menu-duration) cubic-bezier(0.23, 1, 0.32, 1),
+    transform var(--leave-translate-menu-duration) cubic-bezier(0.23, 1, 0.32, 1),
+    visibility 0s 0s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.c-project-anchors_inner {
+  background-color: var(--color-bg);
+  display: grid;
+  width: 100%;
+  height: var(--project-anchors-height);
+  overflow: hidden;
+  position: relative;
+}
+
+@media (min-width: 1000px) {
+  .c-project-anchors_inner { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 999px) {
+  .c-project-anchors_inner { grid-template-columns: repeat(1, 1fr); }
+  .c-project-anchors_inner::after { display: none; }
+}
+
+.c-project-anchors_inner::before,
+.c-project-anchors_inner::after {
+  content: ""; position: absolute; background-color: var(--color-light);
+}
+.c-project-anchors_inner::before { left: 0; width: 100%; bottom: 0; height: 1px; }
+.c-project-anchors_inner::after  { left: 50%; height: 100%; top: 0; width: 1px; }
+
+.c-project-anchors_info {
+  display: flex; justify-content: space-between;
+  width: 100%; align-items: center;
+  padding: 0 var(--grid-margin);
+}
+@media (max-width: 999px) { .c-project-anchors_info { display: none; } }
+
+.c-project-anchors_nav { position: relative; width: 100%; overflow: auto; }
+
+.c-project-anchors_list {
+  display: flex;
+  padding: 0 calc(var(--grid-margin) / 2);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  position: relative;
+}
+@media (min-width: 1000px) { .c-project-anchors_list { justify-content: flex-end; } }
+
+.c-project-anchors_item { white-space: nowrap; scroll-snap-align: start; }
+
+.c-project-anchors_link {
+  display: inline-flex; align-items: center;
+  height: var(--project-anchors-height);
+  padding: 0 calc(var(--grid-margin) / 2);
+  pointer-events: auto; position: relative;
+  color: #a2a2a2;
+  transition: color var(--transition) cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.c-project-anchors_link::after {
+  content: ""; position: absolute; bottom: 0;
+  left: calc(var(--grid-margin) / 2);
+  right: calc(var(--grid-margin) / 2);
+  height: 4px; background-color: var(--color);
+  transform: scale3d(1, 0, 1);
+  transition: transform var(--transition) cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.c-project-anchors_link.is-active { color: #000; }
+.c-project-anchors_link.is-active::after { transform: scale3d(1, 1, 1); }
+
+@media (hover: hover) {
+  .c-project-anchors_link:hover { color: #000; }
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   HERO PROJECT — exact from extracted CSS
+───────────────────────────────────────────────────────── */
+@media (max-width: 999px) { .c-hero-project { background-color: var(--color-bg); } }
+
+.c-hero-project_inner {
+  display: grid;
+  gap: var(--grid-gutter);
+}
+@media (min-width: 1000px) {
+  .c-hero-project_inner {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: calc(var(--grid-gutter) * 2);
   }
+}
 
-  /* ── Tokens ──────────────────────────────────────────── */
-  :root {
-    --blue:    #1925aa;
-    --mercury: #e5e5e2;
-    --spacing: 1.3333px;
-    --font-mono: "GT America Mono", "Space Mono", ui-monospace, monospace;
-    --font-neue: "PP Neue Montreal", "Helvetica Neue", Arial, sans-serif;
+.c-hero-project_col { position: relative; }
+.c-hero-project_col:nth-child(2) { padding-bottom: var(--sp-md); }
+
+.c-hero-project_sticky { display: flex; flex-direction: column; }
+@media (min-width: 1000px) {
+  .c-hero-project_sticky { position: sticky; top: 0; left: 0; width: 100%; height: 100vh; }
+}
+
+.c-hero-project_header { display: flex; flex-direction: column; gap: calc(var(--grid-gutter) / 2); }
+
+.c-hero-project_content {
+  padding-top: var(--navbar-height);
+  padding-bottom: var(--navbar-height);
+  flex-grow: 1;
+  display: flex; flex-direction: column; justify-content: center;
+}
+@media (max-width: 999px) { .c-hero-project_content { gap: var(--sp-lg); } }
+@media (min-width: 1000px) { .c-hero-project_content { gap: var(--sp-sm); height: 100%; } }
+@media (min-width: 1200px) {
+  .c-hero-project_content {
+    padding-left:  calc(0.0625 * (calc(100 * var(--vw, 1vw)) - 2 * var(--grid-margin)) - (1 - 0.0625) * var(--grid-gutter) + 1 * var(--grid-gutter));
+    padding-right: calc(0.0625 * (calc(100 * var(--vw, 1vw)) - 2 * var(--grid-margin)) - (1 - 0.0625) * var(--grid-gutter) + 0.5 * var(--grid-gutter));
   }
+}
 
-  html, body {
-    background: #111;
-    -webkit-font-smoothing: antialiased;
+.c-hero-project_title {
+  font-family: "Helvetica Neue", helvetica, Arial, sans-serif;
+  font-weight: 400;
+  font-size: clamp(35px, 0.0333333333 * calc(100 * var(--vw, 1vw)), 48px);
+  line-height: 1; letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.c-hero-project_tag {
+  display: flex; flex-wrap: wrap; gap: 4px;
+  color: var(--color-light);
+}
+.c-hero-project_tag_item { display: flex; }
+.c-hero-project_tag_item::after { content: ", "; }
+.c-hero-project_tag_item:last-child::after { display: none; }
+@media (hover: hover) {
+  html.is-ready .c-hero-project_tag_label {
+    transition: color var(--transition) cubic-bezier(0.38, 0.005, 0.215, 1);
   }
+  .c-hero-project_tag_label:hover { color: #1444f0; }
+}
 
-  /* ── FOOTER ROOT ─────────────────────────────────────── */
-  footer {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    column-gap: 20px;
-    background-color: var(--blue);
-    padding: 26.67px 20px 34.67px;
-    width: 100%;
-    min-height: 100vh;
+.c-hero-project_img_wrap { position: relative; aspect-ratio: 3/2; }
+.c-hero-project_img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+.c-hero-project_info_list { display: grid; gap: var(--grid-gutter); }
+@media (max-width: 999px) {
+  .c-hero-project_info_list {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: var(--sp-md);
   }
+}
+@media (min-width: 1000px) {
+  .c-hero-project_info_list { grid-template-columns: repeat(3, 1fr); }
+}
 
-  /* ── LOGO WRAPPER ────────────────────────────────────── */
-  .footer-logo-wrap {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    grid-column: 1 / span 6;
-    grid-row: 1 / 2;
+.c-hero-project_info_item { display: flex; flex-direction: column; gap: var(--sp-xs); }
+
+.c-hero-project_gallery { padding-top: var(--navbar-height); }
+@media (min-width: 1200px) {
+  .c-hero-project_gallery {
+    padding-left:  calc(0.0625 * (calc(100 * var(--vw, 1vw)) - 2 * var(--grid-margin)) - (1 - 0.0625) * var(--grid-gutter) + 0.5 * var(--grid-gutter));
+    padding-right: calc(0.0625 * (calc(100 * var(--vw, 1vw)) - 2 * var(--grid-margin)) - (1 - 0.0625) * var(--grid-gutter) + 1 * var(--grid-gutter));
   }
+}
+@media (max-width: 999px) { .c-hero-project_gallery { padding-bottom: var(--sp-3xl); } }
+@media (min-width: 1000px) { .c-hero-project_gallery { padding-bottom: var(--sp-xl); } }
 
-  svg.footer-logo {
-    display: block;
-    width: 29vw;
-    height: 29vw;
-    overflow: hidden;
+.c-hero-project_gallery_list { display: flex; flex-direction: column; gap: var(--grid-margin); }
+
+.c-hero-project_team { padding-top: var(--sp-2xl); }
+@media (min-width: 1200px) { .c-hero-project_team { padding-left: var(--half-offset); } }
+
+.c-hero-project_team_title {
+  color: #a2a2a2;
+  margin-bottom: var(--sp-sm);
+}
+
+.c-hero-project_team_list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sp-sm);
+  column-gap: var(--grid-gutter);
+}
+@media (min-width: 700px) { .c-hero-project_team_list { grid-template-columns: repeat(2, 1fr); } }
+
+
+/* ─────────────────────────────────────────────────────────
+   TEAM TILE — exact from extracted CSS
+───────────────────────────────────────────────────────── */
+.c-tile-team { position: relative; }
+@media (hover: hover) {
+  .c-tile-team.-link::before {
+    content: ""; position: absolute;
+    top: 50%; left: 50%;
+    width: calc(100% + var(--grid-gutter));
+    height: calc(100% + var(--grid-gutter));
+    opacity: 0; border-radius: 4px;
+    background-color: #d9d9d9;
+    transform: translate3d(-50%, -50%, 0);
+    transition: opacity var(--transition) cubic-bezier(0.38, 0.005, 0.215, 1);
   }
+  .c-tile-team.-link:hover::before { opacity: .4; }
+}
 
-  /* ── COPYRIGHT ───────────────────────────────────────── */
-  .footer-copyright {
-    grid-column: 1 / span 6;
-    grid-row: 1 / 2;
-    align-self: flex-end;
-    padding-left: 20px;
-    margin-top: 34.67px;
-    font-family: var(--font-mono);
-    font-size: 16px;
-    line-height: 21.28px;
-    text-transform: uppercase;
-    color: var(--mercury);
+.c-tile-team_inner { position: relative; }
+
+.c-tile-team_media_wrapper {
+  position: relative; aspect-ratio: 3/2;
+}
+.c-tile-team_media_wrapper::before, .c-tile-team_media_wrapper::after {
+  content: ""; position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%; box-sizing: border-box; z-index: 0;
+}
+.c-tile-team_media_wrapper::before {
+  border: var(--media-wire-width) solid var(--media-wire-color);
+}
+.c-tile-team_media_wrapper::after {
+  background: linear-gradient(to bottom right,
+    transparent calc(50% - var(--media-wire-width)),
+    var(--media-wire-color) calc(50% - var(--media-wire-width)),
+    var(--media-wire-color) 50%, transparent 50%);
+}
+
+.c-tile-team_linkedin { position: absolute; right: 8px; bottom: 8px; z-index: 2; }
+.c-tile-team_linkedin svg { width: 20px; height: 20px; fill: currentColor; }
+
+.c-tile-team_infos { padding-top: 12px; padding-bottom: 18px; }
+.c-tile-team_name + .c-tile-team_job { margin-top: 4px; }
+.c-tile-team_accreditation { color: var(--color-alt); margin-top: 6px; }
+.c-tile-team_accreditation + .c-tile-team_job { margin-top: 6px; }
+.c-tile-team_job { color: var(--color-alt); }
+.c-tile-team_link { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; }
+
+
+/* ─────────────────────────────────────────────────────────
+   GALLERY CTA — exact from extracted CSS
+───────────────────────────────────────────────────────── */
+.c-gallery-cta {
+  --button-padding: 18px;
+  position: relative; min-height: 100vh; z-index: 1;
+}
+
+.c-gallery-cta_position {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; z-index: 2;
+}
+
+.c-gallery-cta_sticky {
+  display: flex; align-items: flex-end; justify-content: flex-end;
+  position: sticky; top: 0; left: 0;
+  width: 100%; height: 100vh; overflow: hidden;
+}
+
+@media (max-width: 699px)  { .c-gallery-cta_wrapper { width: 100%; } }
+@media (min-width: 700px) and (max-width: 999px) { .c-gallery-cta_wrapper { width: 50%; } }
+@media (min-width: 1000px) {
+  .c-gallery-cta_wrapper {
+    width: calc(0.25 * (calc(100 * var(--vw, 1vw)) - 2 * var(--grid-margin)) - (1 - 0.25) * var(--grid-gutter) + 0 * var(--grid-gutter) + var(--grid-margin));
   }
+}
 
-  /* ── FOOTER NAV (subgrid) ────────────────────────────── */
-  footer nav {
-    display: grid;
-    grid-column: 7 / span 6;
-    grid-row: 1;
-    /* subgrid inherits the 6 right columns */
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: 379.98px 211.23px 246.66px;
-    align-content: flex-start;
-    row-gap: 0;
-    column-gap: 20px;
+.c-gallery-cta_cta { pointer-events: auto; }
+
+html.is-ready .c-gallery-cta_cta {
+  transform: translate3d(0, 100%, 0);
+  transition: transform var(--transition-slow) cubic-bezier(0.38, 0.005, 0.215, 1);
+}
+.c-gallery-cta.is-inview .c-gallery-cta_cta {
+  transform: translate3d(0, 0, 0);
+  transition: transform var(--transition-slow) cubic-bezier(0.38, 0.005, 0.215, 1);
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   BUTTON — exact from extracted CSS
+───────────────────────────────────────────────────────── */
+.c-button {
+  position: relative; display: inline-flex;
+  width: var(--button-width); box-sizing: border-box; overflow: hidden;
+}
+.c-button.-fluid  { --button-width: 100%; }
+.c-button.-auto   { --button-width: auto; }
+.c-button.-big    { --button-height: 75px; }
+
+.c-button.-background {
+  --panel-delay-in:  0.25s;
+  --panel-delay-out: 0.25s;
+  --button-background-color:        var(--color);
+  --button-background-color-panel:  var(--color-accent);
+  --button-background-color-hover:  var(--color-hover);
+  --button-text-color:              var(--color-bg);
+  --button-text-color-hover:        var(--color-bg);
+  --button-clip:     inset(100% 0 0 0);
+}
+
+.c-button_inner {
+  position: relative; display: inline-flex;
+  column-gap: var(--button-gap);
+  align-items: flex-end; justify-content: space-between;
+  color: var(--button-text-color, currentColor);
+  min-height: var(--button-height, 56px);
+  width: var(--button-width, auto);
+  padding: var(--button-padding, 18px);
+  pointer-events: none; z-index: 0;
+  background-color: var(--button-background-color);
+}
+
+.c-button_inner::before, .c-button_inner::after {
+  content: ""; position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  clip-path: var(--button-clip, inset(100% 0 0 0));
+}
+.c-button_inner::before {
+  background-color: var(--button-background-color-panel);
+  transition-delay: var(--panel-delay-out); z-index: 1;
+}
+.c-button_inner::after {
+  background-color: var(--button-background-color-hover); z-index: 2;
+}
+.c-button.-fluid .c-button_inner { width: 100%; }
+
+@media (hover: hover) {
+  .c-button_inner {
+    transition: color var(--button-transition-duration) cubic-bezier(0.38, 0.005, 0.215, 1) .05s;
   }
-
-  /* ── ALL LINK LISTS (shared base) ────────────────────── */
-  footer ul {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    list-style: none;
-    grid-column: span 3;
-    border-left: 1px solid var(--mercury);
-    padding-left: 16px;
+  .c-button_inner::before, .c-button_inner::after {
+    transition: clip-path var(--button-transition-duration) cubic-bezier(0.38, 0.005, 0.215, 1);
   }
-
-  footer li {
-    overflow: hidden;
-    list-style: none;
+  .c-button:hover .c-button_inner {
+    color: var(--button-text-color-hover);
+    transition: color var(--button-transition-duration) cubic-bezier(0.38, 0.005, 0.215, 1);
   }
+  .c-button:hover .c-button_inner::before,
+  .c-button:hover .c-button_inner::after { clip-path: inset(0); }
+  .c-button:hover .c-button_inner::before { transition-delay: 0s; }
+  .c-button:hover .c-button_inner::after  { transition-delay: var(--panel-delay-in); }
+}
 
-  footer a,
-  footer span.label {
-    display: inline-block;
-    font-family: var(--font-mono);
-    font-size: 16px;
-    line-height: 21.28px;
-    text-transform: uppercase;
-    color: var(--mercury);
-    text-decoration: none;
-    cursor: pointer;
+.c-button_label_wrapper { position: relative; clip-path: inset(0); z-index: 3; }
+
+.c-button_label {
+  display: block;
+  font-family: "Helvetica Neue", helvetica, Arial, sans-serif;
+  font-weight: 400;
+  font-size: var(--font-size-text-t2);
+  line-height: 1;
+}
+.c-button_label::after {
+  display: flex; align-items: center;
+  content: attr(data-label);
+  position: absolute; top: calc(100% + 1px); left: 0;
+}
+@media (hover: hover) {
+  .c-button_label {
+    transition: transform var(--button-transition-duration) cubic-bezier(0.38, 0.005, 0.215, 1);
   }
+  .c-button:hover .c-button_label { transform: translate3d(0, calc(-100% - 1px), 0); }
+}
+.c-button.-big .c-button_label { font-size: var(--font-size-text-t1); line-height: 1.23; }
 
-  /* ── LIST 1 & 2: primary nav (row 1, 380px tall) ─────── */
-  ul.list-primary {
-    padding-top: 20px;
-    height: 379.98px;
-    align-content: flex-start;
+.c-button_icon { position: relative; z-index: 3; }
+.c-button_icon svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
+
+
+/* ─────────────────────────────────────────────────────────
+   LISTING DATED — exact from extracted CSS
+───────────────────────────────────────────────────────── */
+.c-listing-dated { padding-bottom: var(--sp-xl); }
+
+.c-listing-dated_header {
+  padding-top: var(--sp-xl);
+  padding-bottom: var(--sp-md);
+}
+@media (max-width: 999px) { .c-listing-dated_header { background-color: var(--color-bg); } }
+
+.c-listing-dated_heading { color: var(--color-alt); }
+@media (min-width: 700px) {
+  .c-listing-dated_heading {
+    max-width: min(620px, calc(50% - var(--half-offset)));
+    padding-right: var(--half-offset);
   }
-
-  /* ── LIST 3: FAQ (row 2, no border) ─────────────────── */
-  ul.list-faq {
-    margin-top: 42.67px;
-    border-left: none;
-    padding-left: 16px;
-    height: auto;
-    align-self: start;
+}
+@media (min-width: 1000px) {
+  .c-listing-dated_heading {
+    padding-left: calc(0.0625 * (calc(100 * var(--vw, 1vw)) - 2 * var(--grid-margin)) - (1 - 0.0625) * var(--grid-gutter) + 1 * var(--grid-gutter));
   }
+}
 
-  /* ── CONTACT + NEWSLETTER COL (row 2) ────────────────── */
-  .footer-contact-col {
-    grid-column: span 3;
-    margin-top: 42.67px;
-    margin-bottom: 45.33px;
-    margin-left: 16px;
-    align-self: start;
+.c-listing-dated_inner { width: 100%; background-color: var(--color-bg); }
+
+.c-listing-dated_list { position: relative; }
+.c-listing-dated_list::before {
+  content: ""; position: absolute; bottom: 0;
+  left: calc(var(--grid-margin) * -1);
+  width: calc(100% + var(--grid-margin) * 2);
+  height: 1px; background-color: var(--color-light);
+}
+
+.c-listing-dated_item {
+  position: relative; display: flex; line-height: 1;
+}
+@media (max-width: 699px) { .c-listing-dated_item { flex-direction: column; gap: 8px; } }
+@media (min-width: 700px) { .c-listing-dated_item { gap: var(--grid-gutter); } }
+@media (max-width: 999px) { .c-listing-dated_item { padding-top: 16px; padding-bottom: 16px; } }
+@media (min-width: 1000px) {
+  .c-listing-dated_item {
+    padding: 16px calc(0.0625 * (calc(100 * var(--vw, 1vw)) - 2 * var(--grid-margin)) - (1 - 0.0625) * var(--grid-gutter) + 1 * var(--grid-gutter));
   }
+}
+.c-listing-dated_item::before {
+  content: ""; position: absolute; top: 0;
+  left: calc(var(--grid-margin) * -1);
+  width: calc(100% + var(--grid-margin) * 2);
+  height: 1px; background-color: var(--color-light);
+}
 
-  /* "Stay In Touch | 1-212-732-0555" */
-  .contact-row {
-    display: flex;
-    align-items: baseline;
-    font-family: var(--font-mono);
-    font-size: 16px;
-    line-height: 21.28px;
-    text-transform: uppercase;
-    color: var(--mercury);
+.c-listing-dated_title { text-wrap: balance; }
+@media (max-width: 699px) { .c-listing-dated_title { margin-bottom: 4px; } }
+@media (min-width: 1000px) {
+  .c-listing-dated_title {
+    width: calc(0.5 * (calc(100 * var(--vw, 1vw)) - 2 * var(--grid-margin)) - (1 - 0.5) * var(--grid-gutter));
   }
+}
 
-  .contact-row a {
-    font-family: var(--font-mono);
-    font-size: 16px;
-    line-height: 21.28px;
-    text-transform: uppercase;
-    color: var(--mercury);
-    text-decoration: none;
+.c-listing-dated_label { display: flex; text-wrap: balance; }
+@media (min-width: 1000px) {
+  .c-listing-dated_label {
+    width: calc(0.3125 * (calc(100 * var(--vw, 1vw)) - 2 * var(--grid-margin)) - (1 - 0.3125) * var(--grid-gutter));
+    padding-right: 5%;
   }
+}
 
-  .pipe {
-    display: block;
-    margin-inline: 21.33px;
+.c-listing-dated_date { display: flex; color: var(--color-alt); }
+@media (min-width: 700px) { .c-listing-dated_date { text-align: right; flex: 1; } }
+
+
+/* ─────────────────────────────────────────────────────────
+   EXPLORE — exact from extracted CSS
+───────────────────────────────────────────────────────── */
+.c-explore_root {
+  position: relative; background-color: var(--color-bg);
+}
+.c-explore_root::before {
+  content: ""; position: absolute; top: 0; left: 0;
+  width: 100%; height: 1px; background-color: var(--color-light);
+}
+
+.c-explore_inner { position: relative; }
+@media (min-width: 1000px) {
+  .c-explore_inner { min-height: calc(300 * var(--svh, 1svh)); }
+}
+
+.c-explore_sticky_wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+.c-explore_sticky {
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; position: sticky; top: 0; left: 0;
+  width: 100%; height: calc(100 * var(--svh, 1svh)); z-index: 1;
+}
+
+.c-explore_title, .c-explore_duplicate {
+  max-width: max(680px, 47.2222222222vw);
+  text-align: center; text-wrap: balance;
+}
+@media (max-width: 699px) {
+  .c-explore_title, .c-explore_duplicate {
+    max-width: calc(100% - var(--grid-margin) * 2);
   }
+}
 
-  /* Newsletter form */
-  .newsletter-form {
-    width: 100%;
-    margin-top: 26.67px;
+.c-explore_translate {
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; pointer-events: none;
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  color: var(--color-bg);
+  transform-origin: center center; overflow: hidden;
+}
+.c-explore_translate.-children {
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; z-index: 3;
+}
+.c-explore_translate.-parent {
+  display: flex; align-items: center; justify-content: flex-start;
+}
+
+.c-explore_ref { position: absolute; width: 100%; }
+@media (min-width: 700px) and (max-width: 999px) {
+  .c-explore_ref {
+    width: calc(0.875 * (calc(100 * var(--vw, 1vw)) - 2 * var(--grid-margin)) - (1 - 0.875) * var(--grid-gutter));
   }
-
-  .newsletter-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 17.36vw;
-    background-color: var(--blue);
-    border: 1px solid var(--mercury);
-    padding-left: 26.67px;
+}
+@media (min-width: 1000px) {
+  .c-explore_ref {
+    width: calc(0.375 * (calc(100 * var(--vw, 1vw)) - 2 * var(--grid-margin)) - (1 - 0.375) * var(--grid-gutter));
   }
+}
 
-  .newsletter-inner label {
-    display: block;
-    flex: 1 1 0%;
-    height: 21.27px;
-    cursor: default;
+.c-explore_media {
+  width: 100%; transform-origin: center center;
+  background-color: var(--color-bg); position: relative;
+}
+@media (max-width: 999px) {
+  .c-explore_media {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%; transform: none !important;
   }
+}
 
-  .newsletter-inner input[type="email"] {
-    display: block;
-    width: 100%;
-    height: 19px;
-    font-family: var(--font-neue);
-    font-size: 16px;
-    line-height: 16px;
-    color: var(--mercury);
-    background: transparent;
-    border: none;
-    outline: none;
+.c-explore_button {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%; z-index: 10; pointer-events: auto;
+}
+.c-explore_button::before {
+  content: ""; position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%; z-index: 11; opacity: 0;
+  background-color: #1b2831; outline-offset: -5px;
+  transition: opacity var(--transition) cubic-bezier(0.38, 0.005, 0.215, 1);
+}
+.c-explore_button:hover::before,
+.c-explore_button:focus-visible::before { opacity: .2; }
+
+
+/* ─────────────────────────────────────────────────────────
+   LISTING NEWS — exact from extracted CSS
+───────────────────────────────────────────────────────── */
+.c-listing-news { background-color: var(--color-bg); position: relative; }
+.c-listing-news::before {
+  content: ""; position: absolute; top: 0; left: 0;
+  width: 100%; height: 1px; background-color: var(--color-light);
+}
+.c-listing-news.-padding-bottom { padding-bottom: var(--sp-2xl); }
+
+.c-listing-news_header { position: relative; }
+.c-listing-news_header.-visible {
+  padding-top: var(--sp-xl);
+  padding-bottom: var(--sp-sm);
+  position: relative;
+}
+.c-listing-news_header.-visible::before {
+  content: ""; position: absolute; bottom: 0; left: 0;
+  width: 100%; height: 1px; background-color: var(--color-light);
+}
+.c-listing-news_header.-visible .c-listing-news_header_title { color: var(--color); }
+
+.c-listing-news_footer {
+  position: relative; text-align: right;
+  padding-top: var(--grid-margin);
+  background-color: var(--color-bg);
+}
+.c-listing-news_footer::before {
+  content: ""; position: absolute; top: 0; left: 0;
+  width: 100%; height: 1px; background-color: var(--color-light);
+}
+@media (min-width: 1000px) {
+  .c-listing-news_cta {
+    --button-width: 100%;
+    width: max(245px, calc(0.1875 * (calc(100 * var(--vw, 1vw)) - 2 * var(--grid-margin)) - (1 - 0.1875) * var(--grid-gutter)));
   }
+}
 
-  .newsletter-inner input::placeholder {
-    color: var(--mercury);
-    opacity: 1;
+
+/* ─────────────────────────────────────────────────────────
+   NEWS TILE — exact from extracted CSS
+───────────────────────────────────────────────────────── */
+.c-tile-news {
+  --text-color-hover: white;
+  position: relative;
+  border-top: 1px solid var(--color-light);
+}
+.c-listing-news_item:first-child .c-tile-news { border-top: none; }
+
+@media (hover: hover) {
+  .c-tile-news { transition: color var(--transition-slow) cubic-bezier(0.38, 0.005, 0.215, 1); }
+  .c-tile-news:hover { color: var(--text-color-hover); }
+}
+
+.c-tile-news_inner {
+  position: relative; padding: var(--grid-margin);
+  display: grid; column-gap: var(--grid-gutter); z-index: 2;
+}
+@media (max-width: 699px) {
+  .c-tile-news_inner { grid-template-columns: repeat(1, 1fr); row-gap: var(--sp-sm); }
+}
+@media (min-width: 700px) {
+  .c-tile-news_inner { grid-template-columns: repeat(16, 1fr); }
+}
+
+.c-tile-news_info {
+  display: flex; flex-direction: column; gap: var(--sp-sm);
+}
+@media (min-width: 700px) {
+  .c-tile-news_info { grid-column-start: 5; grid-column-end: 17; }
+}
+
+.c-tile-news_media_wrapper { position: relative; aspect-ratio: 3/2; }
+.c-tile-news_media_wrapper::before, .c-tile-news_media_wrapper::after {
+  content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+}
+.c-tile-news_media_wrapper::before {
+  border: var(--media-wire-width) solid var(--media-wire-color);
+}
+.c-tile-news_media_wrapper::after {
+  background: linear-gradient(to bottom right,
+    transparent calc(50% - var(--media-wire-width)),
+    var(--media-wire-color) calc(50% - var(--media-wire-width)),
+    var(--media-wire-color) 50%, transparent 50%);
+}
+@media (min-width: 700px) {
+  .c-tile-news_media_wrapper { grid-column-start: 1; grid-column-end: 5; }
+}
+
+.c-tile-news_head {
+  display: flex; gap: var(--grid-gutter); width: 100%;
+  justify-content: space-between;
+  color: var(--color-alt); padding-bottom: var(--sp-xs);
+}
+@media (hover: hover) {
+  .c-tile-news_head { transition: color var(--transition-slow) cubic-bezier(0.38, 0.005, 0.215, 1); }
+  .c-tile-news:hover .c-tile-news_head { color: #fff; }
+}
+
+.c-tile-news_tag { flex: 1; }
+.c-tile-news_tag_list { display: inline-flex; flex-wrap: wrap; gap: 5px; }
+
+.c-tile-news_title { max-width: 40.625rem; text-wrap: balance; }
+
+.c-tile-news_date { display: block; color: var(--color-alt); }
+.c-tile-news_head .c-tile-news_date { display: none; }
+@media (min-width: 700px) {
+  .c-tile-news_date { display: none; }
+  .c-tile-news_head .c-tile-news_date { display: block; }
+}
+
+.c-tile-news_foot {
+  display: flex; flex-grow: 1; align-items: flex-end;
+  justify-content: flex-end; padding-top: var(--sp-sm);
+}
+
+.c-tile-news_cta {
+  line-height: 1; display: inline-flex;
+  align-items: center; justify-content: space-between;
+  gap: var(--sp-xs); color: currentColor; width: 100%;
+  position: relative;
+}
+.c-tile-news_cta::before {
+  content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+}
+
+.c-tile-news_cta_label { display: inline-block; }
+@media (min-width: 700px) {
+  .c-tile-news_cta_label { opacity: 0; transform: translate3d(-20px, 0, 0); }
+  html.is-first-loaded .c-tile-news_cta_label {
+    transition: transform var(--transition) cubic-bezier(0.23, 1, 0.32, 1),
+                opacity   var(--transition) cubic-bezier(0.23, 1, 0.32, 1);
   }
-
-  .newsletter-inner button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 66.63px;
-    height: 73.33px;
-    padding-inline: 20px;
-    background: transparent;
-    border: none;
-    color: var(--mercury);
-    cursor: pointer;
-    flex-shrink: 0;
+}
+@media (min-width: 700px) and (hover: hover) {
+  .c-tile-news:hover .c-tile-news_cta_label,
+  .c-tile-news:focus-within .c-tile-news_cta_label {
+    opacity: 1; transform: translate3d(0, 0, 0);
   }
+}
 
-  .newsletter-inner button svg {
-    display: block;
-    width: 26.67px;
-    height: 12px;
-    margin-top: -4.8px;
-    overflow: hidden;
+.c-tile-news_hover {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%; opacity: 0;
+  background-color: #1444f0;
+}
+@media (hover: hover) {
+  html.is-first-loaded .c-tile-news_hover {
+    transition: opacity var(--transition-slow) cubic-bezier(0.38, 0.005, 0.215, 1);
   }
+  .c-tile-news:hover .c-tile-news_hover { opacity: 1; }
+}
 
-  /* ── SOCIAL LIST (row 3, order 1) ────────────────────── */
-  ul.list-social {
-    order: 1;
-    justify-content: flex-end;
-    height: 246.66px;
-    padding-top: 0;
-    align-items: flex-start;
-    padding-bottom: 0;
-  }
+.c-tile-news_link {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%; z-index: 3;
+}
 
-  /* ── LEGAL LIST (row 3, order 1) ─────────────────────── */
-  ul.list-legal {
-    order: 1;
-    justify-content: flex-end;
-    height: 246.66px;
-  }
 
-  /* "Made by buzzworthy" inside legal — shown on desktop */
-  .made-by {
-    display: block;
-    margin-top: 26.67px;
-  }
+/* ─────────────────────────────────────────────────────────
+   GALLERY LIGHTBOX
+───────────────────────────────────────────────────────── */
+html.has-modal-open, html.has-menu-open,
+html.has-player-open, html.has-gallery-open { overflow: hidden; }
 
-  /* ── MOBILE MADE-BY (hidden on desktop) ──────────────── */
-  .footer-madeby-mobile {
-    display: none;
-    grid-column: 1 / -1;
-    margin-top: 26.67px;
-    font-family: var(--font-mono);
-    font-size: 16px;
-    line-height: 21.28px;
-    text-transform: uppercase;
-    color: var(--mercury);
-  }
+.c-gallery {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--color);
+  opacity: 0; visibility: hidden;
+  clip-path: inset(0 0 100% 0);
+}
+html.is-ready .c-gallery {
+  transition: visibility var(--transition) linear,
+              clip-path 0s linear var(--transition),
+              opacity var(--transition) linear;
+}
+.c-gallery.is-active {
+  opacity: 1; clip-path: inset(0 0 0 0); visibility: visible;
+}
+html.has-gallery-open .c-gallery.is-active {
+  transition: clip-path var(--transition-slow) cubic-bezier(0.33, 1, 0.68, 1),
+              visibility 0s 0s, opacity 0s 0s;
+}
 
-  /* ── MOBILE HR (hidden on desktop) ──────────────────── */
-  footer hr.mobile-divider {
-    display: none;
-    grid-column: 1 / -1;
-    margin-top: 66.67px;
-    border-top: 1px solid var(--mercury);
-  }
+.c-gallery_inner {
+  display: flex; flex-direction: column;
+  width: 100%; height: 100%;
+  clip-path: inset(0 0 100% 0);
+}
+.c-gallery.is-active .c-gallery_inner { clip-path: inset(0 0 0 0); }
+html.has-gallery-open .c-gallery_inner {
+  transition: clip-path var(--transition-slow) cubic-bezier(0.33, 1, 0.68, 1);
+}
 
-  /* ── MOBILE ──────────────────────────────────────────── */
-  @media (max-width: 1023px) {
-    footer {
-      grid-template-columns: 60vw 1fr;
-      padding-top: 66.67px;
-      padding-bottom: 26.67px;
-    }
+.c-gallery_top {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px 20px 0; color: var(--color-bg); flex-shrink: 0;
+}
 
-    .footer-logo-wrap {
-      grid-column: 1 / -1;
-      grid-row: auto;
-    }
+.c-gallery_pagination { font-size: var(--font-size-text-t1); }
 
-    svg.footer-logo {
-      width: 71.6vw;
-      height: 71.6vw;
-    }
+.c-gallery_close {
+  display: flex; align-items: center; gap: 8px;
+  font-size: var(--font-size-text-t3); letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--color-bg);
+  opacity: 0.7; transition: opacity 0.2s ease;
+}
+.c-gallery_close:hover { opacity: 1; }
+.c-gallery_close svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 1.5; fill: none; }
 
-    footer hr.mobile-divider {
-      display: block;
-    }
+.c-gallery_swiper { flex: 1; overflow: hidden; padding: 20px 0; }
+.c-gallery_swiper .swiper { width: 100%; height: 100%; }
+.c-gallery_swiper .swiper-slide {
+  width: auto !important;
+  display: flex; align-items: center; justify-content: center;
+}
+.c-gallery_swiper .swiper-slide img {
+  max-width: 90vw; max-height: 80vh;
+  width: auto; height: auto; object-fit: contain;
+}
 
-    footer nav {
-      grid-column: 1 / -1;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: auto;
-      margin-top: 66.67px;
-      row-gap: 40px;
-    }
+.c-gallery_bottom {
+  display: flex; justify-content: flex-end; align-items: center;
+  gap: 16px; padding: 0 20px 20px; flex-shrink: 0;
+}
 
-    footer ul {
-      grid-column: span 1;
-      border-left: none;
-      padding-left: 0;
-      height: auto !important;
-    }
+.c-gallery_nav-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 48px; height: 48px;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: var(--color-bg);
+  transition: border-color 0.2s, background 0.2s;
+}
+.c-gallery_nav-btn:hover { border-color: var(--color-bg); background: rgba(255,255,255,.1); }
+.c-gallery_nav-btn svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 
-    ul.list-social,
-    ul.list-legal { order: 0; }
-
-    .footer-contact-col {
-      grid-column: 1 / -1;
-      margin-left: 0;
-      margin-top: 0;
-    }
-
-    .newsletter-inner {
-      width: 100%;
-    }
-
-    .made-by { display: none; }
-
-    .footer-madeby-mobile { display: block; }
-
-    .footer-copyright {
-      grid-column: 1 / -1;
-      grid-row: auto;
-      padding-left: 0;
-    }
-  }
 </style>
 </head>
 <body>
 
-<footer>
-
-  <!-- ── Logo ─────────────────────────────────────────── -->
-  <div class="footer-logo-wrap">
-    <svg viewBox="0 0 421 420" fill="none" xmlns="http://www.w3.org/2000/svg" class="footer-logo">
-      <defs>
-        <rect id="plusV" x="205" width="11" height="420"/>
-        <rect id="plusH" x="420.5" y="204.5" width="11" height="420" transform="rotate(90 420.5 204.5)"/>
-        <path id="plus" d="M216 204.5H420.5V215.5H216V420H205V215.5H0.5V204.5H205V0H216V204.5Z"/>
-        <path id="circle" d="M210.756 34.2979C309.804 34.2979 390.098 114.592 390.098 213.64C390.098 312.688 309.804 392.981 210.756 392.981C111.708 392.981 31.4141 312.687 31.4141 213.64C31.4141 114.592 111.708 34.2979 210.756 34.2979ZM210.75 78.9922C136.385 78.9924 76.1008 139.277 76.1006 213.642C76.1006 288.007 136.385 348.292 210.75 348.292C285.115 348.292 345.4 288.007 345.4 213.642C345.4 139.277 285.115 78.9922 210.75 78.9922Z"/>
-        <mask id="maskForPlusV" maskUnits="userSpaceOnUse">
-          <rect width="100%" height="100%" fill="white"/>
-          <use href="#circle" fill="black"/>
-        </mask>
-        <mask id="maskForPlusH" maskUnits="userSpaceOnUse">
-          <rect width="100%" height="100%" fill="white"/>
-          <use href="#circle" fill="black"/>
-        </mask>
-        <mask id="maskForCircle" maskUnits="userSpaceOnUse">
-          <rect width="100%" height="100%" fill="white"/>
-          <use href="#plusV" fill="black"/>
-          <use href="#plusH" fill="black"/>
-        </mask>
-      </defs>
-      <use href="#plusV"  fill="#E8E6E0" mask="url(#maskForPlusV)"/>
-      <use href="#plusH"  fill="#E8E6E0" mask="url(#maskForPlusH)"/>
-      <use href="#circle" fill="#E8E6E0" mask="url(#maskForCircle)"/>
-    </svg>
+<!-- ══════════════════════════════════════════════════════
+     PROJECT ANCHORS WRAP
+════════════════════════════════════════════════════════ -->
+<div class="c-project-anchors_wrap">
+  <div class="c-project-anchors">
+    <div class="c-project-anchors_sticky">
+      <div class="c-project-anchors_inner c-text -t1">
+        <div class="c-project-anchors_info">
+          <p>Tamperguard - Manufacturing Centre</p>
+          <p style="color:var(--color-alt)">Dorval, QC</p>
+        </div>
+        <nav class="c-project-anchors_nav">
+          <ul class="c-project-anchors_list">
+            <li class="c-project-anchors_item">
+              <a href="#context" class="c-project-anchors_link is-active" data-project-anchors="link">Context</a>
+            </li>
+            <li class="c-project-anchors_item">
+              <a href="#awards" class="c-project-anchors_link" data-project-anchors="link">Awards</a>
+            </li>
+            <li class="c-project-anchors_item">
+              <a href="#images" class="c-project-anchors_link" data-project-anchors="link">Images</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
   </div>
 
-  <!-- ── Mobile HR ─────────────────────────────────────── -->
-  <hr class="mobile-divider">
+  <!-- ══════════════════════════════════════════════════
+       HERO PROJECT
+  ════════════════════════════════════════════════════ -->
+  <div id="context" data-scroll data-scroll-repeat data-scroll-call="onUpdateIndicator, ProjectAnchors" data-scroll-offset="50%, 50%">
+    <section class="c-hero-project">
+      <div class="c-hero-project_inner o-container">
 
-  <!-- ── Nav grid ──────────────────────────────────────── -->
-  <nav aria-label="Footer Navigation">
+        <!-- Left col: sticky info -->
+        <div class="c-hero-project_col">
+          <div class="c-hero-project_sticky">
+            <div class="c-hero-project_content">
 
-    <!-- List 1: About / Services / Projects / Clients -->
-    <ul class="list-primary" role="menu">
-      <li role="none"><span><a href="/about"    role="menuitem">About</a></span></li>
-      <li role="none"><span><a href="/services"  role="menuitem">Services</a></span></li>
-      <li role="none"><span><a href="/projects"  role="menuitem">Projects</a></span></li>
-      <li role="none"><span><a href="/clients"   role="menuitem">Clients</a></span></li>
-    </ul>
+              <div class="c-hero-project_header">
+                <ul class="c-hero-project_tag c-text-condensed -t3 u-anim-translate-y">
+                  <li class="c-hero-project_tag_item">
+                    <a href="#" class="c-hero-project_tag_label">Manufacturing</a>
+                  </li>
+                </ul>
+                <h1 class="c-hero-project_title u-anim-title">Tamperguard - Manufacturing Centre</h1>
+              </div>
 
-    <!-- List 2: Culture / Blog / Contact -->
-    <ul class="list-primary" role="menu">
-      <li role="none"><span><a href="/culture-and-careers" role="menuitem">Culture &amp; Careers</a></span></li>
-      <li role="none"><span><a href="/blog"    role="menuitem">Blog</a></span></li>
-      <li role="none"><span><a href="/contact" role="menuitem">Contact</a></span></li>
-    </ul>
+              <div class="c-hero-project_img_wrap u-anim-img-mask">
+                <div class="c-image c-hero-project_img -cover -overlay -lazy-load" data-wire>
+                  <div class="c-image_inner">
+                    <div class="c-image_anim">
+                      <img class="c-image_img" alt="" width="960" height="640" loading="lazy"
+                        src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=960&h=640&fit=crop&q=80"
+                        onload="this.classList.add('is-loaded');this.closest('.c-image').classList.add('is-loaded')">
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-    <!-- List 3: FAQ (no border, row 2) -->
-    <ul class="list-faq" role="menu">
-      <li role="none"><span><a href="/faq" role="menuitem">FAQ</a></span></li>
-    </ul>
+              <div class="c-hero-project_info u-anim-translate-y">
+                <ul class="c-hero-project_info_list">
+                  <li class="c-hero-project_info_item">
+                    <span class="c-text-condensed -t3">Location</span>
+                    <span class="c-text -t1">Dorval, QC</span>
+                  </li>
+                  <li class="c-hero-project_info_item">
+                    <span class="c-text-condensed -t3">Area</span>
+                    <span class="c-text -t1">30,700 sq. ft.</span>
+                  </li>
+                  <li class="c-hero-project_info_item">
+                    <span class="c-text-condensed -t3">Status</span>
+                    <span class="c-text -t1">Completed, 2022</span>
+                  </li>
+                </ul>
+              </div>
 
-    <!-- Contact + Newsletter (row 2) -->
-    <div class="footer-contact-col">
-      <div class="contact-row">
-        <span class="label">Stay In Touch</span>
-        <span class="pipe">|</span>
-        <a href="tel:+12127320555">1-212-732-0555</a>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right col: scrolling gallery + sticky CTA + team -->
+        <div class="c-hero-project_col">
+          <div class="c-gallery-cta -default is-inview">
+            <div class="c-hero-project_gallery">
+              <ul class="c-hero-project_gallery_list">
+
+                <li class="c-hero-project_gallery_item">
+                  <div class="u-anim-img-mask">
+                    <div class="c-image c-hero-project_gallery_img -lazy-load" data-wire>
+                      <div class="c-image_inner"><div class="c-image_anim">
+                        <img class="c-image_img" alt="" width="1440" height="1006" loading="lazy"
+                          src="https://images.unsplash.com/photo-1565008447742-97f6f38c985c?w=1440&h=1006&fit=crop&q=80"
+                          onload="this.classList.add('is-loaded');this.closest('.c-image').classList.add('is-loaded')">
+                      </div></div>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="c-hero-project_gallery_item">
+                  <div class="u-anim-img-mask">
+                    <div class="c-image c-hero-project_gallery_img -lazy-load" data-wire>
+                      <div class="c-image_inner"><div class="c-image_anim">
+                        <img class="c-image_img" alt="" width="1440" height="2160" loading="lazy"
+                          src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1440&h=2160&fit=crop&q=80"
+                          onload="this.classList.add('is-loaded');this.closest('.c-image').classList.add('is-loaded')">
+                      </div></div>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="c-hero-project_gallery_item">
+                  <div class="u-anim-img-mask">
+                    <div class="c-image c-hero-project_gallery_img -lazy-load" data-wire>
+                      <div class="c-image_inner"><div class="c-image_anim">
+                        <img class="c-image_img" alt="" width="1440" height="1211" loading="lazy"
+                          src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1440&h=1211&fit=crop&q=80"
+                          onload="this.classList.add('is-loaded');this.closest('.c-image').classList.add('is-loaded')">
+                      </div></div>
+                    </div>
+                  </div>
+                </li>
+
+              </ul>
+            </div>
+
+            <div class="c-gallery-cta_position">
+              <div class="c-gallery-cta_sticky">
+                <div class="c-gallery-cta_wrapper">
+                  <button class="c-button -background -fluid -big c-gallery-cta_cta" data-gallery-open data-gallery-id="gallery">
+                    <span class="c-button_inner">
+                      <span class="u-screen-reader-text">Explore in pictures</span>
+                      <span class="c-button_label_wrapper" aria-hidden="true">
+                        <span class="c-button_label" data-label="Explore in pictures">Explore in pictures</span>
+                      </span>
+                      <span class="o-icon c-button_icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                          <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/>
+                        </svg>
+                      </span>
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Team — in right col per original HTML structure -->
+          <div class="c-hero-project_team">
+            <p class="c-hero-project_team_title c-text -t1">Project team</p>
+            <ul class="c-hero-project_team_list">
+
+              <li>
+                <article class="c-tile-team -link -default">
+                  <header class="c-tile-team_inner">
+                    <div class="c-tile-team_media_wrapper u-anim-img-mask">
+                      <div class="c-image c-tile-team_media -cover -lazy-load" data-wire>
+                        <div class="c-image_inner"><div class="c-image_anim">
+                          <img class="c-image_img" alt="Richard Kaplin" width="600" height="400" loading="lazy"
+                            src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&h=400&fit=crop&q=80"
+                            onload="this.classList.add('is-loaded');this.closest('.c-image').classList.add('is-loaded')">
+                        </div></div>
+                      </div>
+                      <span class="c-tile-team_linkedin">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/>
+                        </svg>
+                      </span>
+                    </div>
+                    <div class="c-tile-team_infos u-anim-translate-y">
+                      <p class="c-tile-team_name c-heading -h4">Richard Kaplin</p>
+                      <p class="c-tile-team_accreditation c-text-condensed -t3">OAQ, OAA, AIBC</p>
+                      <p class="c-tile-team_job c-text -t1">Emeritus Partner</p>
+                    </div>
+                    <a class="c-tile-team_link" href="https://ca.linkedin.com/in/richard-kaplin-a62a13135" target="_blank">
+                      <span class="u-screen-reader-text">Richard Kaplin</span>
+                    </a>
+                  </header>
+                </article>
+              </li>
+
+              <li>
+                <article class="c-tile-team -default">
+                  <header class="c-tile-team_inner">
+                    <div class="c-tile-team_media_wrapper u-anim-img-mask">
+                      <div class="c-image c-tile-team_media -cover -lazy-load" data-wire>
+                        <div class="c-image_inner"><div class="c-image_anim">
+                          <img class="c-image_img" alt="Stanley Wu" width="600" height="400" loading="lazy"
+                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&h=400&fit=crop&q=80"
+                            onload="this.classList.add('is-loaded');this.closest('.c-image').classList.add('is-loaded')">
+                        </div></div>
+                      </div>
+                    </div>
+                    <div class="c-tile-team_infos u-anim-translate-y">
+                      <p class="c-tile-team_name c-heading -h4">Stanley Wu</p>
+                      <p class="c-tile-team_accreditation c-text-condensed -t3">OAA, PMP, LEED AP</p>
+                      <p class="c-tile-team_job c-text -t1">Architect, Senior Team Lead</p>
+                    </div>
+                  </header>
+                </article>
+              </li>
+
+            </ul>
+          </div>
+        </div>
+
       </div>
-      <div class="newsletter-form">
-        <div class="newsletter-inner">
-          <label for="footer-email">
-            <input id="footer-email" type="email" placeholder="Your email..." required>
-          </label>
-          <button type="submit" aria-label="Subscribe to newsletter">
-            <!-- Arrow right SVG -->
-            <svg viewBox="0 0 20 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M15.5 1L19 4.5M19 4.5L15.5 8M19 4.5H1" stroke="#E8E6E0" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
+    </section>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════
+       AWARDS
+  ════════════════════════════════════════════════════ -->
+  <div id="awards" data-scroll data-scroll-repeat data-scroll-call="onUpdateIndicator, ProjectAnchors" data-scroll-offset="50%, 50%">
+    <section class="c-listing-dated -default">
+      <div class="c-listing-dated_header o-container">
+        <h2 class="c-listing-dated_heading c-heading -h4">Awards and recognition</h2>
+      </div>
+      <div class="c-listing-dated_inner o-container">
+        <ul class="c-listing-dated_list">
+          <li class="c-listing-dated_item c-heading -h3">
+            <p class="c-listing-dated_title">
+              <span class="c-heading -h3">Certification carbone zéro</span>
+            </p>
+            <p class="c-listing-dated_label">
+              <span class="c-text -t1">BCZ-Design v2</span>
+            </p>
+            <p class="c-listing-dated_date">
+              <span class="c-text-condensed -t3">2023</span>
+            </p>
+          </li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════
+       EXPLORE
+  ════════════════════════════════════════════════════ -->
+  <div id="images" data-scroll data-scroll-repeat data-scroll-call="onUpdateIndicator, ProjectAnchors" data-scroll-offset="50%, 50%">
+    <section class="c-explore_root">
+      <div class="c-explore_el" id="explore-el" data-media-metrics='{"width":1920,"height":1080}'>
+        <div class="c-explore_inner" id="explore-inner">
+          <div class="c-explore_sticky_wrapper">
+            <div class="c-explore_sticky">
+              <h2 class="c-explore_title c-heading -h1">Explore the project in pictures</h2>
+              <div class="c-explore_translate -parent" data-explore="parent" id="explore-parent">
+                <div class="c-explore_translate -children" data-explore="children" id="explore-children">
+                  <p class="c-explore_duplicate c-heading -h1" aria-hidden="true">Explore the project in pictures</p>
+                </div>
+                <div class="c-explore_ref" data-explore="ref" id="explore-ref" aria-hidden="true">Explore the project in pictures</div>
+                <div class="c-explore_media" data-explore="media" id="explore-media" style="aspect-ratio:1920/1080">
+                  <button class="c-explore_button" data-gallery-open data-gallery-id="gallery">
+                    <span class="u-screen-reader-text">Open gallery</span>
+                  </button>
+                  <div class="c-image -cover -overlay -lazy-load" style="position:absolute;inset:0;width:100%;height:100%" data-wire>
+                    <div class="c-image_inner"><div class="c-image_anim">
+                      <img class="c-image_img" alt="" width="1920" height="1080" loading="lazy"
+                        src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&h=1080&fit=crop&q=80"
+                        onload="this.classList.add('is-loaded');this.closest('.c-image').classList.add('is-loaded')">
+                    </div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Second CTA -->
+      <div class="c-gallery-cta -default is-inview">
+        <div class="c-gallery-cta_position">
+          <div class="c-gallery-cta_sticky">
+            <div class="c-gallery-cta_wrapper">
+              <button class="c-button -background -fluid -big c-gallery-cta_cta" data-gallery-open data-gallery-id="gallery">
+                <span class="c-button_inner">
+                  <span class="u-screen-reader-text">Explore in pictures</span>
+                  <span class="c-button_label_wrapper" aria-hidden="true">
+                    <span class="c-button_label" data-label="Explore in pictures">Explore in pictures</span>
+                  </span>
+                  <span class="o-icon c-button_icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                      <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/>
+                    </svg>
+                  </span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════
+       OTHER ARTICLES
+  ════════════════════════════════════════════════════ -->
+  <section class="c-listing-news -padding-bottom">
+    <div class="c-listing-news_header -visible o-container">
+      <h2 class="c-heading -h4 c-listing-news_header_title">Other articles</h2>
+    </div>
+    <ul class="c-listing-news_list">
+
+      <li class="c-listing-news_item">
+        <article class="c-tile-news">
+          <h3><a class="c-tile-news_link" href="#"><span class="u-screen-reader-text">The Impact of Interior Design in the Workplace</span></a></h3>
+          <div class="c-tile-news_inner">
+            <div class="c-tile-news_media_wrapper u-anim-img-mask">
+              <div class="c-image c-tile-news_media -cover -overlay -lazy-load" data-wire>
+                <div class="c-image_inner"><div class="c-image_anim">
+                  <img class="c-image_img" alt="" width="480" height="320" loading="lazy"
+                    src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=480&h=320&fit=crop&q=80"
+                    onload="this.classList.add('is-loaded');this.closest('.c-image').classList.add('is-loaded')">
+                </div></div>
+              </div>
+            </div>
+            <div class="c-tile-news_info u-anim-translate-y">
+              <div class="c-tile-news_head c-text-condensed -t3">
+                <div class="c-tile-news_tag">
+                  <ul class="c-tile-news_tag_list"><li class="c-tile-news_tag_item">Workplace</li></ul>
+                </div>
+                <time class="c-tile-news_date" datetime="2026-04-08">April 8, 2026</time>
+              </div>
+              <p class="c-tile-news_title c-heading -h3" aria-hidden="true">The Impact of Interior Design in the Workplace</p>
+              <div class="c-tile-news_foot">
+                <p class="c-tile-news_cta" aria-hidden="true">
+                  <span class="c-tile-news_cta_label c-text -t1">View more</span>
+                  <span class="o-icon -large c-tile-news_cta_icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="c-tile-news_hover"></div>
+        </article>
+      </li>
+
+      <li class="c-listing-news_item">
+        <article class="c-tile-news">
+          <h3><a class="c-tile-news_link" href="#"><span class="u-screen-reader-text">Andrew King, FRAIC Appointed Design Principal</span></a></h3>
+          <div class="c-tile-news_inner">
+            <div class="c-tile-news_media_wrapper u-anim-img-mask">
+              <div class="c-image c-tile-news_media -cover -overlay -lazy-load" data-wire>
+                <div class="c-image_inner"><div class="c-image_anim">
+                  <img class="c-image_img" alt="Andrew King" width="480" height="320" loading="lazy"
+                    src="https://images.unsplash.com/photo-1556157382-97eda2d62296?w=480&h=320&fit=crop&q=80"
+                    onload="this.classList.add('is-loaded');this.closest('.c-image').classList.add('is-loaded')">
+                </div></div>
+              </div>
+            </div>
+            <div class="c-tile-news_info u-anim-translate-y">
+              <div class="c-tile-news_head c-text-condensed -t3">
+                <div class="c-tile-news_tag">
+                  <ul class="c-tile-news_tag_list"><li class="c-tile-news_tag_item">Company News</li></ul>
+                </div>
+                <time class="c-tile-news_date" datetime="2026-02-24">February 24, 2026</time>
+              </div>
+              <p class="c-tile-news_title c-heading -h3" aria-hidden="true">Andrew King, FRAIC Appointed Design Principal</p>
+              <div class="c-tile-news_foot">
+                <p class="c-tile-news_cta" aria-hidden="true">
+                  <span class="c-tile-news_cta_label c-text -t1">View more</span>
+                  <span class="o-icon -large c-tile-news_cta_icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="c-tile-news_hover"></div>
+        </article>
+      </li>
+
+      <li class="c-listing-news_item">
+        <article class="c-tile-news">
+          <h3><a class="c-tile-news_link" href="#" target="_blank"><span class="u-screen-reader-text">Workspaces: Driving Engagement and Performance</span></a></h3>
+          <div class="c-tile-news_inner">
+            <div class="c-tile-news_media_wrapper u-anim-img-mask">
+              <div class="c-image c-tile-news_media -cover -overlay -lazy-load" data-wire>
+                <div class="c-image_inner"><div class="c-image_anim">
+                  <img class="c-image_img" alt="" width="480" height="320" loading="lazy"
+                    src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=480&h=320&fit=crop&q=80"
+                    onload="this.classList.add('is-loaded');this.closest('.c-image').classList.add('is-loaded')">
+                </div></div>
+              </div>
+            </div>
+            <div class="c-tile-news_info u-anim-translate-y">
+              <div class="c-tile-news_head c-text-condensed -t3">
+                <div class="c-tile-news_tag">
+                  <ul class="c-tile-news_tag_list"><li class="c-tile-news_tag_item">Workplace</li></ul>
+                </div>
+                <time class="c-tile-news_date" datetime="2025-11-28">November 28, 2025</time>
+              </div>
+              <p class="c-tile-news_title c-heading -h3" aria-hidden="true">Workspaces: Driving Engagement and Performance Through Meaningful Human Connection</p>
+              <div class="c-tile-news_foot">
+                <p class="c-tile-news_cta" aria-hidden="true">
+                  <span class="c-tile-news_cta_label c-text -t1">View more</span>
+                  <span class="o-icon -large c-tile-news_cta_icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="c-tile-news_hover"></div>
+        </article>
+      </li>
+
+    </ul>
+
+    <div class="c-listing-news_footer o-container">
+      <a class="c-button -background c-listing-news_cta" href="#">
+        <span class="c-button_inner">
+          <span class="u-screen-reader-text">See all news</span>
+          <span class="c-button_label_wrapper" aria-hidden="true">
+            <span class="c-button_label" data-label="See all news">See all news</span>
+          </span>
+        </span>
+      </a>
+    </div>
+  </section>
+
+</div><!-- /c-project-anchors_wrap -->
+
+
+<!-- ══════════════════════════════════════════════════════
+     GALLERY LIGHTBOX
+════════════════════════════════════════════════════════ -->
+<div class="c-gallery" id="gallery" aria-hidden="true" data-gallery-id="gallery" role="dialog" aria-label="Project gallery">
+  <div class="c-gallery_inner">
+    <div class="c-gallery_top">
+      <div class="c-gallery_pagination c-text -t1"></div>
+      <button class="c-gallery_close c-text-condensed -t3" aria-label="Close gallery">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Close
+      </button>
+    </div>
+    <div class="c-gallery_swiper">
+      <div class="swiper">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide"><img src="https://images.unsplash.com/photo-1565008447742-97f6f38c985c?w=1440&h=1006&fit=crop&q=80" alt="" loading="lazy"></div>
+          <div class="swiper-slide"><img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=900&h=1350&fit=crop&q=80" alt="" loading="lazy"></div>
+          <div class="swiper-slide"><img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1440&h=1211&fit=crop&q=80" alt="" loading="lazy"></div>
+          <div class="swiper-slide"><img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&h=1080&fit=crop&q=80" alt="" loading="lazy"></div>
+          <div class="swiper-slide"><img src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1440&h=960&fit=crop&q=80" alt="" loading="lazy"></div>
+          <div class="swiper-slide"><img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1440&h=960&fit=crop&q=80" alt="" loading="lazy"></div>
+          <div class="swiper-slide"><img src="https://images.unsplash.com/photo-1513828583688-c52646db42da?w=1440&h=960&fit=crop&q=80" alt="" loading="lazy"></div>
+          <div class="swiper-slide"><img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1440&h=960&fit=crop&q=80" alt="" loading="lazy"></div>
+          <div class="swiper-slide"><img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1440&h=960&fit=crop&q=80" alt="" loading="lazy"></div>
+          <div class="swiper-slide"><img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=900&h=1350&fit=crop&q=80" alt="" loading="lazy"></div>
         </div>
       </div>
     </div>
-
-    <!-- Social (row 3, order 1) -->
-    <ul class="list-social">
-      <li><span><a href="https://www.facebook.com/outsourcenyc"                      target="_blank">Facebook</a></span></li>
-      <li><span><a href="https://www.instagram.com/outsource_consultants/"           target="_blank">Instagram</a></span></li>
-      <li><span><a href="https://www.linkedin.com/company/outsource-consultants-inc." target="_blank">LinkedIn</a></span></li>
-      <li><span><a href="https://x.com/outsourcenyc"                                 target="_blank">X</a></span></li>
-    </ul>
-
-    <!-- Legal (row 3, order 1) -->
-    <ul class="list-legal" role="menu">
-      <li role="none"><span><a href="/privacy-policy"       role="menuitem">Privacy Policy</a></span></li>
-      <li role="none"><span><a href="/terms-and-conditions" role="menuitem">Terms and Conditions</a></span></li>
-      <li role="none">
-        <span class="made-by">
-          <a href="https://buzzworthystudio.com/" target="_blank" rel="noopener">Made by buzzworthy</a>
-        </span>
-      </li>
-    </ul>
-
-  </nav>
-
-  <!-- ── Mobile made-by ────────────────────────────────── -->
-  <div class="footer-madeby-mobile">
-    <span><a href="https://buzzworthystudio.com/" target="_blank" rel="noopener">Made by buzzworthy</a></span>
+    <div class="c-gallery_bottom">
+      <button class="c-gallery_nav-btn" id="gallery-prev" aria-label="Previous">
+        <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </button>
+      <button class="c-gallery_nav-btn" id="gallery-next" aria-label="Next">
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
   </div>
+</div>
 
-  <!-- ── Copyright ─────────────────────────────────────── -->
-  <div class="footer-copyright">
-    © 2026. Outsource Consultants, Inc. All Rights Reserved.
-  </div>
 
-</footer>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+/* ── BezierEasing — port of npm package used by Explore.js ── */
+function BezierEasing(p1x,p1y,p2x,p2y){
+  const SZ=11,STEP=1/(SZ-1);
+  function A(a1,a2){return 1-3*a2+3*a1}function B(a1,a2){return 3*a2-6*a1}function C(a){return 3*a}
+  function bz(t,a1,a2){return((A(a1,a2)*t+B(a1,a2))*t+C(a1))*t}
+  function sl(t,a1,a2){return 3*A(a1,a2)*t*t+2*B(a1,a2)*t+C(a1)}
+  const sv=new Float32Array(SZ);
+  for(let i=0;i<SZ;++i)sv[i]=bz(i*STEP,p1x,p2x);
+  function tForX(aX){
+    let s=0,cur=1;for(;cur!==SZ-1&&sv[cur]<=aX;++cur)s+=STEP;--cur;
+    const d=(aX-sv[cur])/(sv[cur+1]-sv[cur]);let g=s+d*STEP;
+    const isl=sl(g,p1x,p2x);
+    if(isl>=0.001){for(let i=0;i<4;++i){const cs=sl(g,p1x,p2x);if(!cs)break;g-=(bz(g,p1x,p2x)-aX)/cs;}return g;}
+    if(!isl)return g;
+    let aA=s,aB=s+STEP,cx,ct,i=0;
+    do{ct=aA+(aB-aA)/2;cx=bz(ct,p1x,p2x)-aX;cx>0?aB=ct:aA=ct;}while(Math.abs(cx)>1e-7&&++i<10);
+    return ct;
+  }
+  return x=>{if(x===0||x===1)return x;return bz(tForX(x),p1y,p2y)};
+}
 
+function clamp(min,max,v){return Math.min(Math.max(v,min),max)}
+function mapRange(iMin,iMax,oMin,oMax,v){return oMin+(oMax-oMin)*((v-iMin)/(iMax-iMin))}
+
+/* ── ProjectAnchors — faithful port ── */
+class ProjectAnchors {
+  static INVIEW_CLASS = 'has-project-anchors-inview';
+  constructor() {
+    this.$links = Array.from(document.querySelectorAll('[data-project-anchors="link"]'));
+  }
+  init() {
+    /* Toggler: positioned at 100vh+300px in source — observe #context scroll */
+    const ctx = document.getElementById('context');
+    if (ctx) {
+      new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          document.documentElement.classList.toggle(ProjectAnchors.INVIEW_CLASS, e.isIntersecting);
+        });
+      }, { threshold: 0, rootMargin: '-80px 0px 0px 0px' }).observe(ctx);
+    }
+    /* Section indicator */
+    document.querySelectorAll('[data-scroll]').forEach(sec => {
+      if (!sec.id) return;
+      new IntersectionObserver(entries => {
+        entries.forEach(e => this.onUpdateIndicator({ target: e.target, way: e.isIntersecting ? 'enter' : 'leave' }));
+      }, { threshold: 0, rootMargin: '-45px 0px -45% 0px' }).observe(sec);
+    });
+  }
+  onUpdateIndicator({ target, way }) {
+    if (way === 'enter') {
+      this.$links.forEach(link => {
+        link.classList.toggle('is-active', link.getAttribute('href') === `#${target.id}`);
+      });
+    } else {
+      this.$links.forEach(link => {
+        if (link.getAttribute('href') === `#${target.id}`) link.classList.remove('is-active');
+      });
+    }
+  }
+}
+
+/* ── Explore — faithful port ── */
+class Explore {
+  static translateEasing = BezierEasing(0.65, 1, 0.9, 1);
+  static scaleEasing      = BezierEasing(0.65, 1, 0.9, 1);
+  constructor(el) {
+    this.el        = el;
+    this.$children = el.querySelector('[data-explore="children"]');
+    this.$parent   = el.querySelector('[data-explore="parent"]');
+    this.$ref      = el.querySelector('[data-explore="ref"]');
+    this.$media    = el.querySelector('[data-explore="media"]');
+    this.mediaMetrics = JSON.parse(el.dataset.mediaMetrics);
+    this.idleRatio = 1; this.scale = 1; this.coverScaleRatio = 1;
+    this.progress = 0; this.imageProgress = 0;
+    this.clipX = 0; this.clipY = 0; this.globalTranslate = 0;
+    this.wHeight = window.innerHeight; this.wWidth = el.offsetWidth;
+    this._ticking = false;
+    this.onScroll = this.onScroll.bind(this);
+    this.onResize = this.onResize.bind(this);
+  }
+  init() {
+    /* min-height: 300svh from real CSS */
+    const inner = document.getElementById('explore-inner');
+    if (inner) inner.style.minHeight = (window.innerHeight * 3) + 'px';
+    this.onResize();
+    window.addEventListener('resize', this.onResize, { passive: true });
+    window.addEventListener('scroll', this.onScroll, { passive: true });
+  }
+  onResize() {
+    this.wHeight = window.innerHeight; this.wWidth = this.el.offsetWidth;
+    this.idleRatio = this.$ref.offsetWidth / this.el.offsetWidth;
+    this.coverScaleRatio = this.wHeight / (this.wWidth * (this.mediaMetrics.height / this.mediaMetrics.width));
+    this.coverScaleRatio = Math.max(this.coverScaleRatio, 1);
+  }
+  onScroll() {
+    if (this._ticking) return;
+    this._ticking = true;
+    requestAnimationFrame(() => {
+      const rect = this.el.getBoundingClientRect();
+      const total = this.el.offsetHeight - window.innerHeight;
+      const progress = total > 0 ? clamp(0, 1, -rect.top / total) : 0;
+      this.onScrollProgress(progress);
+      this._ticking = false;
+    });
+  }
+  onScrollProgress(progress) {
+    this.progress = progress;
+    this.imageProgress = clamp(0, 1, mapRange(0.1, 1, 0, 1, progress));
+    this.setScale(); this.setClip(); this.setTranslate(); this.applyStyles();
+  }
+  setScale() {
+    this.scale = clamp(this.idleRatio, this.coverScaleRatio,
+      mapRange(0.5, 1, this.idleRatio, this.coverScaleRatio, Explore.scaleEasing(this.imageProgress)));
+  }
+  setClip() {
+    const w = this.wWidth * this.scale;
+    const h = w * (this.mediaMetrics.height / this.mediaMetrics.width);
+    this.clipX = (this.wWidth - w) / 2;
+    this.clipY = (this.wHeight - h) / 2;
+  }
+  setTranslate() {
+    this.globalTranslate = clamp(0, 100, mapRange(0, 0.5, 100, 0, Explore.translateEasing(this.imageProgress)));
+  }
+  applyStyles() {
+    this.$media.style.transform    = `scale(${this.scale})`;
+    this.$parent.style.clipPath    = `inset(${this.clipY}px ${this.clipX}px ${this.clipY}px ${this.clipX}px)`;
+    this.$children.style.transform = `translate3d(0,${this.globalTranslate * -1}%,0)`;
+    this.$parent.style.transform   = `translate3d(0,${this.globalTranslate}%,0)`;
+  }
+}
+
+/* ── Gallery — faithful port ── */
+class Gallery {
+  static CLASS = { ACTIVE: 'is-active', GLOBAL_ACTIVE: 'has-gallery-open' };
+  constructor(el) {
+    this.el          = el;
+    this.galleryId   = el.dataset.galleryId;
+    this.$close      = el.querySelector('.c-gallery_close');
+    this.$swiper     = el.querySelector('.swiper');
+    this.$pagination = el.querySelector('.c-gallery_pagination');
+    this.$prev       = document.getElementById('gallery-prev');
+    this.$next       = document.getElementById('gallery-next');
+    this.onKeyDown   = this.onKeyDown.bind(this);
+  }
+  init() {
+    const reduced = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    this.swiper = new Swiper(this.$swiper, {
+      speed: reduced ? 100 : 400, loop: true,
+      slidesPerView: 'auto', spaceBetween: 20,
+      navigation: { prevEl: this.$prev, nextEl: this.$next },
+      pagination: {
+        el: this.$pagination, type: 'fraction',
+        formatFractionCurrent: n => String(n).padStart(2,'0'),
+        formatFractionTotal:   n => String(n).padStart(2,'0'),
+        renderFraction: (c,t) => `<span class="${c}"></span>&nbsp;<span>/ <span class="${t}"></span></span>`
+      }
+    });
+    document.body.addEventListener('click', e => {
+      const trigger = e.target.closest('[data-gallery-open]');
+      if (trigger && trigger.dataset.galleryId === this.galleryId) this.open();
+    });
+    this.$close?.addEventListener('click', () => this.close());
+    document.addEventListener('keydown', this.onKeyDown);
+  }
+  open() {
+    this.el.classList.add(Gallery.CLASS.ACTIVE);
+    document.documentElement.classList.add(Gallery.CLASS.GLOBAL_ACTIVE);
+    this.el.setAttribute('aria-hidden','false');
+    this.swiper?.setProgress(0,0);
+    requestAnimationFrame(() => this.$close?.focus());
+  }
+  close() {
+    this.el.classList.remove(Gallery.CLASS.ACTIVE);
+    document.documentElement.classList.remove(Gallery.CLASS.GLOBAL_ACTIVE);
+    this.el.setAttribute('aria-hidden','true');
+  }
+  onKeyDown(e) {
+    if (!this.el.classList.contains(Gallery.CLASS.ACTIVE)) return;
+    if (e.key === 'Escape')     this.close();
+    if (e.key === 'ArrowLeft')  this.swiper?.slidePrev();
+    if (e.key === 'ArrowRight') this.swiper?.slideNext();
+  }
+}
+
+/* ── Scroll animations — IntersectionObserver ── */
+function initAnimations() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('is-inview');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.05, rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.u-anim-translate-y,.u-anim-img-mask,.u-anim-title').forEach(el => obs.observe(el));
+}
+
+/* ── Viewport sizes — port from app.js ── */
+function setViewportSizes() {
+  const vw = document.body.clientWidth * 0.01;
+  document.documentElement.style.setProperty('--vw', vw + 'px');
+  document.documentElement.style.setProperty('--svh', (window.innerHeight * 0.01) + 'px');
+}
+
+/* ── Smooth anchor scroll ── */
+function initAnchorScroll() {
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (!target) return;
+      e.preventDefault();
+      window.scrollTo({ top: target.getBoundingClientRect().top + scrollY - 45, behavior: 'smooth' });
+    });
+  });
+}
+
+/* ── INIT ── */
+window.addEventListener('load', () => {
+  setViewportSizes();
+  window.addEventListener('resize', setViewportSizes, { passive: true });
+
+  new ProjectAnchors().init();
+
+  const exploreEl = document.getElementById('explore-el');
+  if (exploreEl) new Explore(exploreEl).init();
+
+  new Gallery(document.getElementById('gallery')).init();
+
+  initAnimations();
+  initAnchorScroll();
+
+  /* Mirrors app.js: remove is-loading, add is-ready */
+  document.documentElement.classList.remove('is-loading');
+  document.documentElement.classList.add('is-ready');
+});
+</script>
 </body>
 </html>

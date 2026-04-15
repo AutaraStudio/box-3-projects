@@ -8,6 +8,8 @@
 
 import { defineField, defineType } from "sanity";
 
+import { TaggedMediaPicker } from "../../components/TaggedMediaPicker";
+
 export default defineType({
   name: "homePage",
   title: "Home Page",
@@ -34,10 +36,11 @@ export default defineType({
       name: "heroImage",
       title: "Hero background image",
       description:
-        "The full-width background image behind the hero heading. Use a high-resolution image (at least 2400px wide).",
+        "The full-width background image behind the hero heading. Click 'Pick from library' to browse tagged images, or use the native upload / Select below.",
       type: "image",
       group: "hero",
       options: { hotspot: true },
+      components: { input: TaggedMediaPicker },
       validation: (rule) => rule.required(),
       fields: [
         defineField({

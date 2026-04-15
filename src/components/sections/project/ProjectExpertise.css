@@ -1,0 +1,76 @@
+/* --------------------------------------------------------------------------
+   ProjectExpertise
+   --------------------------------------------------------------------------
+   Numbered list of expertise / service tags. Rule-separated rows, large
+   editorial type. data-theme="cream" provides the warm-paper backdrop.
+
+   All values flow through the token system — no hardcoded colours or
+   pixel values.
+   -------------------------------------------------------------------------- */
+
+.project-expertise {
+  padding-top: var(--section-space-md);
+  padding-bottom: var(--section-space-md);
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+}
+
+/* Header ------------------------------------------------------------------- */
+.project-expertise__header {
+  padding-bottom: var(--space-7);
+  border-bottom: var(--border-width) solid var(--theme-border);
+  margin-bottom: 0;
+}
+
+.project-expertise__heading {
+  margin: 0;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-h4);
+  letter-spacing: var(--letter-spacing-snug);
+  line-height: var(--line-height-snug);
+  color: var(--theme-text-muted);
+}
+
+/* List --------------------------------------------------------------------- */
+.project-expertise__list {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.project-expertise__item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--gap-6);
+  padding: var(--space-5) 0;
+  border-bottom: var(--border-width) solid var(--theme-border);
+  position: relative;
+}
+
+/* Number cell -------------------------------------------------------------- */
+.project-expertise__number {
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-text-xs);
+  letter-spacing: var(--letter-spacing-caps);
+  text-transform: uppercase;
+  color: var(--theme-text-muted);
+  flex-shrink: 0;
+  width: var(--space-5);
+}
+
+/* Title -------------------------------------------------------------------- */
+.project-expertise__title {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-h3);
+  letter-spacing: var(--letter-spacing-snug);
+  line-height: var(--line-height-none);
+  color: var(--theme-text);
+}
+
+/* Responsive --------------------------------------------------------------- */
+@media (max-width: 767px) {
+  .project-expertise__title {
+    font-size: var(--font-size-h4);
+  }
+}

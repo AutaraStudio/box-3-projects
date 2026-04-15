@@ -15,6 +15,9 @@
 
 import { defineField, defineType } from "sanity";
 
+import { TaggedMediaArrayPicker } from "../../components/TaggedMediaArrayPicker";
+import { TaggedMediaPicker } from "../../components/TaggedMediaPicker";
+
 export default defineType({
   name: "project",
   title: "Project",
@@ -97,10 +100,11 @@ export default defineType({
       name: "featuredImage",
       title: "Featured image",
       description:
-        "Main project image — shown in listings and at the top of the project page. Upload via Studio after initial setup.",
+        "Main project image — shown in listings and at the top of the project page. Click 'Pick from library' to browse tagged images, or use the native upload / Select below.",
       type: "image",
       group: "images",
       options: { hotspot: true },
+      components: { input: TaggedMediaPicker },
       fields: [
         defineField({
           name: "alt",
@@ -115,9 +119,10 @@ export default defineType({
       name: "additionalImages",
       title: "Additional images",
       description:
-        "Up to 10 further project images shown in the gallery",
+        "Project gallery images. Click 'Pick multiple from library' to select many tagged images at once. The native 'Add item' button still works for single picks or direct upload.",
       type: "array",
       group: "images",
+      components: { input: TaggedMediaArrayPicker },
       of: [
         {
           type: "image",
@@ -126,14 +131,13 @@ export default defineType({
             defineField({
               name: "alt",
               title: "Image description (for accessibility)",
-              description: "Describe this image for accessibility",
+              description:
+                "Optional — a short description used by screen readers. Recommended for accessibility but not required at upload time.",
               type: "string",
-              validation: (rule) => rule.required(),
             }),
           ],
         },
       ],
-      validation: (rule) => rule.max(10),
     }),
 
     /* ── Project Stats ────────────────────────────────────── */

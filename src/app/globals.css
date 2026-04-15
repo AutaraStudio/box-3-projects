@@ -538,6 +538,7 @@
   --theme-btn-primary-bg-hover: var(--color-rose-400);
   --theme-btn-primary-border: var(--color-black-500);
   --theme-btn-primary-border-hover: var(--color-rose-400);
+  --theme-btn-primary-bg-panel: var(--color-rose-300);
 
   /* Button — Secondary */
   --theme-btn-secondary-text: var(--color-charcoal-500);
@@ -546,6 +547,7 @@
   --theme-btn-secondary-bg-hover: var(--color-charcoal-500);
   --theme-btn-secondary-border: var(--color-charcoal-500);
   --theme-btn-secondary-border-hover: var(--color-charcoal-500);
+  --theme-btn-secondary-bg-panel: var(--color-charcoal-300);
 
   /* Links */
   --theme-link-text: var(--color-charcoal-500);
@@ -599,115 +601,10 @@
 
 /* --------------------------------------------------------------------------
    Theme: Dark
-   Character: Sophisticated, bold, deep charcoal
-   -------------------------------------------------------------------------- */
-[data-theme="dark"] {
-  /* Backgrounds */
-  --theme-bg: var(--color-charcoal-500);
-  --theme-bg-2: var(--color-charcoal-600);
-  --theme-bg-3: var(--color-charcoal-700);
-  --theme-bg-4: var(--color-black-500);
-  --theme-bg-card: var(--color-charcoal-600);
-  --theme-bg-card-hover: var(--color-charcoal-700);
-
-  /* Text */
-  --theme-text: var(--color-white-500);
-  --theme-text-muted: var(--color-white-700);
-  --theme-text-subtle: var(--color-grey-400);
-  --theme-text-inverse: var(--color-charcoal-500);
-  --theme-text-accent: var(--color-pink-500);
-
-  /* Borders */
-  --theme-border: var(--color-charcoal-400);
-  --theme-border-strong: var(--color-grey-600);
-  --theme-border-subtle: color-mix(in srgb, var(--color-white-500) 10%, transparent);
-
-  /* Accent */
-  --theme-accent: var(--color-pink-500);
-  --theme-accent-hover: var(--color-dusty-400);
-  --theme-accent-subtle: color-mix(in srgb, var(--color-pink-500) 15%, transparent);
-
-  /* SVG */
-  --theme-svg: var(--color-white-500);
-  --theme-svg-hover: var(--color-pink-500);
-  --theme-svg-muted: color-mix(in srgb, var(--color-white-500) 40%, transparent);
-
-  /* Selection */
-  --theme-selection-bg: var(--color-rose-500);
-  --theme-selection-text: var(--color-white-500);
-
-  /* Tags */
-  --theme-tag-bg: var(--color-charcoal-600);
-  --theme-tag-border: var(--color-charcoal-400);
-  --theme-tag-text: var(--color-pink-400);
-
-  /* Button — Primary */
-  --theme-btn-primary-text: var(--color-charcoal-500);
-  --theme-btn-primary-text-hover: var(--color-charcoal-500);
-  --theme-btn-primary-bg: var(--color-pink-500);
-  --theme-btn-primary-bg-hover: var(--color-pink-400);
-  --theme-btn-primary-border: var(--color-pink-500);
-  --theme-btn-primary-border-hover: var(--color-pink-400);
-
-  /* Button — Secondary */
-  --theme-btn-secondary-text: var(--color-white-500);
-  --theme-btn-secondary-text-hover: var(--color-charcoal-500);
-  --theme-btn-secondary-bg: var(--color-transparent);
-  --theme-btn-secondary-bg-hover: var(--color-white-500);
-  --theme-btn-secondary-border: var(--color-white-600);
-  --theme-btn-secondary-border-hover: var(--color-white-500);
-
-  /* Links */
-  --theme-link-text: var(--color-white-500);
-  --theme-link-border: var(--color-white-700);
-  --theme-link-text-hover: var(--color-pink-500);
-  --theme-link-border-hover: var(--color-pink-500);
-
-  /* Inputs */
-  --theme-input-bg: var(--color-charcoal-600);
-  --theme-input-border: var(--color-charcoal-400);
-  --theme-input-border-focus: var(--color-pink-500);
-  --theme-input-text: var(--color-white-500);
-  --theme-input-placeholder: var(--color-grey-500);
-
-  /* Misc */
-  --theme-overlay: color-mix(in srgb, var(--color-black-500) 55%, transparent);
-  --theme-shadow: color-mix(in srgb, var(--color-black-900) 30%, transparent);
-  --theme-focus: var(--color-pink-500);
-
-  /* Dither */
-  --theme-dither-ink: var(--color-rose-300);
-  --theme-dither-bg: var(--color-pink-500);
-
-  /* Nav */
-  --theme-nav-bg: var(--color-charcoal-500);
-  --theme-nav-text: var(--color-white-500);
-  --theme-nav-border: var(--color-charcoal-400);
-
-  /* Nav extended */
-  --theme-nav-accent: var(--color-pink-500);
-  --theme-nav-icon-bg: var(--color-pink-500);
-  --theme-nav-icon-text: var(--color-charcoal-500);
-
-  /* Extended palette */
-  --theme-bg-card-2:        var(--color-black-500);
-  --theme-bg-surface:       var(--color-charcoal-400);
-  --theme-accent-2:         var(--color-dusty-400);
-  --theme-accent-3:         color-mix(in srgb, var(--color-pink-500) 12%, transparent);
-  --theme-text-on-accent:   var(--color-charcoal-500);
-  --theme-border-accent:    var(--color-pink-500);
-  --theme-svg-accent:       var(--color-dusty-400);
-  --theme-highlight:        color-mix(in srgb, var(--color-pink-500) 8%, transparent);
-  --theme-highlight-text:   var(--color-pink-400);
-}
-
-
-/* --------------------------------------------------------------------------
-   Theme: Brand
    Character: Deep charcoal base, pink as the hero colour — bold and
    distinctive. The signature dark brand aesthetic.
    -------------------------------------------------------------------------- */
-[data-theme="brand"] {
+[data-theme="dark"] {
   /* Backgrounds */
   --theme-bg: var(--color-charcoal-500);
   --theme-bg-2: var(--color-charcoal-600);
@@ -754,6 +651,7 @@
   --theme-btn-primary-bg-hover: var(--color-pink-400);
   --theme-btn-primary-border: var(--color-pink-500);
   --theme-btn-primary-border-hover: var(--color-pink-400);
+  --theme-btn-primary-bg-panel: var(--color-rose-300);
 
   /* Button — Secondary */
   --theme-btn-secondary-text: var(--color-pink-500);
@@ -762,6 +660,7 @@
   --theme-btn-secondary-bg-hover: var(--color-pink-500);
   --theme-btn-secondary-border: color-mix(in srgb, var(--color-pink-500) 50%, transparent);
   --theme-btn-secondary-border-hover: var(--color-pink-500);
+  --theme-btn-secondary-bg-panel: var(--color-charcoal-300);
 
   /* Links */
   --theme-link-text: var(--color-pink-500);
@@ -814,10 +713,10 @@
 
 
 /* --------------------------------------------------------------------------
-   Theme: Pink
+   Theme: Brand
    Character: Brand-forward, blush, feminine
    -------------------------------------------------------------------------- */
-[data-theme="pink"] {
+[data-theme="brand"] {
   /* Backgrounds */
   --theme-bg: var(--color-pink-500);
   --theme-bg-2: var(--color-pink-400);
@@ -864,6 +763,7 @@
   --theme-btn-primary-bg-hover: var(--color-rose-500);
   --theme-btn-primary-border: var(--color-charcoal-500);
   --theme-btn-primary-border-hover: var(--color-rose-500);
+  --theme-btn-primary-bg-panel: var(--color-rose-300);
 
   /* Button — Secondary */
   --theme-btn-secondary-text: var(--color-charcoal-500);
@@ -872,6 +772,7 @@
   --theme-btn-secondary-bg-hover: var(--color-charcoal-500);
   --theme-btn-secondary-border: var(--color-charcoal-500);
   --theme-btn-secondary-border-hover: var(--color-charcoal-500);
+  --theme-btn-secondary-bg-panel: var(--color-charcoal-300);
 
   /* Links */
   --theme-link-text: var(--color-charcoal-500);
@@ -969,6 +870,7 @@
   --theme-btn-primary-bg-hover: var(--color-rose-500);
   --theme-btn-primary-border: var(--color-charcoal-500);
   --theme-btn-primary-border-hover: var(--color-rose-500);
+  --theme-btn-primary-bg-panel: var(--color-rose-300);
 
   /* Button — Secondary */
   --theme-btn-secondary-text: var(--color-charcoal-500);
@@ -977,6 +879,7 @@
   --theme-btn-secondary-bg-hover: var(--color-charcoal-500);
   --theme-btn-secondary-border: var(--color-charcoal-400);
   --theme-btn-secondary-border-hover: var(--color-charcoal-500);
+  --theme-btn-secondary-bg-panel: var(--color-charcoal-300);
 
   /* Links */
   --theme-link-text: var(--color-charcoal-500);
@@ -1074,6 +977,7 @@
   --theme-btn-primary-bg-hover: var(--color-pink-500);
   --theme-btn-primary-border: var(--color-white-500);
   --theme-btn-primary-border-hover: var(--color-pink-500);
+  --theme-btn-primary-bg-panel: var(--color-pink-400);
 
   /* Button — Secondary */
   --theme-btn-secondary-text: var(--color-white-500);
@@ -1082,6 +986,7 @@
   --theme-btn-secondary-bg-hover: var(--color-white-500);
   --theme-btn-secondary-border: color-mix(in srgb, var(--color-white-500) 50%, transparent);
   --theme-btn-secondary-border-hover: var(--color-white-500);
+  --theme-btn-secondary-bg-panel: var(--color-white-600);
 
   /* Links */
   --theme-link-text: var(--color-white-500);
@@ -1179,6 +1084,7 @@
   --theme-btn-primary-bg-hover: var(--color-rose-500);
   --theme-btn-primary-border: var(--color-charcoal-500);
   --theme-btn-primary-border-hover: var(--color-rose-500);
+  --theme-btn-primary-bg-panel: var(--color-rose-400);
 
   /* Button — Secondary */
   --theme-btn-secondary-text: var(--color-charcoal-500);
@@ -1187,6 +1093,7 @@
   --theme-btn-secondary-bg-hover: var(--color-charcoal-500);
   --theme-btn-secondary-border: var(--color-charcoal-400);
   --theme-btn-secondary-border-hover: var(--color-charcoal-500);
+  --theme-btn-secondary-bg-panel: var(--color-charcoal-300);
 
   /* Links */
   --theme-link-text: var(--color-charcoal-500);
@@ -1284,6 +1191,7 @@
   --theme-btn-primary-bg-hover: var(--color-rose-500);
   --theme-btn-primary-border: var(--color-charcoal-500);
   --theme-btn-primary-border-hover: var(--color-rose-500);
+  --theme-btn-primary-bg-panel: var(--color-rose-400);
 
   /* Button — Secondary */
   --theme-btn-secondary-text: var(--color-charcoal-500);
@@ -1292,6 +1200,7 @@
   --theme-btn-secondary-bg-hover: var(--color-charcoal-500);
   --theme-btn-secondary-border: var(--color-charcoal-400);
   --theme-btn-secondary-border-hover: var(--color-charcoal-500);
+  --theme-btn-secondary-bg-panel: var(--color-charcoal-300);
 
   /* Links */
   --theme-link-text: var(--color-charcoal-500);
@@ -1389,6 +1298,7 @@
   --theme-btn-primary-bg-hover: var(--color-rose-500);
   --theme-btn-primary-border: var(--color-charcoal-500);
   --theme-btn-primary-border-hover: var(--color-rose-500);
+  --theme-btn-primary-bg-panel: var(--color-rose-400);
 
   /* Button — Secondary */
   --theme-btn-secondary-text: var(--color-charcoal-500);
@@ -1397,6 +1307,7 @@
   --theme-btn-secondary-bg-hover: var(--color-charcoal-500);
   --theme-btn-secondary-border: var(--color-charcoal-400);
   --theme-btn-secondary-border-hover: var(--color-charcoal-500);
+  --theme-btn-secondary-bg-panel: var(--color-charcoal-300);
 
   /* Links */
   --theme-link-text: var(--color-charcoal-500);

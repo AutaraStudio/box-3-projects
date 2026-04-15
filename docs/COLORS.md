@@ -133,16 +133,16 @@ Never applied to individual child elements.
 
 ### Available Themes
 
-| Theme  | Base         | Character                     |
-|--------|--------------|-------------------------------|
-| light  | Warm white   | Default — clean and open      |
-| dark   | Deep charcoal| Sophisticated and bold        |
-| pink   | Blush pink   | Brand-forward                 |
-| cream  | Warm cream   | Soft and editorial            |
-| rose   | Muted rose   | Intimate and warm             |
-| mauve  | Mauve        | Gentle contrast               |
-| sage   | Soft sage    | Fresh and organic             |
-| sand   | Warm sand    | Earthy and calm               |
+| Theme  | Base          | Character                          |
+|--------|---------------|------------------------------------|
+| light  | Warm white    | Default — clean and open           |
+| dark   | Deep charcoal | Charcoal base, pink as hero colour |
+| brand  | Blush pink    | Brand-forward, feminine            |
+| cream  | Warm cream    | Soft and editorial                 |
+| rose   | Muted rose    | Intimate and warm                  |
+| mauve  | Mauve         | Gentle contrast                    |
+| sage   | Soft sage     | Fresh and organic                  |
+| sand   | Warm sand     | Earthy and calm                    |
 
 ## color-mix() Usage
 Used for transparent variants — borders, overlays, muted SVGs.

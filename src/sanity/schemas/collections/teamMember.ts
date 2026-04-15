@@ -8,6 +8,8 @@
 
 import { defineField, defineType } from "sanity";
 
+import { TaggedMediaPicker } from "../../components/TaggedMediaPicker";
+
 export default defineType({
   name: "teamMember",
   title: "Team Members",
@@ -43,8 +45,9 @@ export default defineType({
       title: "Photo",
       type: "image",
       options: { hotspot: true },
+      components: { input: TaggedMediaPicker },
       description:
-        "Professional headshot. Portrait orientation recommended.",
+        "Professional headshot. Click 'Pick from library' to browse tagged images, or use the native upload / Select below.",
     }),
     defineField({
       name: "order",

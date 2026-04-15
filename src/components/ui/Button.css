@@ -1,0 +1,203 @@
+/* --------------------------------------------------------------------------
+   Button
+   --------------------------------------------------------------------------
+   Theme-aware via --theme-btn-* tokens → local --btn-* variables set on
+   the variant modifier classes. All colour rules below reference the
+   local vars only, so the button never needs to know the active theme.
+
+   Two-stage hover:
+     .btn__panel wipes up first (--btn-bg-panel)
+     .btn__hover wipes up after a brief delay (--btn-bg-hover)
+   Reverse on un-hover — panel lingers so the exit mirrors the entrance.
+
+   Char-slide label hover is handled globally via globals.css rules that
+   target `button:hover [data-char-hover] span` and
+   `a:hover [data-char-hover] span`. Do not duplicate that here.
+   -------------------------------------------------------------------------- */
+
+/* Variant — Primary -------------------------------------------------------- */
+.btn--primary {
+  --btn-bg: var(--theme-btn-primary-bg);
+  --btn-bg-panel: var(--theme-btn-primary-bg-panel);
+  --btn-bg-hover: var(--theme-btn-primary-bg-hover);
+  --btn-text: var(--theme-btn-primary-text);
+  --btn-text-hover: var(--theme-btn-primary-text-hover);
+  --btn-border: var(--theme-btn-primary-border);
+  --btn-border-hover: var(--theme-btn-primary-border-hover);
+}
+
+/* Variant — Secondary ------------------------------------------------------ */
+.btn--secondary {
+  --btn-bg: var(--theme-btn-secondary-bg);
+  --btn-bg-panel: var(--theme-btn-secondary-bg-panel);
+  --btn-bg-hover: var(--theme-btn-secondary-bg-hover);
+  --btn-text: var(--theme-btn-secondary-text);
+  --btn-text-hover: var(--theme-btn-secondary-text-hover);
+  --btn-border: var(--theme-btn-secondary-border);
+  --btn-border-hover: var(--theme-btn-secondary-border-hover);
+}
+
+/* Base --------------------------------------------------------------------- */
+.btn {
+  position: relative;
+  display: inline-flex;
+  overflow: hidden;
+  border: var(--border-width) solid var(--btn-border);
+  transition: border-color var(--animation-gentle);
+  cursor: pointer;
+  text-decoration: none;
+  background: transparent;
+  /* Reset native button chrome so <a> and <button> render identically. */
+  appearance: none;
+  font-family: inherit;
+}
+
+.btn:hover {
+  border-color: var(--btn-border-hover);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--theme-focus);
+  outline-offset: 3px;
+}
+
+/* Full width --------------------------------------------------------------- */
+.btn--full,
+.btn--full .btn__inner {
+  width: 100%;
+}
+
+/* Inner wrapper ------------------------------------------------------------ */
+.btn__inner {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: var(--gap-3);
+  width: 100%;
+  height: 100%;
+}
+
+/* Layer 1 — resting background -------------------------------------------- */
+.btn__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-color: var(--btn-bg);
+}
+
+/* Layer 2 — flash panel (wipes first) ------------------------------------- */
+.btn__panel {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-color: var(--btn-bg-panel);
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path var(--animation-brand);
+}
+
+.btn:hover .btn__panel {
+  clip-path: inset(0% 0 0 0);
+  transition-delay: 0s;
+}
+
+.btn:not(:hover) .btn__panel {
+  transition-delay: var(--duration-fast);
+}
+
+/* Layer 3 — final hover colour (arrives after panel) ---------------------- */
+.btn__hover {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background-color: var(--btn-bg-hover);
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path var(--animation-brand);
+}
+
+.btn:hover .btn__hover {
+  clip-path: inset(0% 0 0 0);
+  transition-delay: var(--duration-fast);
+}
+
+.btn:not(:hover) .btn__hover {
+  transition-delay: 0s;
+}
+
+/* Label -------------------------------------------------------------------- */
+.btn__label {
+  position: relative;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-primary);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-caps);
+  line-height: var(--line-height-none);
+  color: var(--btn-text);
+  transition: color var(--animation-gentle);
+}
+
+.btn:hover .btn__label {
+  color: var(--btn-text-hover);
+}
+
+/* Icon --------------------------------------------------------------------- */
+.btn__icon {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  color: var(--btn-text);
+  transition: color var(--animation-gentle);
+}
+
+.btn:hover .btn__icon {
+  color: var(--btn-text-hover);
+}
+
+/* Sizes -------------------------------------------------------------------- */
+.btn--sm {
+  height: var(--space-6);
+  padding-inline: var(--space-4);
+}
+
+.btn--md {
+  height: var(--space-7);
+  padding-inline: var(--space-5);
+}
+
+.btn--lg {
+  height: var(--space-8);
+  padding-inline: var(--space-6);
+}
+
+.btn--xl {
+  height: var(--space-9);
+  padding-inline: var(--space-7);
+}
+
+.btn--sm .btn__label {
+  font-size: var(--font-size-text-xs);
+}
+
+.btn--md .btn__label {
+  font-size: var(--font-size-text-sm);
+}
+
+.btn--lg .btn__label {
+  font-size: var(--font-size-text-sm);
+}
+
+.btn--xl .btn__label {
+  font-size: var(--font-size-text-md);
+}
+
+/* Disabled ----------------------------------------------------------------- */
+.btn--disabled,
+.btn[disabled] {
+  opacity: 0.4;
+  pointer-events: none;
+  cursor: not-allowed;
+}

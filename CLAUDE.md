@@ -101,7 +101,7 @@ trace back to the token system.
 - All colors reference CSS custom property tokens only
 - Primitive palette lives in globals.css (--color-*)
 - Semantic tokens live in globals.css (--theme-*)
-- 8 themes available: light, dark, pink, cream, rose, mauve, sage, sand
+- 8 themes available: light, dark, brand, cream, rose, mauve, sage, sand
 - Themes applied via data-theme="[name]" on outer section wrapper only
 - Never apply data-theme to individual child elements unless explicitly instructed
 - color-mix(in srgb, ...) for transparent variants — never rgba() with hardcoded values
@@ -150,6 +150,45 @@ trace back to the token system.
 - Schema is folder-based and intuitive for non-technical clients
 - Field names and descriptions written in plain English
 - If schema structure is ambiguous — ask before building
+
+### Media & Images
+
+The site's entire image pipeline is tag-based. See `/docs/SANITY.md`
+"Media & Images" for the full spec. The rules that matter during
+implementation:
+
+- **Library**: `sanity-plugin-media` is installed and registered in
+  `src/sanity/lib/studio.ts`. Assets live as native `sanity.imageAsset`
+  docs; organisation is by `media.tag` references at `opt.media.tags`.
+- **Tag convention**: kebab-case slugs (`carlton-gardens`,
+  `team-members`). Matches the tag slugs the client has already
+  populated. Any new uploader must slugify with the same rules.
+- **Bulk Upload tool**: `src/sanity/components/BulkTaggedUploaderTool.tsx`,
+  registered as a Studio top-nav tool. Pre-selects a tag, then
+  uploads files through a bounded-concurrency pool of **4** (anything
+  higher stalls silently at Sanity's asset-endpoint throttle).
+- **Pickers on image fields**:
+    - `TaggedMediaPicker` for single-value image fields
+    - `TaggedMediaArrayPicker` for image array fields
+  Both sit **above** the native input as an opt-in "Pick from library"
+  button — native upload / Select still works underneath as a fallback.
+  Every new image field on any schema must wire one of these via
+  `components: { input: ... }`.
+- **Never upload inside a consumer document** (project, teamMember,
+  homePage, etc.). Uploads flow through the Bulk Upload tool or the
+  Media browser. Consumer fields hold references only.
+- **Don't change the `opt.media.tags` patch shape.** It must stay
+  compatible with `sanity-plugin-media`'s writer.
+- **`urlFor()`** pre-applies `.auto("format").quality(80)`. Callers
+  don't need to repeat these; they can override if needed.
+
+Operational scripts live in `/scripts` and run via `npx tsx`:
+- `delete-projects.ts` — wipe all `project` docs
+- `list-tags.ts` — list `media.tag` names with asset counts
+- `populate-projects.ts` — destructive rebuild of project /
+  projectCategory / expertise content; preserves `teamMember` docs
+  and round-robins them across projects; matches tag slugs to
+  project titles and pulls 1 featured + up to 15 gallery images.
 
 ### Sanity — Production Readiness Rule
 
@@ -237,6 +276,7 @@ src/
   config/                          # animations.config.ts and other config
   styles/                          # Additional global stylesheets
   sanity/
+    components/                    # Studio input components (TaggedMediaPicker, TaggedMediaArrayPicker, BulkTaggedUploaderTool)
     schemas/
       pages/                       # Page documents (homePage, etc.)
       sections/                    # Reusable section schemas
@@ -244,7 +284,13 @@ src/
       globals/                     # Nav, footer, site settings
       components/                  # Shared component schemas
     queries/                       # GROQ queries — one file per page/type
-    lib/                           # Sanity client, image builder, fetch helper
+    lib/                           # Sanity client, image builder, fetch helper, studio config, structure
+
+scripts/
+  seed-sanity.ts                   # Idempotent singletons + baseline content
+  delete-projects.ts               # Wipe all project docs
+  list-tags.ts                     # List media.tag names + asset counts
+  populate-projects.ts             # Destructive rebuild of project content
 
 docs/                              # Project documentation (read these for full context)
   STACK.md
@@ -309,7 +355,7 @@ Add these to any element and animations trigger automatically:
 
 ### Theming — Ready To Use
 - Add data-theme="[name]" to any outer section wrapper
-- Available: light, dark, pink, cream, rose, mauve, sage, sand
+- Available: light, dark, brand, cream, rose, mauve, sage, sand
 - Default theme: light (set on body in (site)/layout.tsx)
 
 ### Utility
@@ -360,6 +406,14 @@ Add these to any element and animations trigger automatically:
   - Footer.css — 12-column grid, sub-column dividers
   - siteFooter schema — src/sanity/schemas/globals/siteFooter.ts
   - FOOTER_QUERY — src/sanity/queries/siteFooter.ts
+- Media pipeline — complete ✅
+  - sanity-plugin-media registered in src/sanity/lib/studio.ts
+  - BulkTaggedUploaderTool — top-nav Studio tool for pre-tagged bulk upload
+  - TaggedMediaPicker / TaggedMediaArrayPicker — tag-filtered pickers on
+    every image field (homePage.heroImage, project.featuredImage,
+    project.additionalImages, teamMember.image)
+  - urlFor() applies auto("format") + quality(80) defaults
+  - Operational scripts: delete-projects, list-tags, populate-projects
 - All other pages/sections — pending ⏳
 
 ## Upcoming Next Steps

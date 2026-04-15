@@ -1,0 +1,127 @@
+/* --------------------------------------------------------------------------
+   RelatedProjects
+   --------------------------------------------------------------------------
+   Grid of up to five related project cards, followed by a secondary
+   "View All Projects" button aligned right.
+
+   Uses the global [data-overlay="medium"] rule from globals.css for
+   the per-card overlay wash. On hover the overlay deepens via
+   color-mix — no hardcoded rgba values.
+
+   All values flow through the token system.
+   -------------------------------------------------------------------------- */
+
+.related-projects {
+  padding-top: var(--section-space-lg);
+  padding-bottom: var(--section-space-lg);
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+}
+
+/* Header ------------------------------------------------------------------- */
+.related-projects__header {
+  padding-bottom: var(--space-7);
+  border-bottom: var(--border-width) solid var(--theme-border);
+  margin-bottom: var(--space-8);
+}
+
+.related-projects__heading {
+  margin: 0;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-h4);
+  letter-spacing: var(--letter-spacing-snug);
+  line-height: var(--line-height-snug);
+  color: var(--theme-text-muted);
+}
+
+/* Grid --------------------------------------------------------------------- */
+.related-projects__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--gap-5);
+}
+
+@media (max-width: 991px) {
+  .related-projects__list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .related-projects__list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Footer ------------------------------------------------------------------- */
+.related-projects__footer {
+  padding-top: var(--space-9);
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* --------------------------------------------------------------------------
+   Project card
+   -------------------------------------------------------------------------- */
+
+.project-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.project-card__media {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background-color: var(--theme-bg-2);
+  margin-bottom: var(--space-3);
+}
+
+.project-card__media-inner {
+  position: absolute;
+  inset: 0;
+}
+
+.project-card__img {
+  transition: var(--transition-image);
+}
+
+.project-card:hover .project-card__img {
+  transform: scale(1.03);
+}
+
+.project-card__placeholder {
+  position: absolute;
+  inset: 0;
+  background-color: var(--theme-bg-2);
+}
+
+/* Hover overlay deepens — color-mix only, no hardcoded rgba. */
+.project-card:hover [data-overlay="medium"] {
+  background-color: color-mix(
+    in srgb,
+    var(--color-black-900) 55%,
+    transparent
+  );
+}
+
+/* Info block --------------------------------------------------------------- */
+.project-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.project-card__category,
+.project-card__title,
+.project-card__meta {
+  margin: 0;
+}
+
+.project-card__title {
+  margin-top: var(--space-1);
+}

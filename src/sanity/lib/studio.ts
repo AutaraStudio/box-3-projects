@@ -7,7 +7,9 @@
 
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
+import { media } from "sanity-plugin-media";
 
+import BulkTaggedUploaderTool from "../components/BulkTaggedUploaderTool";
 import { schemaTypes } from "../schemas";
 import { projectId, dataset } from "./client";
 import { structure } from "./structure";
@@ -27,10 +29,19 @@ export default defineConfig({
   projectId,
   dataset,
   basePath: "/studio",
-  plugins: [structureTool({ structure })],
+  plugins: [structureTool({ structure }), media()],
   schema: {
     types: schemaTypes,
   },
+  /* Custom Studio tools — appear in the top nav alongside Structure / Media. */
+  tools: (prev) => [
+    ...prev,
+    {
+      name: "bulk-upload",
+      title: "Bulk Upload",
+      component: BulkTaggedUploaderTool,
+    },
+  ],
   document: {
     /* Remove "duplicate" and "delete" actions on singletons. */
     actions: (input, context) =>

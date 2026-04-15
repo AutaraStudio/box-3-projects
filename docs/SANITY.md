@@ -212,3 +212,135 @@ await client
 4. Create a new token with Editor permissions
 5. Add to `.env.local` as `SANITY_API_TOKEN=your-token-here`
 6. Never commit this token to version control
+
+## Media & Images
+
+### Architecture at a glance
+
+- **Library**: the `sanity-plugin-media` plugin (flat Media browser at
+  the top of Studio). Assets are stored as native `sanity.imageAsset`
+  documents; organisation is **tag-based**, no custom folder schema.
+- **Tags**: `media.tag` documents created automatically. Each asset
+  stores its tag references at `opt.media.tags` (an array of
+  `{_key, _ref, _type: "reference", _weak: true}`).
+- **Tag naming convention**: kebab-case, lower-case, project-oriented —
+  e.g. `carlton-gardens`, `cleveland-house`, `team-members`.
+  The Bulk Upload tool auto-slugifies any free-text tag name to this
+  format on create (`Project Oak House` → `project-oak-house`).
+- **Consumer docs** (project, teamMember, homePage, etc.) only hold
+  references to existing library assets via custom picker components —
+  they do not own the upload flow.
+
+### Bulk Upload tool
+
+File: `src/sanity/components/BulkTaggedUploaderTool.tsx`
+Registered as a Studio tool in `src/sanity/lib/studio.ts` — appears in
+the top nav next to Structure, Media, Releases.
+
+Flow the client sees:
+1. Pick an existing `media.tag` from the dropdown — or type a new
+   label and click "Create tag" (slugified on save).
+2. Drag a folder (or multi-select files) onto the drop zone.
+3. Every uploaded asset is patched with the chosen tag in one go;
+   progress counter shows "Uploading & tagging N of M…".
+
+Implementation notes:
+- Uploads run through a **bounded-concurrency pool of 4** — higher
+  parallelism hits Sanity's asset-endpoint throttle and stalls
+  silently at ~25. Do not increase without testing.
+- The patch shape matches what `sanity-plugin-media` writes when
+  tagging manually — assets tagged via this tool are indistinguishable
+  from manually tagged ones in the Media browser.
+
+### Tagged pickers (consumer-side)
+
+Two custom input components replace the native image pickers on every
+image field across the site. Both read from the library filtered by
+tag, so the client's workflow is always "upload + tag, then pick by
+tag" — never "re-upload per field".
+
+| Component | File | Used on |
+|---|---|---|
+| `TaggedMediaPicker` | `src/sanity/components/TaggedMediaPicker.tsx` | single-value image fields |
+| `TaggedMediaArrayPicker` | `src/sanity/components/TaggedMediaArrayPicker.tsx` | image array fields |
+
+Wire on any image field by opting in:
+
+```ts
+defineField({
+  name: "heroImage",
+  type: "image",
+  components: { input: TaggedMediaPicker },
+  // fields (alt), options (hotspot), etc. stay normal
+}),
+
+defineField({
+  name: "additionalImages",
+  type: "array",
+  of: [{ type: "image", fields: [/* alt */] }],
+  components: { input: TaggedMediaArrayPicker },
+}),
+```
+
+Both pickers:
+- Show a "Pick from library" / "Pick multiple from library" button
+  **above** the default input — the native upload / Select flow stays
+  underneath as a fallback.
+- Open a dialog with a tag dropdown (sourced from all `media.tag`
+  docs) and a thumbnail grid of tagged assets.
+- Set the field via a standard `set`/`setIfMissing` patch with the
+  asset reference — no custom image asset shape.
+
+Currently wired on:
+- `homePage.heroImage`
+- `project.featuredImage`
+- `project.additionalImages`
+- `teamMember.image`
+
+### Image URL defaults
+
+`src/sanity/lib/image.ts` exposes `urlFor(source)` which pre-applies
+`.auto("format").quality(80)` on every call, so every caller gets
+AVIF/WebP delivery + sensible compression without repeating it.
+Callers can still chain `.quality(95)` etc. to override.
+
+Upload-time compression: none — the client uploads originals; the
+Sanity CDN serves resized/re-encoded versions per URL parameters.
+Clients do not need to pre-compress. Image field descriptions reflect
+this so the client is reassured they can upload large originals.
+
+### Scripts
+
+One-off operational scripts for project content lifecycle live in
+`/scripts`. Each loads `.env.local` via `dotenv` and uses
+`SANITY_API_TOKEN` (Editor permissions).
+
+| Script | Purpose |
+|---|---|
+| `scripts/seed-sanity.ts` | Singletons + baseline content (idempotent, `npm run seed`). |
+| `scripts/delete-projects.ts` | Wipes every `project` document (drafts + published). |
+| `scripts/list-tags.ts` | Prints every `media.tag` with the count of assets referencing it. |
+| `scripts/populate-projects.ts` | Deletes projects / categories / expertise and rebuilds; leaves teamMember docs alone and round-robins them; matches tag slugs to project titles and pulls 1 featured + up to 15 gallery images per project. |
+
+All scripts are run with `npx tsx scripts/<name>.ts`. `populate-projects.ts`
+is destructive to project / projectCategory / expertise content —
+re-run deliberately, not casually.
+
+### Rules for new image work
+
+1. **Never upload inside a consumer document.** Uploads go through
+   the Bulk Upload tool or the Media browser; consumer fields only
+   reference tagged library assets.
+2. **Always wire image fields to the Tagged pickers.** New image
+   fields on any schema must opt into `TaggedMediaPicker` (single)
+   or `TaggedMediaArrayPicker` (array) unless there's a written
+   reason not to.
+3. **Keep the concurrency cap at 4** in any bulk-asset script or
+   component that talks to the Sanity asset endpoint.
+4. **Don't change the `opt.media.tags` shape.** It must stay
+   compatible with `sanity-plugin-media`'s writer — otherwise the
+   Media browser stops showing those tags on those assets.
+5. **Tag slugs stay kebab-case.** If you build a new uploader flow,
+   slugify user input with the same rules as
+   `BulkTaggedUploaderTool.slugifyTag` (`[^a-z0-9]+` → `-`, trim
+   leading/trailing `-`).

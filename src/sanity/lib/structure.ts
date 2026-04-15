@@ -22,6 +22,10 @@ const SINGLETONS = [
   "siteFooter",
 ];
 
+/** Document types hidden from the generic "everything else" list —
+ *  singletons are already surfaced under Site Settings / Pages. */
+const HIDDEN_FROM_GENERIC = new Set<string>(SINGLETONS);
+
 export const structure: StructureResolver = (S) =>
   S.list()
     .title("Content")
@@ -105,6 +109,6 @@ export const structure: StructureResolver = (S) =>
 
       /* ── Everything else (safety net for future types) ───── */
       ...S.documentTypeListItems().filter(
-        (item) => !SINGLETONS.includes(item.getId() ?? ""),
+        (item) => !HIDDEN_FROM_GENERIC.has(item.getId() ?? ""),
       ),
     ]);

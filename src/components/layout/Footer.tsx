@@ -8,7 +8,7 @@
  * Full-width hairline divider + copyright line at the bottom.
  *
  * All content from props (Sanity) — zero hardcoded strings.
- * Theme-aware via data-theme="brand" on the footer element.
+ * Theme-aware via data-theme="dark" on the footer element.
  * Server component — link hover is handled globally by
  * CharHoverObserver + CSS.
  */
@@ -58,8 +58,8 @@ export default function Footer({
 }: FooterProps) {
   return (
     <footer
-      data-theme="brand"
-      data-nav-theme="brand"
+      data-theme="dark"
+      data-nav-theme="dark"
       className="footer-root"
     >
       <div className="container">

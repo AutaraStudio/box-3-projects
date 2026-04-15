@@ -186,8 +186,8 @@ export default function PartnersSection({ partners }: PartnersProps) {
   return (
     <section
       ref={sectionRef}
-      data-theme="brand"
-      data-nav-theme="brand"
+      data-theme="dark"
+      data-nav-theme="dark"
       className="bg-[var(--theme-bg)] overflow-hidden"
       style={{
         paddingTop: "var(--section-space-md)",
