@@ -38,8 +38,11 @@ const DEFAULT_FOOTER: SiteFooterData = {
     { label: "Terms & Conditions", href: "/terms-and-conditions", _key: "f-terms" },
   ],
   phone: "+44 20 0000 0000",
+  email: "hello@box3projects.co.uk",
+  address: "Studio 4, 12 Fitzroy Square\nLondon\nW1T 6EQ",
   stayInTouchLabel: "Stay In Touch",
   newsletterPlaceholder: "Your email...",
+  contactHeading: "Find Us",
   madeByLabel: "Made by Autara Studio",
   madeByUrl: "#",
   copyright: "\u00A9 2026. Box 3 Projects Ltd. All Rights Reserved.",
@@ -106,8 +109,11 @@ export default async function RootLayout({
           socialLinks={footer.socialLinks}
           legalLinks={footer.legalLinks}
           phone={footer.phone}
+          email={footer.email}
+          address={footer.address}
           stayInTouchLabel={footer.stayInTouchLabel}
           newsletterPlaceholder={footer.newsletterPlaceholder}
+          contactHeading={footer.contactHeading}
           madeByLabel={footer.madeByLabel}
           madeByUrl={footer.madeByUrl}
           copyright={footer.copyright}

@@ -125,7 +125,6 @@ export default function HomeHero({
       {/* --- Dither Background Image --- */}
       <div
         data-dither=""
-        data-dither-texture=""
         className="absolute inset-0 h-full w-full"
       >
         {imageUrl && (

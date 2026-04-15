@@ -41,3 +41,12 @@ export interface PartnersData {
   sectionLabel: string;
   partners: PartnerItem[];
 }
+
+/** A partner with its logo URL resolved to inline SVG markup.
+ *  Produced server-side in page.tsx before passing to the
+ *  client-side PartnersSection marquee component. */
+export interface ResolvedPartner {
+  _key: string;
+  name: string;
+  svgContent: string;
+}

@@ -19,6 +19,7 @@ import AnimationProvider from "./AnimationProvider";
 import SplitTextObserver from "./SplitTextObserver";
 import LineRevealObserver from "./LineRevealObserver";
 import NavThemeObserver from "./NavThemeObserver";
+import CharHoverObserver from "./CharHoverObserver";
 import HeroDitherProvider from "./HeroDitherProvider";
 
 interface ProvidersProps {
@@ -32,7 +33,9 @@ export default function Providers({ children }: ProvidersProps) {
         <SplitTextObserver>
           <LineRevealObserver>
             <NavThemeObserver>
-              <HeroDitherProvider>{children}</HeroDitherProvider>
+              <CharHoverObserver>
+                <HeroDitherProvider>{children}</HeroDitherProvider>
+              </CharHoverObserver>
             </NavThemeObserver>
           </LineRevealObserver>
         </SplitTextObserver>

@@ -112,6 +112,17 @@ Never applied to individual child elements.
 - `--theme-nav-text`
 - `--theme-nav-border`
 
+#### Extended Palette
+- `--theme-bg-card-2` — second card background variant
+- `--theme-bg-surface` — raised surface / panel tone
+- `--theme-accent-2` — second accent for visual variety
+- `--theme-accent-3` — tertiary accent, subtle tint
+- `--theme-text-on-accent` — text colour on accent backgrounds
+- `--theme-border-accent` — accent-coloured border
+- `--theme-svg-accent` — secondary SVG colour
+- `--theme-highlight` — wash colour for hovers and selections
+- `--theme-highlight-text` — text colour when on highlight
+
 ### Available Themes
 
 | Theme  | Base         | Character                     |

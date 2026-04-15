@@ -35,8 +35,11 @@ export const FOOTER_QUERY = groq`
       href
     },
     phone,
+    email,
+    address,
     stayInTouchLabel,
     newsletterPlaceholder,
+    contactHeading,
     madeByLabel,
     madeByUrl,
     copyright
@@ -58,8 +61,11 @@ export interface SiteFooterData {
   socialLinks: FooterLink[];
   legalLinks: FooterLink[];
   phone: string;
+  email: string;
+  address: string;
   stayInTouchLabel: string;
   newsletterPlaceholder: string;
+  contactHeading: string;
   madeByLabel: string;
   madeByUrl: string;
   copyright: string;

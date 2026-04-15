@@ -1,136 +1,81 @@
 /**
  * PartnersSection
  * ===============
- * Grid of partner / brand logos. Fully prop-based — all content
- * from Sanity. Handles any number of partners (1 to unlimited)
- * without layout regressions.
+ * Infinite horizontal marquee of partner / brand logos rendered
+ * as a 2-row checkerboard strip scrolling left to right forever.
  *
- * Server component — SVG content is fetched server-side so that
- * currentColor can be controlled via CSS. An <img> tag cannot
- * inherit CSS color, so the SVG must be inlined in the DOM.
+ * Row 1: logo, empty, logo, logo, empty, logo
+ * Row 2: empty, logo, logo, empty, logo, logo
  *
- * No GSAP / interaction logic in this file — structure + CSS only.
- * Animations are added in a follow-up task.
+ * A single "panel" is one 6×2 = 12-cell checkerboard. The track
+ * contains three panels so the GSAP modulo modifier can wrap x
+ * seamlessly at every panel boundary.
+ *
+ * Scroll-direction aware — scroll up flips the marquee timeScale
+ * so the motion feels tied to reading direction. A gentle parallax
+ * also drifts the whole scroll wrapper horizontally on page scroll.
+ *
+ * This is a client component: GSAP runs in the browser only.
+ * SVG markup is fetched + sanitised server-side in page.tsx
+ * and passed down as resolved `svgContent` strings — this keeps
+ * inlined-SVG + currentColor working without async client code.
  */
 
-import type { PartnerItem } from "@/sanity/queries/partnersSection";
+"use client";
+
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import type { ResolvedPartner } from "@/sanity/queries/partnersSection";
+
 import "./PartnersSection.css";
 
+gsap.registerPlugin(ScrollTrigger);
+
 /* --------------------------------------------------------------------------
-   SVG fetch helper
+   Panel builder
    -------------------------------------------------------------------------- */
 
 /**
- * Fetches raw SVG markup from a Sanity CDN URL server-side,
- * then sanitises it so all fill and stroke values use currentColor.
+ * Builds one panel of the 2-row checkerboard marquee.
+ * Each panel = 12 cells (6 cols × 2 rows).
+ * null = empty transparent slot.
  *
- * This is required because uploaded SVG files contain hardcoded
- * brand colours. Replacing them with currentColor allows CSS to
- * control the logo colour via the parent element's color property.
+ * Row 1 null positions: cols 1 and 4
+ * Row 2 null positions: cols 0 and 3
  *
- * Inlining SVG in the DOM is required for currentColor to work —
- * an <img> tag cannot inherit CSS color from the parent element.
- *
- * Results are revalidated hourly via Next.js fetch caching.
- * Returns an empty string on failure so the card renders
- * gracefully with no logo.
+ * Partners wrap via modulo if fewer than 8 are provided.
  */
-async function fetchSvgContent(url: string): Promise<string> {
-  if (!url) return "";
-  try {
-    const res = await fetch(url, { next: { revalidate: 3600 } });
-    if (!res.ok) return "";
-    const text = await res.text();
-    if (!text.includes("<svg")) return "";
-    return sanitiseSvg(text);
-  } catch {
-    return "";
-  }
-}
+function buildPanel(
+  partners: ResolvedPartner[],
+): Array<ResolvedPartner | null> {
+  if (partners.length === 0) return [];
+  const COLS = 6;
+  const nullRow1 = [1, 4];
+  const nullRow2 = [0, 3];
+  const panel: Array<ResolvedPartner | null> = [];
+  let pIndex = 0;
 
-/**
- * Sanitises SVG markup so all colour values use currentColor.
- *
- * Replaces:
- *   - fill="[any value]"         → fill="currentColor"
- *   - stroke="[any value]"       → stroke="currentColor"
- *   - fill:[value] in style=""   → fill:currentColor
- *   - stroke:[value] in style="" → stroke:currentColor
- *
- * Preserves:
- *   - fill="none"   — intentional transparent fills (keep as-is)
- *   - stroke="none" — intentional no-stroke (keep as-is)
- *   - fill="currentColor" — already correct (no change needed)
- */
-function sanitiseSvg(svg: string): string {
-  return svg
-    /* Replace fill attributes — preserve fill="none" */
-    .replace(/fill="(?!none|currentColor)[^"]*"/gi, 'fill="currentColor"')
-    /* Replace stroke attributes — preserve stroke="none" */
-    .replace(/stroke="(?!none|currentColor)[^"]*"/gi, 'stroke="currentColor"')
-    /* Replace fill: in inline style attributes */
-    .replace(/fill\s*:\s*(?!none|currentColor)[^;"]*/gi, "fill:currentColor")
-    /* Replace stroke: in inline style attributes */
-    .replace(
-      /stroke\s*:\s*(?!none|currentColor)[^;"]*/gi,
-      "stroke:currentColor",
-    )
-    /* Remove any stop-color values in gradients (replace with currentColor) */
-    .replace(/stop-color\s*:\s*[^;"]*/gi, "stop-color:currentColor")
-    .replace(
-      /stop-color="(?!currentColor)[^"]*"/gi,
-      'stop-color="currentColor"',
-    );
-}
-
-/* --------------------------------------------------------------------------
-   Checkerboard layout
-   -------------------------------------------------------------------------- */
-
-type PartnerWithSvg = {
-  _key: string;
-  name: string;
-  svgContent: string;
-};
-
-/**
- * Builds a display grid array from a flat list of partners by
- * inserting null slots at alternating positions per row.
- *
- * Creates a checkerboard rhythm:
- *   Even rows: [logo, null, logo, logo, null, logo] — nulls at 1, 4
- *   Odd  rows: [null, logo, logo, null, logo, logo] — nulls at 0, 3
- *
- * Works for any number of partners. Remaining cells in the last
- * row are filled with nulls to complete the row.
- */
-function buildCheckerboard(
-  partners: PartnerWithSvg[],
-  cols: number = 6,
-): Array<PartnerWithSvg | null> {
-  const result: Array<PartnerWithSvg | null> = [];
-  let partnerIndex = 0;
-  let row = 0;
-
-  while (partnerIndex < partners.length) {
-    /* Null positions alternate per row */
-    const nullPositions = row % 2 === 0 ? [1, 4] : [0, 3];
-
-    for (let col = 0; col < cols; col++) {
-      if (nullPositions.includes(col)) {
-        result.push(null);
-      } else if (partnerIndex < partners.length) {
-        result.push(partners[partnerIndex]);
-        partnerIndex++;
-      } else {
-        /* Fill remainder of last row with nulls */
-        result.push(null);
-      }
+  /* Row 1 */
+  for (let col = 0; col < COLS; col++) {
+    if (nullRow1.includes(col)) {
+      panel.push(null);
+    } else {
+      panel.push(partners[pIndex % partners.length]);
+      pIndex++;
     }
-    row++;
+  }
+  /* Row 2 */
+  for (let col = 0; col < COLS; col++) {
+    if (nullRow2.includes(col)) {
+      panel.push(null);
+    } else {
+      panel.push(partners[pIndex % partners.length]);
+      pIndex++;
+    }
   }
 
-  return result;
+  return panel; /* 12 cells total */
 }
 
 /* --------------------------------------------------------------------------
@@ -138,75 +83,163 @@ function buildCheckerboard(
    -------------------------------------------------------------------------- */
 
 interface PartnersProps {
+  /** Label passed from Sanity — kept on the props surface even though
+   *  it is not currently rendered, so the schema stays wired. */
   sectionLabel: string;
-  partners: PartnerItem[];
+  partners: ResolvedPartner[];
 }
 
 /* --------------------------------------------------------------------------
    Component
    -------------------------------------------------------------------------- */
 
-export default async function PartnersSection({
-  sectionLabel,
-  partners,
-}: PartnersProps) {
-  const partnersWithSvg = await Promise.all(
-    partners.map(async (partner) => ({
-      _key: partner._key,
-      name: partner.name,
-      svgContent: await fetchSvgContent(partner.logo?.asset?.url ?? ""),
-    })),
-  );
+export default function PartnersSection({ partners }: PartnersProps) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
 
-  const displayGrid = buildCheckerboard(partnersWithSvg);
+  /* Build one checkerboard panel, then triple it for seamless looping */
+  const panel = buildPanel(partners);
+  const triplePanel = [...panel, ...panel, ...panel];
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const scroll = scrollRef.current;
+    const track = trackRef.current;
+    if (!section || !scroll || !track) return;
+
+    let animation: gsap.core.Tween | null = null;
+    let scrollTween: gsap.core.Tween | null = null;
+    let directionTrigger: ScrollTrigger | null = null;
+
+    /*
+     * Measure after paint so the grid has its final dimensions.
+     * requestAnimationFrame ensures layout is complete before
+     * we read scrollWidth — prevents incorrect panelWidth on load.
+     */
+    const raf = requestAnimationFrame(() => {
+      const panelWidth = track.scrollWidth / 3;
+
+      if (panelWidth === 0) return;
+
+      const speedFactor = (panelWidth / window.innerWidth) * 25;
+
+      /*
+       * Positive modulo helper — JavaScript % returns negative
+       * values for negative numbers which causes a visible jump
+       * at the loop point. This always returns a positive remainder.
+       */
+      const posMod = (n: number, m: number): number =>
+        ((n % m) + m) % m;
+
+      animation = gsap.to(track, {
+        x: -panelWidth,
+        repeat: -1,
+        duration: speedFactor,
+        ease: "none",
+        modifiers: {
+          x: gsap.utils.unitize(
+            (x) => -posMod(-parseFloat(x), panelWidth),
+          ),
+        },
+      });
+
+      /* Reverse on scroll up, forward on scroll down */
+      directionTrigger = ScrollTrigger.create({
+        trigger: section,
+        start: "top bottom",
+        end: "bottom top",
+        onUpdate: (self) => {
+          if (animation) {
+            animation.timeScale(self.direction === 1 ? 1 : -1);
+          }
+        },
+      });
+
+      /* Subtle parallax drift */
+      const scrollSpeed = 8;
+      scrollTween = gsap.fromTo(
+        scroll,
+        { x: `${scrollSpeed}vw` },
+        {
+          x: `-${scrollSpeed}vw`,
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 0,
+          },
+        },
+      );
+    });
+
+    return () => {
+      cancelAnimationFrame(raf);
+      directionTrigger?.kill();
+      scrollTween?.scrollTrigger?.kill();
+      scrollTween?.kill();
+      animation?.kill();
+    };
+  }, [partners]);
 
   return (
     <section
+      ref={sectionRef}
       data-theme="brand"
       data-nav-theme="brand"
-      className="py-section-lg bg-[var(--theme-bg)]"
+      className="bg-[var(--theme-bg)] overflow-hidden"
+      style={{
+        paddingTop: "var(--section-space-md)",
+        paddingBottom: "var(--space-9)",
+      }}
     >
-      <div className="container">
-        {/* Section label */}
-        <p className="font-primary text-text-xs uppercase tracking-caps font-medium mb-space-7 text-[var(--theme-text)]">
-          {sectionLabel}
-        </p>
-
-        {/* Partners grid — checkerboard layout, any number of logos */}
-        <div className="partners-grid">
-          {displayGrid.map((item, index) =>
+      {/* Scroll drift wrapper — GSAP animates x on page scroll */}
+      <div
+        ref={scrollRef}
+        data-marquee-scroll=""
+        className="partners-marquee-scroll"
+      >
+        {/* Infinite track — GSAP animates x for the loop */}
+        <div
+          ref={trackRef}
+          data-marquee-track=""
+          className="partners-marquee-track"
+        >
+          {triplePanel.map((item, index) =>
             item === null ? (
-              /* Empty slot — cream background creates checkerboard rhythm */
+              /* Empty slot — transparent, section bg shows through */
               <div
-                key={`slot-${index}`}
-                className="brand-card-slot"
+                key={`empty-${index}`}
+                className="partners-marquee-item partners-marquee-item--empty"
                 aria-hidden="true"
               />
             ) : (
               /* Logo card */
-              <div key={item._key} className="brand-card-wrap">
-                <div
-                  className="brand-card"
-                  role="img"
-                  aria-label={item.name}
-                >
-                  {item.svgContent ? (
-                    /*
-                     * dangerouslySetInnerHTML is intentional here.
-                     * SVG must be inlined in the DOM for currentColor
-                     * to inherit the parent CSS color value.
-                     * An <img> tag cannot achieve this.
-                     * SVG content comes from our own Sanity CDN only.
-                     */
-                    <div
-                      className="brand-card-svg-wrap"
-                      aria-hidden="true"
-                      dangerouslySetInnerHTML={{ __html: item.svgContent }}
-                    />
-                  ) : (
-                    <div className="brand-card-svg-wrap" aria-hidden="true" />
-                  )}
-                </div>
+              <div
+                key={`${item._key}-${index}`}
+                className="partners-marquee-item"
+                role="img"
+                aria-label={item.name}
+              >
+                {item.svgContent ? (
+                  /*
+                   * dangerouslySetInnerHTML is intentional.
+                   * SVG must be inlined for currentColor to work.
+                   * Content comes from Sanity CDN only, and is
+                   * sanitised server-side before reaching here.
+                   */
+                  <div
+                    className="partners-marquee-svg"
+                    aria-hidden="true"
+                    dangerouslySetInnerHTML={{ __html: item.svgContent }}
+                  />
+                ) : (
+                  <div
+                    className="partners-marquee-svg"
+                    aria-hidden="true"
+                  />
+                )}
               </div>
             ),
           )}

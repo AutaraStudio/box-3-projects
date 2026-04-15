@@ -17,6 +17,7 @@ export const ease = {
   bounce:     "elastic.out(1, 0.5)",
   splitText:  "power4.out",
   parallax:   "none",
+  slide:      "power2.inOut",   /* approximate GSAP equivalent of --ease-slide */
 } as const;
 
 export const duration = {

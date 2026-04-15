@@ -104,6 +104,17 @@ const config: Config = {
         "theme-svg-hover": "var(--theme-svg-hover)",
         "theme-svg-muted": "var(--theme-svg-muted)",
 
+        /* Extended palette */
+        "theme-bg-card-2": "var(--theme-bg-card-2)",
+        "theme-bg-surface": "var(--theme-bg-surface)",
+        "theme-accent-2": "var(--theme-accent-2)",
+        "theme-accent-3": "var(--theme-accent-3)",
+        "theme-text-on-accent": "var(--theme-text-on-accent)",
+        "theme-border-accent": "var(--theme-border-accent)",
+        "theme-svg-accent": "var(--theme-svg-accent)",
+        "theme-highlight": "var(--theme-highlight)",
+        "theme-highlight-text": "var(--theme-highlight-text)",
+
         /* Button — Primary */
         "theme-btn-primary-text": "var(--theme-btn-primary-text)",
         "theme-btn-primary-text-hover": "var(--theme-btn-primary-text-hover)",

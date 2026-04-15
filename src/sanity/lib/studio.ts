@@ -15,6 +15,7 @@ import { structure } from "./structure";
 /** Document types that are singletons — hide "Create new" and delete actions. */
 const SINGLETON_TYPES = new Set([
   "homePage",
+  "careersPage",
   "partnersSection",
   "siteNav",
   "siteFooter",

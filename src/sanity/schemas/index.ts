@@ -17,9 +17,17 @@ import type { SchemaTypeDefinition } from "sanity";
 
 /* Pages */
 import homePage from "./pages/homePage";
+import careersPage from "./pages/careersPage";
 
 /* Sections */
 import partnersSection from "./sections/partnersSection";
+
+/* Collections */
+import project from "./collections/project";
+import projectCategory from "./collections/projectCategory";
+import expertise from "./collections/expertise";
+import teamMember from "./collections/teamMember";
+import vacancy from "./collections/vacancy";
 
 /* Globals */
 import siteNav from "./globals/siteNav";
@@ -27,7 +35,13 @@ import siteFooter from "./globals/siteFooter";
 
 export const schemaTypes: SchemaTypeDefinition[] = [
   homePage,
-  partnersSection,
+  careersPage,
   siteNav,
   siteFooter,
+  partnersSection,
+  projectCategory,
+  expertise,
+  teamMember,
+  project,
+  vacancy,
 ];

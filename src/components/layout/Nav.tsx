@@ -390,20 +390,8 @@ export default function Nav({
         link.addEventListener("blur", leave);
       });
 
-      /* ── Secondary / Contact Link Hover (scramble) ── */
-      function attachScrambleHover(el: HTMLElement) {
-        if (!el.dataset.originalText) el.dataset.originalText = el.textContent || "";
-        el.addEventListener("mouseenter", () => {
-          const txt = el.dataset.originalText || "";
-          gsap.to(el, {
-            scrambleText: { text: txt, speed: txt.length * 0.1, chars: "x&oci" },
-            duration: duration.slow,
-          });
-        });
-      }
-
-      menuSecondaryLinksArray.forEach(attachScrambleHover);
-      contactArray.forEach(attachScrambleHover);
+      /* Secondary / contact link hover is handled globally by
+         CharHoverObserver + CSS (data-char-hover spans in JSX). */
 
       /* ── Close on Outside Click ────────────────── */
       function onOutsideClick(e: MouseEvent) {
@@ -542,7 +530,7 @@ export default function Nav({
                 {megaMenuCompanyLinks.map((link) => (
                   <li key={link._key} className="menu-secondary-item" role="none">
                     <a href={link.href} className="menu-secondary-link" data-menu-secondary-link="" role="menuitem" tabIndex={-1}>
-                      {link.label}
+                      <span data-char-hover="">{link.label}</span>
                     </a>
                   </li>
                 ))}
@@ -558,10 +546,14 @@ export default function Nav({
               </div>
               <div className="menu-contact-details">
                 <div className="menu-contact-item">
-                  <a className="menu-contact-link u-nums" data-menu-contact="" href={`tel:${phone}`}>{phone}</a>
+                  <a className="menu-contact-link u-nums" data-menu-contact="" href={`tel:${phone}`}>
+                    <span data-char-hover="">{phone}</span>
+                  </a>
                 </div>
                 <div className="menu-contact-item">
-                  <a className="menu-contact-link" data-menu-contact="" href={`mailto:${email}`}>{email}</a>
+                  <a className="menu-contact-link" data-menu-contact="" href={`mailto:${email}`}>
+                    <span data-char-hover="">{email}</span>
+                  </a>
                 </div>
                 <div className="menu-contact-item">
                   <address className="menu-contact-link menu-contact-address" data-menu-contact="">

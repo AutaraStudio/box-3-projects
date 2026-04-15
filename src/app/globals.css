@@ -583,6 +583,17 @@
   --theme-partner-card-bg: var(--color-charcoal-500);
   --theme-partner-card-svg: var(--color-pink-500);
   --theme-partner-card-svg-hover: var(--color-pure-white);
+
+  /* Extended palette */
+  --theme-bg-card-2:        var(--color-cream-400);
+  --theme-bg-surface:       var(--color-cream-200);
+  --theme-accent-2:         var(--color-rose-500);
+  --theme-accent-3:         color-mix(in srgb, var(--color-pink-500) 15%, transparent);
+  --theme-text-on-accent:   var(--color-pure-white);
+  --theme-border-accent:    var(--color-pink-500);
+  --theme-svg-accent:       var(--color-rose-500);
+  --theme-highlight:        color-mix(in srgb, var(--color-pink-500) 10%, transparent);
+  --theme-highlight-text:   var(--color-rose-500);
 }
 
 
@@ -677,6 +688,17 @@
   --theme-nav-accent: var(--color-pink-500);
   --theme-nav-icon-bg: var(--color-pink-500);
   --theme-nav-icon-text: var(--color-charcoal-500);
+
+  /* Extended palette */
+  --theme-bg-card-2:        var(--color-black-500);
+  --theme-bg-surface:       var(--color-charcoal-400);
+  --theme-accent-2:         var(--color-dusty-400);
+  --theme-accent-3:         color-mix(in srgb, var(--color-pink-500) 12%, transparent);
+  --theme-text-on-accent:   var(--color-charcoal-500);
+  --theme-border-accent:    var(--color-pink-500);
+  --theme-svg-accent:       var(--color-dusty-400);
+  --theme-highlight:        color-mix(in srgb, var(--color-pink-500) 8%, transparent);
+  --theme-highlight-text:   var(--color-pink-400);
 }
 
 
@@ -714,7 +736,7 @@
   /* SVG */
   --theme-svg: var(--color-pink-500);
   --theme-svg-hover: var(--color-pink-400);
-  --theme-svg-muted: color-mix(in srgb, var(--color-pink-500) 40%, transparent);
+  --theme-svg-muted: var(--color-white-700);
 
   /* Selection */
   --theme-selection-bg: var(--color-pink-500);
@@ -774,9 +796,20 @@
   --theme-nav-icon-text: var(--color-charcoal-500);
 
   /* Partner Cards */
-  --theme-partner-card-bg: var(--color-charcoal-700);
-  --theme-partner-card-svg: var(--color-pink-500);
-  --theme-partner-card-svg-hover: var(--color-white-500);
+  --theme-partner-card-bg: var(--theme-bg-surface);
+  --theme-partner-card-svg: var(--color-white-700);
+  --theme-partner-card-svg-hover: var(--theme-accent);
+
+  /* Extended palette */
+  --theme-bg-card-2:        var(--color-black-500);
+  --theme-bg-surface:       var(--color-charcoal-600);
+  --theme-accent-2:         var(--color-pink-400);
+  --theme-accent-3:         color-mix(in srgb, var(--color-pink-500) 12%, transparent);
+  --theme-text-on-accent:   var(--color-charcoal-500);
+  --theme-border-accent:    var(--color-pink-500);
+  --theme-svg-accent:       var(--color-pink-400);
+  --theme-highlight:        color-mix(in srgb, var(--color-pink-500) 10%, transparent);
+  --theme-highlight-text:   var(--color-pink-500);
 }
 
 
@@ -871,6 +904,17 @@
   --theme-nav-accent: var(--color-rose-500);
   --theme-nav-icon-bg: var(--color-rose-500);
   --theme-nav-icon-text: var(--color-white-500);
+
+  /* Extended palette */
+  --theme-bg-card-2:        var(--color-pink-300);
+  --theme-bg-surface:       var(--color-pink-200);
+  --theme-accent-2:         var(--color-rose-600);
+  --theme-accent-3:         color-mix(in srgb, var(--color-rose-500) 15%, transparent);
+  --theme-text-on-accent:   var(--color-pure-white);
+  --theme-border-accent:    var(--color-rose-500);
+  --theme-svg-accent:       var(--color-rose-600);
+  --theme-highlight:        color-mix(in srgb, var(--color-rose-500) 10%, transparent);
+  --theme-highlight-text:   var(--color-rose-600);
 }
 
 
@@ -965,6 +1009,17 @@
   --theme-nav-accent: var(--color-charcoal-500);
   --theme-nav-icon-bg: var(--color-charcoal-500);
   --theme-nav-icon-text: var(--color-white-500);
+
+  /* Extended palette */
+  --theme-bg-card-2:        var(--color-cream-300);
+  --theme-bg-surface:       var(--color-cream-200);
+  --theme-accent-2:         var(--color-rose-500);
+  --theme-accent-3:         color-mix(in srgb, var(--color-pink-500) 15%, transparent);
+  --theme-text-on-accent:   var(--color-pure-white);
+  --theme-border-accent:    var(--color-rose-500);
+  --theme-svg-accent:       var(--color-rose-400);
+  --theme-highlight:        color-mix(in srgb, var(--color-pink-500) 10%, transparent);
+  --theme-highlight-text:   var(--color-rose-500);
 }
 
 
@@ -1059,6 +1114,17 @@
   --theme-nav-accent: var(--color-white-500);
   --theme-nav-icon-bg: var(--color-white-500);
   --theme-nav-icon-text: var(--color-rose-500);
+
+  /* Extended palette */
+  --theme-bg-card-2:        var(--color-rose-700);
+  --theme-bg-surface:       var(--color-rose-800);
+  --theme-accent-2:         var(--color-pink-400);
+  --theme-accent-3:         color-mix(in srgb, var(--color-pink-500) 15%, transparent);
+  --theme-text-on-accent:   var(--color-pure-white);
+  --theme-border-accent:    var(--color-pink-400);
+  --theme-svg-accent:       var(--color-pink-400);
+  --theme-highlight:        color-mix(in srgb, var(--color-pure-white) 10%, transparent);
+  --theme-highlight-text:   var(--color-pink-400);
 }
 
 
@@ -1153,6 +1219,17 @@
   --theme-nav-accent: var(--color-charcoal-500);
   --theme-nav-icon-bg: var(--color-charcoal-500);
   --theme-nav-icon-text: var(--color-white-500);
+
+  /* Extended palette */
+  --theme-bg-card-2:        var(--color-mauve-700);
+  --theme-bg-surface:       var(--color-mauve-300);
+  --theme-accent-2:         var(--color-rose-600);
+  --theme-accent-3:         color-mix(in srgb, var(--color-pink-500) 12%, transparent);
+  --theme-text-on-accent:   var(--color-pure-white);
+  --theme-border-accent:    var(--color-rose-500);
+  --theme-svg-accent:       var(--color-rose-600);
+  --theme-highlight:        color-mix(in srgb, var(--color-pink-500) 8%, transparent);
+  --theme-highlight-text:   var(--color-rose-600);
 }
 
 
@@ -1247,6 +1324,17 @@
   --theme-nav-accent: var(--color-charcoal-500);
   --theme-nav-icon-bg: var(--color-charcoal-500);
   --theme-nav-icon-text: var(--color-white-500);
+
+  /* Extended palette */
+  --theme-bg-card-2:        var(--color-sage-600);
+  --theme-bg-surface:       var(--color-sage-200);
+  --theme-accent-2:         var(--color-rose-500);
+  --theme-accent-3:         color-mix(in srgb, var(--color-pink-500) 12%, transparent);
+  --theme-text-on-accent:   var(--color-pure-white);
+  --theme-border-accent:    var(--color-rose-500);
+  --theme-svg-accent:       var(--color-rose-400);
+  --theme-highlight:        color-mix(in srgb, var(--color-sage-600) 15%, transparent);
+  --theme-highlight-text:   var(--color-rose-500);
 }
 
 
@@ -1341,6 +1429,17 @@
   --theme-nav-accent: var(--color-charcoal-500);
   --theme-nav-icon-bg: var(--color-charcoal-500);
   --theme-nav-icon-text: var(--color-white-500);
+
+  /* Extended palette */
+  --theme-bg-card-2:        var(--color-sand-600);
+  --theme-bg-surface:       var(--color-sand-200);
+  --theme-accent-2:         var(--color-rose-500);
+  --theme-accent-3:         color-mix(in srgb, var(--color-pink-500) 12%, transparent);
+  --theme-text-on-accent:   var(--color-pure-white);
+  --theme-border-accent:    var(--color-rose-500);
+  --theme-svg-accent:       var(--color-rose-400);
+  --theme-highlight:        color-mix(in srgb, var(--color-sand-600) 15%, transparent);
+  --theme-highlight-text:   var(--color-rose-500);
 }
 
 
@@ -1365,6 +1464,7 @@
   --ease-gentle: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Micro-interactions */
   --ease-expressive: cubic-bezier(0.34, 1.28, 0.64, 1);/* Subtle overshoot */
   --ease-snappy: cubic-bezier(0.4, 0, 0.2, 1);         /* UI feedback */
+  --ease-slide: cubic-bezier(0.625, 0.05, 0, 1);       /* Char slide ease — smooth deceleration for text character reveals */
   --ease-bounce: linear(                                 /* Refined bounce — use sparingly */
     0, 0.5737 7.6%, 0.8382 11.87%, 0.9463 14.19%,
     1.0292 16.54%, 1.0886 18.97%, 1.1258 21.53%,
@@ -1430,6 +1530,9 @@
   /* Bounce (refined) */
   --animation-bounce: var(--duration-moderate) var(--ease-bounce);
   --animation-bounce-fast: var(--duration-normal) var(--ease-bounce);
+
+  /* Slide (char reveals) */
+  --animation-slide: var(--duration-moderate) var(--ease-slide);
 
 
   /* --- Transition Presets ---
@@ -1700,6 +1803,50 @@ p {
   line-height: var(--line-height-relaxed);
   font-family: var(--font-secondary);
   text-wrap: pretty;
+}
+
+
+/* --- Character Hover Animation ---
+   Apply data-char-hover="" to any link or text element.
+   CharHoverObserver splits the text into character spans
+   on mount. CSS transitions handle the hover animation —
+   no GSAP required for the hover itself.
+
+   On hover: each character slides up by 1.3em.
+   text-shadow creates a copy below so the slot is filled.
+   Characters stagger via inline transition-delay on each span.
+
+   Usage:
+     <a href="/about" data-char-hover="">About</a>  */
+
+[data-char-hover] {
+  display: inline-block;
+  overflow: hidden;
+  position: relative;
+  vertical-align: top;
+  line-height: 1.3;
+  /* Height clips to one line — hides the shadow text below */
+  height: 1.3em;
+}
+
+[data-char-hover] span {
+  display: inline-block;
+  position: relative;
+  white-space: pre;
+  /* Shadow copy sits exactly 1.3em below — matches height */
+  text-shadow: 0px 1.3em currentColor;
+  transform: translateY(0em) rotate(0.001deg);
+  transition: transform var(--duration-moderate) var(--ease-slide);
+  will-change: transform;
+}
+
+/* Stagger delay increases with each character span.
+   Set via inline style by CharHoverObserver. */
+
+a:hover [data-char-hover] span,
+button:hover [data-char-hover] span,
+[data-char-hover-trigger]:hover [data-char-hover] span {
+  transform: translateY(-1.3em) rotate(0.001deg);
 }
 
 

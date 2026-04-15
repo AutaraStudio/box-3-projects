@@ -14,7 +14,13 @@
 import type { StructureResolver } from "sanity/structure";
 
 /** Document types that should appear as singletons (one-per-site). */
-const SINGLETONS = ["homePage", "partnersSection", "siteNav", "siteFooter"];
+const SINGLETONS = [
+  "homePage",
+  "careersPage",
+  "partnersSection",
+  "siteNav",
+  "siteFooter",
+];
 
 export const structure: StructureResolver = (S) =>
   S.list()
@@ -35,6 +41,15 @@ export const structure: StructureResolver = (S) =>
                     .schemaType("homePage")
                     .documentId("homePage")
                     .title("Home Page"),
+                ),
+              S.listItem()
+                .title("Careers Page")
+                .id("careersPage")
+                .child(
+                  S.document()
+                    .schemaType("careersPage")
+                    .documentId("careersPage")
+                    .title("Careers Page"),
                 ),
             ]),
         ),

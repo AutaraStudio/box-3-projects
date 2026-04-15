@@ -383,6 +383,18 @@ Add these to any element and animations trigger automatically:
 - After seeding, the client can log in to /studio and edit
   all content immediately
 
+### Char Hover Animation
+- Add `data-char-hover=""` to the text element (span, not the link)
+- The link or button is the hover trigger — CSS selects
+  `a:hover [data-char-hover] span`
+- `CharHoverObserver` splits the text into spans on mount
+- Do NOT add `data-char-hover` to elements whose text changes
+  dynamically after mount — splits happen once at mount time
+- The menu button "Menu"/"Close" text uses ScrambleText
+  click animation — do not add `data-char-hover` to that element
+- `overflow: hidden` on `[data-char-hover]` is set globally in
+  `globals.css` — do not add it again in component CSS
+
 ### Nav Theme Observer
 - Every page section needs data-nav-theme="[theme]" for the nav to
   respond correctly as the user scrolls

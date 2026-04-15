@@ -112,6 +112,28 @@ export default defineType({
       group: "contact",
     }),
     defineField({
+      name: "email",
+      title: "Email address",
+      description: "Contact email shown in the footer",
+      type: "string",
+      group: "contact",
+    }),
+    defineField({
+      name: "address",
+      title: "Office address",
+      description: "Full office address shown in the footer",
+      type: "text",
+      rows: 3,
+      group: "contact",
+    }),
+    defineField({
+      name: "contactHeading",
+      title: "Contact details heading",
+      description: "Heading above the contact details e.g. Find Us",
+      type: "string",
+      group: "contact",
+    }),
+    defineField({
       name: "newsletterPlaceholder",
       title: "Newsletter input placeholder",
       description:

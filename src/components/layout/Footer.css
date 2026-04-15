@@ -1,160 +1,145 @@
 /**
  * Footer.css
  * ==========
- * Component-level styles for the site footer.
- * 12-column root grid — logo + copyright in left 6 cols,
- * nav subgrid in right 6 cols with 3 explicit row heights.
- *
- * Only structural/layout rules that Tailwind cannot achieve.
- * All typography applied via Tailwind utility classes in JSX.
- * All values reference CSS custom property tokens — zero hardcoded values.
+ * Left 6 cols: two sub-columns of nav links with headings.
+ * Right 6 cols: callback form + contact details.
+ * Divider lines all aligned at the same top position.
+ * All values reference CSS custom property tokens.
  */
 
-
-/* ==========================================================================
-   Footer Root — 12-Column Grid
-   ========================================================================== */
-
 .footer-root {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  column-gap: var(--gap-3);
-  padding: var(--space-4) var(--space-3) var(--space-6);
   background-color: var(--theme-bg);
   color: var(--theme-text);
+  border-top: var(--border-width) solid var(--theme-border);
+  padding-top: var(--space-9);
+  padding-bottom: var(--space-6);
 }
 
+/* ── Main body grid ────────────────────────────────── */
 
-/* ==========================================================================
-   Logo Wrapper — Left 6 columns, row 1
-   ========================================================================== */
+.footer-body {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: 0;
+  align-items: stretch;
+}
 
-.footer-logo-wrap {
+/* ── Left half ─────────────────────────────────────── */
+
+.footer-left {
+  grid-column: span 6;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 0;
+  align-items: stretch;
+}
+
+/*
+ * Each sub-column has a top border and a right-hand divider.
+ * All sub-columns stretch to the same height so the top borders
+ * are perfectly horizontally aligned and the right-hand dividers
+ * run the full length of the content band.
+ */
+.footer-sub-col {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  grid-column: 1 / span 6;
-  grid-row: 1 / 2;
+  flex-direction: column;
+  gap: var(--space-7);
+  border-top: var(--border-width) solid var(--theme-border);
+  border-right: var(--border-width) solid var(--theme-border);
+  padding-top: var(--space-4);
+  padding-right: var(--space-5);
+  padding-left: var(--space-5);
+  height: 100%;
 }
 
-.footer-logo {
+/* First sub-col has no left padding — sits at container edge */
+.footer-sub-col:first-child {
+  padding-left: 0;
+}
+
+/* Each link group within a sub-column */
+.footer-link-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* Column heading — Index, Company, Social, Legal etc. */
+.footer-col-heading {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-text-xxs);
+  letter-spacing: var(--letter-spacing-caps);
+  text-transform: uppercase;
+  color: var(--theme-text-muted);
+  margin-bottom: var(--space-2);
   display: block;
-  width: 29vw;
-  height: 29vw;
-  overflow: hidden;
-  color: var(--theme-text);
 }
 
+/* ── Right half ────────────────────────────────────── */
 
-/* ==========================================================================
-   Copyright — Left 6 columns, row 1, bottom-aligned
-   ========================================================================== */
+.footer-right {
+  grid-column: span 6;
+  border-top: var(--border-width) solid var(--theme-border);
+  padding-top: var(--space-4);
+  padding-left: var(--space-5);
+  display: flex;
+  flex-direction: column;
+}
 
-.footer-copyright {
-  grid-column: 1 / span 6;
-  grid-row: 1 / 2;
-  align-self: end;
-  padding-left: var(--space-3);
-  margin-top: var(--space-6);
+/* ── Contact details ───────────────────────────────── */
+
+.footer-contact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.footer-contact-heading {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-text-xxs);
+  letter-spacing: var(--letter-spacing-caps);
+  text-transform: uppercase;
+  color: var(--theme-text-muted);
+  display: block;
+  margin-bottom: var(--space-1);
+}
+
+.footer-contact-detail {
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-text-sm);
+  line-height: var(--line-height-relaxed);
+  color: var(--theme-text);
+  text-decoration: none;
+  display: block;
+  font-style: normal;
+  transition: color var(--animation-gentle);
+  text-transform: uppercase;
   letter-spacing: var(--letter-spacing-caps);
 }
 
-
-/* ==========================================================================
-   Footer Nav — Right 6 columns, own 6-col subgrid
-   ========================================================================== */
-
-.footer-nav {
-  display: grid;
-  grid-column: 7 / span 6;
-  grid-row: 1;
-  grid-template-columns: repeat(6, 1fr);
-  /* exact row heights — no token equivalent */
-  grid-template-rows: 23.75rem 13.2rem 15.4rem;
-  align-content: flex-start;
-  row-gap: 0;
-  column-gap: var(--gap-3);
+a.footer-contact-detail:hover {
+  color: var(--theme-accent);
 }
 
+/* ── Bottom: divider + copyright ───────────────────── */
 
-/* ==========================================================================
-   All Link Lists — Shared Base
-   ========================================================================== */
-
-.footer-list {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  list-style: none;
-  grid-column: span 3;
-  border-left: var(--border-width) solid var(--theme-border);
-  padding-left: var(--space-3);
+.footer-divider {
+  border: none;
+  border-top: var(--border-width) solid var(--theme-border);
+  margin-top: var(--space-9);
+  margin-bottom: var(--space-4);
 }
 
-
-/* ==========================================================================
-   List 1 & 2 — Primary Nav (row 1)
-   ========================================================================== */
-
-.footer-list--primary {
-  padding-top: var(--space-3);
-  height: 23.75rem;
-  align-content: flex-start;
+.footer-copyright {
+  display: block;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-text-xxs);
+  letter-spacing: var(--letter-spacing-caps);
+  text-transform: uppercase;
+  color: var(--theme-text-muted);
 }
 
-
-/* ==========================================================================
-   List 3 — FAQ (row 2, no left border)
-   ========================================================================== */
-
-.footer-list--misc {
-  margin-top: var(--space-8);
-  border-left: none;
-  padding-left: var(--space-3);
-  height: auto;
-  align-self: start;
-}
-
-
-/* ==========================================================================
-   Social List (row 3, order 1)
-   ========================================================================== */
-
-.footer-social {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  list-style: none;
-  grid-column: span 3;
-  order: 1;
-  justify-content: flex-end;
-  height: 15.4rem;
-  border-left: var(--border-width) solid var(--theme-border);
-  padding-left: var(--space-3);
-}
-
-
-/* ==========================================================================
-   Legal List (row 3, order 1)
-   ========================================================================== */
-
-.footer-legal {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  list-style: none;
-  grid-column: span 3;
-  order: 1;
-  justify-content: flex-end;
-  height: 15.4rem;
-  border-left: var(--border-width) solid var(--theme-border);
-  padding-left: var(--space-3);
-}
-
-
-/* ==========================================================================
-   Footer Link — structural only
-   ========================================================================== */
+/* ── Link base ─────────────────────────────────────── */
 
 .footer-link {
   display: block;
@@ -163,198 +148,44 @@
   letter-spacing: var(--letter-spacing-caps);
 }
 
-
-/* ==========================================================================
-   Made-by Desktop — inside legal list
-   ========================================================================== */
-
-.footer-made-by-desktop {
-  display: block;
-  margin-top: var(--space-4);
-}
-
-
-/* ==========================================================================
-   Mobile Made-by — hidden on desktop
-   ========================================================================== */
-
-.footer-madeby-mobile {
-  display: none;
-  grid-column: 1 / -1;
-  margin-top: var(--space-4);
-}
-
-
-/* ==========================================================================
-   Contact + Newsletter Column (row 2)
-   ========================================================================== */
-
-.footer-contact-col {
-  grid-column: span 3;
-  margin-top: var(--space-8);
-  margin-bottom: var(--space-7);
-  margin-left: var(--space-3);
-  align-self: start;
-}
-
-.footer-contact-row {
-  display: flex;
-  align-items: baseline;
-  letter-spacing: var(--letter-spacing-caps);
-}
-
-.footer-pipe {
-  display: block;
-  margin-inline: var(--space-4);
-}
-
-
-/* ==========================================================================
-   Newsletter Form
-   ========================================================================== */
-
-.footer-newsletter {
-  width: 100%;
-  margin-top: var(--space-4);
-}
-
-.footer-newsletter-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 17.36vw;
-  border: var(--border-width) solid var(--theme-border);
-  padding-left: var(--space-4);
-  background: transparent;
-}
-
-.footer-newsletter-label {
-  display: block;
-  flex: 1 1 0%;
-  cursor: default;
-}
-
-.footer-newsletter-input {
-  display: block;
-  width: 100%;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--theme-text);
-  font-size: var(--font-size-text-sm);
-}
-
-.footer-newsletter-input::placeholder {
-  color: color-mix(in srgb, var(--theme-text) 60%, transparent);
-}
-
-.footer-newsletter-submit {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--space-9);
-  height: var(--space-9);
-  padding-inline: var(--space-3);
-  background: transparent;
-  border: none;
-  color: var(--theme-text);
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.footer-newsletter-arrow {
-  display: block;
-  width: var(--space-5);
-  height: var(--space-1);
-  overflow: hidden;
-}
-
-
-/* ==========================================================================
-   Mobile HR — hidden on desktop
-   ========================================================================== */
-
-.footer-hr-mobile {
-  display: none;
-  grid-column: 1 / -1;
-  margin-top: var(--section-space-xs);
-  border-top: var(--border-width) solid var(--theme-border);
-}
-
-
-/* ==========================================================================
-   Mobile — max-width 991px
-   ========================================================================== */
+/* ── Mobile ────────────────────────────────────────── */
 
 @media (max-width: 991px) {
-  .footer-root {
-    grid-template-columns: 60vw 1fr;
-    padding-top: var(--section-space-xs);
-    padding-bottom: var(--space-4);
+  .footer-body {
+    grid-template-columns: 1fr;
+    row-gap: var(--space-9);
+    align-items: start;
   }
 
-  .footer-logo-wrap {
-    grid-column: 1 / -1;
-    grid-row: auto;
-  }
-
-  .footer-logo {
-    width: 71.6vw;
-    height: 71.6vw;
-  }
-
-  .footer-hr-mobile {
-    display: block;
-  }
-
-  .footer-nav {
-    grid-column: 1 / -1;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto;
-    margin-top: var(--section-space-xs);
-    row-gap: var(--space-6);
-  }
-
-  .footer-list {
+  .footer-left {
     grid-column: span 1;
-    border-left: none;
-    padding-left: 0;
-    height: auto !important;
+    align-items: start;
   }
 
-  .footer-list--primary {
-    height: auto !important;
-  }
-
-  .footer-social,
-  .footer-legal {
-    order: 0;
-    height: auto !important;
-    border-left: none;
+  .footer-right {
+    grid-column: span 1;
     padding-left: 0;
   }
 
-  .footer-contact-col {
-    grid-column: 1 / -1;
-    margin-left: 0;
-    margin-top: 0;
-  }
-
-  .footer-newsletter-inner {
-    width: 100%;
-  }
-
-  .footer-made-by-desktop {
-    display: none;
-  }
-
-  .footer-madeby-mobile {
-    display: block;
-  }
-
-  .footer-copyright {
-    grid-column: 1 / -1;
-    grid-row: auto;
+  .footer-sub-col {
+    border-right: none;
+    padding-right: 0;
     padding-left: 0;
+    height: auto;
+  }
+
+  .footer-sub-col:first-child {
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .footer-left {
+    grid-template-columns: 1fr;
+    row-gap: var(--space-7);
+  }
+
+  .footer-sub-col {
+    height: auto;
   }
 }
