@@ -240,7 +240,7 @@ src/
     schemas/
       pages/                       # Page documents (homePage, etc.)
       sections/                    # Reusable section schemas
-      collections/                 # Repeatable content types
+      collections/                 # Collections: project, projectCategory, vacancy, expertise, teamMember
       globals/                     # Nav, footer, site settings
       components/                  # Shared component schemas
     queries/                       # GROQ queries — one file per page/type
@@ -268,7 +268,10 @@ reference/                         # Original Webflow source — read for intent
 - AnimationProvider.tsx — global data-animate observer
 - SplitTextObserver.tsx — global data-split-text observer
 - LineRevealObserver.tsx — data-line-reveal and data-line-reveal-hero observer
-- Providers.tsx — single wrapper, imported in (site)/layout.tsx
+- NavThemeObserver.tsx — swaps nav data-theme on scroll per section
+- CharHoverObserver.tsx — splits data-char-hover text into character spans
+- HeroDitherProvider.tsx — Three.js dither engine lifecycle management
+- Providers.tsx — single root wrapper, imported in (site)/layout.tsx
 
 ### Data Attribute Animations — Ready To Use
 Add these to any element and animations trigger automatically:
@@ -278,17 +281,28 @@ Add these to any element and animations trigger automatically:
 - data-animate="clip-reveal"
 - data-animate="scale-reveal"
 - data-animate-delay="0.2" (optional delay in seconds)
-- data-animate-stagger="0.1" (on parent, staggers children)
+- data-animate-stagger="0.1" (on parent, staggers direct children)
 - data-split-text="lines"
 - data-split-text="words"
 - data-split-text="chars"
-- data-split-delay="0.2" (optional delay)
+- data-split-delay="0.2" (optional delay on split-text elements)
 - data-line-reveal-hero="top|bottom" — line scales in on page load
 - data-line-reveal="top|bottom" — line scales in on scroll
 - data-line-duration="0.8" — optional per-element duration override
 - data-line-delay="0.2" — optional per-element delay override
-- data-hero-scroll-fade — fades out on hero scroll
+- data-hero-scroll-fade — fades element out as hero scrolls away
 - data-hero-scroll-fade-scale — fades and scales down on hero scroll
+- data-char-hover="" — splits text into spans for char slide-up hover
+- data-char-hover-trigger — designates a hover trigger for char animation
+- data-dither — registers element with the DitherEngine
+- data-dither-full — full-bleed dither mode, no wipe animation
+- data-dither-hover — enables hover wipe interaction on dither element
+- data-dither-texture — texture blend mode, partial dither overlay
+- data-dither-link — button that triggers dither wipe on a target element
+- data-dither-id — unique ID linking a dither container to its media
+- data-overlay="dark|medium|light" — colour overlay utility
+- data-lenis-prevent — prevents Lenis smooth scroll inside element
+- data-hero-sticky — marks the hero section for the DitherEngine
 - data-nav-theme="dark|light|[theme]" — tells NavThemeObserver what
   theme the nav should use when this section is in view. Add to every
   page section that needs to change the nav appearance.
@@ -341,7 +355,11 @@ Add these to any element and animations trigger automatically:
   - NavThemeObserver.tsx — swaps nav data-theme on scroll per section
   - siteNav schema — src/sanity/schemas/globals/siteNav.ts
   - NAV_QUERY — src/sanity/queries/siteNav.ts
-- Footer component — pending ⏳
+- Footer component — complete ✅
+  - Footer.tsx — editorial two-column layout, contact details
+  - Footer.css — 12-column grid, sub-column dividers
+  - siteFooter schema — src/sanity/schemas/globals/siteFooter.ts
+  - FOOTER_QUERY — src/sanity/queries/siteFooter.ts
 - All other pages/sections — pending ⏳
 
 ## Upcoming Next Steps

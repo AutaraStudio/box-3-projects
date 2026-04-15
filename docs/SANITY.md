@@ -92,6 +92,14 @@ schema type name** (e.g. `homePage`, `siteNav`). This guarantees
 the Studio deep-link and the seed script resolve to the same
 document forever.
 
+Current singletons:
+
+- homePage
+- careersPage
+- partnersSection
+- siteNav
+- siteFooter
+
 ### Field Groups
 Every document with more than ~4 fields declares `groups` so the
 Studio renders a tabbed UI:

@@ -34,6 +34,7 @@ Never hardcode ease strings or duration values in components
 | `--ease-expressive`  | `cubic-bezier(0.34, 1.28, 0.64, 1)` | Subtle overshoot             |
 | `--ease-snappy`      | `cubic-bezier(0.4, 0, 0.2, 1)`    | UI feedback                    |
 | `--ease-bounce`      | `linear(...)`                      | Refined bounce — use sparingly |
+| `--ease-slide`      | `cubic-bezier(0.625, 0.05, 0, 1)` | Char slide reveals — smooth deceleration |
 
 ### Duration Scale
 
@@ -91,6 +92,7 @@ Available prefixes:
 | `bounce`     | `elastic.out(1, 0.5)` |
 | `splitText`  | `power4.out`          |
 | `parallax`   | `none`                |
+| `slide` | `power2.inOut` |
 
 ### Duration Map (seconds)
 
@@ -152,13 +154,27 @@ Available prefixes:
 
 ## Data Attribute Conventions
 
-| Attribute                 | Behaviour                             |
-|---------------------------|---------------------------------------|
-| `data-animate="fade-up"`  | Standard scroll reveal                |
-| `data-animate="fade-in"`  | Opacity only reveal                   |
-| `data-animate="clip-reveal"` | Clip-path wipe reveal              |
-| `data-split-text="lines"` | SplitText — animate by line           |
-| `data-split-text="words"` | SplitText — animate by word           |
-| `data-split-text="chars"` | SplitText — animate by character      |
-| `data-parallax="[speed]"` | Parallax — speed is a float multiplier|
-| `data-lenis-scroll`       | Smooth scroll target                  |
+| Attribute                              | Behaviour                                        |
+|----------------------------------------|--------------------------------------------------|
+| `data-animate="fade-up"`               | Fade in from below on scroll                     |
+| `data-animate="fade-in"`              | Opacity only reveal on scroll                    |
+| `data-animate="fade-down"`            | Fade in from above on scroll                     |
+| `data-animate="clip-reveal"`          | Clip-path wipe reveal on scroll                  |
+| `data-animate="scale-reveal"`         | Scale up from slightly smaller on scroll         |
+| `data-animate-delay="0.2"`            | Optional delay in seconds                        |
+| `data-animate-stagger="0.1"`          | On parent — staggers direct children             |
+| `data-split-text="lines"`             | SplitText — animate by line on scroll            |
+| `data-split-text="words"`             | SplitText — animate by word on scroll            |
+| `data-split-text="chars"`             | SplitText — animate by character on scroll       |
+| `data-split-delay="0.2"`             | Optional delay on split-text elements            |
+| `data-line-reveal-hero="top\|bottom"` | Line scaleY reveal on page load                  |
+| `data-line-reveal="top\|bottom"`      | Line scaleY reveal on scroll                     |
+| `data-line-duration="0.8"`            | Per-element duration override                    |
+| `data-line-delay="0.2"`              | Per-element delay override                       |
+| `data-hero-scroll-fade`               | Fades out as hero scrolls away (scrub)           |
+| `data-hero-scroll-fade-scale`         | Fades and scales down on hero scroll (scrub)     |
+| `data-char-hover=""`                  | Splits text into spans for char slide-up hover   |
+| `data-char-hover-trigger`             | Designates a hover trigger for char animation    |
+| `data-parallax="[speed]"`             | Parallax — speed is a float multiplier           |
+| `data-lenis-prevent`                  | Prevents Lenis smooth scroll inside element      |
+| `data-nav-theme="dark\|light\|[name]"`| Nav theme to apply when section is in view       |

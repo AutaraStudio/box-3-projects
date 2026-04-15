@@ -111,6 +111,14 @@ Never applied to individual child elements.
 - `--theme-nav-bg`
 - `--theme-nav-text`
 - `--theme-nav-border`
+- `--theme-nav-accent`
+- `--theme-nav-icon-bg`
+- `--theme-nav-icon-text`
+
+#### Partner Cards
+- `--theme-partner-card-bg`
+- `--theme-partner-card-svg`
+- `--theme-partner-card-svg-hover`
 
 #### Extended Palette
 - `--theme-bg-card-2` — second card background variant

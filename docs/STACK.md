@@ -5,7 +5,9 @@
 - Deployed on Netlify, version controlled on GitHub
 
 ## Styling
-- Tailwind CSS (utility-first)
+- Tailwind CSS v4 (utility-first) — uses @import "tailwindcss" and
+  @config directives. Never use @tailwind base/components/utilities
+  (v3 directives — will silently break the token system)
 - CSS custom properties for all tokens (colors, animations, spacing, typography)
 - No hardcoded values anywhere
 
