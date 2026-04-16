@@ -13,7 +13,8 @@
 
 "use client";
 
-import { useRef, type FormEvent } from "react";
+import { useEffect, useRef, type FormEvent } from "react";
+import { usePathname } from "next/navigation";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
@@ -67,6 +68,7 @@ export default function Nav({
   /* Refs — state (useRef to avoid re-renders) */
   const isMenuOpen = useRef(false);
   const showMenuBtn = useRef(false);
+  const closeMenuRef = useRef<(() => void) | null>(null);
 
   /* Refs — GSAP timelines */
   const navShowTl = useRef<gsap.core.Timeline | null>(null);
@@ -349,6 +351,10 @@ export default function Nav({
         menuCloseTl.current.to(megaMenu, { display: "none", duration: 0 });
       }
 
+      /* Expose closeMenu so the pathname-change effect can close the
+         mega menu on route transitions from PageTransition. */
+      closeMenuRef.current = closeMenu;
+
       /* ── Toggle Menu ───────────────────────────── */
       function toggleMenu() {
         if (!isMenuOpen.current) {
@@ -422,6 +428,17 @@ export default function Nav({
     },
     { scope: headerRef, dependencies: [] },
   );
+
+  /* ── Close mega menu on route change ───────────────────────
+     PageTransition stops propagation on link clicks so the mega
+     menu's own handlers never fire. This effect watches for the
+     pathname change that follows and closes the menu. */
+  const pathname = usePathname();
+  useEffect(() => {
+    if (isMenuOpen.current && closeMenuRef.current) {
+      closeMenuRef.current();
+    }
+  }, [pathname]);
 
   return (
     <header ref={headerRef} data-nav="" data-theme="dark" className="site-header">

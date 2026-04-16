@@ -362,6 +362,13 @@ export default function ProjectGallery({
       loop: true,
       slidesPerView: "auto",
       spaceBetween: 20,
+      /* Observer watches for DOM mutations + image load events so
+         Swiper re-measures slide widths when images arrive. Without
+         these, cloned loop-slides can render with zero width until
+         the user interacts. */
+      observer: true,
+      observeParents: true,
+      observeSlideChildren: true,
       navigation: {
         prevEl: prevRef.current,
         nextEl: nextRef.current,
@@ -540,12 +547,24 @@ export default function ProjectGallery({
                     >
                       <div className="project-gallery__carousel-media">
                         {image.asset?.url ? (
-                          <Image
+                          /* Plain <img> (not next/image) — Next's Image
+                             with `fill` inside Swiper's cloned loop
+                             slides can render at zero height until the
+                             first interaction. Eager loading kicks off
+                             the Sanity fetch immediately on mount so the
+                             images are cached by the time the lightbox
+                             opens. */
+                          <img
                             src={urlFor(image).width(1920).url()}
                             alt={image.alt ?? ""}
-                            fill
-                            sizes="70vw"
+                            width={dims.width}
+                            height={dims.height}
+                            loading="eager"
+                            decoding="async"
                             className="project-gallery__carousel-image"
+                            onLoad={() => {
+                              swiperInstanceRef.current?.update();
+                            }}
                           />
                         ) : null}
                       </div>
