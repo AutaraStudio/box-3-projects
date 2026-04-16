@@ -54,10 +54,8 @@ function slugify(value: string): string {
 }
 
 async function deleteAllOfType(type: string): Promise<number> {
-  const ids = await client.fetch<string[]>(
-    `*[_type == $type]._id`,
-    { type },
-  );
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const ids = await (client as any).fetch(`*[_type == $type]._id`, { type }) as string[];
   if (ids.length === 0) return 0;
   const tx = client.transaction();
   for (const id of ids) tx.delete(id);
@@ -68,7 +66,7 @@ async function deleteAllOfType(type: string): Promise<number> {
 async function assetIdsForTag(tagSlug: string): Promise<string[]> {
   const query = `*[_type == "sanity.imageAsset" && references(*[_type == "media.tag" && name.current == $tag]._id)]._id`;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return client.fetch(query, { tag: tagSlug }) as Promise<string[]>;
+  return (client as any).fetch(query, { tag: tagSlug }) as Promise<string[]>;
 }
 
 function imageRef(assetId: string) {
