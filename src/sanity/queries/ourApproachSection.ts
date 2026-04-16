@@ -7,7 +7,7 @@
  */
 
 import { groq } from "next-sanity";
-import type { Image } from "sanity";
+
 
 export const OUR_APPROACH_QUERY = groq`
   *[_type == "ourApproachSection"][0] {
@@ -49,7 +49,7 @@ export const OUR_APPROACH_QUERY = groq`
    Types
    ------------------------------------------------------------------ */
 
-export interface OurApproachImage extends Image {
+export interface OurApproachImage {
   _key?: string;
   alt?: string;
   asset?: {
