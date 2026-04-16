@@ -66,10 +66,9 @@ async function deleteAllOfType(type: string): Promise<number> {
 }
 
 async function assetIdsForTag(tagSlug: string): Promise<string[]> {
-  return client.fetch<string[]>(
-    `*[_type == "sanity.imageAsset" && references(*[_type == "media.tag" && name.current == $tag]._id)]._id`,
-    { tag: tagSlug },
-  );
+  const query = `*[_type == "sanity.imageAsset" && references(*[_type == "media.tag" && name.current == $tag]._id)]._id`;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return client.fetch(query, { tag: tagSlug }) as Promise<string[]>;
 }
 
 function imageRef(assetId: string) {
