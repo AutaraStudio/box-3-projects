@@ -39,7 +39,7 @@ import {
   Text,
 } from "@sanity/ui";
 import {
-  type ImageInputProps,
+  type ObjectInputProps,
   set,
   setIfMissing,
   useClient,
@@ -55,7 +55,8 @@ type LibraryAsset = {
   originalFilename?: string;
 };
 
-export function TaggedMediaPicker(props: ImageInputProps) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function TaggedMediaPicker(props: ObjectInputProps<any>) {
   const { onChange, renderDefault } = props;
   const client = useClient({ apiVersion: "2024-06-01" });
   const builder = useMemo(() => imageUrlBuilder(client), [client]);
