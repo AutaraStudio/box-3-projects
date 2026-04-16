@@ -2,25 +2,24 @@
  * Providers
  * =========
  * Single wrapper that composes all global providers in the correct order.
- * Import this once in the root layout — it handles smooth scrolling,
- * scroll-triggered animations, SplitText observers, line reveals,
- * nav theme detection, and the hero dither engine.
+ * Import this once in the root layout.
  *
  * Order matters:
  *   SmoothScroll (Lenis + ScrollTrigger) must wrap everything so
- *   scroll position is correct before animation observers fire.
+ *   scroll position is correct before downstream observers fire.
+ *   HoverCursor sits outermost after SmoothScroll so its fixed
+ *   cursor chip is in the DOM regardless of which subtree mounts.
  */
 
 "use client";
 
 import type { ReactNode } from "react";
 import SmoothScroll from "./SmoothScroll";
-import AnimationProvider from "./AnimationProvider";
-import SplitTextObserver from "./SplitTextObserver";
-import LineRevealObserver from "./LineRevealObserver";
-import NavThemeObserver from "./NavThemeObserver";
+import HoverCursor from "./HoverCursor";
+import ParallaxObserver from "./ParallaxObserver";
+import ImageRevealObserver from "./ImageRevealObserver";
 import CharHoverObserver from "./CharHoverObserver";
-import HeroDitherProvider from "./HeroDitherProvider";
+import NavThemeObserver from "./NavThemeObserver";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -29,17 +28,15 @@ interface ProvidersProps {
 export default function Providers({ children }: ProvidersProps) {
   return (
     <SmoothScroll>
-      <AnimationProvider>
-        <SplitTextObserver>
-          <LineRevealObserver>
-            <NavThemeObserver>
-              <CharHoverObserver>
-                <HeroDitherProvider>{children}</HeroDitherProvider>
-              </CharHoverObserver>
-            </NavThemeObserver>
-          </LineRevealObserver>
-        </SplitTextObserver>
-      </AnimationProvider>
+      <HoverCursor>
+        <ParallaxObserver>
+          <ImageRevealObserver>
+            <CharHoverObserver>
+              <NavThemeObserver>{children}</NavThemeObserver>
+            </CharHoverObserver>
+          </ImageRevealObserver>
+        </ParallaxObserver>
+      </HoverCursor>
     </SmoothScroll>
   );
 }

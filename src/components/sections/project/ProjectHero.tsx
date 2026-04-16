@@ -1,281 +1,289 @@
-"use client";
-
 /**
  * ProjectHero
  * ===========
- * Opening section of the project detail page.
+ * Two-column hero mirroring reference/ref.html:
+ *   Left column (sticky on desktop):
+ *     - category tag
+ *     - title
+ *     - primary hero image with mask reveal
+ *     - ruled stats table from Sanity `stats[]`
+ *   Right column (scrolls normally):
+ *     - gallery list (first 5 images)
+ *     - project-team grid
  *
- * Layout:
- *   - Desktop: 12-column grid. Left 5 cols are sticky (category tag,
- *     title, hero portrait, stats). Right 7 cols are a gallery stack
- *     followed by the project team grid.
- *   - Mobile: single column, sticky disabled.
- *
- * Animation hooks are all data-attributes, picked up by the global
- * providers in src/components/layout/Providers.tsx:
- *   - data-split-text="lines" on the h1
- *   - data-animate="clip-reveal" on every image
- *   - data-animate="fade-up" with staggered delay on each team card
- *
- * All colour and sizing values flow through --theme-* / --space-*
- * tokens — no hardcoded values.
+ * Content flows entirely from props — no hardcoded strings or images.
+ * Theme inherited from the parent section wrapper (light).
  */
 
 import Image from "next/image";
 
+import Accordion, { type AccordionItem } from "@/components/ui/Accordion";
 import { urlFor } from "@/sanity/lib/image";
 import type {
+  ProjectCategoryRef,
   ProjectImage,
   ProjectStat,
   TeamMemberRef,
 } from "@/sanity/queries/project";
+/* NOTE: ProjectImage is still imported for the right-column gallery
+   (heroImages). The left-column featured image was removed so the
+   stats grid can carry the column. */
 
 import "./ProjectHero.css";
 
 /* --------------------------------------------------------------------------
-   Props
+   Types
    -------------------------------------------------------------------------- */
 
 export interface ProjectHeroProps {
   title: string;
-  category?: { title: string };
-  heroImage?: ProjectImage;
+  category?: ProjectCategoryRef;
+  /** First 5 items render in the right-column gallery. */
   heroImages: ProjectImage[];
   stats: ProjectStat[];
   location: string;
   year: number;
   teamMembers: TeamMemberRef[];
+  /** Project brief — rendered inside the right-column accordion. */
+  clientObjective?: string;
+  /** Client quote / feedback — rendered inside the accordion. */
+  clientFeedback?: string;
 }
 
 /* --------------------------------------------------------------------------
-   Team card — inline so the hero owns its presentation.
+   Component
    -------------------------------------------------------------------------- */
 
-interface ProjectTeamCardProps {
-  member: TeamMemberRef;
-  index: number;
-}
-
-function ProjectTeamCard({ member, index }: ProjectTeamCardProps) {
-  const staggerDelay = String(index * 0.08);
-  const hasImage = Boolean(member.image?.asset?.url);
-  const imageUrl = hasImage
-    ? urlFor(member.image as ProjectImage)
-        .width(600)
-        .height(400)
-        .quality(85)
-        .auto("format")
-        .url()
-    : null;
-
-  const media = (
-    <div className="team-card__media">
-      {hasImage && imageUrl ? (
-        <Image
-          src={imageUrl}
-          alt={member.name}
-          fill
-          className="object-cover"
-          sizes="20vw"
-        />
-      ) : (
-        <div className="team-card__placeholder" />
-      )}
-      {member.linkedinUrl ? (
-        <span className="team-card__linkedin" aria-hidden="true">
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            aria-hidden="true"
-          >
-            <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" />
-            <circle cx="4" cy="4" r="2" />
-          </svg>
-        </span>
-      ) : null}
-    </div>
-  );
-
-  const info = (
-    <div className="team-card__info">
-      <p className="team-card__name font-primary text-h6">{member.name}</p>
-      {member.qualifications ? (
-        <p
-          className="team-card__quals font-secondary text-text-xs uppercase tracking-caps"
-          style={{ color: "var(--theme-text-muted)" }}
-        >
-          {member.qualifications}
-        </p>
-      ) : null}
-      <p
-        className="team-card__role font-secondary text-text-sm"
-        style={{ color: "var(--theme-text-muted)" }}
-      >
-        {member.role}
-      </p>
-    </div>
-  );
-
-  if (member.linkedinUrl) {
-    return (
-      <a
-        className="team-card team-card--link"
-        data-animate="fade-up"
-        data-animate-delay={staggerDelay}
-        href={member.linkedinUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {media}
-        {info}
-      </a>
-    );
-  }
-
-  return (
-    <article
-      className="team-card"
-      data-animate="fade-up"
-      data-animate-delay={staggerDelay}
-    >
-      {media}
-      {info}
-    </article>
-  );
-}
-
-/* --------------------------------------------------------------------------
-   Main
-   -------------------------------------------------------------------------- */
-
-export function ProjectHero({
+export default function ProjectHero({
   title,
   category,
-  heroImage,
   heroImages,
   stats,
+  location,
+  year,
   teamMembers,
+  clientObjective,
+  clientFeedback,
 }: ProjectHeroProps) {
-  const heroImageUrl = heroImage
-    ? urlFor(heroImage).width(900).quality(85).auto("format").url()
-    : null;
+  /* Build accordion items from whichever client fields are
+     populated — accordion is skipped entirely if neither field
+     has content so the layout doesn't render empty dropdowns. */
+  const accordionItems: AccordionItem[] = [];
+  if (clientObjective) {
+    accordionItems.push({
+      key: "objective",
+      label: "Objective",
+      content: clientObjective,
+    });
+  }
+  if (clientFeedback) {
+    accordionItems.push({
+      key: "feedback",
+      label: "Client feedback",
+      content: clientFeedback,
+    });
+  }
+  /* Right-col gallery: first 5 images. */
+  const galleryImages = heroImages.slice(0, 5);
+
+  /* Left-column stat grid.
+     Location + Year are always shown first, then every stat from
+     Sanity in order. No cap — the left column was redesigned to
+     anchor the stats at the bottom, so additional rows just extend
+     the ledger downwards. */
+  const heroStats: ProjectStat[] = [
+    { _key: "location", label: "Location", value: location },
+    { _key: "year", label: "Year", value: String(year) },
+    ...stats,
+  ];
 
   return (
-    <section
-      className="project-hero py-section-xl"
-      data-theme="light"
-      data-nav-theme="light"
-      aria-label="Project overview"
-    >
-      <div className="project-hero__grid container">
-        {/* ------------------------------ Left column --------------------- */}
-        <div className="project-hero__left">
-          {category ? (
-            <p
-              className="font-secondary text-text-xs uppercase tracking-caps"
-              style={{ color: "var(--theme-text-muted)" }}
-            >
-              {category.title}
-            </p>
-          ) : null}
+    <section className="project-hero pt-section-xl">
+      <div className="project-hero__inner container">
+        {/* Left column — sticky on desktop. Header anchors to the top,
+            a flexible spacer pushes the stats grid to the bottom. */}
+        <div className="project-hero__col">
+          <div className="project-hero__sticky">
+            <div className="project-hero__content">
+              <header className="project-hero__header">
+                {category ? (
+                  <p
+                    className="project-hero__tag font-secondary text-text-xs tracking-caps uppercase"
+                  >
+                    <span className="project-hero__tag-label">
+                      {category.title}
+                    </span>
+                  </p>
+                ) : null}
 
-          <h1
-            data-split-text="lines"
-            className="font-primary text-h3 tracking-snug leading-snug"
-          >
-            {title}
-          </h1>
+                <h1
+                  className="project-hero__title font-primary text-h3 leading-tight tracking-tight"
+                >
+                  {title}
+                </h1>
+              </header>
 
-          {heroImage && heroImageUrl ? (
-            <div
-              className="project-hero__image-wrap"
-              data-animate="clip-reveal"
-            >
-              <div className="project-hero__image-inner">
-                <Image
-                  src={heroImageUrl}
-                  alt={heroImage.alt ?? ""}
-                  fill
-                  className="object-cover"
-                  sizes="40vw"
-                  priority
-                />
+              <div className="project-hero__stats">
+                <dl className="project-hero__stats-list">
+                  {heroStats.map((stat) => (
+                    <div
+                      key={stat._key}
+                      className="project-hero__stats-item"
+                    >
+                      <dt className="font-secondary text-text-xs tracking-caps uppercase project-hero__stats-label">
+                        {stat.label}
+                      </dt>
+                      <dd className="project-hero__stats-value">
+                        {stat.value}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
               </div>
             </div>
-          ) : null}
-
-          {stats.length > 0 ? (
-            <dl className="project-hero__stats">
-              {stats.map((stat) => (
-                <div key={stat._key} className="project-hero__stat">
-                  <dt
-                    className="font-secondary text-text-xs uppercase tracking-caps"
-                    style={{ color: "var(--theme-text-muted)" }}
-                  >
-                    {stat.label}
-                  </dt>
-                  <dd className="font-primary text-text-sm">{stat.value}</dd>
-                </div>
-              ))}
-            </dl>
-          ) : null}
+          </div>
         </div>
 
-        {/* ------------------------------ Right column -------------------- */}
-        <div className="project-hero__right">
-          <div className="project-hero__images">
-            {heroImages.map((img, i) => {
-              const url = urlFor(img)
-                .width(1200)
-                .quality(85)
-                .auto("format")
-                .url();
-              return (
-                <div
-                  // Sanity images don't carry a stable key in the projection,
-                  // so index is used intentionally — the list is append-only
-                  // during a render and order is meaningful to the layout.
-                  key={`${img.asset?._id ?? "img"}-${i}`}
+        {/* Right column — gallery + team */}
+        <div className="project-hero__col">
+          <div className="project-hero__gallery">
+            <ul className="project-hero__gallery-list">
+              {galleryImages.map((image, index) => (
+                <li
+                  key={image.asset?._id ?? index}
                   className="project-hero__gallery-item"
-                  data-animate="clip-reveal"
-                  data-animate-delay={String(i * 0.1)}
+                  data-image-reveal
+                  data-image-reveal-delay={(index * 0.05).toFixed(2)}
+                  data-parallax="trigger"
+                  data-parallax-start="12"
+                  data-parallax-end="-12"
+                  data-parallax-disable="mobileLandscape"
                 >
-                  <Image
-                    src={url}
-                    alt={img.alt ?? ""}
-                    fill
-                    className="object-cover"
-                    sizes="55vw"
-                    priority={i === 0}
-                    loading={i === 0 ? "eager" : "lazy"}
-                  />
-                </div>
-              );
-            })}
+                  <div
+                    className="project-hero__gallery-image-inner"
+                    data-parallax="target"
+                  >
+                    {image.asset?.url ? (
+                      <figure className="project-hero__gallery-image">
+                        <Image
+                          src={urlFor(image).width(1600).url()}
+                          alt={image.alt ?? ""}
+                          fill
+                          sizes="(max-width: 999px) 100vw, 50vw"
+                          className="project-hero__gallery-image-el"
+                        />
+                      </figure>
+                    ) : (
+                      <div
+                        className="project-hero__gallery-image project-hero__gallery-image--placeholder"
+                        aria-hidden="true"
+                      />
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
 
           {teamMembers.length > 0 ? (
             <div className="project-hero__team">
-              <p
-                className="font-secondary text-text-xs uppercase tracking-caps"
-                style={{
-                  color: "var(--theme-text-muted)",
-                  marginBottom: "var(--space-4)",
-                }}
-              >
-                Project Team
-              </p>
-              <div className="project-hero__team-grid">
-                {teamMembers.map((member, i) => (
-                  <ProjectTeamCard
-                    key={member._id}
-                    member={member}
-                    index={i}
-                  />
-                ))}
-              </div>
+              <h2 className="project-hero__team-title font-primary text-h5 leading-snug tracking-tight">
+                Project team
+              </h2>
+              <ul className="project-hero__team-list">
+                {teamMembers.map((member) => {
+                  const hasLink = Boolean(member.linkedinUrl);
+                  const inner = (
+                    <article
+                      className={`project-hero__team-tile${
+                        hasLink ? " project-hero__team-tile--link" : ""
+                      }`}
+                    >
+                      <div
+                        className="project-hero__team-media"
+                        data-image-reveal
+                      >
+                        {member.image?.asset?.url ? (
+                          <Image
+                            src={urlFor(member.image).width(800).url()}
+                            alt={member.image.alt ?? member.name}
+                            fill
+                            sizes="(max-width: 999px) 50vw, 25vw"
+                            className="project-hero__team-image"
+                          />
+                        ) : (
+                          <div
+                            className="project-hero__team-image project-hero__team-image--placeholder"
+                            aria-hidden="true"
+                          />
+                        )}
+                        {hasLink ? (
+                          <span
+                            className="project-hero__team-linkedin"
+                            aria-hidden="true"
+                          >
+                            <svg
+                              viewBox="0 0 24 24"
+                              width="20"
+                              height="20"
+                              fill="currentColor"
+                            >
+                              <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" />
+                              <circle cx="4" cy="4" r="2" />
+                            </svg>
+                          </span>
+                        ) : null}
+                      </div>
+                      <div className="project-hero__team-info">
+                        <p className="project-hero__team-name font-primary text-h6 leading-normal">
+                          {member.name}
+                        </p>
+                        {member.qualifications ? (
+                          <p className="project-hero__team-qual font-secondary text-text-xs tracking-caps uppercase">
+                            {member.qualifications}
+                          </p>
+                        ) : null}
+                        {member.role ? (
+                          <p className="project-hero__team-role font-secondary text-text-xs tracking-caps uppercase">
+                            {member.role}
+                          </p>
+                        ) : null}
+                      </div>
+                    </article>
+                  );
+
+                  return (
+                    <li key={member._id}>
+                      {hasLink ? (
+                        <a
+                          className="project-hero__team-link"
+                          href={member.linkedinUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`${member.name} on LinkedIn`}
+                        >
+                          {inner}
+                        </a>
+                      ) : (
+                        inner
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ) : null}
+
+          {/* Objective / Client feedback accordion — sits beneath
+              the team grid in the right column. Rendered only when
+              at least one of the fields is populated in Sanity. */}
+          {accordionItems.length > 0 ? (
+            <div className="project-hero__accordion">
+              <Accordion
+                idPrefix="project-client"
+                items={accordionItems}
+                defaultOpenKey={accordionItems[0]?.key}
+              />
             </div>
           ) : null}
         </div>
@@ -283,5 +291,3 @@ export function ProjectHero({
     </section>
   );
 }
-
-export default ProjectHero;

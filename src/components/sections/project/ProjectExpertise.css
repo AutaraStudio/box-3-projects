@@ -1,76 +1,87 @@
-/* --------------------------------------------------------------------------
+/* ==========================================================================
    ProjectExpertise
-   --------------------------------------------------------------------------
-   Numbered list of expertise / service tags. Rule-separated rows, large
-   editorial type. data-theme="cream" provides the warm-paper backdrop.
-
-   All values flow through the token system — no hardcoded colours or
-   pixel values.
-   -------------------------------------------------------------------------- */
+   ==========================================================================
+   Ported from reference .c-listing-dated — ruled list with top/bottom
+   borders and per-row dividers. Uses the cream theme palette via the
+   parent section wrapper.
+   ========================================================================== */
 
 .project-expertise {
-  padding-top: var(--section-space-md);
-  padding-bottom: var(--section-space-md);
   background-color: var(--theme-bg);
   color: var(--theme-text);
+  padding-bottom: var(--section-space-md);
 }
 
-/* Header ------------------------------------------------------------------- */
 .project-expertise__header {
-  padding-bottom: var(--space-7);
-  border-bottom: var(--border-width) solid var(--theme-border);
-  margin-bottom: 0;
+  padding-top: var(--section-space-md);
+  padding-bottom: var(--space-5);
 }
 
 .project-expertise__heading {
   margin: 0;
-  font-family: var(--font-primary);
-  font-size: var(--font-size-h4);
-  letter-spacing: var(--letter-spacing-snug);
-  line-height: var(--line-height-snug);
   color: var(--theme-text-muted);
+  max-width: 38rem;
 }
 
-/* List --------------------------------------------------------------------- */
+.project-expertise__inner {
+  width: 100%;
+}
+
 .project-expertise__list {
   position: relative;
-  list-style: none;
   margin: 0;
   padding: 0;
+  list-style: none;
+}
+
+/* Bottom-rule closes the list — spans full container edge-to-edge. */
+.project-expertise__list::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: calc(var(--container-padding) * -1);
+  width: calc(100% + var(--container-padding) * 2);
+  height: var(--border-width);
+  background-color: var(--theme-border);
 }
 
 .project-expertise__item {
-  display: flex;
-  align-items: baseline;
-  gap: var(--gap-6);
-  padding: var(--space-5) 0;
-  border-bottom: var(--border-width) solid var(--theme-border);
   position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  column-gap: var(--gap-4);
+  line-height: var(--line-height-snug);
+  padding: var(--space-4) 0;
 }
 
-/* Number cell -------------------------------------------------------------- */
-.project-expertise__number {
-  font-family: var(--font-secondary);
-  font-size: var(--font-size-text-xs);
-  letter-spacing: var(--letter-spacing-caps);
-  text-transform: uppercase;
-  color: var(--theme-text-muted);
-  flex-shrink: 0;
-  width: var(--space-5);
-}
-
-/* Title -------------------------------------------------------------------- */
-.project-expertise__title {
-  font-family: var(--font-primary);
-  font-size: var(--font-size-h3);
-  letter-spacing: var(--letter-spacing-snug);
-  line-height: var(--line-height-none);
-  color: var(--theme-text);
-}
-
-/* Responsive --------------------------------------------------------------- */
-@media (max-width: 767px) {
-  .project-expertise__title {
-    font-size: var(--font-size-h4);
+@media (min-width: 1000px) {
+  .project-expertise__item {
+    grid-template-columns: var(--space-8) 1fr;
+    column-gap: var(--gap-5);
+    padding: var(--space-5) 0;
   }
+}
+
+.project-expertise__index {
+  color: var(--theme-text-muted);
+  margin: 0;
+  padding-top: var(--space-1);
+}
+
+/* Top-rule per item — also extends edge-to-edge. */
+.project-expertise__item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: calc(var(--container-padding) * -1);
+  width: calc(100% + var(--container-padding) * 2);
+  height: var(--border-width);
+  background-color: var(--theme-border);
+}
+
+.project-expertise__title {
+  margin: 0;
+  text-wrap: balance;
+  color: var(--theme-text);
 }

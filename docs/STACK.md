@@ -12,10 +12,12 @@
 - No hardcoded values anywhere
 
 ## Animation
-- GSAP + ScrollTrigger + SplitText: scroll animations, timelines, text reveals
+- GSAP + ScrollTrigger: scroll animations, timelines, parallax
+- GSAP ScrambleText: nav primary/secondary link reveals only
 - Lenis: smooth scroll, initialised globally at app level
 - Framer Motion: page transitions and React-specific UI micro-interactions only
 - All easings/durations centralised in /src/config/animations.config.ts
+- Global observers live in `src/components/layout/*Observer.tsx` — see `docs/ANIMATIONS.md` for the full list.
 
 ## CMS
 - Sanity with next-sanity

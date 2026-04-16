@@ -1,0 +1,334 @@
+/* ==========================================================================
+   BannerShowroom
+   ==========================================================================
+   Sticky 200svh banner with a muted looping background video and
+   two editorial columns. Clicking the video raises a fullscreen
+   VideoPlayer with custom controls.
+
+   Tokens carry all colour / typography / spacing. The decorative
+   rule width and the heading max-width are the two hardcoded rem
+   values, both explained inline.
+   ========================================================================== */
+
+.banner-showroom {
+  position: relative;
+  /* 200svh drives the scroll-scrub distance. Keeps the section
+     sticky for one viewport's worth of scroll before releasing. */
+  height: 200svh;
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  padding-top: var(--space-9);
+}
+
+/* ── Top-left section label (h4 heading, not caps) ─────────────────────── */
+
+.banner-showroom__label {
+  margin: 0 var(--space-9);
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-6);
+  color: var(--theme-text);
+  /* Soft editorial rule beneath the section label — picks up the
+     active theme's text colour at 30% opacity so it reads as a
+     separator rather than a hard line. */
+  border-bottom: var(--border-width) solid
+    color-mix(in srgb, currentColor 30%, transparent);
+}
+
+/* ── Sticky wrap (holds one viewport's worth of content) ────────────────── */
+
+.banner-showroom__sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+}
+
+.banner-showroom__container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100svh;
+}
+
+/* ── Horizontal rule (scales 0 → 1 as section scrubs) ───────────────────── */
+
+.banner-showroom__border {
+  position: absolute;
+  /* Pinned above centre. -20rem matches the reference's editorial
+     offset so the rule sits in the upper third of the viewport
+     rather than bisecting the composition. No token equivalent. */
+  margin-top: -20rem;
+  /* 152rem is the reference's authored width — capped by the
+     container padding so it never overflows narrow viewports. */
+  width: 152rem;
+  max-width: calc(100% - var(--space-11));
+  height: var(--border-width);
+  background-color: var(--theme-border);
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform;
+}
+
+/* ── Content row (heading | address + CTA) ─────────────────────────────── */
+
+.banner-showroom__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin: 0 var(--space-9);
+  gap: var(--gap-8);
+}
+
+.banner-showroom__column {
+  will-change: transform;
+}
+
+.banner-showroom__column--right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+
+/* ── Heading (line-mask reveal) ─────────────────────────────────────────── */
+
+.banner-showroom__heading {
+  /* 45rem ≈ 720px at 1440 — sized for the new heading scale so the
+     two-line headline reads as a measured block. No token. */
+  max-width: 45rem;
+  margin: var(--space-3) 0;
+  color: var(--theme-text);
+}
+
+/* Each line of the heading gets its own overflow:clip wrapper so
+   the line itself can translate vertically for entrance effects
+   without bleeding into siblings. */
+.banner-showroom__line-mask {
+  display: block;
+  overflow: clip;
+  /* Negative vertical margin + inside padding gives descenders /
+     ascenders some breathing room without changing visual
+     line-height. */
+  margin: calc(var(--space-5) * -1) 0;
+  padding: var(--space-3) 0;
+}
+
+.banner-showroom__line {
+  display: block;
+}
+
+/* ── Address block ──────────────────────────────────────────────────────── */
+
+.banner-showroom__address {
+  margin-bottom: var(--space-7);
+}
+
+.banner-showroom__address-title {
+  margin: 0 0 var(--space-2);
+  color: var(--theme-text-muted);
+}
+
+.banner-showroom__address-text {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+.banner-showroom__cta {
+  display: inline-flex;
+}
+
+/* ── Background video (clickable) ───────────────────────────────────────── */
+
+.banner-showroom__background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: hidden;
+  will-change: transform, opacity;
+}
+
+.banner-showroom__background--placeholder {
+  background-color: var(--theme-bg-2);
+}
+
+.banner-showroom__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+
+/* ==========================================================================
+   Fullscreen VideoPlayer modal
+   ========================================================================== */
+
+.banner-showroom__player {
+  position: fixed;
+  inset: 0;
+  /* Above the nav (z-index: 1000) so the fullscreen player takes
+     over the entire viewport — nav shouldn't poke through. */
+  z-index: 2000;
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  pointer-events: none;
+}
+
+.banner-showroom__player.is-open {
+  pointer-events: auto;
+}
+
+.banner-showroom__player-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+
+/* Close button — top-right */
+.banner-showroom__player-close {
+  position: absolute;
+  top: var(--space-9);
+  right: var(--space-9);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Fixed square — uses space tokens for the size so it scales
+     with the rest of the scale. 2.5rem ≈ 40px at 1440. */
+  width: var(--space-7);
+  height: var(--space-7);
+  padding: 0;
+  border: var(--border-width) solid var(--theme-border);
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  cursor: pointer;
+  z-index: 1;
+}
+
+.banner-showroom__player-close:hover {
+  background-color: var(--theme-bg-2);
+}
+
+/* Controls row — bottom bar */
+.banner-showroom__player-controls {
+  position: absolute;
+  inset: auto 0 var(--space-7) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--gap-6);
+  padding-inline: var(--space-9);
+  pointer-events: none;
+}
+
+.banner-showroom__player-btn,
+.banner-showroom__player-time,
+.banner-showroom__player-timeline {
+  pointer-events: auto;
+}
+
+.banner-showroom__player-btn {
+  color: var(--theme-text);
+  background: transparent;
+  border: 0;
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+}
+
+.banner-showroom__player-btn--pause {
+  margin-right: auto;
+}
+
+.banner-showroom__player-timeline {
+  position: relative;
+  flex: 1 1 auto;
+  max-width: 60rem;
+  height: var(--space-5);
+}
+
+.banner-showroom__player-range,
+.banner-showroom__player-progress {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  width: 100%;
+  appearance: none;
+  border: 0;
+  outline: 0;
+  overflow: hidden;
+}
+
+.banner-showroom__player-progress {
+  height: var(--border-width);
+  background-color: color-mix(
+    in srgb,
+    var(--theme-text) 30%,
+    transparent
+  );
+  pointer-events: none;
+}
+
+.banner-showroom__player-progress::-webkit-progress-bar {
+  background-color: color-mix(
+    in srgb,
+    var(--theme-text) 30%,
+    transparent
+  );
+}
+
+.banner-showroom__player-progress::-webkit-progress-value {
+  background-color: var(--theme-text);
+}
+
+.banner-showroom__player-progress::-moz-progress-bar {
+  background-color: var(--theme-text);
+}
+
+.banner-showroom__player-range {
+  height: 100%;
+  background: transparent;
+  z-index: 1;
+}
+
+.banner-showroom__player-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 0;
+  height: 0;
+}
+
+.banner-showroom__player-time {
+  color: var(--theme-text-muted);
+  margin: 0;
+  /* Tabular figures keep the clock from jittering as digits change. */
+  font-variant-numeric: tabular-nums;
+}
+
+/* Document-level flag set while the player is open — pair with
+   `html.has-player-open { overflow: hidden; }` in globals if you
+   want to lock background scroll. */
+
+/* ── Responsive — stack content on narrow screens ──────────────────────── */
+
+@media (max-width: 767px) {
+  .banner-showroom__content {
+    flex-direction: column;
+    gap: var(--gap-6);
+  }
+
+  .banner-showroom__column--right {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .banner-showroom__heading {
+    max-width: none;
+  }
+}

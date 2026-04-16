@@ -1,0 +1,227 @@
+/* ==========================================================================
+   FeaturedProjects
+   ==========================================================================
+   Alternating text/image rows on the home page. Each row is a
+   2-column grid on desktop; rows stack to a single column on
+   tablet + mobile with the image above the content for visual
+   rhythm.
+
+   Colour / spacing / typography via the token system. The
+   100svh image and 45rem stats-column max-width are the only
+   hardcoded rems — both carry approval comments.
+   ========================================================================== */
+
+.featured-projects {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  padding-top: var(--section-space-lg);
+  padding-bottom: var(--section-space-lg);
+}
+
+/* Header block — heading sits top-left with a full-width divider
+   beneath it (matches the PartnersSection "Trusted By" pattern).
+   Optional — if the client doesn't set `sectionLabel`, the
+   header is skipped entirely and the section starts directly
+   with the first project. */
+.featured-projects__header {
+  margin-bottom: var(--space-4);
+}
+
+.featured-projects__heading {
+  margin: 0;
+  color: var(--theme-text);
+}
+
+.featured-projects__divider {
+  width: 100%;
+  border: 0;
+  border-top: var(--border-width) solid var(--theme-border);
+  margin: 0 0 var(--section-space-md);
+}
+
+/* ── Row layout ────────────────────────────────────────────────────────── */
+
+.featured-projects__row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gap-7);
+  padding-bottom: var(--section-space-lg);
+}
+
+@media (min-width: 1000px) {
+  .featured-projects__row {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: var(--gap-8);
+    align-items: stretch;
+  }
+
+  /* Odd rows (first, third, fifth…): text-left, image-right. */
+  .featured-projects__row--image-right .featured-projects__content {
+    grid-column: 1 / 2;
+    padding-left: var(--container-padding);
+    padding-right: var(--space-9);
+  }
+  .featured-projects__row--image-right .featured-projects__media {
+    grid-column: 2 / 3;
+  }
+
+  /* Even rows (second, fourth…): image-left, text-right. */
+  .featured-projects__row--image-left .featured-projects__media {
+    grid-column: 1 / 2;
+    grid-row: 1;
+  }
+  .featured-projects__row--image-left .featured-projects__content {
+    grid-column: 2 / 3;
+    grid-row: 1;
+    padding-right: var(--container-padding);
+    padding-left: var(--space-9);
+  }
+}
+
+/* Mobile + tablet: stack image above content, keep container
+   padding on the text column only (image is full-bleed). */
+@media (max-width: 999px) {
+  .featured-projects__row {
+    grid-template-columns: 1fr;
+    gap: var(--gap-6);
+  }
+  .featured-projects__media {
+    order: -1;
+  }
+  .featured-projects__content {
+    padding-inline: var(--container-padding);
+  }
+}
+
+/* ── Content column ────────────────────────────────────────────────────── */
+
+.featured-projects__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Matches ProjectHero's content gap + bottom padding so the home
+     page featured blocks read at the same vertical rhythm as the
+     project detail hero (header → stats → CTA spacing, plus the
+     identical `--space-5` tail beneath the CTA). */
+  gap: var(--space-6);
+  padding-bottom: var(--space-5);
+}
+
+@media (max-width: 999px) {
+  .featured-projects__content {
+    gap: var(--space-7);
+  }
+}
+
+.featured-projects__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.featured-projects__tag {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+.featured-projects__title {
+  margin: 0;
+  color: var(--theme-text);
+  text-wrap: balance;
+}
+
+/* Ruled stats grid — matches ProjectHero layout. */
+.featured-projects__stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: var(--gap-5);
+  margin: 0;
+  padding: 0;
+  /* 45rem ≈ 720px at 1440 — comfortable max-width for the stats
+     grid so long project labels break naturally across rows. */
+  max-width: 45rem;
+}
+
+.featured-projects__stats-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-top: var(--border-width) solid var(--theme-border);
+  min-width: 0;
+}
+
+.featured-projects__stats-label {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+.featured-projects__stats-value {
+  margin: 0;
+  color: var(--theme-text);
+  /* 20px at 1440 — sits between --font-size-text-lg (24px) and
+     --font-size-text-md (16px); matches ProjectHero's compacted
+     stat value so both surfaces read at the same hierarchy. */
+  font-size: 1.25rem;
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--letter-spacing-tight);
+  overflow-wrap: anywhere;
+}
+
+.featured-projects__cta {
+  display: inline-flex;
+}
+
+/* ── Media column ──────────────────────────────────────────────────────── */
+
+.featured-projects__media {
+  position: relative;
+  overflow: hidden;
+  /* 100svh on desktop — the featured image takes a full viewport
+     height next to the text column. No token equivalent since this
+     is a viewport-based layout decision. */
+  min-height: 100svh;
+  background-color: var(--theme-bg-2);
+}
+
+@media (max-width: 999px) {
+  .featured-projects__media {
+    /* 3:2 aspect on mobile so the image doesn't dominate the row
+       when it stacks above the text. */
+    aspect-ratio: 3 / 2;
+    min-height: 0;
+  }
+}
+
+/* Parallax target — 30% taller than the mask with a -15% top offset
+   so the image sits centred at rest. ParallaxObserver animates
+   yPercent 12 → -12 (15.6% of mask height each way), so the mask
+   stays fully covered across the scroll range while the drift is
+   clearly visible. Same math as ProjectHero gallery items. */
+.featured-projects__media-inner {
+  position: absolute;
+  top: -15%;
+  left: 0;
+  right: 0;
+  height: 130%;
+  will-change: transform;
+}
+
+.featured-projects__media-image {
+  object-fit: cover;
+  object-position: center center;
+}
+
+.featured-projects__media-placeholder {
+  position: absolute;
+  inset: 0;
+  background-color: var(--theme-bg-2);
+}
+
+/* ── Bottom CTA ────────────────────────────────────────────────────────── */
+
+.featured-projects__footer {
+  padding-inline: var(--container-padding);
+  padding-top: var(--space-6);
+}

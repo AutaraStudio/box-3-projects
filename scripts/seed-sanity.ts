@@ -143,14 +143,88 @@ const documents: SeedDoc[] = [
   {
     _id: "partnersSection",
     _type: "partnersSection",
+    heading: "Trusted By",
     sectionLabel: "Our Partners",
-    partners: [
-      { _key: "p-nike", name: "Nike" },
-      { _key: "p-hugo", name: "Hugo Boss" },
-      { _key: "p-meta", name: "Meta" },
-      { _key: "p-warner", name: "Warner Music Group" },
-      { _key: "p-master", name: "Mastercard" },
-      { _key: "p-meta2", name: "Meta" },
+    /* Partner references are attached by the post-seed partner
+       migration block below — it creates partner documents and
+       rewrites this array as an ordered list of references. */
+    partners: [],
+  },
+  {
+    _id: "ourApproachSection",
+    _type: "ourApproachSection",
+    sectionLabel: "Our process",
+    intro: {
+      heading: "Built with rigour.\nFinished with craft.",
+      text: "Every Box 3 fit-out follows a clear, refined process — bringing precision, transparency, and confidence from initial concept through to final handover.",
+    },
+    steps: [
+      {
+        _key: "step-discover",
+        title: "1. Discover & design",
+        heading: "Your vision,\nmade tangible.",
+        text: "We start by understanding your brand, culture, and how your team works. Our design team translates that brief into spatial concepts, materials, and detailed drawings — balancing aesthetics with day-one practicality.",
+        layout: "right",
+      },
+      {
+        _key: "step-survey",
+        title: "2. Survey & detail",
+        heading: "Precision long before the first wall is built.",
+        text: "Once the design is signed off, our project surveyors visit site to confirm every measurement, condition, and constraint. We resolve clashes on paper so installation runs without surprises.",
+        layout: "left",
+      },
+      {
+        _key: "step-build",
+        title: "3. Procure & build",
+        heading: "Quality crafted,\non time.",
+        text: "Materials are procured from a vetted supplier network and trades are coordinated on a tight programme. Every joinery piece, finish, and service install is QA'd against the design — no shortcuts, no surprises.",
+        layout: "right",
+      },
+    ],
+    completion: {
+      title: "4. Install & handover",
+      heading: "Perfectly fitted,\nbeautifully finished.",
+      text: "Our site team manages the install end-to-end, with daily snagging and a final walkthrough before handover. We don't leave until you're ready to move in.",
+    },
+  },
+  {
+    _id: "featuredProjectsSection",
+    _type: "featuredProjectsSection",
+    sectionLabel: "Selected work",
+    ctaLabel: "Explore all projects",
+    ctaHref: "/projects",
+    /* Project references are added by the post-seed patch block
+       below (it resolves project docs by title and populates the
+       references array only if the section is otherwise empty). */
+    projects: [],
+  },
+  {
+    _id: "bannerShowroom",
+    _type: "bannerShowroom",
+    sectionLabel: "Showroom",
+    heading: "A team where quality\nand ambition meet.",
+    cursorLabel: "Play",
+    /* Videos default to empty — the client pastes direct MP4 URLs
+       once the films are hosted. */
+    backgroundVideoUrl: "",
+    modalVideoUrl: "",
+  },
+  {
+    _id: "homeIntroSection",
+    _type: "homeIntroSection",
+    body:
+      "Box 3 is a London-based commercial fit-out partner building interiors for ambitious businesses. For over a decade we have delivered category-leading workspaces, hospitality venues, and retail environments across the capital — quietly, on time, and to a standard of craft most of our clients say they've never seen before.",
+    points: [
+      {
+        _key: "p-1",
+        text:
+          "We work as a genuine extension of your team — from first concept through to snag-free handover, with a dedicated project lead and transparent cost reporting from day one.",
+      },
+      {
+        _key: "p-2",
+        text:
+          "Every project is underwritten by a vetted trade network we've refined over a decade, so the craft you see on site is the craft you signed off in the drawings.",
+      },
     ],
   },
   {
@@ -304,6 +378,17 @@ async function seedTeamMembers(): Promise<Map<string, string>> {
     );
     for (const doc of existing) nameToId.set(doc.name, doc._id);
 
+    /* Short-circuit if the dataset already has any teamMember docs —
+       the client's own team is authoritative and the baseline
+       TEAM_MEMBERS array is only a first-run fallback. Prevents this
+       script from appending duplicates on top of the client's roster. */
+    if (existing.length > 0) {
+      console.log(
+        `↷ teamMember already exists (${existing.length} docs) — skipping baseline seed`,
+      );
+      return nameToId;
+    }
+
     let created = 0;
     for (const m of TEAM_MEMBERS) {
       if (nameToId.has(m.name)) continue;
@@ -321,10 +406,6 @@ async function seedTeamMembers(): Promise<Map<string, string>> {
 
     if (created > 0) {
       console.log(`✔ created ${created} teamMember doc(s)`);
-    } else {
-      console.log(
-        `↷ teamMember already exists (${nameToId.size} docs) — skipping`,
-      );
     }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -935,6 +1016,17 @@ async function seedProjects(
       `count(*[_type == "project"])`,
     );
 
+    /* Short-circuit if the dataset already has projects — the client
+       is authoritative. The baseline PROJECTS array is a first-run
+       fallback only, and running it later appends duplicates on top
+       of the client's real projects. */
+    if (existingCount > 0) {
+      console.log(
+        `↷ project already exists (${existingCount} docs) — skipping baseline seed`,
+      );
+      return { created: 0, total: PROJECTS.length };
+    }
+
     /* Resolve all category _ids up-front. */
     const cats = await client.fetch<
       Array<{ _id: string; slug: { current: string } }>
@@ -1232,6 +1324,336 @@ async function seedVacancies(): Promise<{ created: number; total: number }> {
   }
 }
 
+/* --------------------------------------------------------------------------
+   Partners — seed partner documents and wire the partnersSection
+   singleton to reference them.
+   -------------------------------------------------------------------------- */
+
+const PARTNER_NAMES: string[] = [
+  "Nike",
+  "Hugo Boss",
+  "Meta",
+  "Warner Music Group",
+  "Mastercard",
+  "Gensler",
+  "Skanska",
+  "Walmart",
+];
+
+function slugify(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/['’"]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 96);
+}
+
+async function seedPartners(): Promise<Map<string, string>> {
+  const nameToId = new Map<string, string>();
+  try {
+    const existing = await client.fetch<Array<{ _id: string; name: string }>>(
+      `*[_type == "partner"]{ _id, name }`,
+    );
+    for (const doc of existing) nameToId.set(doc.name, doc._id);
+
+    /* Short-circuit if the dataset already has partner docs — the
+       client's partners are authoritative. PARTNER_NAMES is only a
+       first-run fallback. */
+    if (existing.length > 0) {
+      console.log(
+        `↷ partner already exists (${existing.length} docs) — skipping baseline seed`,
+      );
+      return nameToId;
+    }
+
+    let created = 0;
+    for (const name of PARTNER_NAMES) {
+      if (nameToId.has(name)) continue;
+      const doc = await client.create({
+        _type: "partner",
+        name,
+        slug: { _type: "slug", current: slugify(name) },
+      });
+      nameToId.set(name, doc._id);
+      created += 1;
+    }
+
+    if (created > 0) {
+      console.log(`✔ created ${created} partner doc(s)`);
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`✘ failed to seed partners: ${message}`);
+  }
+  return nameToId;
+}
+
+async function patchPartnersSectionRefs(
+  partnerMap: Map<string, string>,
+): Promise<void> {
+  try {
+    const current = await client.fetch<{ partners?: unknown[] } | null>(
+      '*[_id == "partnersSection"][0]{partners}',
+    );
+    if (current?.partners && current.partners.length > 0) {
+      console.log(
+        `↷ partnersSection already has ${current.partners.length} partner ref(s) — leaving alone`,
+      );
+      return;
+    }
+
+    const refs = PARTNER_NAMES
+      .map((name, i) => {
+        const id = partnerMap.get(name);
+        if (!id) return null;
+        return {
+          _key: `p-${i}`,
+          _type: "reference" as const,
+          _ref: id,
+        };
+      })
+      .filter((x): x is NonNullable<typeof x> => x !== null);
+
+    if (refs.length === 0) return;
+
+    await client.patch("partnersSection").set({ partners: refs }).commit();
+    console.log(`✔ patched partnersSection with ${refs.length} partner refs`);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`✘ failed to patch partnersSection partners: ${message}`);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Testimonials — seed testimonial documents and attach them to the
+   home page (1 quote) and every project (2–3 quotes each).
+   -------------------------------------------------------------------------- */
+
+type SeedTestimonial = {
+  key: string;             // stable internal key for this seed row
+  quote: string;
+  author: string;
+  title: string;
+  partnerName: string;     // must match a PARTNER_NAMES entry
+};
+
+const TESTIMONIALS: SeedTestimonial[] = [
+  {
+    key: "t-gensler-meticulous",
+    quote:
+      "\u201CBox 3 brought a level of detail and ownership to this project that I rarely see on a commercial fit-out. Every junction, every finish, every programme decision was considered. The team they put on site ran the job like it was their own business.\u201D",
+    author: "Alex Hanks",
+    title: "Design Director",
+    partnerName: "Gensler",
+  },
+  {
+    key: "t-hugo-quality",
+    quote:
+      "\u201CWorking with Box 3 felt like an extension of our own team from day one. They held us to a higher standard on quality than we held ourselves — and delivered the store on time, on budget, and without a single snag we had to chase.\u201D",
+    author: "Rachel Mortimer",
+    title: "Head of Retail Projects",
+    partnerName: "Hugo Boss",
+  },
+  {
+    key: "t-meta-pace",
+    quote:
+      "\u201CThe pace at which Box 3 moved without dropping quality was remarkable. They delivered a 25,000 sq ft workplace for us across two floors in under twelve weeks, and the handover was the cleanest I have ever been part of.\u201D",
+    author: "Jordan Ellis",
+    title: "Workplace Programme Lead",
+    partnerName: "Meta",
+  },
+  {
+    key: "t-warner-craft",
+    quote:
+      "\u201CThe craftsmanship across every detail — the joinery, the acoustic treatments, the bespoke lighting — is genuinely the best I have seen on a project of this scale. Box 3 are the only contractor we will be using going forward.\u201D",
+    author: "Priya Banerjee",
+    title: "Director of Real Estate",
+    partnerName: "Warner Music Group",
+  },
+  {
+    key: "t-mastercard-transparency",
+    quote:
+      "\u201CBox 3 are refreshingly transparent. Honest cost reporting every week, no surprises at the final account, and a programme that never slipped. That is the exact partnership model we have been looking for.\u201D",
+    author: "Daniel Okafor",
+    title: "Senior Procurement Manager",
+    partnerName: "Mastercard",
+  },
+  {
+    key: "t-skanska-collab",
+    quote:
+      "\u201CFrom pre-construction through to handover the collaboration was seamless. Box 3 challenged the design team where it mattered, protected the client's budget, and kept everyone aligned. A genuinely rare team.\u201D",
+    author: "Helena Strand",
+    title: "Operations Director",
+    partnerName: "Skanska",
+  },
+];
+
+async function seedTestimonials(
+  partnerMap: Map<string, string>,
+): Promise<Map<string, string>> {
+  const keyToId = new Map<string, string>();
+  try {
+    const existing = await client.fetch<
+      Array<{ _id: string; author: string; partner: { _ref?: string } | null }>
+    >(
+      `*[_type == "testimonial"]{ _id, author, partner }`,
+    );
+
+    /* Map existing docs by author to stay idempotent. */
+    const authorToId = new Map<string, string>();
+    for (const doc of existing) authorToId.set(doc.author, doc._id);
+
+    let created = 0;
+    for (const t of TESTIMONIALS) {
+      const partnerId = partnerMap.get(t.partnerName);
+      const matchedId = authorToId.get(t.author);
+      if (matchedId) {
+        keyToId.set(t.key, matchedId);
+        continue;
+      }
+
+      const doc = await client.create({
+        _type: "testimonial",
+        quote: t.quote,
+        author: t.author,
+        title: t.title,
+        partner: partnerId
+          ? { _type: "reference", _ref: partnerId }
+          : undefined,
+      });
+      keyToId.set(t.key, doc._id);
+      created += 1;
+    }
+
+    if (created > 0) {
+      console.log(`✔ created ${created} testimonial doc(s)`);
+    } else {
+      console.log(
+        `↷ testimonial already exists (${keyToId.size} docs) — skipping`,
+      );
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`✘ failed to seed testimonials: ${message}`);
+  }
+  return keyToId;
+}
+
+/** Attach a testimonials section to the home page (single featured
+ *  quote). Idempotent — only patches if empty. */
+async function attachTestimonialsToHomePage(
+  testimonialMap: Map<string, string>,
+): Promise<void> {
+  try {
+    const current = await client.fetch<{
+      testimonialsSection?: { testimonials?: unknown[] } | null;
+    } | null>(
+      '*[_id == "homePage"][0]{testimonialsSection}',
+    );
+    if (
+      current?.testimonialsSection?.testimonials &&
+      current.testimonialsSection.testimonials.length > 0
+    ) {
+      console.log(
+        `↷ homePage already has testimonials — leaving alone`,
+      );
+      return;
+    }
+
+    const featuredKey = "t-warner-craft";
+    const id = testimonialMap.get(featuredKey);
+    if (!id) return;
+
+    await client
+      .patch("homePage")
+      .set({
+        testimonialsSection: {
+          sectionLabel: "Testimonials",
+          reference: "[BOX3.1]",
+          testimonials: [
+            { _key: "hp-t-0", _type: "reference", _ref: id },
+          ],
+        },
+      })
+      .commit();
+    console.log(`✔ attached 1 testimonial to homePage`);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`✘ failed to attach testimonials to homePage: ${message}`);
+  }
+}
+
+/** Round-robin 2–3 testimonials onto every project that doesn't
+ *  already have a testimonialsSection. */
+async function attachTestimonialsToProjects(
+  testimonialMap: Map<string, string>,
+): Promise<void> {
+  try {
+    const projects = await client.fetch<
+      Array<{
+        _id: string;
+        title: string;
+        testimonialsSection?: { testimonials?: unknown[] } | null;
+      }>
+    >(
+      `*[_type == "project"] | order(title asc){_id, title, testimonialsSection}`,
+    );
+
+    const keys = Array.from(testimonialMap.keys());
+    if (keys.length === 0) return;
+
+    let patched = 0;
+    for (let i = 0; i < projects.length; i++) {
+      const p = projects[i];
+      const hasAny =
+        p.testimonialsSection?.testimonials &&
+        p.testimonialsSection.testimonials.length > 0;
+      if (hasAny) continue;
+
+      /* Pick 2 or 3 testimonials, rotating through the pool so every
+         project gets a different slice. */
+      const count = 2 + (i % 2); /* alternates 2, 3, 2, 3 … */
+      const refs: Array<{ _key: string; _type: "reference"; _ref: string }> = [];
+      for (let j = 0; j < count; j++) {
+        const key = keys[(i + j) % keys.length];
+        const id = testimonialMap.get(key);
+        if (!id) continue;
+        refs.push({
+          _key: `pr-t-${j}`,
+          _type: "reference" as const,
+          _ref: id,
+        });
+      }
+      if (refs.length === 0) continue;
+
+      /* Project reference code — something editorial per project. */
+      const reference = `[BOX3.${String(i + 1).padStart(2, "0")}]`;
+
+      await client
+        .patch(p._id)
+        .set({
+          testimonialsSection: {
+            sectionLabel: "Testimonials",
+            reference,
+            testimonials: refs,
+          },
+        })
+        .commit();
+      patched += 1;
+    }
+
+    if (patched > 0) {
+      console.log(`✔ attached testimonials to ${patched} project(s)`);
+    } else {
+      console.log(`↷ all projects already have testimonials — skipping`);
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`✘ failed to attach testimonials to projects: ${message}`);
+  }
+}
+
 async function seed() {
   let succeeded = 0;
   const total = documents.length + 1; /* +1 for projectCategory seeder */
@@ -1273,6 +1695,108 @@ async function seed() {
     }
   }
 
+  /* Backfill homeIntroSection.points on pre-existing docs that were
+     created before the field was reintroduced (idempotent — only
+     writes when the array is missing or empty so a client edit is
+     never overwritten). */
+  try {
+    const current = await client.fetch<
+      { points?: unknown[] } | null
+    >('*[_id == "homeIntroSection"][0]{points}');
+    if (!current?.points || current.points.length === 0) {
+      await client
+        .patch("homeIntroSection")
+        .set({
+          points: [
+            {
+              _key: "p-1",
+              text:
+                "We work as a genuine extension of your team — from first concept through to snag-free handover, with a dedicated project lead and transparent cost reporting from day one.",
+            },
+            {
+              _key: "p-2",
+              text:
+                "Every project is underwritten by a vetted trade network we've refined over a decade, so the craft you see on site is the craft you signed off in the drawings.",
+            },
+          ],
+        })
+        .commit();
+      console.log(`✔ backfilled homeIntroSection.points`);
+    } else {
+      console.log(
+        `↷ homeIntroSection.points already populated — leaving alone`,
+      );
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`✘ failed to backfill homeIntroSection.points: ${message}`);
+  }
+
+  /* Patch partnersSection with newly-added heading (idempotent). */
+  try {
+    await client
+      .patch("partnersSection")
+      .setIfMissing({ heading: "Trusted By" })
+      .commit();
+    console.log(`✔ patched partnersSection with heading`);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`✘ failed to patch partnersSection: ${message}`);
+  }
+
+  /* bannerShowroom — update copy to the new "team" headline and
+     strip the now-removed address / CTA fields from the document. */
+  try {
+    await client
+      .patch("bannerShowroom")
+      .set({ heading: "A team where quality\nand ambition meet." })
+      .unset(["addressTitle", "addressText", "ctaLabel", "ctaHref"])
+      .commit();
+    console.log(
+      `✔ patched bannerShowroom heading + unset removed fields`,
+    );
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`✘ failed to patch bannerShowroom: ${message}`);
+  }
+
+  /* Seed featuredProjectsSection.projects if it's still empty —
+     picks the first three projects from the dataset by year desc.
+     Re-runs don't overwrite the client's selection because we only
+     patch when the array is empty. */
+  try {
+    const existing = await client.fetch<{ projects?: unknown[] } | null>(
+      '*[_id == "featuredProjectsSection"][0]{projects}',
+    );
+    if (!existing?.projects || existing.projects.length === 0) {
+      const picks = await client.fetch<Array<{ _id: string }>>(
+        '*[_type == "project"] | order(year desc, title asc)[0...3]{_id}',
+      );
+      if (picks.length > 0) {
+        await client
+          .patch("featuredProjectsSection")
+          .set({
+            projects: picks.map((p, i) => ({
+              _key: `fp-${i}`,
+              _type: "reference",
+              _ref: p._id,
+            })),
+          })
+          .commit();
+        console.log(
+          `✔ patched featuredProjectsSection with ${picks.length} project refs`,
+        );
+      }
+    } else {
+      console.log(
+        `↷ featuredProjectsSection already has ${existing.projects.length} project ref(s) — leaving alone`,
+      );
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`✘ failed to patch featuredProjectsSection: ${message}`);
+  }
+
   /* Patch siteFooter with newly-added fields (idempotent). */
   try {
     await client
@@ -1298,7 +1822,33 @@ async function seed() {
   const expertiseMap = await seedExpertise();
   const teamMap = await seedTeamMembers();
   await seedProjects(expertiseMap, teamMap); /* logs its own summary */
-  await seedVacancies();                     /* logs its own "Vacancies seeded: X/7" summary */
+  await seedVacancies();                     /* logs its own summary */
+
+  /* Partners — migrate any legacy inline partners to documents, then
+     seed partner docs and wire refs into the partnersSection singleton. */
+  try {
+    const legacy = await client.fetch<{ partners?: Array<{ _type?: string }> } | null>(
+      '*[_id == "partnersSection"][0]{partners}',
+    );
+    const hasLegacyInline = (legacy?.partners ?? []).some(
+      (p) => !!p && p._type !== "reference",
+    );
+    if (hasLegacyInline) {
+      await client.patch("partnersSection").unset(["partners"]).commit();
+      console.log(`⚠ cleared legacy inline partners on partnersSection`);
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`✘ failed to inspect legacy partners: ${message}`);
+  }
+
+  const partnerMap = await seedPartners();
+  await patchPartnersSectionRefs(partnerMap);
+
+  /* Testimonials — seed docs then attach to home + projects. */
+  const testimonialMap = await seedTestimonials(partnerMap);
+  await attachTestimonialsToHomePage(testimonialMap);
+  await attachTestimonialsToProjects(testimonialMap);
 
   console.log(`\nSeeded ${succeeded}/${total} singletons + category set`);
 }

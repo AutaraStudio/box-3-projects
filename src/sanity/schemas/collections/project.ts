@@ -27,6 +27,7 @@ export default defineType({
     { name: "images", title: "Images" },
     { name: "stats", title: "Project Stats" },
     { name: "client", title: "Client" },
+    { name: "testimonials", title: "Testimonials" },
   ],
   fields: [
     /* ── Overview ─────────────────────────────────────────── */
@@ -163,7 +164,7 @@ export default defineType({
       name: "stats",
       title: "Project stats",
       description:
-        "Flexible project details shown as a stat grid. Add as many as needed — each has a label and a value.",
+        "Flexible project details shown as a stat grid at the top of the project page. Location and Year are always shown first, then every stat below in order. Add as many as you like.",
       type: "array",
       group: "stats",
       of: [
@@ -212,6 +213,16 @@ export default defineType({
       type: "text",
       rows: 5,
       group: "client",
+    }),
+
+    /* ── Testimonials ─────────────────────────────────────── */
+    defineField({
+      name: "testimonialsSection",
+      title: "Testimonials",
+      description:
+        "Optional — choose one or more testimonials to show on this project page. Leave empty to hide the section.",
+      type: "testimonialsSection",
+      group: "testimonials",
     }),
   ],
   preview: {

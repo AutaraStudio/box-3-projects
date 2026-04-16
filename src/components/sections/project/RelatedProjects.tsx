@@ -1,108 +1,157 @@
 /**
  * RelatedProjects
  * ===============
- * Server component. Renders the "More Projects" grid at the bottom
- * of a project detail page. Data is pre-fetched by the page — this
- * component is purely presentational.
+ * "Other articles" grid, ported from reference/ref.html.
  *
- * Image URLs come directly from `project.featuredImage.asset.url`
- * (dereferenced in the query), so urlFor() is not used here.
+ * Each tile is a 16-column grid on desktop:
+ *   - columns 1–4: media (3:2)
+ *   - columns 5–16: tag, title, view-more CTA
+ * Hover fills the tile with the accent colour, inverts the text, and
+ * slides the trailing "View more" label into view.
  *
- * Animation hooks:
- *   - data-animate="fade-up" on the header
- *   - data-animate="fade-up" with staggered delay on each card
+ * Trailing CTA button wraps to a /projects overview page.
  */
 
 import Image from "next/image";
+import Link from "next/link";
 
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
+import { urlFor } from "@/sanity/lib/image";
 import type { RelatedProject } from "@/sanity/queries/projectDetail";
 
 import "./RelatedProjects.css";
 
+/* --------------------------------------------------------------------------
+   Props
+   -------------------------------------------------------------------------- */
+
 export interface RelatedProjectsProps {
   projects: RelatedProject[];
+  heading?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
 }
 
-export function RelatedProjects({ projects }: RelatedProjectsProps) {
-  if (!projects || projects.length === 0) {
-    return null;
-  }
+/* --------------------------------------------------------------------------
+   Component
+   -------------------------------------------------------------------------- */
+
+export default function RelatedProjects({
+  projects,
+  heading = "More projects",
+  ctaLabel = "View All Projects",
+  ctaHref = "/projects",
+}: RelatedProjectsProps) {
+  if (projects.length === 0) return null;
+
+  const visible = projects.slice(0, 5);
 
   return (
-    <section
-      className="related-projects"
-      data-theme="light"
-      data-nav-theme="light"
-      aria-label="More projects"
-    >
-      <div className="container">
-        <div className="related-projects__header" data-animate="fade-up">
-          <h2 className="related-projects__heading">More Projects</h2>
-        </div>
+    <section className="related-projects">
+      <div className="related-projects__header container">
+        <h2
+          className="related-projects__heading font-primary text-h4 font-medium leading-snug tracking-snug"
+        >
+          {heading}
+        </h2>
+      </div>
 
-        <ul className="related-projects__list" role="list">
-          {projects.map((project, i) => (
+      <ul className="related-projects__list">
+        {visible.map((project) => {
+          const href = `/projects/${project.slug}`;
+          const image = project.featuredImage;
+          return (
             <li
               key={project._id}
-              data-animate="fade-up"
-              data-animate-delay={String(i * 0.08)}
+              className="related-projects__item"
             >
-              <a
-                href={`/projects/${project.slug}`}
-                className="project-card"
-                aria-label={project.title}
-              >
-                <div className="project-card__media">
-                  <div className="project-card__media-inner">
-                    {project.featuredImage?.asset?.url ? (
+              <article className="related-projects__tile">
+                <Link
+                  href={href}
+                  className="related-projects__tile-link"
+                  aria-label={project.title}
+                >
+                  <span className="sr-only">{project.title}</span>
+                </Link>
+                <div className="related-projects__tile-inner">
+                  <div className="related-projects__media" data-image-reveal>
+                    {image?.asset?.url ? (
                       <Image
-                        src={project.featuredImage.asset.url}
-                        alt={project.featuredImage.alt ?? project.title}
+                        src={image.asset.url}
+                        alt={image.alt ?? project.title}
                         fill
-                        className="object-cover project-card__img"
-                        sizes="(max-width: 767px) 100vw, (max-width: 991px) 50vw, 20vw"
-                        loading="lazy"
+                        sizes="(max-width: 699px) 100vw, 25vw"
+                        className="related-projects__media-image"
                       />
                     ) : (
-                      <div className="project-card__placeholder" />
+                      <div
+                        className="related-projects__media-placeholder"
+                        aria-hidden="true"
+                      />
                     )}
-                    <div data-overlay="medium" aria-hidden="true" />
+                  </div>
+                  <div className="related-projects__info">
+                    <div className="related-projects__head font-secondary text-text-xs tracking-caps uppercase">
+                      <div className="related-projects__tag">
+                        {project.category?.title ? (
+                          <ul className="related-projects__tag-list">
+                            <li>{project.category.title}</li>
+                          </ul>
+                        ) : null}
+                      </div>
+                      <span className="related-projects__date">
+                        {project.year}
+                      </span>
+                    </div>
+                    <p
+                      className="related-projects__title font-primary text-h4 leading-snug tracking-snug"
+                      aria-hidden="true"
+                    >
+                      {project.title}
+                    </p>
+                    <div className="related-projects__foot">
+                      <p
+                        className="related-projects__cta font-secondary text-text-md"
+                        aria-hidden="true"
+                      >
+                        <span className="related-projects__cta-label">
+                          View more
+                        </span>
+                        <span className="related-projects__cta-icon">
+                          <svg
+                            viewBox="0 0 24 24"
+                            width="24"
+                            height="24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                          </svg>
+                        </span>
+                      </p>
+                    </div>
                   </div>
                 </div>
-
-                <div className="project-card__info">
-                  {project.category ? (
-                    <p
-                      className="project-card__category font-secondary text-text-xs uppercase tracking-caps"
-                      style={{ color: "var(--theme-text-muted)" }}
-                    >
-                      {project.category.title}
-                    </p>
-                  ) : null}
-                  <p className="project-card__title font-primary text-h5 tracking-snug leading-snug">
-                    {project.title}
-                  </p>
-                  <p
-                    className="project-card__meta font-secondary text-text-xs"
-                    style={{ color: "var(--theme-text-muted)" }}
-                  >
-                    {project.location}, {project.year}
-                  </p>
-                </div>
-              </a>
+                <span
+                  className="related-projects__hover"
+                  aria-hidden="true"
+                />
+              </article>
             </li>
-          ))}
-        </ul>
+          );
+        })}
+      </ul>
 
-        <div className="related-projects__footer">
-          <Button href="/projects" variant="secondary" size="md">
-            View All Projects
+      <div className="related-projects__footer container">
+        <div className="related-projects__cta-btn">
+          <Button href={ctaHref} variant="primary" size="lg" full>
+            {ctaLabel}
           </Button>
         </div>
       </div>
     </section>
   );
 }
-
-export default RelatedProjects;

@@ -10,8 +10,8 @@
      .btn__hover wipes up after a brief delay (--btn-bg-hover)
    Reverse on un-hover — panel lingers so the exit mirrors the entrance.
 
-   Char-slide label hover is handled globally via globals.css rules that
-   target `button:hover [data-char-hover] span` and
+   Label char-slide hover is handled globally via globals.css rules
+   that target `button:hover [data-char-hover] span` and
    `a:hover [data-char-hover] span`. Do not duplicate that here.
    -------------------------------------------------------------------------- */
 
@@ -68,6 +68,10 @@
 }
 
 /* Inner wrapper ------------------------------------------------------------ */
+/* Padding lives on the inner (not the root) so the absolutely-positioned
+   bg / panel / hover layers — positioned relative to this element —
+   extend edge-to-edge of the button while the label and icon still sit
+   inside the safe padding area. */
 .btn__inner {
   position: relative;
   display: inline-flex;
@@ -76,6 +80,7 @@
   column-gap: var(--gap-3);
   width: 100%;
   height: 100%;
+  box-sizing: border-box;
 }
 
 /* Layer 1 — resting background -------------------------------------------- */
@@ -125,11 +130,17 @@
 }
 
 /* Label -------------------------------------------------------------------- */
+/* flex: 1 + justify-content: center centers the label text whether or not
+   an icon is present. With an icon, the icon is pushed to the right by
+   the flex-growing label; without one, the label simply fills and
+   centres itself. */
 .btn__label {
   position: relative;
   z-index: 3;
+  flex: 1;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   font-family: var(--font-primary);
   font-weight: var(--font-weight-medium);
   text-transform: uppercase;
@@ -158,23 +169,37 @@
 }
 
 /* Sizes -------------------------------------------------------------------- */
+/* Height sits on the root; padding-inline sits on the inner so bg layers
+   still extend full-width (see .btn__inner above). */
 .btn--sm {
   height: var(--space-6);
+}
+
+.btn--sm .btn__inner {
   padding-inline: var(--space-4);
 }
 
 .btn--md {
   height: var(--space-7);
+}
+
+.btn--md .btn__inner {
   padding-inline: var(--space-5);
 }
 
 .btn--lg {
   height: var(--space-8);
+}
+
+.btn--lg .btn__inner {
   padding-inline: var(--space-6);
 }
 
 .btn--xl {
   height: var(--space-9);
+}
+
+.btn--xl .btn__inner {
   padding-inline: var(--space-7);
 }
 

@@ -19,6 +19,9 @@ const SINGLETON_TYPES = new Set([
   "homePage",
   "careersPage",
   "partnersSection",
+  "ourApproachSection",
+  "bannerShowroom",
+  "featuredProjectsSection",
   "siteNav",
   "siteFooter",
 ]);

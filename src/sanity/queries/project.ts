@@ -8,6 +8,11 @@
 
 import { groq } from "next-sanity";
 
+import {
+  TESTIMONIALS_SECTION_PROJECTION,
+  type TestimonialsSectionData,
+} from "./testimonialsSection";
+
 /** Shared projection — every field the UI needs for a single project. */
 const PROJECT_PROJECTION = groq`
   _id,
@@ -50,7 +55,10 @@ const PROJECT_PROJECTION = groq`
     value
   },
   clientObjective,
-  clientFeedback
+  clientFeedback,
+  testimonialsSection {
+    ${TESTIMONIALS_SECTION_PROJECTION}
+  }
 `;
 
 /** Fetch all projects, newest first. */
@@ -120,4 +128,5 @@ export interface Project {
   stats?: ProjectStat[];
   clientObjective?: string;
   clientFeedback?: string;
+  testimonialsSection?: TestimonialsSectionData;
 }

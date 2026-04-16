@@ -13,6 +13,24 @@
  * viewport-relative cell sizing, which has an approval comment.
  */
 
+/* Top-left heading block above the marquee */
+.partners-section__header {
+  margin-bottom: var(--space-4);
+}
+
+.partners-section__heading {
+  color: var(--theme-text);
+  margin: 0;
+}
+
+/* Full-bleed divider beneath the heading */
+.partners-section__divider {
+  width: 100%;
+  border: 0;
+  border-top: var(--border-width) solid var(--theme-border);
+  margin: 0 0 var(--space-6);
+}
+
 /* Overflow hidden on the section clips the scrolling track */
 .partners-marquee-scroll {
   width: 100%;

@@ -14,7 +14,10 @@ export default defineType({
   name: "homePage",
   title: "Home Page",
   type: "document",
-  groups: [{ name: "hero", title: "Hero Section", default: true }],
+  groups: [
+    { name: "hero", title: "Hero Section", default: true },
+    { name: "testimonials", title: "Testimonials" },
+  ],
   fields: [
     defineField({
       name: "heading",
@@ -52,6 +55,14 @@ export default defineType({
           validation: (rule) => rule.required(),
         }),
       ],
+    }),
+    defineField({
+      name: "testimonialsSection",
+      title: "Testimonials",
+      description:
+        "Optional — choose one or more testimonials to show on the home page. Leave empty to hide the section.",
+      type: "testimonialsSection",
+      group: "testimonials",
     }),
   ],
   preview: {

@@ -211,14 +211,16 @@
 
   /* --- Font Size Scale ---
      All values in rem. At the 1440px design width, 1rem = 16px.
-     Osmo scales these automatically at every breakpoint. */
-  --font-size-display: 8rem;        /* 128px at 1440 */
-  --font-size-h1: 6.5rem;           /* 104px at 1440 */
-  --font-size-h2: 5rem;             /* 80px at 1440  */
-  --font-size-h3: 3.75rem;          /* 60px at 1440  */
-  --font-size-h4: 3rem;             /* 48px at 1440  */
-  --font-size-h5: 2.25rem;          /* 36px at 1440  */
-  --font-size-h6: 1.75rem;          /* 28px at 1440  */
+     Osmo scales these automatically at every breakpoint.
+     Scaled up in a site-wide pass — editorial emphasis on the
+     display + heading scale, body sizes unchanged. */
+  --font-size-display: 9rem;        /* 144px at 1440 */
+  --font-size-h1: 7rem;             /* 112px at 1440 */
+  --font-size-h2: 5.5rem;           /* 88px at 1440 */
+  --font-size-h3: 4rem;             /* 64px at 1440 */
+  --font-size-h4: 3rem;             /* 48px at 1440 */
+  --font-size-h5: 2rem;             /* 32px at 1440 */
+  --font-size-h6: 1.5rem;           /* 24px at 1440 */
   --font-size-text-lg: 1.5rem;      /* 24px at 1440  */
   --font-size-text-md: 1rem;        /* 16px at 1440  */
   --font-size-text-sm: 0.875rem;    /* 14px at 1440  */
@@ -278,23 +280,28 @@
 :root {
 
   /* --- Base Spacing Scale ---
-     General-purpose spacing for margins, padding, and layout. */
-  --space-1: 0.5rem;     /* 8px at 1440   */
-  --space-2: 0.75rem;    /* 12px at 1440  */
-  --space-3: 1rem;       /* 16px at 1440  */
-  --space-4: 1.5rem;     /* 24px at 1440  */
-  --space-5: 2rem;       /* 32px at 1440  */
-  --space-6: 2.5rem;     /* 40px at 1440  */
-  --space-7: 3rem;       /* 48px at 1440  */
-  --space-8: 4rem;       /* 64px at 1440  */
-  --space-9: 5rem;       /* 80px at 1440  */
-  --space-10: 6rem;      /* 96px at 1440  */
-  --space-11: 7rem;      /* 112px at 1440 */
-  --space-12: 8rem;      /* 128px at 1440 */
+     General-purpose spacing for margins, padding, and layout.
+     Tightened ~20–30% from the original scale so components feel
+     more refined and compact. Steps 1–3 are unchanged — the micro
+     rungs that drive small UI gaps already read correctly. */
+  --space-1: 0.5rem;     /* 8px at 1440   — unchanged */
+  --space-2: 0.75rem;    /* 12px at 1440  — unchanged */
+  --space-3: 1rem;       /* 16px at 1440  — unchanged */
+  --space-4: 1.25rem;    /* 20px at 1440  (was 24) */
+  --space-5: 1.5rem;     /* 24px at 1440  (was 32) */
+  --space-6: 2rem;       /* 32px at 1440  (was 40) */
+  --space-7: 2.5rem;     /* 40px at 1440  (was 48) */
+  --space-8: 3rem;       /* 48px at 1440  (was 64) */
+  --space-9: 4rem;       /* 64px at 1440  (was 80) */
+  --space-10: 5rem;      /* 80px at 1440  (was 96) */
+  --space-11: 5.5rem;    /* 88px at 1440  (was 112) */
+  --space-12: 6.5rem;    /* 104px at 1440 (was 128) */
 
 
   /* --- Section Spacing Scale ---
-     Vertical padding for page sections.
+     Vertical padding for page sections. Tightened ~30% from the
+     original scale — the single biggest lever on perceived
+     whitespace site-wide.
      none: remove spacing
      xs:   tight sections, small gaps between related content
      sm:   standard tight section padding
@@ -302,23 +309,24 @@
      lg:   spacious sections, feature areas
      xl:   page top padding (accounts for nav height) */
   --section-space-none: 0rem;
-  --section-space-xs: 3rem;      /* 48px at 1440  */
-  --section-space-sm: 5rem;      /* 80px at 1440  */
-  --section-space-md: 7rem;      /* 112px at 1440 */
-  --section-space-lg: 10rem;     /* 160px at 1440 */
-  --section-space-xl: 14rem;     /* 224px at 1440 */
+  --section-space-xs: 2rem;      /* 32px at 1440  (was 48)  */
+  --section-space-sm: 3.5rem;    /* 56px at 1440  (was 80)  */
+  --section-space-md: 5rem;      /* 80px at 1440  (was 112) */
+  --section-space-lg: 7rem;      /* 112px at 1440 (was 160) */
+  --section-space-xl: 9rem;      /* 144px at 1440 (was 224) */
 
 
   /* --- Gap Scale ---
-     For grid column gaps, flex gaps, and layout spacing. */
-  --gap-1: 0.5rem;       /* 8px at 1440  */
-  --gap-2: 0.75rem;      /* 12px at 1440 */
-  --gap-3: 1rem;         /* 16px at 1440 */
-  --gap-4: 1.5rem;       /* 24px at 1440 */
-  --gap-5: 2rem;         /* 32px at 1440 */
-  --gap-6: 2.5rem;       /* 40px at 1440 */
-  --gap-7: 3rem;         /* 48px at 1440 */
-  --gap-8: 4rem;         /* 64px at 1440 */
+     For grid column gaps, flex gaps, and layout spacing.
+     Mirrors the base scale — tightened mid-to-large rungs only. */
+  --gap-1: 0.5rem;       /* 8px at 1440  — unchanged */
+  --gap-2: 0.75rem;      /* 12px at 1440 — unchanged */
+  --gap-3: 1rem;         /* 16px at 1440 — unchanged */
+  --gap-4: 1.25rem;      /* 20px at 1440 (was 24) */
+  --gap-5: 1.5rem;       /* 24px at 1440 (was 32) */
+  --gap-6: 2rem;         /* 32px at 1440 (was 40) */
+  --gap-7: 2.5rem;       /* 40px at 1440 (was 48) */
+  --gap-8: 3rem;         /* 48px at 1440 (was 64) */
 }
 
 
@@ -482,7 +490,7 @@
    All transparent variants use color-mix(in srgb, ...) — never rgba().
    Every semantic token references a --color- primitive — never raw hex.
 
-   9 themes: light, dark, brand, pink, cream, rose, mauve, sage, sand
+   8 themes: light, dark, brand, cream, rose, mauve, sage, sand
    ========================================================================== */
 
 
@@ -567,9 +575,6 @@
   --theme-shadow: color-mix(in srgb, var(--color-charcoal-500) 10%, transparent);
   --theme-focus: var(--color-rose-400);
 
-  /* Dither */
-  --theme-dither-ink: var(--color-charcoal-500);
-  --theme-dither-bg: var(--color-pink-500);
 
   /* Nav */
   --theme-nav-bg: var(--color-white-500);
@@ -680,9 +685,6 @@
   --theme-shadow: color-mix(in srgb, var(--color-black-900) 30%, transparent);
   --theme-focus: var(--color-pink-500);
 
-  /* Dither */
-  --theme-dither-ink: var(--color-pink-500);
-  --theme-dither-bg: var(--color-charcoal-500);
 
   /* Nav */
   --theme-nav-bg: var(--color-charcoal-500);
@@ -699,6 +701,9 @@
   --theme-partner-card-svg: var(--color-white-700);
   --theme-partner-card-svg-hover: var(--theme-accent);
 
+  /* Image reveal overlay — matches partner-card surface */
+  --theme-image-reveal-bg: var(--color-charcoal-600);
+
   /* Extended palette */
   --theme-bg-card-2:        var(--color-black-500);
   --theme-bg-surface:       var(--color-charcoal-600);
@@ -709,6 +714,121 @@
   --theme-svg-accent:       var(--color-pink-400);
   --theme-highlight:        color-mix(in srgb, var(--color-pink-500) 10%, transparent);
   --theme-highlight-text:   var(--color-pink-500);
+}
+
+
+/* --------------------------------------------------------------------------
+   Theme: Night
+   Character: Pure white text on a deep charcoal base — intended for
+   sections whose background is a photograph or dark overlay. Keeps
+   the pink brand accent for buttons, links and highlights while the
+   body text reads neutral-white for maximum contrast over imagery.
+   -------------------------------------------------------------------------- */
+[data-theme="night"] {
+  /* Backgrounds */
+  --theme-bg: var(--color-charcoal-500);
+  --theme-bg-2: var(--color-charcoal-600);
+  --theme-bg-3: var(--color-charcoal-700);
+  --theme-bg-4: var(--color-black-500);
+  --theme-bg-card: var(--color-charcoal-600);
+  --theme-bg-card-hover: var(--color-charcoal-700);
+
+  /* Text */
+  --theme-text: var(--color-white-500);
+  --theme-text-muted: var(--color-white-700);
+  --theme-text-subtle: var(--color-white-800);
+  --theme-text-inverse: var(--color-charcoal-500);
+  --theme-text-accent: var(--color-pink-400);
+
+  /* Borders */
+  --theme-border: color-mix(in srgb, var(--color-white-500) 25%, transparent);
+  --theme-border-strong: color-mix(in srgb, var(--color-white-500) 50%, transparent);
+  --theme-border-subtle: color-mix(in srgb, var(--color-white-500) 10%, transparent);
+
+  /* Accent — keeps pink brand colour */
+  --theme-accent: var(--color-pink-500);
+  --theme-accent-hover: var(--color-pink-400);
+  --theme-accent-subtle: color-mix(in srgb, var(--color-pink-500) 15%, transparent);
+
+  /* SVG */
+  --theme-svg: var(--color-white-500);
+  --theme-svg-hover: var(--color-pink-400);
+  --theme-svg-muted: var(--color-white-700);
+
+  /* Selection */
+  --theme-selection-bg: var(--color-pink-500);
+  --theme-selection-text: var(--color-charcoal-500);
+
+  /* Tags */
+  --theme-tag-bg: color-mix(in srgb, var(--color-white-500) 10%, transparent);
+  --theme-tag-border: color-mix(in srgb, var(--color-white-500) 25%, transparent);
+  --theme-tag-text: var(--color-white-500);
+
+  /* Button — Primary (pink — matches logo + menu + contact chips) */
+  --theme-btn-primary-text: var(--color-charcoal-500);
+  --theme-btn-primary-text-hover: var(--color-charcoal-500);
+  --theme-btn-primary-bg: var(--color-pink-500);
+  --theme-btn-primary-bg-hover: var(--color-pink-400);
+  --theme-btn-primary-border: var(--color-pink-500);
+  --theme-btn-primary-border-hover: var(--color-pink-400);
+  --theme-btn-primary-bg-panel: var(--color-rose-300);
+
+  /* Button — Secondary */
+  --theme-btn-secondary-text: var(--color-white-500);
+  --theme-btn-secondary-text-hover: var(--color-charcoal-500);
+  --theme-btn-secondary-bg: var(--color-transparent);
+  --theme-btn-secondary-bg-hover: var(--color-white-500);
+  --theme-btn-secondary-border: color-mix(in srgb, var(--color-white-500) 50%, transparent);
+  --theme-btn-secondary-border-hover: var(--color-white-500);
+  --theme-btn-secondary-bg-panel: var(--color-charcoal-300);
+
+  /* Links */
+  --theme-link-text: var(--color-white-500);
+  --theme-link-border: color-mix(in srgb, var(--color-white-500) 40%, transparent);
+  --theme-link-text-hover: var(--color-pink-400);
+  --theme-link-border-hover: var(--color-pink-400);
+
+  /* Inputs */
+  --theme-input-bg: var(--color-charcoal-600);
+  --theme-input-border: color-mix(in srgb, var(--color-white-500) 30%, transparent);
+  --theme-input-border-focus: var(--color-white-500);
+  --theme-input-text: var(--color-white-500);
+  --theme-input-placeholder: var(--color-white-800);
+
+  /* Misc */
+  --theme-overlay: color-mix(in srgb, var(--color-black-900) 55%, transparent);
+  --theme-shadow: color-mix(in srgb, var(--color-black-900) 30%, transparent);
+  --theme-focus: var(--color-white-500);
+
+
+  /* Nav */
+  --theme-nav-bg: var(--color-charcoal-500);
+  --theme-nav-text: var(--color-white-500);
+  --theme-nav-border: color-mix(in srgb, var(--color-white-500) 20%, transparent);
+
+  /* Nav extended — contact chip stays pink for night theme */
+  --theme-nav-accent: var(--color-pink-500);
+  --theme-nav-icon-bg: var(--color-pink-500);
+  --theme-nav-icon-text: var(--color-charcoal-500);
+
+  /* Partner Cards */
+  --theme-partner-card-bg: var(--theme-bg-surface);
+  --theme-partner-card-svg: var(--color-white-700);
+  --theme-partner-card-svg-hover: var(--theme-accent);
+
+  /* Image reveal overlay — matches partner-card surface */
+  --theme-image-reveal-bg: var(--color-charcoal-600);
+
+  /* Extended palette */
+  --theme-bg-card-2:        var(--color-black-500);
+  --theme-bg-surface:       var(--color-charcoal-600);
+  --theme-accent-2:         var(--color-pink-400);
+  --theme-accent-3:         color-mix(in srgb, var(--color-white-500) 12%, transparent);
+  --theme-text-on-accent:   var(--color-charcoal-500);
+  --theme-border-accent:    var(--color-white-500);
+  --theme-svg-accent:       var(--color-white-500);
+  --theme-highlight:        color-mix(in srgb, var(--color-white-500) 10%, transparent);
+  --theme-highlight-text:   var(--color-white-500);
 }
 
 
@@ -792,9 +912,6 @@
   --theme-shadow: color-mix(in srgb, var(--color-rose-500) 15%, transparent);
   --theme-focus: var(--color-rose-500);
 
-  /* Dither */
-  --theme-dither-ink: var(--color-charcoal-500);
-  --theme-dither-bg: var(--color-pink-400);
 
   /* Nav */
   --theme-nav-bg: var(--color-pink-500);
@@ -899,9 +1016,6 @@
   --theme-shadow: color-mix(in srgb, var(--color-cream-800) 15%, transparent);
   --theme-focus: var(--color-rose-500);
 
-  /* Dither */
-  --theme-dither-ink: var(--color-charcoal-500);
-  --theme-dither-bg: var(--color-cream-400);
 
   /* Nav */
   --theme-nav-bg: var(--color-cream-500);
@@ -912,6 +1026,11 @@
   --theme-nav-accent: var(--color-charcoal-500);
   --theme-nav-icon-bg: var(--color-charcoal-500);
   --theme-nav-icon-text: var(--color-white-500);
+
+  /* Image reveal overlay — deeper cream so the reveal reads as the
+     page itself parting rather than a contrasting colour sweeping
+     away. Matches --theme-border for tone-on-tone consistency. */
+  --theme-image-reveal-bg: var(--color-cream-700);
 
   /* Extended palette */
   --theme-bg-card-2:        var(--color-cream-300);
@@ -1006,9 +1125,6 @@
   --theme-shadow: color-mix(in srgb, var(--color-rose-900) 20%, transparent);
   --theme-focus: var(--color-pink-400);
 
-  /* Dither */
-  --theme-dither-ink: var(--color-white-500);
-  --theme-dither-bg: var(--color-rose-600);
 
   /* Nav */
   --theme-nav-bg: var(--color-rose-500);
@@ -1113,9 +1229,6 @@
   --theme-shadow: color-mix(in srgb, var(--color-mauve-800) 20%, transparent);
   --theme-focus: var(--color-rose-500);
 
-  /* Dither */
-  --theme-dither-ink: var(--color-charcoal-500);
-  --theme-dither-bg: var(--color-mauve-400);
 
   /* Nav */
   --theme-nav-bg: var(--color-mauve-500);
@@ -1220,9 +1333,6 @@
   --theme-shadow: color-mix(in srgb, var(--color-sage-800) 15%, transparent);
   --theme-focus: var(--color-rose-500);
 
-  /* Dither */
-  --theme-dither-ink: var(--color-charcoal-500);
-  --theme-dither-bg: var(--color-sage-300);
 
   /* Nav */
   --theme-nav-bg: var(--color-sage-400);
@@ -1327,9 +1437,6 @@
   --theme-shadow: color-mix(in srgb, var(--color-sand-800) 15%, transparent);
   --theme-focus: var(--color-rose-500);
 
-  /* Dither */
-  --theme-dither-ink: var(--color-charcoal-500);
-  --theme-dither-bg: var(--color-sand-300);
 
   /* Nav */
   --theme-nav-bg: var(--color-sand-400);
@@ -1653,19 +1760,26 @@ h5, h6 {
   font-feature-settings: "kern" 1, "liga" 1;
 }
 
-h1 { font-size: var(--font-size-h1); }
-h2 { font-size: var(--font-size-h2); }
-h3 { font-size: var(--font-size-h3); }
-h4 { font-size: var(--font-size-h4); }
-h5 { font-size: var(--font-size-h5); }
-h6 { font-size: var(--font-size-h6); }
+/* Element font-size defaults live in @layer base so Tailwind's
+   utility classes (text-h*, text-text-*) can override them on
+   specific elements. Without this layer wrap, bare element rules
+   beat utility classes in the cascade and e.g. <p class="text-text-xs">
+   would still render at text-md. */
+@layer base {
+  h1 { font-size: var(--font-size-h1); }
+  h2 { font-size: var(--font-size-h2); }
+  h3 { font-size: var(--font-size-h3); }
+  h4 { font-size: var(--font-size-h4); }
+  h5 { font-size: var(--font-size-h5); }
+  h6 { font-size: var(--font-size-h6); }
 
-p {
-  font-family: var(--font-secondary);
-  font-size: var(--font-size-text-md);
-  line-height: var(--line-height-relaxed);
-  color: var(--theme-text);
-  text-wrap: pretty;
+  p {
+    font-family: var(--font-secondary);
+    font-size: var(--font-size-text-md);
+    line-height: var(--line-height-relaxed);
+    color: var(--theme-text);
+    text-wrap: pretty;
+  }
 }
 
 /* Display text — for hero headlines and oversized typographic moments */
@@ -1718,17 +1832,25 @@ p {
 
 
 /* --- Character Hover Animation ---
-   Apply data-char-hover="" to any link or text element.
-   CharHoverObserver splits the text into character spans
-   on mount. CSS transitions handle the hover animation —
-   no GSAP required for the hover itself.
+   Global link / button hover effect. Apply `data-char-hover=""` to
+   a text span inside any link, button, or element carrying
+   `data-char-hover-trigger`. CharHoverObserver splits the text into
+   one span per character on mount; on hover, each character slides
+   up by 1.3em while a shadow copy below fills the vacated slot.
 
-   On hover: each character slides up by 1.3em.
-   text-shadow creates a copy below so the slot is filled.
-   Characters stagger via inline transition-delay on each span.
+   Staggering is driven by an inline `transition-delay` the observer
+   writes onto each span. Duration + ease use global tokens.
+
+   Constraints:
+     - Only wrap text that does NOT change after mount. Dynamic text
+       (scramble, live values) will desync from the split spans.
+     - The hover target is the nearest `a`, `button`, or
+       `[data-char-hover-trigger]` ancestor — not the span itself.
 
    Usage:
-     <a href="/about" data-char-hover="">About</a>  */
+     <a href="/about">
+       <span data-char-hover="">About</span>
+     </a>  */
 
 [data-char-hover] {
   display: inline-block;
@@ -1736,7 +1858,7 @@ p {
   position: relative;
   vertical-align: top;
   line-height: 1.3;
-  /* Height clips to one line — hides the shadow text below */
+  /* Height clips to one line so the shadow copy below stays hidden. */
   height: 1.3em;
 }
 
@@ -1744,15 +1866,13 @@ p {
   display: inline-block;
   position: relative;
   white-space: pre;
-  /* Shadow copy sits exactly 1.3em below — matches height */
+  /* Shadow copy sits exactly 1.3em below the visible character;
+     when the char slides up, the shadow takes its place. */
   text-shadow: 0px 1.3em currentColor;
   transform: translateY(0em) rotate(0.001deg);
   transition: transform var(--duration-moderate) var(--ease-slide);
   will-change: transform;
 }
-
-/* Stagger delay increases with each character span.
-   Set via inline style by CharHoverObserver. */
 
 a:hover [data-char-hover] span,
 button:hover [data-char-hover] span,
@@ -1761,10 +1881,83 @@ button:hover [data-char-hover] span,
 }
 
 
-/* --- Dither Texture Overlay ---
-   Built-in darker overlay for data-dither-texture containers.
-   Replaces the need for a separate .u-overlay div inside the hero.
-   Sits above the canvas (z-index 4) but below page content (z-30). */
+/* --- Hover Cursor ---
+   All `.hover-cursor` visual rules are colocated with the React
+   component at `src/components/layout/HoverCursor.css`. The native
+   system cursor is intentionally NOT hidden on `[data-cursor-label]`
+   elements — both cursors (OS arrow + pink chip) read together. */
+
+
+/* --- Image reveal ---
+   Soft pink overlay that gently fades off once the image's top
+   crosses the vertical centre of the viewport. Dark + night themes
+   swap the overlay tone via --theme-image-reveal-bg so the reveal
+   reads as a surface match rather than a colour shift.
+
+   Tuned for a long, unhurried fade — a 2.4s ease-out quartic curve
+   means the overlay drifts off rather than snapping. Pair with
+   transform: none on the underlying image to avoid layout jank.
+
+   Usage:
+     <div data-image-reveal>
+       <Image ... />
+     </div>  */
+
+[data-image-reveal] {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+[data-image-reveal]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--theme-image-reveal-bg, var(--color-pink-500));
+  z-index: 2;
+  pointer-events: none;
+  opacity: 1;
+  /* Custom duration + curve — longer than any token in the scale and
+     a gentler tail than --ease-gentle. Kept inline (not in the token
+     system) because this pacing is specific to the reveal. */
+  transition: opacity 2.4s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity;
+}
+
+[data-image-reveal][data-revealed]::after {
+  opacity: 0;
+}
+
+
+/* --- Preloader ---
+   Applied by the `Preloader` component to the element carrying
+   `data-preloader="target"` (the nav's logo block). Expands the
+   element to cover the viewport with a flat pink wash so the
+   first-load Flip morph can animate it back down into the nav's
+   logo position. Children are hidden while the class is on so the
+   fullscreen state reads as a blank colour wash, not a giant
+   floating logo + wordmark.
+
+   Removed by the Preloader just before `Flip.from()` runs — the
+   class toggle is the layout change Flip animates. */
+
+.is-preloader {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100svh !important;
+  max-width: none !important;
+  z-index: 9999;
+  background-color: var(--theme-btn-primary-bg);
+  border: 0 !important;
+  overflow: hidden;
+  pointer-events: auto;
+}
+
+.is-preloader > * {
+  opacity: 0;
+  pointer-events: none;
+}
 
 
 /* --- Max Width Utilities ---

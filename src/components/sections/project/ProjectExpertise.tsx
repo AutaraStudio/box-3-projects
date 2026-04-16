@@ -1,54 +1,63 @@
 /**
  * ProjectExpertise
- * ================
- * Server component. Renders the "Expertise & Services" list for a
- * project — numbered, rule-separated, editorial. Empty / missing
- * arrays short-circuit to null so the section disappears entirely.
+ * =================
+ * Ruled list section mirroring the reference "Awards and recognition"
+ * layout. Each row is delineated by a top border; an enclosing bottom
+ * border closes the list.
  *
- * All animation hooks are data-attributes, driven by the global
- * AnimationProvider:
- *   - data-animate="fade-up" on the header
- *   - data-animate="fade-up" with staggered delay on each item
+ * Renders project.expertise[] from Sanity — a list of
+ * { _id, title } references to the expertise collection. One row per
+ * expertise tag.
  */
 
 import type { ExpertiseRef } from "@/sanity/queries/project";
 
 import "./ProjectExpertise.css";
 
+/* --------------------------------------------------------------------------
+   Props
+   -------------------------------------------------------------------------- */
+
 export interface ProjectExpertiseProps {
   expertise: ExpertiseRef[];
+  heading?: string;
 }
 
-export function ProjectExpertise({ expertise }: ProjectExpertiseProps) {
-  if (!expertise || expertise.length === 0) {
-    return null;
-  }
+/* --------------------------------------------------------------------------
+   Component
+   -------------------------------------------------------------------------- */
+
+export default function ProjectExpertise({
+  expertise,
+  heading = "Expertise",
+}: ProjectExpertiseProps) {
+  if (expertise.length === 0) return null;
 
   return (
-    <section
-      className="project-expertise"
-      data-theme="cream"
-      data-nav-theme="light"
-      aria-label="Expertise and services"
-    >
-      <div className="container">
-        <div className="project-expertise__header" data-animate="fade-up">
-          <h2 className="project-expertise__heading">
-            Expertise &amp; Services
-          </h2>
-        </div>
-        <ul className="project-expertise__list" role="list">
-          {expertise.map((item, i) => (
+    <section className="project-expertise">
+      <div className="project-expertise__header container">
+        <h2
+          className="project-expertise__heading font-primary text-h4 font-medium leading-snug tracking-snug"
+        >
+          {heading}
+        </h2>
+      </div>
+      <div className="project-expertise__inner container">
+        <ul className="project-expertise__list">
+          {expertise.map((item, index) => (
             <li
               key={item._id}
               className="project-expertise__item"
-              data-animate="fade-up"
-              data-animate-delay={String(i * 0.06)}
             >
-              <span className="project-expertise__number">
-                {String(i + 1).padStart(2, "0")}
+              <span
+                className="project-expertise__index font-secondary text-text-xs tracking-caps uppercase"
+                aria-hidden="true"
+              >
+                {String(index + 1).padStart(2, "0")}
               </span>
-              <span className="project-expertise__title">{item.title}</span>
+              <p className="project-expertise__title font-primary text-h4 leading-snug tracking-snug">
+                {item.title}
+              </p>
             </li>
           ))}
         </ul>
@@ -56,5 +65,3 @@ export function ProjectExpertise({ expertise }: ProjectExpertiseProps) {
     </section>
   );
 }
-
-export default ProjectExpertise;

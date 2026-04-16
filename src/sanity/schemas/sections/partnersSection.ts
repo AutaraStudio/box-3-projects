@@ -1,9 +1,10 @@
 /**
  * Partners Section Schema
  * =======================
- * Reusable section for a grid of partner / brand logos.
- * Each partner has a name and an SVG logo. SVGs should use
- * currentColor so the colour can be controlled via CSS.
+ * Singleton that drives the partners marquee. Now references Partner
+ * collection documents rather than storing inline objects — the same
+ * partner docs are reused by testimonials (for the company logo), so
+ * uploading a logo once updates it everywhere.
  */
 
 import { defineField, defineType } from "sanity";
@@ -15,42 +16,30 @@ export default defineType({
   groups: [{ name: "content", title: "Content", default: true }],
   fields: [
     defineField({
-      name: "sectionLabel",
-      title: "Section label",
-      description: "The label shown above the logo grid e.g. Our Partners",
+      name: "heading",
+      title: "Heading",
+      description:
+        "Top-left heading shown above the marquee e.g. Trusted By",
       type: "string",
       group: "content",
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: "sectionLabel",
+      title: "Section label",
+      description:
+        "Short label kept for legacy use — not currently rendered.",
+      type: "string",
+      group: "content",
+    }),
+    defineField({
       name: "partners",
       title: "Partners",
-      description: "Add one entry per partner — drag to reorder",
+      description:
+        "Select which partners appear in the marquee. To add a new partner (or change a logo), open the Partners collection in the sidebar.",
       type: "array",
       group: "content",
-      of: [
-        {
-          type: "object",
-          fields: [
-            defineField({
-              name: "name",
-              title: "Partner name",
-              description: "Brand or company name (shown below the logo card)",
-              type: "string",
-              validation: (rule) => rule.required(),
-            }),
-            defineField({
-              name: "logo",
-              title: "Partner logo (SVG)",
-              description:
-                "Upload an SVG file. The logo will display in the brand pink colour by default and change on hover. Make sure the SVG uses currentColor for fill and stroke so its colour can be controlled.",
-              type: "file",
-              options: { accept: ".svg,image/svg+xml" },
-            }),
-          ],
-          preview: { select: { title: "name" } },
-        },
-      ],
+      of: [{ type: "reference", to: [{ type: "partner" }] }],
     }),
   ],
   preview: {

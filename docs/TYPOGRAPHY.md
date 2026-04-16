@@ -42,15 +42,18 @@ Tailwind classes: `font-primary`, `font-secondary`
 
 ## Font Size Scale
 
-| Token                    | rem     | px at 1440 | Tailwind class  |
-|--------------------------|---------|------------|-----------------|
-| `--font-size-display`    | 8rem     | 128px      | `text-display`  |
-| `--font-size-h1`         | 6.5rem   | 104px      | `text-h1`       |
-| `--font-size-h2`         | 5rem     | 80px       | `text-h2`       |
-| `--font-size-h3`         | 3.75rem  | 60px       | `text-h3`       |
+Heading scale bumped up in a site-wide pass — display is 128px,
+h1 is 96px. Body scale unchanged.
+
+| Token                    | rem      | px at 1440 | Tailwind class  |
+|--------------------------|----------|------------|-----------------|
+| `--font-size-display`    | 9rem     | 144px      | `text-display`  |
+| `--font-size-h1`         | 7rem     | 112px      | `text-h1`       |
+| `--font-size-h2`         | 5.5rem   | 88px       | `text-h2`       |
+| `--font-size-h3`         | 4rem     | 64px       | `text-h3`       |
 | `--font-size-h4`         | 3rem     | 48px       | `text-h4`       |
-| `--font-size-h5`         | 2.25rem  | 36px       | `text-h5`       |
-| `--font-size-h6`         | 1.75rem  | 28px       | `text-h6`       |
+| `--font-size-h5`         | 2rem     | 32px       | `text-h5`       |
+| `--font-size-h6`         | 1.5rem   | 24px       | `text-h6`       |
 | `--font-size-text-lg`    | 1.5rem   | 24px       | `text-text-lg`  |
 | `--font-size-text-md`    | 1rem     | 16px       | `text-text-md`  |
 | `--font-size-text-sm`    | 0.875rem | 14px       | `text-text-sm`  |
@@ -127,14 +130,14 @@ Follow them without exception across every component.
 
 | Context                          | Token            | Size     |
 |----------------------------------|------------------|----------|
-| Hero display heading             | `text-display`   | 8rem     |
-| Page primary heading             | `text-h1`        | 6.5rem   |
-| Page secondary heading           | `text-h2`        | 5rem     |
-| Section heading                  | `text-h3`        | 3.75rem  |
+| Hero display heading             | `text-display`   | 9rem     |
+| Page primary heading             | `text-h1`        | 7rem     |
+| Page secondary heading           | `text-h2`        | 5.5rem   |
+| Section heading                  | `text-h3`        | 4rem     |
 | Card / feature heading           | `text-h4`        | 3rem     |
-| Sub-heading / list title         | `text-h5`        | 2.25rem  |
-| Small heading / label heading    | `text-h6`        | 1.75rem  |
-| Mega menu primary links          | `text-h5`        | 2.25rem  |
+| Sub-heading / list title         | `text-h5`        | 2rem     |
+| Small heading / label heading    | `text-h6`        | 1.5rem   |
+| Mega menu primary links          | `text-h5`        | 2rem     |
 | Mega menu secondary links        | `text-text-md`   | 1rem     |
 | Mega menu contact links          | `text-text-md`   | 1rem     |
 | Body copy / paragraphs           | `text-text-md`   | 1rem     |

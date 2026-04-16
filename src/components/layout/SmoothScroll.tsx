@@ -36,6 +36,11 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
 
     lenisRef.current = lenis;
 
+    /* Expose the live instance on window under a namespaced key so
+       other components (Preloader, PageTransition, etc.) can stop/
+       start/scroll without prop-drilling or context. */
+    (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
+
     /* Connect Lenis scroll position to ScrollTrigger on every frame */
     lenis.on("scroll", ScrollTrigger.update);
 
@@ -52,6 +57,11 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
       gsap.ticker.remove(onTick);
       lenis.destroy();
       lenisRef.current = null;
+      if (
+        (window as unknown as { __lenis?: Lenis }).__lenis === lenis
+      ) {
+        delete (window as unknown as { __lenis?: Lenis }).__lenis;
+      }
     };
   }, []);
 

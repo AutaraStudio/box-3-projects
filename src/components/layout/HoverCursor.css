@@ -1,0 +1,46 @@
+/* ==========================================================================
+   HoverCursor — visual rules
+   ==========================================================================
+   Imported by the HoverCursor component so HMR picks this up on mount
+   rather than depending on globals.css. The `[data-cursor-label]`
+   native-cursor-hiding rule stays in globals.css since it needs to
+   apply to any element opting in across the site, independent of
+   whether the HoverCursor component has mounted.
+   ========================================================================== */
+
+.hover-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Size — intentionally generous so the label reads clearly. No
+     token equivalent — the chip is a fixed UI element, not layout
+     spacing, so custom rem values are appropriate. */
+  width: 6rem;
+  height: 2.75rem;
+  margin: 1rem 0 0 1rem;
+  padding-inline: var(--space-4);
+  background-color: var(--theme-accent);
+  /* Dark charcoal label — pinned to the primitive token so the
+     colour doesn't flip across themes. The chip renders at
+     provider level outside any section's data-theme scope, and
+     the light theme's primary-button text is white, which would
+     read invisibly on the pink background. */
+  color: var(--color-charcoal-500);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-fast) var(--ease-gentle);
+  will-change: transform;
+}
+
+.hover-cursor.is-visible {
+  opacity: 1;
+}
+
+.hover-cursor__label {
+  line-height: 1;
+  white-space: nowrap;
+}

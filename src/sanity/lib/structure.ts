@@ -18,13 +18,31 @@ const SINGLETONS = [
   "homePage",
   "careersPage",
   "partnersSection",
+  "ourApproachSection",
+  "bannerShowroom",
+  "featuredProjectsSection",
+  "homeIntroSection",
   "siteNav",
   "siteFooter",
 ];
 
+/** Collection document types — grouped under the Collections sidebar
+ *  entry. These are repeatable (not singletons) so each opens a
+ *  standard list view. */
+const COLLECTIONS = [
+  "project",
+  "expertise",
+  "teamMember",
+  "vacancy",
+  "projectCategory",
+  "partner",
+  "testimonial",
+];
+
 /** Document types hidden from the generic "everything else" list —
- *  singletons are already surfaced under Site Settings / Pages. */
-const HIDDEN_FROM_GENERIC = new Set<string>(SINGLETONS);
+ *  singletons are already surfaced under Site Settings / Pages, and
+ *  collections have their own grouped list. */
+const HIDDEN_FROM_GENERIC = new Set<string>([...SINGLETONS, ...COLLECTIONS]);
 
 export const structure: StructureResolver = (S) =>
   S.list()
@@ -66,6 +84,15 @@ export const structure: StructureResolver = (S) =>
             .title("Reusable Sections")
             .items([
               S.listItem()
+                .title("Home Intro Section")
+                .id("homeIntroSection")
+                .child(
+                  S.document()
+                    .schemaType("homeIntroSection")
+                    .documentId("homeIntroSection")
+                    .title("Home Intro Section"),
+                ),
+              S.listItem()
                 .title("Partners Section")
                 .id("partnersSection")
                 .child(
@@ -73,6 +100,33 @@ export const structure: StructureResolver = (S) =>
                     .schemaType("partnersSection")
                     .documentId("partnersSection")
                     .title("Partners Section"),
+                ),
+              S.listItem()
+                .title("Our Approach Section")
+                .id("ourApproachSection")
+                .child(
+                  S.document()
+                    .schemaType("ourApproachSection")
+                    .documentId("ourApproachSection")
+                    .title("Our Approach Section"),
+                ),
+              S.listItem()
+                .title("Showroom Banner")
+                .id("bannerShowroom")
+                .child(
+                  S.document()
+                    .schemaType("bannerShowroom")
+                    .documentId("bannerShowroom")
+                    .title("Showroom Banner"),
+                ),
+              S.listItem()
+                .title("Featured Projects Section")
+                .id("featuredProjectsSection")
+                .child(
+                  S.document()
+                    .schemaType("featuredProjectsSection")
+                    .documentId("featuredProjectsSection")
+                    .title("Featured Projects Section"),
                 ),
             ]),
         ),
@@ -104,6 +158,25 @@ export const structure: StructureResolver = (S) =>
                     .documentId("siteFooter")
                     .title("Footer"),
                 ),
+            ]),
+        ),
+
+      /* ── Collections ──────────────────────────────────────── */
+      S.listItem()
+        .title("Collections")
+        .child(
+          S.list()
+            .title("Collections")
+            .items([
+              S.documentTypeListItem("project").title("Projects"),
+              S.documentTypeListItem("expertise").title("Expertise"),
+              S.documentTypeListItem("teamMember").title("Team Members"),
+              S.documentTypeListItem("vacancy").title("Vacancies"),
+              S.documentTypeListItem("partner").title("Partners"),
+              S.documentTypeListItem("testimonial").title("Testimonials"),
+              S.documentTypeListItem("projectCategory").title(
+                "Project Categories",
+              ),
             ]),
         ),
 

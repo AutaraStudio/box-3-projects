@@ -14,7 +14,8 @@ Defined as CSS custom properties in `globals.css`
 Used via `transition: var(--transition-*)` in components
 
 ### GSAP Animations (expressive)
-For: scroll reveals, timelines, SplitText, parallax, page transitions
+For: scroll reveals, timelines, parallax, component-specific scrubs
+(ProjectGallery explore, PartnersSection marquee, Nav ScrambleText).
 All config in `/src/config/animations.config.ts`
 Never hardcode ease strings or duration values in components
 
@@ -128,53 +129,63 @@ Available prefixes:
 
 ### Animation Presets
 
-| Preset        | Description                    |
-|---------------|--------------------------------|
-| `fadeUp`      | Fade in from below             |
-| `fadeUpSubtle`| Soft fade up, minimal distance |
-| `fadeIn`      | Opacity only                   |
-| `fadeDown`    | Fade in from above             |
-| `slideLeft`   | Slide in from right            |
-| `slideRight`  | Slide in from left             |
-| `scaleReveal` | Scale up from slightly smaller |
-| `clipReveal`  | Clip-path wipe reveal          |
-| `splitLine`   | SplitText — per line           |
-| `splitWord`   | SplitText — per word           |
-| `splitChar`   | SplitText — per character      |
+The `fromPresets` export in `animations.config.ts` still ships
+these starting-state objects so any component that writes its own
+`gsap.from(...)` call has consistent entrance values. There is no
+global observer wired to them — they're opt-in per component.
+
+| Preset        | Description                                         |
+|---------------|-----------------------------------------------------|
+| `fadeUp`      | Opacity 0 + y 40 — standard entrance                |
+| `fadeUpSubtle`| Opacity 0 + y 20 — quieter entrance                 |
+| `fadeIn`      | Opacity only                                        |
+| `fadeDown`    | Opacity 0 + y -30                                   |
+| `slideLeft`   | Opacity 0 + x -60                                   |
+| `slideRight`  | Opacity 0 + x 60                                    |
+| `scaleReveal` | Opacity 0 + scale 0.94                              |
+| `clipReveal`  | `clip-path: inset(0 100% 0 0)` → right-to-left wipe |
+| `splitLine`   | Opacity 0 + y 110% — for manual SplitText lines     |
+| `splitWord`   | Opacity 0 + y 30 — for manual SplitText words       |
+| `splitChar`   | Opacity 0 + y 20 + rotateX 20 — manual chars        |
+
+The `splitLine` / `splitWord` / `splitChar` presets are useful if
+you import GSAP's SplitText plugin in a one-off component, but
+there is no global SplitText observer — see the warning below.
 
 ---
 
 ## Global Animations (initialised once at app level)
 - Lenis smooth scroll
 - GSAP ScrollTrigger integration with Lenis
-- SplitText global `data-*` attribute observer
-- Scroll-triggered fade/reveal observer
+- `ParallaxObserver` — scrub parallax on any `[data-parallax="trigger"]`
+- `ImageRevealObserver` — fades an overlay off any `[data-image-reveal]` when its top crosses the viewport centre
+- `CharHoverObserver` — splits `[data-char-hover]` text into character spans for the global link/button slide-up hover
+- `HoverCursor` — pink cursor chip that appears with custom text on any `[data-cursor-label="…"]`
+- `NavThemeObserver` — swaps nav `data-theme` to match the section in view
+
+There is currently NO global split-text, fade-up, or line-reveal
+system. Those were intentionally removed — do not reintroduce
+them without explicit instruction.
 
 ---
 
 ## Data Attribute Conventions
 
-| Attribute                              | Behaviour                                        |
-|----------------------------------------|--------------------------------------------------|
-| `data-animate="fade-up"`               | Fade in from below on scroll                     |
-| `data-animate="fade-in"`              | Opacity only reveal on scroll                    |
-| `data-animate="fade-down"`            | Fade in from above on scroll                     |
-| `data-animate="clip-reveal"`          | Clip-path wipe reveal on scroll                  |
-| `data-animate="scale-reveal"`         | Scale up from slightly smaller on scroll         |
-| `data-animate-delay="0.2"`            | Optional delay in seconds                        |
-| `data-animate-stagger="0.1"`          | On parent — staggers direct children             |
-| `data-split-text="lines"`             | SplitText — animate by line on scroll            |
-| `data-split-text="words"`             | SplitText — animate by word on scroll            |
-| `data-split-text="chars"`             | SplitText — animate by character on scroll       |
-| `data-split-delay="0.2"`             | Optional delay on split-text elements            |
-| `data-line-reveal-hero="top\|bottom"` | Line scaleY reveal on page load                  |
-| `data-line-reveal="top\|bottom"`      | Line scaleY reveal on scroll                     |
-| `data-line-duration="0.8"`            | Per-element duration override                    |
-| `data-line-delay="0.2"`              | Per-element delay override                       |
-| `data-hero-scroll-fade`               | Fades out as hero scrolls away (scrub)           |
-| `data-hero-scroll-fade-scale`         | Fades and scales down on hero scroll (scrub)     |
-| `data-char-hover=""`                  | Splits text into spans for char slide-up hover   |
-| `data-char-hover-trigger`             | Designates a hover trigger for char animation    |
-| `data-parallax="[speed]"`             | Parallax — speed is a float multiplier           |
-| `data-lenis-prevent`                  | Prevents Lenis smooth scroll inside element      |
-| `data-nav-theme="dark\|light\|[name]"`| Nav theme to apply when section is in view       |
+| Attribute                              | Behaviour                                                  |
+|----------------------------------------|------------------------------------------------------------|
+| `data-image-reveal`                    | Pink (theme-aware) overlay that fades off on viewport-centre crossing |
+| `data-image-reveal-delay="0.2"`        | Optional per-element delay in seconds                      |
+| `data-parallax="trigger"`              | REQUIRED to register an element with `ParallaxObserver`   |
+| `data-parallax="target"`               | Child of a trigger — animated instead of the trigger itself |
+| `data-parallax-direction`              | `vertical` (default) or `horizontal`                       |
+| `data-parallax-start` / `-end`         | Start/end in %. Defaults `20` / `-20`                      |
+| `data-parallax-scroll-start` / `-end`  | ScrollTrigger positions, wrapped in `clamp()`. Defaults `top bottom` / `bottom top` |
+| `data-parallax-scrub`                  | `true` (default, Lenis-friendly) or seconds of lag         |
+| `data-parallax-disable`                | `mobile` · `mobileLandscape` · `tablet` (matchMedia)       |
+| `data-char-hover=""`                   | Splits text into character spans for slide-up hover         |
+| `data-char-hover-trigger`              | Designates the hover target when it isn't the nearest `a` / `button` |
+| `data-cursor-label="Play"`             | Shows the global pink HoverCursor chip with this text on hover |
+| `data-lenis-prevent`                   | Prevents Lenis smooth scroll inside element                |
+| `data-nav-theme="dark\|light\|[name]"` | Nav theme to apply when section is in view                 |
+| `data-theme="[name]"`                  | Applies a semantic theme scope to a section                |
+| `data-overlay="dark\|medium\|light"`   | Tinted overlay utility (not an animation)                  |

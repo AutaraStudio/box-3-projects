@@ -1,0 +1,23 @@
+/**
+ * PageTransition
+ * ==============
+ * Fixed full-viewport overlay used as a soft wipe between routes.
+ * Starts invisible + non-interactive; GSAP drives opacity on
+ * navigation and the pointer-events toggle is handled inline in
+ * the component so clicks can't be stolen while hidden.
+ *
+ * Colour is a neutral cream — it reads as an elegant curtain
+ * rather than a branded flash (the preloader already owns that
+ * moment). If the current theme is dark, we invert to charcoal so
+ * a dark → dark navigation doesn't feel like a bright flash.
+ */
+
+.page-transition {
+  position: fixed;
+  inset: 0;
+  background-color: var(--color-pink-500);
+  z-index: 200;
+  pointer-events: none;
+  will-change: opacity;
+  opacity: 0;
+}

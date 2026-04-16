@@ -72,35 +72,46 @@
    Logo Block
    ========================================================================== */
 
+/* Outer wrap — single child (the square home-link). Kept as a
+   separate wrapper element rather than collapsing with the child
+   so future siblings (tagline, status chip, etc.) can slot in
+   next to the square without restructuring the JSX.
+
+   Deliberately NO `will-change: transform` / `transform` / `filter`
+   on this element: those properties would promote it to the
+   containing block for any `position: fixed` descendant, which
+   would stop the preloader's `.is-preloader { position: fixed;
+   inset: 0 }` from covering the actual viewport. */
 .header-logo-block {
-  border: var(--border-width) solid var(--theme-btn-primary-bg);
+  display: inline-flex;
+  align-items: stretch;
   align-self: start;
-  will-change: transform;
 }
 
 @media (min-width: 992px) {
   .header-logo-block {
-    grid-column: span 6;
+    grid-column: 1 / auto;
     justify-self: start;
-    width: 100%;
   }
 }
 
+/* Square — the preloader target. Fixed 1:1 ratio so the Flip
+   morph lands on a predictable shape. Contains the logo SVG +
+   absolute pink bg; nothing else. */
 .header-home-link {
   position: relative;
-  width: 100%;
   pointer-events: auto;
   display: flex;
   align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  width: var(--space-7);
   height: var(--space-7);
-  padding-block: var(--space-2);
-  padding-left: var(--space-3);
   overflow: hidden;
 }
 
 .header-logo-container {
-  /* 29px at 1440 — no token equivalent, pixel-perfect logo size */
+  /* 29px at 1440 — pixel-perfect logo size, no token equivalent. */
   height: 1.8125rem;
   width: 1.8125rem;
   display: block;
@@ -112,27 +123,6 @@
   height: 100%;
   color: var(--theme-btn-primary-text);
   transition: color var(--animation-gentle);
-}
-
-.header-text-container {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-}
-
-.logo-text {
-  display: block;
-  white-space: nowrap;
-  font-family: var(--font-primary);
-  font-size: var(--font-size-text-xs);
-  line-height: var(--line-height-none);
-  letter-spacing: var(--letter-spacing-normal);
-  text-transform: uppercase;
-  text-align: center;
-  color: var(--theme-btn-primary-text);
-  font-weight: var(--font-weight-medium);
-  margin-left: var(--space-4);
-  margin-right: var(--space-5);
 }
 
 .logo-bg {
@@ -160,7 +150,7 @@
 @media (min-width: 992px) {
   .header-primary-nav {
     display: block;
-    grid-column: span 3;
+    grid-column: 7 / span 3;
   }
 }
 
@@ -176,22 +166,16 @@
   overflow: hidden;
 }
 
+/* Mirrors .footer-link — typography + sizing come from Tailwind
+   utilities on the anchor (font-primary text-text-sm uppercase
+   tracking-caps leading-normal). This rule only owns block display,
+   cursor, no-underline, and the theme text colour. */
 .nav-link {
-  letter-spacing: var(--letter-spacing-caps);
-  font-weight: var(--font-weight-regular);
-  font-family: var(--font-primary);
   display: block;
-  text-transform: uppercase;
-  transition: opacity var(--animation-snappy-fast);
-  opacity: 1;
-  font-size: var(--font-size-text-xs);
-  line-height: var(--line-height-normal);
+  text-decoration: none;
+  cursor: pointer;
   color: var(--theme-text);
-}
-
-.nav-link:hover,
-.nav-link:focus {
-  color: var(--theme-text-muted);
+  transition: opacity var(--animation-snappy-fast);
 }
 
 
@@ -226,20 +210,13 @@
   overflow: hidden;
 }
 
+/* Mirrors .nav-link / .footer-link — typography on the anchor via
+   Tailwind utilities; this rule only carries display + colour. */
 .nav-link-secondary {
-  letter-spacing: var(--letter-spacing-caps);
-  font-weight: var(--font-weight-regular);
-  font-family: var(--font-primary);
   display: block;
-  text-transform: uppercase;
-  font-size: var(--font-size-text-xs);
-  line-height: var(--line-height-normal);
+  text-decoration: none;
+  cursor: pointer;
   color: var(--theme-text);
-}
-
-.nav-link-secondary:hover,
-.nav-link-secondary:focus {
-  color: var(--theme-text-muted);
 }
 
 

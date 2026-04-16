@@ -1,81 +1,47 @@
+import BannerShowroom from "@/components/sections/BannerShowroom";
+import FeaturedProjects from "@/components/sections/FeaturedProjects";
 import HomeHero from "@/components/sections/HomeHero";
+import HomeIntro from "@/components/sections/HomeIntro";
+import OurApproach from "@/components/sections/OurApproach";
 import PartnersSection from "@/components/sections/PartnersSection";
+import TestimonialsSection from "@/components/sections/TestimonialsSection";
+import { loadPartners } from "@/lib/fetchPartners";
+import { resolveTestimonialsSection } from "@/lib/fetchTestimonials";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import {
+  BANNER_SHOWROOM_QUERY,
+  type BannerShowroomData,
+} from "@/sanity/queries/bannerShowroom";
+import {
+  FEATURED_PROJECTS_QUERY,
+  type FeaturedProjectsData,
+} from "@/sanity/queries/featuredProjectsSection";
+import {
+  HOME_INTRO_QUERY,
+  type HomeIntroData,
+} from "@/sanity/queries/homeIntroSection";
 import { HOME_PAGE_QUERY, type HomePageData } from "@/sanity/queries/homePage";
 import {
-  PARTNERS_QUERY,
-  type PartnersData,
-  type ResolvedPartner,
-} from "@/sanity/queries/partnersSection";
-
-/** Fallback partners data when Sanity hasn't been populated yet. */
-const DEFAULT_PARTNERS: PartnersData = {
-  sectionLabel: "Our Partners",
-  partners: [],
-};
-
-/* --------------------------------------------------------------------------
-   SVG fetch + sanitise (server-side)
-   --------------------------------------------------------------------------
-   The PartnersSection marquee is a client component and cannot be async,
-   so we resolve every partner SVG here on the server and pass the raw
-   sanitised markup down as a prop. Inlining the SVG in the DOM is what
-   allows currentColor to inherit from the parent element's color. */
-
-/**
- * Fetches raw SVG markup from a Sanity CDN URL server-side.
- * Inlining SVG is required for currentColor to work —
- * an img tag cannot inherit CSS color from its parent.
- * Results revalidated hourly via Next.js fetch caching.
- */
-async function fetchSvgContent(url: string): Promise<string> {
-  if (!url) return "";
-  try {
-    const res = await fetch(url, { next: { revalidate: 3600 } });
-    if (!res.ok) return "";
-    const text = await res.text();
-    if (!text.includes("<svg")) return "";
-    return sanitiseSvg(text);
-  } catch {
-    return "";
-  }
-}
-
-/**
- * Replaces hardcoded fill/stroke colour values with currentColor
- * so CSS can control logo colour via the parent color property.
- * Preserves fill="none" and stroke="none" intentional values.
- */
-function sanitiseSvg(svg: string): string {
-  return svg
-    .replace(/fill="(?!none|currentColor)[^"]*"/gi, 'fill="currentColor"')
-    .replace(/stroke="(?!none|currentColor)[^"]*"/gi, 'stroke="currentColor"')
-    .replace(/fill\s*:\s*(?!none|currentColor)[^;"]*/gi, "fill:currentColor")
-    .replace(
-      /stroke\s*:\s*(?!none|currentColor)[^;"]*/gi,
-      "stroke:currentColor",
-    )
-    .replace(/stop-color\s*:\s*[^;"]*/gi, "stop-color:currentColor")
-    .replace(
-      /stop-color="(?!currentColor)[^"]*"/gi,
-      'stop-color="currentColor"',
-    );
-}
+  OUR_APPROACH_QUERY,
+  type OurApproachData,
+} from "@/sanity/queries/ourApproachSection";
 
 export default async function Home() {
-  const [homeData, partnersData] = await Promise.all([
+  const [homeData, intro, approach, featured, showroom, partners] = await Promise.all([
     sanityFetch<HomePageData | null>({ query: HOME_PAGE_QUERY }),
-    sanityFetch<PartnersData | null>({ query: PARTNERS_QUERY }),
+    sanityFetch<HomeIntroData | null>({ query: HOME_INTRO_QUERY }),
+    sanityFetch<OurApproachData | null>({ query: OUR_APPROACH_QUERY }),
+    sanityFetch<FeaturedProjectsData | null>({
+      query: FEATURED_PROJECTS_QUERY,
+    }),
+    sanityFetch<BannerShowroomData | null>({ query: BANNER_SHOWROOM_QUERY }),
+    loadPartners(),
   ]);
 
-  const rawPartners = partnersData?.partners ?? DEFAULT_PARTNERS.partners;
-
-  const resolvedPartners: ResolvedPartner[] = await Promise.all(
-    rawPartners.map(async (partner) => ({
-      _key: partner._key,
-      name: partner.name,
-      svgContent: await fetchSvgContent(partner.logo?.asset?.url ?? ""),
-    })),
+  /* Testimonials section is optional on the home page — resolve the
+     embedded section to inlined SVG logos (or null if missing). */
+  const testimonials = await resolveTestimonialsSection(
+    homeData?.testimonialsSection,
   );
 
   return (
@@ -88,14 +54,45 @@ export default async function Home() {
         image={homeData?.heroImage ?? null}
         imageAlt={homeData?.heroImage?.alt ?? "Hero background"}
       />
-      <section
-        data-nav-theme="light"
-        style={{ height: "200vh", background: "var(--color-cream-300)" }}
-        aria-hidden="true"
-      />
+      {intro ? (
+        <HomeIntro body={intro.body} points={intro.points ?? []} />
+      ) : null}
+      {showroom ? (
+        <BannerShowroom
+          sectionLabel={showroom.sectionLabel}
+          heading={showroom.heading}
+          cursorLabel={showroom.cursorLabel}
+          backgroundVideoUrl={showroom.backgroundVideoUrl}
+          modalVideoUrl={showroom.modalVideoUrl}
+        />
+      ) : null}
+      {featured && featured.projects && featured.projects.length > 0 ? (
+        <FeaturedProjects
+          sectionLabel={featured.sectionLabel}
+          ctaLabel={featured.ctaLabel}
+          ctaHref={featured.ctaHref}
+          projects={featured.projects}
+        />
+      ) : null}
+      {approach ? (
+        <OurApproach
+          sectionLabel={approach.sectionLabel}
+          intro={approach.intro}
+          steps={approach.steps}
+          completion={approach.completion}
+        />
+      ) : null}
+      {testimonials ? (
+        <TestimonialsSection
+          sectionLabel={testimonials.sectionLabel}
+          reference={testimonials.reference}
+          testimonials={testimonials.testimonials}
+        />
+      ) : null}
       <PartnersSection
-        sectionLabel={partnersData?.sectionLabel ?? DEFAULT_PARTNERS.sectionLabel}
-        partners={resolvedPartners}
+        heading={partners.heading}
+        sectionLabel={partners.sectionLabel}
+        partners={partners.partners}
       />
     </main>
   );

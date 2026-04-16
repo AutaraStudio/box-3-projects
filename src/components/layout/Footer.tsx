@@ -9,8 +9,8 @@
  *
  * All content from props (Sanity) — zero hardcoded strings.
  * Theme-aware via data-theme="dark" on the footer element.
- * Server component — link hover is handled globally by
- * CharHoverObserver + CSS.
+ * Server component — link char hover is handled globally by
+ * CharHoverObserver + CSS (via `<span data-char-hover>` wrappers).
  */
 
 import type { FooterLink } from "@/sanity/queries/siteFooter";
@@ -76,9 +76,7 @@ export default function Footer({
                     href={link.href}
                     className="footer-link font-primary text-text-sm uppercase tracking-caps leading-normal"
                     role="menuitem"
-                  >
-                    <span data-char-hover="">{link.label}</span>
-                  </a>
+                  ><span data-char-hover="">{link.label}</span></a>
                 ))}
               </div>
 
@@ -90,9 +88,7 @@ export default function Footer({
                     href={link.href}
                     className="footer-link font-primary text-text-sm uppercase tracking-caps leading-normal"
                     role="menuitem"
-                  >
-                    <span data-char-hover="">{link.label}</span>
-                  </a>
+                  ><span data-char-hover="">{link.label}</span></a>
                 ))}
               </div>
             </div>
@@ -107,9 +103,7 @@ export default function Footer({
                     href={link.href}
                     className="footer-link font-primary text-text-sm uppercase tracking-caps leading-normal"
                     role="menuitem"
-                  >
-                    <span data-char-hover="">{link.label}</span>
-                  </a>
+                  ><span data-char-hover="">{link.label}</span></a>
                 ))}
                 {socialLinks.map((link) => (
                   <a
@@ -118,9 +112,7 @@ export default function Footer({
                     target="_blank"
                     rel="noopener noreferrer"
                     className="footer-link font-primary text-text-sm uppercase tracking-caps leading-normal"
-                  >
-                    <span data-char-hover="">{link.label}</span>
-                  </a>
+                  ><span data-char-hover="">{link.label}</span></a>
                 ))}
               </div>
 
@@ -132,18 +124,14 @@ export default function Footer({
                     href={link.href}
                     className="footer-link font-primary text-text-sm uppercase tracking-caps leading-normal"
                     role="menuitem"
-                  >
-                    <span data-char-hover="">{link.label}</span>
-                  </a>
+                  ><span data-char-hover="">{link.label}</span></a>
                 ))}
                 <a
                   href={madeByUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="footer-link font-primary text-text-sm uppercase tracking-caps leading-normal"
-                >
-                  <span data-char-hover="">{madeByLabel}</span>
-                </a>
+                ><span data-char-hover="">{madeByLabel}</span></a>
               </div>
             </div>
           </div>

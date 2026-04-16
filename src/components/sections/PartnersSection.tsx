@@ -83,9 +83,11 @@ function buildPanel(
    -------------------------------------------------------------------------- */
 
 interface PartnersProps {
+  /** Top-left heading rendered above the marquee. */
+  heading: string;
   /** Label passed from Sanity — kept on the props surface even though
    *  it is not currently rendered, so the schema stays wired. */
-  sectionLabel: string;
+  sectionLabel?: string;
   partners: ResolvedPartner[];
 }
 
@@ -93,7 +95,7 @@ interface PartnersProps {
    Component
    -------------------------------------------------------------------------- */
 
-export default function PartnersSection({ partners }: PartnersProps) {
+export default function PartnersSection({ heading, partners }: PartnersProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -188,12 +190,18 @@ export default function PartnersSection({ partners }: PartnersProps) {
       ref={sectionRef}
       data-theme="dark"
       data-nav-theme="dark"
-      className="bg-[var(--theme-bg)] overflow-hidden"
+      className="partners-section bg-[var(--theme-bg)] overflow-hidden"
       style={{
         paddingTop: "var(--section-space-md)",
-        paddingBottom: "var(--space-9)",
+        paddingBottom: "var(--section-space-md)",
       }}
     >
+      <div className="partners-section__header container">
+        <h2 className="partners-section__heading font-primary text-h4 font-medium leading-snug tracking-tight">
+          {heading}
+        </h2>
+      </div>
+      <hr className="partners-section__divider" aria-hidden="true" />
       {/* Scroll drift wrapper — GSAP animates x on page scroll */}
       <div
         ref={scrollRef}

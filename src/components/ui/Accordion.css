@@ -1,0 +1,114 @@
+/* ==========================================================================
+   Accordion
+   ==========================================================================
+   Vertical list of disclosure items separated by hairline borders.
+   Only one item can be open at a time; the open state is driven by
+   React + GSAP in Accordion.tsx.
+
+   All colour / spacing / typography flow from the token system.
+   The expand/collapse trick relies on the grid-template-rows
+   0fr → 1fr animation — each `.accordion__panel` is a
+   display: grid container whose single row grows from 0fr to 1fr
+   to reveal its content without needing a known height.
+   ========================================================================== */
+
+.accordion {
+  /* Top hairline — pairs with each item's bottom border to produce
+     a continuous ruled list. */
+  border-top: var(--border-width) solid var(--theme-border);
+}
+
+.accordion__item {
+  border-bottom: var(--border-width) solid var(--theme-border);
+}
+
+/* ── Heading + title button ────────────────────────────────────────────── */
+
+.accordion__heading {
+  margin: 0;
+}
+
+.accordion__title {
+  width: 100%;
+  padding: var(--space-5) 0;
+  padding-right: var(--space-3);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--gap-4);
+  text-align: left;
+  background: transparent;
+  border: 0;
+  color: var(--theme-text);
+  /* Pin font-size to h5 directly so the heading wrapper's base
+     rule can never cascade a larger size into the button. The
+     text-h5 utility class on the JSX is the belt; this is the
+     braces. */
+  font-size: var(--font-size-h5);
+  cursor: pointer;
+  transition: color var(--animation-brand);
+}
+
+.accordion__title:hover,
+.accordion__title:focus-visible {
+  color: var(--theme-text-muted);
+}
+
+.accordion__label {
+  display: inline-block;
+}
+
+/* ── Icon (plus → × rotation) ──────────────────────────────────────────── */
+
+.accordion__icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* 1.125rem ≈ 18px — matches the SVG viewBox. Custom size, no
+     token equivalent. */
+  width: 1.125rem;
+  height: 1.125rem;
+  /* Nudges the icon down so it optically aligns with the heading's
+     cap line rather than sitting flush at the top. */
+  margin-top: 0.375rem;
+  transform-origin: center center;
+  will-change: transform;
+  color: currentColor;
+}
+
+.accordion__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+/* ── Panel (grid-rows 0fr → 1fr trick) ─────────────────────────────────── */
+
+.accordion__panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  overflow: hidden;
+}
+
+.accordion__inner {
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.accordion__body {
+  padding-top: var(--space-5);
+  padding-bottom: var(--space-7);
+  color: var(--theme-text-muted);
+}
+
+.accordion__body p {
+  color: inherit;
+  margin: 0;
+}
+
+.accordion__body p + p {
+  margin-top: var(--space-4);
+}

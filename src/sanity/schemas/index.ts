@@ -21,6 +21,11 @@ import careersPage from "./pages/careersPage";
 
 /* Sections */
 import partnersSection from "./sections/partnersSection";
+import ourApproachSection from "./sections/ourApproachSection";
+import bannerShowroom from "./sections/bannerShowroom";
+import featuredProjectsSection from "./sections/featuredProjectsSection";
+import testimonialsSection from "./sections/testimonialsSection";
+import homeIntroSection from "./sections/homeIntroSection";
 
 /* Collections */
 import project from "./collections/project";
@@ -28,6 +33,8 @@ import projectCategory from "./collections/projectCategory";
 import expertise from "./collections/expertise";
 import teamMember from "./collections/teamMember";
 import vacancy from "./collections/vacancy";
+import partner from "./collections/partner";
+import testimonial from "./collections/testimonial";
 
 /* Globals */
 import siteNav from "./globals/siteNav";
@@ -39,9 +46,16 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   siteNav,
   siteFooter,
   partnersSection,
+  ourApproachSection,
+  bannerShowroom,
+  featuredProjectsSection,
+  testimonialsSection,
+  homeIntroSection,
   projectCategory,
   expertise,
   teamMember,
   project,
   vacancy,
+  partner,
+  testimonial,
 ];

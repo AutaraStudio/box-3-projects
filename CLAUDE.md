@@ -9,7 +9,7 @@
 ## Tech Stack
 - Framework: Next.js 14 (App Router, TypeScript strict mode)
 - Styling: Tailwind CSS v4 + CSS custom properties
-- Animation: GSAP + ScrollTrigger + SplitText, Lenis smooth scroll, Framer Motion (UI transitions only)
+- Animation: GSAP + ScrollTrigger + ScrambleText (nav only), Lenis smooth scroll, Framer Motion (UI transitions only)
 - CMS: Sanity (next-sanity) — Project ID: uwutffn5
 - Hosting: Netlify
 - Version Control: GitHub
@@ -101,7 +101,7 @@ trace back to the token system.
 - All colors reference CSS custom property tokens only
 - Primitive palette lives in globals.css (--color-*)
 - Semantic tokens live in globals.css (--theme-*)
-- 8 themes available: light, dark, brand, cream, rose, mauve, sage, sand
+- 9 themes available: light, dark, night, brand, cream, rose, mauve, sage, sand
 - Themes applied via data-theme="[name]" on outer section wrapper only
 - Never apply data-theme to individual child elements unless explicitly instructed
 - color-mix(in srgb, ...) for transparent variants — never rgba() with hardcoded values
@@ -123,13 +123,123 @@ trace back to the token system.
 - Conversion: rem = px / 16
 
 ### Animations
+- Global providers (wrapped once in `Providers.tsx`):
+  - **SmoothScroll** — Lenis + GSAP ScrollTrigger integration
+  - **HoverCursor** — `data-cursor-label` pink cursor chip
+  - **ParallaxObserver** — `data-parallax="trigger"` scrub parallax
+  - **ImageRevealObserver** — `data-image-reveal` overlay fade
+  - **CharHoverObserver** — `data-char-hover` link/button char slide-up
+  - **NavThemeObserver** — swaps nav theme by section
 - All DOM targeting uses data-* attributes, never classes or IDs
-- Global animations (Lenis, GSAP ScrollTrigger, SplitText) initialised once at app level
-- Component-specific animations scoped to that component
 - All GSAP easings and durations imported from /src/config/animations.config.ts
 - All CSS transitions use tokens from globals.css (--ease-*, --duration-*, --animation-*, --transition-*)
-- Never hardcode animation values in components
+- Never hardcode animation values in components (image-reveal's 2.4s curve is an intentional exception, documented inline)
 - Smooth, modern, editorial — never bouncy or gratuitous
+- There is currently NO global split-text, fade-up, or line-reveal system. Do not reintroduce one without explicit instruction.
+
+### Image Reveal (opt-in)
+
+Any media container can opt into the site-wide reveal overlay:
+
+```tsx
+<div data-image-reveal>
+  <Image ... />
+</div>
+```
+
+- Overlay colour defaults to `--color-pink-500`; dark + night themes override via `--theme-image-reveal-bg` to match the partner-card surface tone.
+- Fires when the element's top crosses the vertical viewport centre (IntersectionObserver with `rootMargin: "0px 0px -50% 0px"`).
+- Transition: 2.4s `cubic-bezier(0.22, 1, 0.36, 1)` opacity fade.
+- Optional `data-image-reveal-delay="0.2"` for a seconds-based offset.
+
+### Parallax (opt-in)
+
+Scrub parallax system — add `data-parallax="trigger"` to any
+element and it will animate its `yPercent` (or `xPercent`) as it
+passes through the viewport.
+
+```tsx
+<div data-parallax="trigger" data-parallax-start="0" data-parallax-end="40">
+  <img src="…" />
+</div>
+```
+
+Image-in-a-frame mask pattern:
+
+```tsx
+<div class="mask" data-parallax="trigger"
+     style={{ overflow: "hidden", position: "relative" }}>
+  <div data-parallax="target"
+       style={{ position: "absolute", inset: 0, height: "120%" }}>
+    <img … />
+  </div>
+</div>
+```
+
+All attributes (all optional, all live on the trigger):
+
+| Attribute                        | Default        | Purpose                                    |
+|----------------------------------|----------------|--------------------------------------------|
+| `data-parallax="trigger"`        | —              | REQUIRED. Also the animated element unless a child has `data-parallax="target"`. |
+| `data-parallax="target"`         | —              | Child element to animate instead of the trigger itself. |
+| `data-parallax-direction`        | `vertical`     | `vertical` → yPercent · `horizontal` → xPercent |
+| `data-parallax-start`            | `20`           | Start position in % (of element size).     |
+| `data-parallax-end`              | `-20`          | End position in %.                         |
+| `data-parallax-scroll-start`     | `top bottom`   | ScrollTrigger `start` (wrapped in `clamp()`). |
+| `data-parallax-scroll-end`       | `bottom top`   | ScrollTrigger `end` (wrapped in `clamp()`). |
+| `data-parallax-scrub`            | `true`         | `true` for tight Lenis feel, or a number (seconds of lag). |
+| `data-parallax-disable`          | —              | `mobile` · `mobileLandscape` · `tablet` (matchMedia-scoped). |
+
+Breakpoints used by `data-parallax-disable`:
+- `mobile` — max-width: 479px
+- `mobileLandscape` — max-width: 767px
+- `tablet` — max-width: 991px
+
+### Hover Cursor (opt-in, reusable label chip)
+
+Global custom cursor that appears as a pink chip with custom text
+over any element carrying `data-cursor-label="…"`. One chip is
+rendered at provider level and follows the pointer with a lerp
+smooth-follow; the native cursor is hidden only inside opt-in
+subtrees.
+
+```tsx
+<button data-cursor-label="Play" onClick={openPlayer}>
+  {/* …background video, image, anything clickable… */}
+</button>
+```
+
+- Skipped on touch / coarse-pointer devices automatically.
+- The label text is read from the attribute — change it per
+  instance without touching the component.
+- Nested elements inherit the label from their nearest
+  `[data-cursor-label]` ancestor (click through a `<video>` inside
+  a wrapper without losing the chip).
+- Pair with a click handler — the wrapper is typically a `<button>`
+  so the action is keyboard-accessible. The chip itself has
+  `pointer-events: none`.
+
+### Char Hover (opt-in, for links + buttons)
+
+Global hover effect — each character slides up 1.3em and a shadow
+copy below fills the slot. Used on `Button` labels, footer links,
+and mega-menu links:
+
+```tsx
+<a href="/about">
+  <span data-char-hover="">About</span>
+</a>
+```
+
+- The span MUST wrap the text; the anchor/button is the hover target.
+- `data-char-hover-trigger` on a different ancestor lets you move the
+  hover target off the anchor (rarely needed).
+- The observer splits text into character spans once on mount. Do
+  NOT wrap text that mutates at runtime (e.g. GSAP ScrambleText
+  targets like the primary/secondary nav links).
+- Stagger is a 0.015s per-character `transition-delay` written
+  inline by the observer; duration + ease come from
+  `--duration-moderate` + `--ease-slide` in globals.css.
 
 ### Components
 - Every component is fully prop-based with TypeScript
@@ -309,54 +419,53 @@ reference/                         # Original Webflow source — read for intent
 
 ## Global Systems — Completed & Active
 
-### Animation Providers (initialised in root layout)
-- SmoothScroll.tsx — Lenis smooth scroll + GSAP ScrollTrigger integration
-- AnimationProvider.tsx — global data-animate observer
-- SplitTextObserver.tsx — global data-split-text observer
-- LineRevealObserver.tsx — data-line-reveal and data-line-reveal-hero observer
-- NavThemeObserver.tsx — swaps nav data-theme on scroll per section
-- CharHoverObserver.tsx — splits data-char-hover text into character spans
-- HeroDitherProvider.tsx — Three.js dither engine lifecycle management
-- Providers.tsx — single root wrapper, imported in (site)/layout.tsx
+### Animation Providers (wrapped once in `src/components/layout/Providers.tsx`)
 
-### Data Attribute Animations — Ready To Use
-Add these to any element and animations trigger automatically:
-- data-animate="fade-up"
-- data-animate="fade-in"
-- data-animate="fade-down"
-- data-animate="clip-reveal"
-- data-animate="scale-reveal"
-- data-animate-delay="0.2" (optional delay in seconds)
-- data-animate-stagger="0.1" (on parent, staggers direct children)
-- data-split-text="lines"
-- data-split-text="words"
-- data-split-text="chars"
-- data-split-delay="0.2" (optional delay on split-text elements)
-- data-line-reveal-hero="top|bottom" — line scales in on page load
-- data-line-reveal="top|bottom" — line scales in on scroll
-- data-line-duration="0.8" — optional per-element duration override
-- data-line-delay="0.2" — optional per-element delay override
-- data-hero-scroll-fade — fades element out as hero scrolls away
-- data-hero-scroll-fade-scale — fades and scales down on hero scroll
-- data-char-hover="" — splits text into spans for char slide-up hover
-- data-char-hover-trigger — designates a hover trigger for char animation
-- data-dither — registers element with the DitherEngine
-- data-dither-full — full-bleed dither mode, no wipe animation
-- data-dither-hover — enables hover wipe interaction on dither element
-- data-dither-texture — texture blend mode, partial dither overlay
-- data-dither-link — button that triggers dither wipe on a target element
-- data-dither-id — unique ID linking a dither container to its media
-- data-overlay="dark|medium|light" — colour overlay utility
-- data-lenis-prevent — prevents Lenis smooth scroll inside element
-- data-hero-sticky — marks the hero section for the DitherEngine
-- data-nav-theme="dark|light|[theme]" — tells NavThemeObserver what
-  theme the nav should use when this section is in view. Add to every
-  page section that needs to change the nav appearance.
+In composition order — SmoothScroll must be outermost so its Lenis
+proxy is in place before any ScrollTrigger-driven provider fires:
+
+- **SmoothScroll.tsx** — Lenis smooth scroll + GSAP ScrollTrigger sync
+- **ParallaxObserver.tsx** — scrub parallax on `[data-parallax="trigger"]`
+- **ImageRevealObserver.tsx** — overlay fade on `[data-image-reveal]`
+- **CharHoverObserver.tsx** — splits `[data-char-hover]` text into
+  character spans for the global link/button slide-up hover
+- **NavThemeObserver.tsx** — swaps the nav's `data-theme` based on
+  which section is currently crossing the nav's vertical midpoint
+
+There is NO global split-text, fade-up, line-reveal, or dither
+system. Those were intentionally removed; do not reintroduce them
+without explicit instruction.
+
+### Data Attribute Conventions — Ready To Use
+
+Animation attributes (see the sections above for full behaviour):
+
+- `data-parallax="trigger"` — register a parallax scrub tween (also
+  accepts `-direction`, `-start`, `-end`, `-scroll-start`,
+  `-scroll-end`, `-scrub`, `-disable`)
+- `data-parallax="target"` — child to animate instead of the trigger
+- `data-image-reveal` — overlay fade reveal (+ optional
+  `data-image-reveal-delay`)
+- `data-char-hover=""` — wrap link/button label for char slide-up
+  (+ `data-char-hover-trigger` to relocate the hover target)
+
+Structural / utility attributes:
+
+- `data-theme="[name]"` — semantic theme scope on a section wrapper
+- `data-nav-theme="[name]"` — tells NavThemeObserver which theme the
+  nav should adopt while this section is in view
+- `data-overlay="dark|medium|light"` — tinted overlay utility
+- `data-lenis-prevent` — excludes a subtree from Lenis smooth scroll
+- `data-nav=""` — marks the nav header element (NavThemeObserver target)
 
 ### Theming — Ready To Use
-- Add data-theme="[name]" to any outer section wrapper
-- Available: light, dark, brand, cream, rose, mauve, sage, sand
-- Default theme: light (set on body in (site)/layout.tsx)
+- Add `data-theme="[name]"` to any outer section wrapper
+- Available: light, dark, night, brand, cream, rose, mauve, sage, sand
+- `night` = charcoal background with pure white text + pink accents
+  (use for sections with a photograph/background image)
+- `dark` = charcoal background with pink text (use for solid dark
+  sections without imagery)
+- Default theme: `light` (set on body in `(site)/layout.tsx`)
 
 ### Utility
 - cn() helper available at @/lib/utils for conditional classNames
@@ -373,7 +482,6 @@ Add these to any element and animations trigger automatically:
 - Queries live in: src/sanity/queries/
 - All queries use sanityFetch helper from src/sanity/lib/fetch.ts
 - Image URLs resolved via urlFor() from src/sanity/lib/image.ts
-- Dither engine reads image URL from data-src attribute on img elements
 
 ## Current Build Status
 - Project scaffolded ✅
@@ -414,14 +522,33 @@ Add these to any element and animations trigger automatically:
     project.additionalImages, teamMember.image)
   - urlFor() applies auto("format") + quality(80) defaults
   - Operational scripts: delete-projects, list-tags, populate-projects
+- Button component — complete ✅
+  - Button.tsx + Button.css — global reusable button, fully theme-aware
+  - Primary + secondary variants, sm/md/lg/xl sizes
+  - Two-stage clip-path wipe on hover, CharHoverObserver label animation
+- Project detail page — complete ✅
+  - /projects/[slug] — dynamic route with generateStaticParams
+  - ProjectHero.tsx + .css — sticky left col (stats + team), gallery
+    right col (parallax images + inline team tiles); dark theme
+  - ProjectExpertise.tsx + .css — ruled expertise list, cream theme
+  - ProjectGallery.tsx + .css — 300svh scroll-scrub Explore + inline
+    Swiper lightbox; light theme at rest, dark lightbox modal
+  - RelatedProjects.tsx + .css — same-category-first 5-tile grid with
+    permanent accent wash behind each tile
+  - PartnersSection marquee appended below Related (dark theme)
+  - src/sanity/queries/projectDetail.ts — RELATED_PROJECTS_QUERY
+- Studio Collections group — complete ✅
+  - Projects, Expertise, Team Members, Vacancies, Project Categories
+    grouped under a single sidebar item in src/sanity/lib/structure.ts
 - All other pages/sections — pending ⏳
 
 ## Upcoming Next Steps
-1. Component library (Button, Link, Tag)
-2. Nav component
-3. Footer component
-4. Remaining page sections
-5. Sanity schemas per section
+1. Component library expansion (Tag, Link primitives)
+2. Projects listing page (/projects)
+3. About page
+4. Services page
+5. Contact page
+6. Remaining Sanity schemas per new page
 
 ## Key Reference Files
 - /src/config/animations.config.ts — all GSAP easings, durations, stagger values, scroll trigger defaults, animation presets
@@ -471,9 +598,16 @@ Add these to any element and animations trigger automatically:
 - Every page section needs data-nav-theme="[theme]" for the nav to
   respond correctly as the user scrolls
 - The nav header element has data-nav="" — NavThemeObserver targets this
-- Nav vertical lines use data-line-reveal-hero="top" — fires immediately
-  on load, not on scroll
 - Mega menu overflow requires is-open class on mega-menu-container
+
+### Image Reveal vs Parallax on the same element
+- `data-image-reveal` and `data-parallax="trigger"` can coexist on
+  the same mask — ImageReveal's `::after` overlay sits at z-index 2
+  above the parallax target
+- When using both, the parallax target must be a child wrapper
+  (`data-parallax="target"`); the image-reveal attr stays on the
+  outer mask
+- See `ProjectHero` gallery items for a wired example
 
 ## When Starting Any Task
 1. Read this file first

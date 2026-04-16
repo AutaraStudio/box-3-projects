@@ -9,9 +9,9 @@
  * Hover animation is a two-stage clip-path wipe, driven entirely
  * by CSS in Button.css — no GSAP involved.
  *
- * Char slide-up label hover is handled globally by
- * CharHoverObserver + CSS rules in globals.css. The label span
- * carries `data-char-hover=""` to opt in.
+ * The label span carries `data-char-hover=""` to opt in to the
+ * site-wide character slide-up hover (CharHoverObserver + CSS rules
+ * in globals.css).
  */
 
 import type { MouseEventHandler, ReactNode } from "react";

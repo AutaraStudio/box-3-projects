@@ -6,6 +6,11 @@
 
 import { groq } from "next-sanity";
 
+import {
+  TESTIMONIALS_SECTION_PROJECTION,
+  type TestimonialsSectionData,
+} from "./testimonialsSection";
+
 /** Fetches the first homePage document with hero fields. */
 export const HOME_PAGE_QUERY = groq`
   *[_type == "homePage"][0] {
@@ -14,6 +19,9 @@ export const HOME_PAGE_QUERY = groq`
     heroImage {
       asset,
       alt
+    },
+    testimonialsSection {
+      ${TESTIMONIALS_SECTION_PROJECTION}
     }
   }
 `;
@@ -26,4 +34,5 @@ export interface HomePageData {
     asset: { _ref: string };
     alt: string;
   };
+  testimonialsSection?: TestimonialsSectionData;
 }

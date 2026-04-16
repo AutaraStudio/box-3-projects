@@ -8,7 +8,7 @@
  * Usage:
  *   const containerRef = useRef<HTMLDivElement>(null);
  *   useGSAP(() => {
- *     gsap.from("[data-animate]", { opacity: 0 });
+ *     gsap.from(".some-el", { opacity: 0 });
  *   }, { scope: containerRef, dependencies: [] });
  */
 

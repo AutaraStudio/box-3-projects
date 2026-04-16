@@ -390,8 +390,6 @@ export default function Nav({
         link.addEventListener("blur", leave);
       });
 
-      /* Secondary / contact link hover is handled globally by
-         CharHoverObserver + CSS (data-char-hover spans in JSX). */
 
       /* ── Close on Outside Click ────────────────── */
       function onOutsideClick(e: MouseEvent) {
@@ -429,9 +427,15 @@ export default function Nav({
     <header ref={headerRef} data-nav="" data-theme="dark" className="site-header">
       <nav className="header-nav" aria-label="Main">
 
-        {/* Logo */}
+        {/* Logo — just the square home link. `data-preloader="target"`
+            tags it for the first-load Preloader, which morphs the
+            same element from fullscreen back to this slot via Flip. */}
         <div className="header-logo-block">
-          <a href="/" className="header-home-link">
+          <a
+            href="/"
+            className="header-home-link"
+            data-preloader="target"
+          >
             <span className="sr-only">Box 3 Projects home page</span>
             <span className="header-logo-container">
               <svg
@@ -443,9 +447,6 @@ export default function Nav({
                 <path d="M15.3 28.07a12.825 12.825 0 0 0 .714.001V30H15.3v-1.93Zm13.172-12.713c-.049 6.916-5.576 12.529-12.458 12.714v-3.196c5.118-.184 9.216-4.366 9.263-9.518h3.195Zm-22.427 0c.048 5.15 4.14 9.33 9.255 9.518v3.195c-6.877-.19-12.4-5.8-12.447-12.713h3.192Zm9.969-9.7v8.986h9.243c.013.206.022.414.022.624l-.002.09h-9.263v9.518c-.117.004-.235.009-.353.009-.12 0-.241-.005-.361-.009v-9.518H6.045l-.002-.09c0-.21.01-.418.022-.624H15.3V5.657c.12-.004.24-.009.361-.009.118 0 .236.005.353.01Zm14.643 8.986v.714h-2.185v-.091c0-.21-.005-.417-.015-.623h2.2Zm-27.79 0c-.01.206-.015.414-.015.623v.091H.657v-.714h2.211ZM16.014 2.46c6.704.18 12.123 5.513 12.443 12.182h-3.2a9.615 9.615 0 0 0-9.243-8.986V2.461ZM15.3 5.657a9.616 9.616 0 0 0-9.235 8.986H2.867C3.187 7.977 8.6 2.648 15.3 2.462v3.195Zm.714-3.196a13.081 13.081 0 0 0-.714 0V0h.714v2.46Z" fill="currentColor" />
               </svg>
             </span>
-            <span className="header-text-container">
-              <span className="logo-text">Box 3 Projects</span>
-            </span>
             <span className="logo-bg" />
           </a>
         </div>
@@ -455,7 +456,12 @@ export default function Nav({
           <ul className="primary-nav-list" role="menu">
             {primaryLinks.map((link) => (
               <li key={link._key} className="primary-nav-item" role="none">
-                <a href={link.href} className="nav-link" data-primary-link="" role="menuitem">
+                <a
+                  href={link.href}
+                  className="nav-link font-primary text-text-sm uppercase tracking-caps leading-normal"
+                  data-primary-link=""
+                  role="menuitem"
+                >
                   {link.label}
                 </a>
               </li>
@@ -468,7 +474,12 @@ export default function Nav({
           <ul className="secondary-nav-list" role="menu">
             {secondaryLinks.map((link) => (
               <li key={link._key} className="secondary-nav-item" role="none">
-                <a href={link.href} className="nav-link-secondary" data-secondary-link="" role="menuitem">
+                <a
+                  href={link.href}
+                  className="nav-link-secondary font-primary text-text-sm uppercase tracking-caps leading-normal"
+                  data-secondary-link=""
+                  role="menuitem"
+                >
                   {link.label}
                 </a>
               </li>

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import PageTransition from "@/components/layout/PageTransition";
+import Preloader from "@/components/layout/Preloader";
 import Providers from "@/components/layout/Providers";
 import Nav from "@/components/layout/Nav";
 import Footer from "@/components/layout/Footer";
@@ -92,6 +94,18 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body data-theme="light">
+        {/* First-load preloader — once per tab via sessionStorage.
+            Renders no DOM itself; adds `.is-preloader` to the Nav's
+            logo block (which renders below) and Flips it back to its
+            natural nav position. Sits above Nav + Providers so its
+            effect fires after the Nav is mounted and the target
+            element is in the DOM. */}
+        <Preloader />
+        {/* Route-change overlay — fixed full-viewport div that fades
+            in before navigation fires and fades out once the new
+            route has painted. Sits above Nav so the whole UI wipes
+            as one. */}
+        <PageTransition />
         <Nav
           primaryLinks={nav.primaryLinks}
           secondaryLinks={nav.secondaryLinks}

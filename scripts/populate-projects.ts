@@ -107,6 +107,12 @@ const EXPERTISE = [
   { title: "Furniture Specification" },
   { title: "Technical Drawings" },
   { title: "CAD Design" },
+  { title: "Joinery Design" },
+  { title: "Lighting Design" },
+  { title: "Material Sourcing" },
+  { title: "Brand Integration" },
+  { title: "Art Direction" },
+  { title: "Sustainability Consulting" },
 ] as const;
 
 type ProjectSeed = {
@@ -125,7 +131,7 @@ type ProjectSeed = {
   stats: { label: string; value: string }[];
 };
 
-const PROJECTS: ProjectSeed[] = [
+export const PROJECTS: ProjectSeed[] = [
   {
     title: "Carlton Gardens",
     tag: "carlton-gardens",
@@ -133,14 +139,21 @@ const PROJECTS: ProjectSeed[] = [
     location: "St James's, London",
     year: 2024,
     tags: ["Residential", "Heritage", "Luxury"],
-    expertise: ["Interior Design", "Space Planning", "Furniture Specification"],
+    expertise: [
+      "Interior Design",
+      "Space Planning",
+      "Furniture Specification",
+      "Joinery Design",
+      "Material Sourcing",
+      "Lighting Design",
+    ],
     teamCount: 2,
     shortDescription:
       "A considered refurbishment of a heritage residence in St James's, balancing contemporary calm with the building's historic fabric.",
     clientObjective:
-      "Reimagine the ground and first-floor spaces as a family home while retaining the building's period detailing.",
+      "Reimagine the ground and first-floor spaces as a family home while retaining the building's period detailing and listed-fabric constraints. The brief called for contemporary calm that sits comfortably alongside the building's historic elements without ever feeling pastiche.",
     clientFeedback:
-      "The team handled every stage with care and precision. The final result feels both contemporary and at home in the building's history.",
+      "The team handled every stage with care and precision. The final result feels both contemporary and entirely at home in the building's history — we've had visitors assume certain details were original.",
     stats: [
       { label: "Size", value: "6,200 sq ft" },
       { label: "Completed", value: "Spring 2024" },
@@ -154,14 +167,20 @@ const PROJECTS: ProjectSeed[] = [
     location: "Soho, London",
     year: 2023,
     tags: ["Hospitality", "Restaurant"],
-    expertise: ["Interior Design", "Furniture Specification"],
+    expertise: [
+      "Interior Design",
+      "Furniture Specification",
+      "Lighting Design",
+      "Material Sourcing",
+      "Joinery Design",
+    ],
     teamCount: 2,
     shortDescription:
       "An intimate dining room in Soho built around warm materials and a relaxed, convivial atmosphere.",
     clientObjective:
-      "Create a neighbourhood restaurant that feels immediately familiar yet distinctive within a competitive Soho setting.",
+      "Create a neighbourhood restaurant that feels immediately familiar yet distinctive within a competitive Soho setting. The space had to hold warmth at full capacity and calm during quieter service, with a material palette that would age well over years of use.",
     clientFeedback:
-      "Guests regularly comment on how calm the space feels — a real achievement given how busy service can get.",
+      "Guests regularly comment on how calm the space feels — a real achievement given how busy service can get. The finishes have bedded in beautifully and the front-of-house team love running the room.",
     stats: [
       { label: "Covers", value: "48" },
       { label: "Completed", value: "Autumn 2023" },
@@ -175,14 +194,21 @@ const PROJECTS: ProjectSeed[] = [
     location: "Mayfair, London",
     year: 2024,
     tags: ["Workplace", "Private Equity"],
-    expertise: ["Interior Design", "Space Planning", "Project Management"],
+    expertise: [
+      "Interior Design",
+      "Space Planning",
+      "Project Management",
+      "Joinery Design",
+      "Furniture Specification",
+      "Lighting Design",
+    ],
     teamCount: 2,
     shortDescription:
       "Bespoke workplace interiors for a global private equity firm, designed around quiet focus and high-touch client hosting.",
     clientObjective:
-      "Deliver an elevated London workspace that supports both internal focus time and senior client engagement.",
+      "Deliver an elevated London workspace that supports both internal focus time and senior client engagement. The brief was to move away from a generic corporate aesthetic toward something closer to a members' club, while still accommodating the acoustic separation deal teams need.",
     clientFeedback:
-      "A beautifully considered space. The team understood the way our people actually work and designed around it.",
+      "A beautifully considered space. The team understood the way our people actually work and designed around it rather than forcing a pattern on us — client meetings land differently now.",
     stats: [
       { label: "Size", value: "9,500 sq ft" },
       { label: "Completed", value: "Summer 2024" },
@@ -196,14 +222,21 @@ const PROJECTS: ProjectSeed[] = [
     location: "St James's, London",
     year: 2023,
     tags: ["Residential", "Heritage"],
-    expertise: ["Interior Design", "Space Planning", "Technical Drawings"],
+    expertise: [
+      "Interior Design",
+      "Space Planning",
+      "Technical Drawings",
+      "Joinery Design",
+      "Material Sourcing",
+      "Art Direction",
+    ],
     teamCount: 2,
     shortDescription:
       "A layered, material-rich residence in St James's where classical architecture meets a contemporary collector's sensibility.",
     clientObjective:
-      "Develop a cohesive design language across every floor that feels timeless without being austere.",
+      "Develop a cohesive design language across every floor that feels timeless without being austere. The client collects contemporary art, so the palette and lighting needed to flex with a rotating collection rather than compete with it.",
     clientFeedback:
-      "Every detail has been considered — from the joinery to the way light falls through the rooms in the afternoon.",
+      "Every detail has been considered — from the joinery to the way light falls through the rooms in the afternoon. It's a genuinely beautiful home to live in, and we find ourselves noticing something new months after moving back in.",
     stats: [
       { label: "Size", value: "12,000 sq ft" },
       { label: "Completed", value: "Winter 2023" },
@@ -217,14 +250,21 @@ const PROJECTS: ProjectSeed[] = [
     location: "Farringdon, London",
     year: 2024,
     tags: ["Workplace", "Office"],
-    expertise: ["Interior Design", "Space Planning", "CAD Design"],
+    expertise: [
+      "Interior Design",
+      "Space Planning",
+      "CAD Design",
+      "Project Management",
+      "Furniture Specification",
+      "Sustainability Consulting",
+    ],
     teamCount: 3,
     shortDescription:
       "A flexible workplace spanning three floors in Farringdon, designed for hybrid teams and informal collaboration.",
     clientObjective:
-      "Move the team into a space that supports varied working styles and draws people back into the office.",
+      "Move the team into a space that supports varied working styles and draws people back into the office. We were coming from a formal open-plan setup that wasn't serving hybrid work, and needed something that felt like a destination rather than an obligation.",
     clientFeedback:
-      "The new space feels genuinely like ours. Teams are choosing to come in — which is exactly what we hoped for.",
+      "The new space feels genuinely like ours. Teams are choosing to come in — which is exactly what we hoped for — and attendance is meaningfully up on the old office.",
     stats: [
       { label: "Size", value: "18,400 sq ft" },
       { label: "Floors", value: "3" },
@@ -238,14 +278,21 @@ const PROJECTS: ProjectSeed[] = [
     location: "Bond Street, London",
     year: 2023,
     tags: ["Retail", "Luxury", "Brand"],
-    expertise: ["Interior Design", "Furniture Specification", "Project Management"],
+    expertise: [
+      "Interior Design",
+      "Furniture Specification",
+      "Project Management",
+      "Brand Integration",
+      "Lighting Design",
+      "Material Sourcing",
+    ],
     teamCount: 2,
     shortDescription:
       "A flagship retail environment in London's West End, designed to translate the brand's architectural language into a rich tactile experience.",
     clientObjective:
-      "Roll out the brand's new global retail concept for a flagship London store while meeting heritage-listed constraints.",
+      "Roll out the brand's new global retail concept for a flagship London store while meeting heritage-listed constraints. The challenge was translating a standardised architectural language onto a building with real character of its own, without softening either.",
     clientFeedback:
-      "The team navigated a complex brief with real craft. The store performs beautifully for both staff and customers.",
+      "The team navigated a complex brief with real craft. The store performs beautifully for both staff and customers, and the heritage details now feel like part of the brand's story rather than an obstacle to it.",
     stats: [
       { label: "Size", value: "4,100 sq ft" },
       { label: "Completed", value: "Autumn 2023" },
@@ -259,14 +306,20 @@ const PROJECTS: ProjectSeed[] = [
     location: "Holborn, London",
     year: 2024,
     tags: ["Wellness", "Fitness", "Hospitality"],
-    expertise: ["Interior Design", "Space Planning"],
+    expertise: [
+      "Interior Design",
+      "Space Planning",
+      "Lighting Design",
+      "Material Sourcing",
+      "Furniture Specification",
+    ],
     teamCount: 2,
     shortDescription:
       "A boutique members' gym beneath the streets of Holborn, balancing performance-focused equipment zones with a calm hospitality experience.",
     clientObjective:
-      "Create a members' club feel in a wellness setting — somewhere people want to stay beyond their workout.",
+      "Create a members' club feel in a wellness setting — somewhere people want to stay beyond their workout. We briefed for a quiet, hospitality-led atmosphere that doesn't rely on the usual neon-and-mirrors vocabulary of the fitness category.",
     clientFeedback:
-      "Members regularly say it doesn't feel like a gym. That was the brief — and the team absolutely delivered.",
+      "Members regularly say it doesn't feel like a gym. That was the brief — and the team absolutely delivered. Retention has been the strongest we've seen at any of our sites.",
     stats: [
       { label: "Size", value: "7,800 sq ft" },
       { label: "Completed", value: "Spring 2024" },
@@ -280,14 +333,20 @@ const PROJECTS: ProjectSeed[] = [
     location: "Walworth, London",
     year: 2023,
     tags: ["Residential", "New Build"],
-    expertise: ["Interior Design", "Furniture Specification"],
+    expertise: [
+      "Interior Design",
+      "Furniture Specification",
+      "Material Sourcing",
+      "Art Direction",
+      "Lighting Design",
+    ],
     teamCount: 2,
     shortDescription:
       "A family home in South London where soft palettes and layered textures bring warmth to a clean contemporary shell.",
     clientObjective:
-      "Furnish and finish a newly built family home that feels lived-in from day one without losing its architectural calm.",
+      "Furnish and finish a newly built family home that feels lived-in from day one without losing its architectural calm. We handed over a shell with strong bones and wanted someone to bring warmth and practicality without disturbing the architecture.",
     clientFeedback:
-      "Moving in felt effortless. Everything we needed was there, and everything we didn't — wasn't.",
+      "Moving in felt effortless. Everything we needed was there, and everything we didn't — wasn't. It's the first house we've lived in that genuinely feels resolved on day one rather than a work in progress.",
     stats: [
       { label: "Size", value: "3,600 sq ft" },
       { label: "Completed", value: "Summer 2023" },
@@ -301,14 +360,21 @@ const PROJECTS: ProjectSeed[] = [
     location: "King's Cross, London",
     year: 2024,
     tags: ["Workplace", "Tech"],
-    expertise: ["Interior Design", "Space Planning", "Project Management"],
+    expertise: [
+      "Interior Design",
+      "Space Planning",
+      "Project Management",
+      "Brand Integration",
+      "Furniture Specification",
+      "Sustainability Consulting",
+    ],
     teamCount: 2,
     shortDescription:
       "A flexible meeting and collaboration floor for a global technology brand, focused on neighbourhood-scale teamwork and brand expression.",
     clientObjective:
-      "Re-work one floor of the London HQ to support hybrid collaboration and signature client meetings.",
+      "Re-work one floor of the London HQ to support hybrid collaboration and signature client meetings. The existing layout couldn't flex between large all-hands moments and small team-scale sessions without constant reconfiguration.",
     clientFeedback:
-      "A thoughtful partner from concept through delivery. The space has changed how teams use the floor.",
+      "A thoughtful partner from concept through delivery. The space has changed how teams use the floor — we're seeing organic collaboration happen in spots that simply didn't exist in the old layout.",
     stats: [
       { label: "Size", value: "11,200 sq ft" },
       { label: "Completed", value: "Summer 2024" },
@@ -322,14 +388,21 @@ const PROJECTS: ProjectSeed[] = [
     location: "Leicester Square, London",
     year: 2024,
     tags: ["Public Realm", "Hospitality", "Cultural"],
-    expertise: ["Interior Design", "Technical Drawings", "CAD Design"],
+    expertise: [
+      "Interior Design",
+      "Technical Drawings",
+      "CAD Design",
+      "Lighting Design",
+      "Brand Integration",
+      "Material Sourcing",
+    ],
     teamCount: 2,
     shortDescription:
       "A reimagined ticket kiosk at the heart of Leicester Square, built to welcome both tourists and regulars with clarity and calm.",
     clientObjective:
-      "Refresh the public face of an iconic London destination while keeping the ticketing workflow efficient.",
+      "Refresh the public face of an iconic London destination while keeping the ticketing workflow efficient. We needed architecture that reads quickly for tourists at pavement level and still works day-in-day-out for the team on shift.",
     clientFeedback:
-      "It looks brilliant on the square and works beautifully for our team behind the glass. A hard brief, nailed.",
+      "It looks brilliant on the square and works beautifully for our team behind the glass. A hard brief, nailed — queue times have held flat even with higher visitor numbers, which tells us the flow is right.",
     stats: [
       { label: "Footprint", value: "420 sq ft" },
       { label: "Completed", value: "Summer 2024" },
@@ -343,14 +416,21 @@ const PROJECTS: ProjectSeed[] = [
     location: "City of London",
     year: 2023,
     tags: ["Workplace", "Office", "City"],
-    expertise: ["Interior Design", "Space Planning", "Project Management"],
+    expertise: [
+      "Interior Design",
+      "Space Planning",
+      "Project Management",
+      "Furniture Specification",
+      "Lighting Design",
+      "Joinery Design",
+    ],
     teamCount: 3,
     shortDescription:
       "A calm, materially restrained workplace high above the City, designed around natural light and panoramic views.",
     clientObjective:
-      "Take advantage of the tower's views while delivering a quiet, professional atmosphere for client-facing teams.",
+      "Take advantage of the tower's views while delivering a quiet, professional atmosphere for client-facing teams. The previous office leaned into the postcard panorama; we wanted something calmer that trusted the view to do its own work.",
     clientFeedback:
-      "Balanced, restrained, very well resolved. Exactly the right tone for how we wanted to present ourselves.",
+      "Balanced, restrained, very well resolved. Exactly the right tone for how we wanted to present ourselves — clients notice and comment, which was the point. A confident step up from the previous office.",
     stats: [
       { label: "Size", value: "14,600 sq ft" },
       { label: "Completed", value: "Autumn 2023" },
@@ -369,14 +449,17 @@ const PROJECTS: ProjectSeed[] = [
       "Space Planning",
       "Project Management",
       "Furniture Specification",
+      "Technical Drawings",
+      "CAD Design",
+      "Sustainability Consulting",
     ],
     teamCount: 4,
     shortDescription:
       "A campus-scale workplace programme delivered across multiple floors, supporting a large union workforce with a modern, democratic office.",
     clientObjective:
-      "Consolidate multiple teams into a single modernised HQ that reflects the organisation's values.",
+      "Consolidate multiple teams into a single modernised HQ that reflects the organisation's values. A long-tenure workforce meant the design needed to honour the existing culture while quietly updating the working environment around them.",
     clientFeedback:
-      "A huge programme handled with clarity and pace. Our teams feel proud of the space.",
+      "A huge programme handled with clarity and pace. Our teams feel proud of the space, and members visiting the HQ frequently tell us it finally looks like an organisation that takes itself seriously.",
     stats: [
       { label: "Size", value: "62,000 sq ft" },
       { label: "Floors", value: "5" },
@@ -390,14 +473,20 @@ const PROJECTS: ProjectSeed[] = [
     location: "Shoreditch, London",
     year: 2023,
     tags: ["Workplace", "Creative"],
-    expertise: ["Interior Design", "Furniture Specification"],
+    expertise: [
+      "Interior Design",
+      "Furniture Specification",
+      "Lighting Design",
+      "Material Sourcing",
+      "Art Direction",
+    ],
     teamCount: 2,
     shortDescription:
       "A compact creative studio in Shoreditch, fitted out with a relaxed, hospitality-influenced palette to support a small close-knit team.",
     clientObjective:
-      "Move the studio into a warm, grown-up space that steps away from the typical open-plan office.",
+      "Move the studio into a warm, grown-up space that steps away from the typical open-plan office. We work with a lot of hospitality clients and needed the studio to reflect the quality of the work we put out, rather than feel like an afterthought.",
     clientFeedback:
-      "Feels like a home for the studio. Clients love coming in and we love working here.",
+      "Feels like a home for the studio. Clients love coming in and we love working here — it's become a hiring advantage too, as people walk in and immediately get the level we operate at.",
     stats: [
       { label: "Size", value: "1,900 sq ft" },
       { label: "Completed", value: "Spring 2023" },

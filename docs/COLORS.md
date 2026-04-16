@@ -104,8 +104,12 @@ Never applied to individual child elements.
 - `--theme-overlay`
 - `--theme-shadow`
 - `--theme-focus`
-- `--theme-dither-ink`
-- `--theme-dither-bg`
+- `--theme-image-reveal-bg` — overlay colour used by the global
+  `[data-image-reveal]` effect. Defined on:
+  - `dark` / `night` → `--color-charcoal-600`
+  - `cream` → `--color-cream-700` (tone-on-tone with `--theme-border`)
+  Other themes fall back to the default pink via CSS
+  `var(..., var(--color-pink-500))`
 
 #### Nav
 - `--theme-nav-bg`
@@ -133,16 +137,25 @@ Never applied to individual child elements.
 
 ### Available Themes
 
-| Theme  | Base          | Character                          |
-|--------|---------------|------------------------------------|
-| light  | Warm white    | Default — clean and open           |
-| dark   | Deep charcoal | Charcoal base, pink as hero colour |
-| brand  | Blush pink    | Brand-forward, feminine            |
-| cream  | Warm cream    | Soft and editorial                 |
-| rose   | Muted rose    | Intimate and warm                  |
-| mauve  | Mauve         | Gentle contrast                    |
-| sage   | Soft sage     | Fresh and organic                  |
-| sand   | Warm sand     | Earthy and calm                    |
+| Theme  | Base          | Character                                              |
+|--------|---------------|--------------------------------------------------------|
+| light  | Warm white    | Default — clean and open                               |
+| dark   | Deep charcoal | Charcoal base, pink as the hero colour                 |
+| night  | Deep charcoal | White text + pink accents — for sections with imagery  |
+| brand  | Blush pink    | Brand-forward, feminine                                |
+| cream  | Warm cream    | Soft and editorial                                     |
+| rose   | Muted rose    | Intimate and warm                                      |
+| mauve  | Mauve         | Gentle contrast                                        |
+| sage   | Soft sage     | Fresh and organic                                      |
+| sand   | Warm sand     | Earthy and calm                                        |
+
+**`dark` vs `night`** — both sit on a charcoal-500 base, but:
+- **dark** uses pink-500 as `--theme-text`, so copy reads in pink.
+  Use when the section has no imagery and you want the brand tone.
+- **night** uses white-500 as `--theme-text`, keeping copy neutral
+  against a photograph. Logo / MENU button / contact chip stay pink
+  via `--theme-btn-primary-*` + `--theme-nav-icon-bg` so the brand
+  signals are preserved.
 
 ## color-mix() Usage
 Used for transparent variants — borders, overlays, muted SVGs.
