@@ -1,3 +1,4 @@
+import ApproachHeader from "@/components/sections/ApproachHeader";
 import BannerShowroom from "@/components/sections/BannerShowroom";
 import FeaturedProjects from "@/components/sections/FeaturedProjects";
 import HomeHero from "@/components/sections/HomeHero";
@@ -17,6 +18,10 @@ import {
   type FeaturedProjectsData,
 } from "@/sanity/queries/featuredProjectsSection";
 import {
+  APPROACH_HEADER_QUERY,
+  type ApproachHeaderData,
+} from "@/sanity/queries/approachHeaderSection";
+import {
   HOME_INTRO_QUERY,
   type HomeIntroData,
 } from "@/sanity/queries/homeIntroSection";
@@ -27,10 +32,11 @@ import {
 } from "@/sanity/queries/ourApproachSection";
 
 export default async function Home() {
-  const [homeData, intro, approach, featured, showroom, partners] = await Promise.all([
+  const [homeData, intro, approach, approachHeader, featured, showroom, partners] = await Promise.all([
     sanityFetch<HomePageData | null>({ query: HOME_PAGE_QUERY }),
     sanityFetch<HomeIntroData | null>({ query: HOME_INTRO_QUERY }),
     sanityFetch<OurApproachData | null>({ query: OUR_APPROACH_QUERY }),
+    sanityFetch<ApproachHeaderData | null>({ query: APPROACH_HEADER_QUERY }),
     sanityFetch<FeaturedProjectsData | null>({
       query: FEATURED_PROJECTS_QUERY,
     }),
@@ -82,11 +88,20 @@ export default async function Home() {
           completion={approach.completion}
         />
       ) : null}
+      {approachHeader ? (
+        <ApproachHeader
+          label={approachHeader.label}
+          heading={approachHeader.heading}
+          image1={approachHeader.image1}
+          image2={approachHeader.image2}
+        />
+      ) : null}
       {testimonials ? (
         <TestimonialsSection
           sectionLabel={testimonials.sectionLabel}
           reference={testimonials.reference}
           testimonials={testimonials.testimonials}
+          theme="cream"
         />
       ) : null}
       <PartnersSection

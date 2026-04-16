@@ -24,6 +24,7 @@
   margin: 1rem 0 0 1rem;
   padding-inline: var(--space-4);
   background-color: var(--theme-accent);
+  border-radius: var(--radius-sm);
   /* Dark charcoal label — pinned to the primitive token so the
      colour doesn't flip across themes. The chip renders at
      provider level outside any section's data-theme scope, and

@@ -52,6 +52,8 @@ interface TestimonialsSectionProps {
   reference?: string;
   /** Resolved testimonials — at least one required. */
   testimonials: ResolvedTestimonial[];
+  /** Theme applied to the section. Defaults to "brand" (pink). */
+  theme?: string;
 }
 
 /* --------------------------------------------------------------------------
@@ -189,6 +191,7 @@ export default function TestimonialsSection({
   sectionLabel = "Testimonials",
   reference,
   testimonials,
+  theme = "brand",
 }: TestimonialsSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const quoteBlockRef = useRef<HTMLDivElement>(null);
@@ -339,8 +342,8 @@ export default function TestimonialsSection({
     <section
       ref={sectionRef}
       className="testimonials-section"
-      data-theme="brand"
-      data-nav-theme="brand"
+      data-theme={theme}
+      data-nav-theme={theme}
       aria-label={sectionLabel}
     >
       {/* Label row — the section label reads as a proper sub-heading

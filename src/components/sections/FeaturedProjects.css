@@ -45,7 +45,6 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--gap-7);
-  padding-bottom: var(--section-space-lg);
 }
 
 @media (min-width: 1000px) {

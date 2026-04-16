@@ -17,11 +17,13 @@ import type { StructureResolver } from "sanity/structure";
 const SINGLETONS = [
   "homePage",
   "careersPage",
+  "contactPage",
   "partnersSection",
   "ourApproachSection",
   "bannerShowroom",
   "featuredProjectsSection",
   "homeIntroSection",
+  "approachHeaderSection",
   "siteNav",
   "siteFooter",
 ];
@@ -73,6 +75,15 @@ export const structure: StructureResolver = (S) =>
                     .documentId("careersPage")
                     .title("Careers Page"),
                 ),
+              S.listItem()
+                .title("Contact Page")
+                .id("contactPage")
+                .child(
+                  S.document()
+                    .schemaType("contactPage")
+                    .documentId("contactPage")
+                    .title("Contact Page"),
+                ),
             ]),
         ),
 
@@ -83,6 +94,15 @@ export const structure: StructureResolver = (S) =>
           S.list()
             .title("Reusable Sections")
             .items([
+              S.listItem()
+                .title("Approach Header")
+                .id("approachHeaderSection")
+                .child(
+                  S.document()
+                    .schemaType("approachHeaderSection")
+                    .documentId("approachHeaderSection")
+                    .title("Approach Header"),
+                ),
               S.listItem()
                 .title("Home Intro Section")
                 .id("homeIntroSection")

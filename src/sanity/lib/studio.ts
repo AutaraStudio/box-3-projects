@@ -18,6 +18,7 @@ import { structure } from "./structure";
 const SINGLETON_TYPES = new Set([
   "homePage",
   "careersPage",
+  "contactPage",
   "partnersSection",
   "ourApproachSection",
   "bannerShowroom",

@@ -301,11 +301,10 @@
   gap: var(--gap-3);
   margin: var(--space-8) 0 var(--space-5);
   /* Edge-to-edge — no inline padding so images bleed to the
-     viewport edges like the reference layout. Constrained to
-     40svh so the strip + body text both fit within the 100svh
-     panel beneath the heading. */
+     viewport edges like the reference layout. With the body text
+     removed, the strip can take more vertical space. */
   width: 100%;
-  height: 40svh;
+  height: 50svh;
 }
 
 /* Completion-image is a positioned wrapper that holds an <img> +

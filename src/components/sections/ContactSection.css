@@ -1,0 +1,206 @@
+/**
+ * ContactSection.css
+ * ==================
+ * Two-column contact layout: info sidebar + form column.
+ * 12-column grid on desktop, stacked on mobile.
+ * All values reference CSS custom property tokens.
+ */
+
+
+/* ==========================================================================
+   Section wrapper — 12-col grid
+   ========================================================================== */
+
+.contact-section {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gap-5);
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  border-bottom: var(--border-width) solid var(--theme-border-strong);
+}
+
+
+/* ==========================================================================
+   Info column — left sidebar
+   ========================================================================== */
+
+.contact-info-col {
+  grid-column: 1 / -1;
+  margin-top: var(--space-10);
+  padding-bottom: var(--space-10);
+}
+
+.contact-desktop-heading {
+  display: none;
+}
+
+.contact-info-text {
+  font-size: var(--font-size-h6);
+  margin-bottom: var(--space-5);
+}
+
+.contact-info-image {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 382 / 238;
+  margin-top: var(--space-8);
+}
+
+
+/* ==========================================================================
+   Form column
+   ========================================================================== */
+
+.contact-form-col {
+  grid-column: 1 / -1;
+  margin-top: var(--space-12);
+  padding-bottom: var(--section-space-lg);
+}
+
+
+/* ── Tabs ── */
+
+.contact-tabs {
+  display: flex;
+  gap: 0;
+}
+
+.contact-tab {
+  flex: 1;
+  text-align: left;
+  font-size: var(--font-size-h4);
+  padding-bottom: var(--space-2);
+  border: none;
+  border-bottom: var(--border-width) solid transparent;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.25;
+  transition: opacity var(--duration-moderate) var(--ease-out),
+              border-color var(--duration-moderate) var(--ease-out);
+}
+
+.contact-tab.is-active {
+  border-bottom-color: var(--theme-border-strong);
+  opacity: 1;
+}
+
+
+/* ── Form ── */
+
+.contact-form {
+  margin-top: var(--space-11);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-10);
+}
+
+.contact-name-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-10);
+}
+
+.contact-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  position: relative;
+}
+
+.contact-input {
+  font-family: var(--font-primary);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--font-size-h6);
+  line-height: var(--line-height-none);
+  color: var(--theme-text);
+  padding-bottom: var(--space-1);
+  border: none;
+  border-bottom: var(--border-width) solid var(--theme-border-strong);
+  background: transparent;
+  outline: none;
+  width: 100%;
+  appearance: none;
+  border-radius: 0;
+}
+
+.contact-input::placeholder {
+  color: var(--theme-text);
+  font-weight: var(--font-weight-medium);
+  opacity: 0.3;
+}
+
+textarea.contact-input {
+  resize: vertical;
+  min-height: 3rem;
+}
+
+
+/* ==========================================================================
+   Desktop — ≥ 992px
+   ========================================================================== */
+
+@media (min-width: 992px) {
+
+  /* Info col: cols 1–4, row 1 */
+  .contact-info-col {
+    grid-column: 1 / 5;
+    grid-row: 1 / 3;
+    margin-top: 0;
+    align-self: start;
+    padding-top: var(--section-space-lg);
+    padding-bottom: var(--section-space-lg);
+  }
+
+  .contact-desktop-heading {
+    display: block;
+    margin-bottom: var(--space-12);
+  }
+
+  .contact-info-text {
+    font-size: var(--font-size-text-md);
+    margin-bottom: var(--space-5);
+  }
+
+  .contact-info-image {
+    margin-top: var(--space-9);
+  }
+
+  /* Form col: cols 5–12, row 1, left border */
+  .contact-form-col {
+    grid-column: 5 / -1;
+    grid-row: 1 / 3;
+    margin-top: 0;
+    padding-top: var(--section-space-lg);
+    padding-bottom: var(--section-space-lg);
+    border-left: var(--border-width) solid var(--theme-border-strong);
+    padding-left: var(--gap-8);
+  }
+
+  .contact-tabs {
+    gap: var(--space-9);
+  }
+
+  .contact-tab {
+    flex: none;
+    font-size: var(--font-size-h3);
+  }
+
+  .contact-form {
+    margin-top: var(--space-12);
+    gap: var(--space-5);
+  }
+
+  .contact-name-row {
+    flex-direction: row;
+    gap: var(--gap-5);
+  }
+
+  .contact-name-row .contact-field {
+    flex: 1;
+  }
+
+}

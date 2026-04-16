@@ -351,9 +351,6 @@ export default function OurApproach({
           {/* Completion panel */}
           <div className="our-approach__completion">
             <div className="our-approach__completion-inner">
-              <p className="our-approach__completion-title font-secondary text-text-xs tracking-caps uppercase">
-                {completion.title}
-              </p>
               <h3 className="our-approach__completion-heading font-primary text-h3 leading-tight tracking-tight">
                 {completion.heading}
               </h3>
@@ -384,9 +381,6 @@ export default function OurApproach({
                   );
                 })}
               </div>
-              <p className="our-approach__completion-body font-secondary text-text-md leading-snug">
-                {completion.text}
-              </p>
             </div>
           </div>
         </div>

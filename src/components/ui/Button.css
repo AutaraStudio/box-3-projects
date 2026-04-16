@@ -43,6 +43,7 @@
   display: inline-flex;
   overflow: hidden;
   border: var(--border-width) solid var(--btn-border);
+  border-radius: var(--radius-sm);
   transition: border-color var(--animation-gentle);
   cursor: pointer;
   text-decoration: none;

@@ -1,0 +1,26 @@
+/**
+ * ContactHero.css
+ * ===============
+ * Component-level styles for the contact page hero section.
+ * Simple centred layout with generous top padding to clear the nav.
+ */
+
+.contact-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  padding-top: var(--section-space-xl);
+  padding-bottom: var(--section-space-sm);
+  /* ~312 × 0.25rem = 78rem top padding at desktop in the reference,
+     but we use section tokens + extra nav clearance instead */
+  min-height: 50svh;
+}
+
+@media (min-width: 992px) {
+  .contact-hero {
+    padding-top: calc(var(--section-space-xl) + 6rem);
+    padding-bottom: var(--section-space-md);
+  }
+}

@@ -18,6 +18,7 @@ import type { SchemaTypeDefinition } from "sanity";
 /* Pages */
 import homePage from "./pages/homePage";
 import careersPage from "./pages/careersPage";
+import contactPage from "./pages/contactPage";
 
 /* Sections */
 import partnersSection from "./sections/partnersSection";
@@ -25,6 +26,7 @@ import ourApproachSection from "./sections/ourApproachSection";
 import bannerShowroom from "./sections/bannerShowroom";
 import featuredProjectsSection from "./sections/featuredProjectsSection";
 import testimonialsSection from "./sections/testimonialsSection";
+import approachHeaderSection from "./sections/approachHeaderSection";
 import homeIntroSection from "./sections/homeIntroSection";
 
 /* Collections */
@@ -43,6 +45,7 @@ import siteFooter from "./globals/siteFooter";
 export const schemaTypes: SchemaTypeDefinition[] = [
   homePage,
   careersPage,
+  contactPage,
   siteNav,
   siteFooter,
   partnersSection,
@@ -50,6 +53,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   bannerShowroom,
   featuredProjectsSection,
   testimonialsSection,
+  approachHeaderSection,
   homeIntroSection,
   projectCategory,
   expertise,

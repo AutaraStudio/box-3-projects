@@ -105,9 +105,10 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: var(--space-7);
-  height: var(--space-7);
+  width: var(--space-8);
+  height: var(--space-8);
   overflow: hidden;
+  border-radius: var(--radius-sm);
 }
 
 .header-logo-container {
@@ -241,14 +242,15 @@
 .menu-btn-wrap {
   position: relative;
   overflow: hidden;
+  border-radius: var(--radius-sm);
   flex: 1;
   min-width: var(--space-9);
 }
 
 @media (min-width: 992px) {
   .menu-btn-wrap {
-    width: var(--space-10);    /* 6rem */
-    height: var(--space-7);    /* 3rem */
+    width: var(--space-11);    /* 5.5rem */
+    height: var(--space-8);    /* 3rem */
     flex: none;
     flex-shrink: 0;
     overflow: hidden;          /* keep — needed for hover bg animation */
@@ -257,6 +259,7 @@
 
 .menu-btn-border {
   border: var(--border-width) solid var(--theme-btn-primary-bg);
+  border-radius: var(--radius-sm);
   overflow: hidden;
   height: 100%;
   width: 100%;
@@ -312,6 +315,7 @@
   flex: 1;
   background-color: var(--theme-nav-icon-bg);
   border: var(--border-width) solid var(--theme-nav-icon-bg);
+  border-radius: var(--radius-sm);
   align-items: center;
   justify-content: center;
   transition: background-color var(--animation-gentle);
@@ -320,8 +324,8 @@
 
 @media (min-width: 992px) {
   .contact-link-btn {
-    width: var(--space-7);     /* 3rem */
-    height: var(--space-7);    /* 3rem */
+    width: var(--space-8);     /* 3rem */
+    height: var(--space-8);    /* 3rem */
     flex: none;
     flex-shrink: 0;
   }
@@ -434,7 +438,7 @@
   opacity: 1;
   font-family: var(--font-secondary);
   font-weight: var(--font-weight-regular);
-  font-size: var(--font-size-h5);
+  font-size: var(--font-size-h4);
   line-height: var(--line-height-normal);
   letter-spacing: var(--letter-spacing-normal);
   transition: var(--transition-link);
@@ -442,7 +446,7 @@
 
 @media (min-width: 992px) {
   .menu-primary-link {
-    font-size: var(--font-size-h5);
+    font-size: var(--font-size-h3);
   }
 }
 

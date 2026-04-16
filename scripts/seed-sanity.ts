@@ -210,6 +210,12 @@ const documents: SeedDoc[] = [
     modalVideoUrl: "",
   },
   {
+    _id: "approachHeaderSection",
+    _type: "approachHeaderSection",
+    label: "Our approach",
+    heading: "Where vision meets\nexecution",
+  },
+  {
     _id: "homeIntroSection",
     _type: "homeIntroSection",
     body:
@@ -226,6 +232,64 @@ const documents: SeedDoc[] = [
           "Every project is underwritten by a vetted trade network we've refined over a decade, so the craft you see on site is the craft you signed off in the drawings.",
       },
     ],
+  },
+  {
+    _id: "contactPage",
+    _type: "contactPage",
+    heading: "Let's Connect",
+    sectionLabel: "Contact us",
+    sectionReference: "[BOX3.1]",
+    tabs: [
+      { _key: "tab-question", label: "Question", key: "question" },
+      { _key: "tab-proposal", label: "Proposal", key: "proposal" },
+    ],
+    formFields: [
+      {
+        _key: "field-firstName",
+        label: "First Name",
+        name: "firstName",
+        placeholder: "John",
+        type: "text",
+        halfWidth: true,
+      },
+      {
+        _key: "field-lastName",
+        label: "Last Name",
+        name: "lastName",
+        placeholder: "Doe",
+        type: "text",
+        halfWidth: true,
+      },
+      {
+        _key: "field-email",
+        label: "Email",
+        name: "email",
+        placeholder: "johndoe@company.com",
+        type: "email",
+        halfWidth: false,
+      },
+      {
+        _key: "field-phone",
+        label: "Phone",
+        name: "phone",
+        placeholder: "+44 20 0000 0000",
+        type: "tel",
+        halfWidth: false,
+      },
+      {
+        _key: "field-details",
+        label: "Project Details",
+        name: "details",
+        placeholder: "Tell us about your project...",
+        type: "text",
+        halfWidth: false,
+      },
+    ],
+    submitLabel: "Submit",
+    infoHeading: "Let's connect on your next building project.",
+    address: "Studio 4, 12 Fitzroy Square\nLondon\nW1T 6EQ",
+    phone: "+44 20 0000 0000",
+    email: "hello@box3projects.co.uk",
   },
   {
     _id: "careersPage",
@@ -1584,6 +1648,57 @@ async function attachTestimonialsToHomePage(
   }
 }
 
+/** Attach testimonials to the contact page (2 quotes).
+ *  Idempotent — only patches if empty. */
+async function attachTestimonialsToContactPage(
+  testimonialMap: Map<string, string>,
+): Promise<void> {
+  try {
+    const current = await client.fetch<{
+      testimonialsSection?: { testimonials?: unknown[] } | null;
+    } | null>(
+      '*[_id == "contactPage"][0]{testimonialsSection}',
+    );
+    if (
+      current?.testimonialsSection?.testimonials &&
+      current.testimonialsSection.testimonials.length > 0
+    ) {
+      console.log(
+        `↷ contactPage already has testimonials — leaving alone`,
+      );
+      return;
+    }
+
+    /* Pick two testimonials for the contact page. */
+    const keys = Array.from(testimonialMap.keys());
+    const picks = [keys[1], keys[3]].filter(Boolean);
+    const refs = picks
+      .map((key, i) => {
+        const id = testimonialMap.get(key!);
+        if (!id) return null;
+        return { _key: `cp-t-${i}`, _type: "reference" as const, _ref: id };
+      })
+      .filter((x): x is NonNullable<typeof x> => x !== null);
+
+    if (refs.length === 0) return;
+
+    await client
+      .patch("contactPage")
+      .set({
+        testimonialsSection: {
+          sectionLabel: "Testimonials",
+          reference: "[BOX3.1]",
+          testimonials: refs,
+        },
+      })
+      .commit();
+    console.log(`✔ attached ${refs.length} testimonial(s) to contactPage`);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`✘ failed to attach testimonials to contactPage: ${message}`);
+  }
+}
+
 /** Round-robin 2–3 testimonials onto every project that doesn't
  *  already have a testimonialsSection. */
 async function attachTestimonialsToProjects(
@@ -1848,6 +1963,7 @@ async function seed() {
   /* Testimonials — seed docs then attach to home + projects. */
   const testimonialMap = await seedTestimonials(partnerMap);
   await attachTestimonialsToHomePage(testimonialMap);
+  await attachTestimonialsToContactPage(testimonialMap);
   await attachTestimonialsToProjects(testimonialMap);
 
   console.log(`\nSeeded ${succeeded}/${total} singletons + category set`);
