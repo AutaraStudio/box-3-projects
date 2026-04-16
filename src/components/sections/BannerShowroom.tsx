@@ -57,7 +57,7 @@ export default function BannerShowroom({
   const sectionRef = useRef<HTMLElement>(null);
   const colOneRef = useRef<HTMLDivElement>(null);
   const borderRef = useRef<HTMLDivElement>(null);
-  const bgRef = useRef<HTMLDivElement>(null);
+  const bgRef = useRef<HTMLButtonElement>(null);
 
   const [playerOpen, setPlayerOpen] = useState(false);
 
