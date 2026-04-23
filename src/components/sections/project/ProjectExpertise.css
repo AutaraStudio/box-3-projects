@@ -20,7 +20,7 @@
 .project-expertise__heading {
   margin: 0;
   color: var(--theme-text-muted);
-  max-width: 38rem;
+  max-width: var(--measure-tight);
 }
 
 .project-expertise__inner {

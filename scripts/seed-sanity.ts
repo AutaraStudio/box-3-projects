@@ -151,43 +151,6 @@ const documents: SeedDoc[] = [
     partners: [],
   },
   {
-    _id: "ourApproachSection",
-    _type: "ourApproachSection",
-    sectionLabel: "Our process",
-    intro: {
-      heading: "Built with rigour.\nFinished with craft.",
-      text: "Every Box 3 fit-out follows a clear, refined process — bringing precision, transparency, and confidence from initial concept through to final handover.",
-    },
-    steps: [
-      {
-        _key: "step-discover",
-        title: "1. Discover & design",
-        heading: "Your vision,\nmade tangible.",
-        text: "We start by understanding your brand, culture, and how your team works. Our design team translates that brief into spatial concepts, materials, and detailed drawings — balancing aesthetics with day-one practicality.",
-        layout: "right",
-      },
-      {
-        _key: "step-survey",
-        title: "2. Survey & detail",
-        heading: "Precision long before the first wall is built.",
-        text: "Once the design is signed off, our project surveyors visit site to confirm every measurement, condition, and constraint. We resolve clashes on paper so installation runs without surprises.",
-        layout: "left",
-      },
-      {
-        _key: "step-build",
-        title: "3. Procure & build",
-        heading: "Quality crafted,\non time.",
-        text: "Materials are procured from a vetted supplier network and trades are coordinated on a tight programme. Every joinery piece, finish, and service install is QA'd against the design — no shortcuts, no surprises.",
-        layout: "right",
-      },
-    ],
-    completion: {
-      title: "4. Install & handover",
-      heading: "Perfectly fitted,\nbeautifully finished.",
-      text: "Our site team manages the install end-to-end, with daily snagging and a final walkthrough before handover. We don't leave until you're ready to move in.",
-    },
-  },
-  {
     _id: "featuredProjectsSection",
     _type: "featuredProjectsSection",
     sectionLabel: "Selected work",
@@ -208,30 +171,6 @@ const documents: SeedDoc[] = [
        once the films are hosted. */
     backgroundVideoUrl: "",
     modalVideoUrl: "",
-  },
-  {
-    _id: "approachHeaderSection",
-    _type: "approachHeaderSection",
-    label: "Our approach",
-    heading: "Where vision meets\nexecution",
-  },
-  {
-    _id: "homeIntroSection",
-    _type: "homeIntroSection",
-    body:
-      "Box 3 is a London-based commercial fit-out partner building interiors for ambitious businesses. For over a decade we have delivered category-leading workspaces, hospitality venues, and retail environments across the capital — quietly, on time, and to a standard of craft most of our clients say they've never seen before.",
-    points: [
-      {
-        _key: "p-1",
-        text:
-          "We work as a genuine extension of your team — from first concept through to snag-free handover, with a dedicated project lead and transparent cost reporting from day one.",
-      },
-      {
-        _key: "p-2",
-        text:
-          "Every project is underwritten by a vetted trade network we've refined over a decade, so the craft you see on site is the craft you signed off in the drawings.",
-      },
-    ],
   },
   {
     _id: "contactPage",
@@ -1808,43 +1747,6 @@ async function seed() {
       const message = err instanceof Error ? err.message : String(err);
       console.error(`✘ failed to seed ${_type}: ${message}`);
     }
-  }
-
-  /* Backfill homeIntroSection.points on pre-existing docs that were
-     created before the field was reintroduced (idempotent — only
-     writes when the array is missing or empty so a client edit is
-     never overwritten). */
-  try {
-    const current = await client.fetch<
-      { points?: unknown[] } | null
-    >('*[_id == "homeIntroSection"][0]{points}');
-    if (!current?.points || current.points.length === 0) {
-      await client
-        .patch("homeIntroSection")
-        .set({
-          points: [
-            {
-              _key: "p-1",
-              text:
-                "We work as a genuine extension of your team — from first concept through to snag-free handover, with a dedicated project lead and transparent cost reporting from day one.",
-            },
-            {
-              _key: "p-2",
-              text:
-                "Every project is underwritten by a vetted trade network we've refined over a decade, so the craft you see on site is the craft you signed off in the drawings.",
-            },
-          ],
-        })
-        .commit();
-      console.log(`✔ backfilled homeIntroSection.points`);
-    } else {
-      console.log(
-        `↷ homeIntroSection.points already populated — leaving alone`,
-      );
-    }
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error(`✘ failed to backfill homeIntroSection.points: ${message}`);
   }
 
   /* Patch partnersSection with newly-added heading (idempotent). */

@@ -171,13 +171,18 @@
 
 /* Sizes -------------------------------------------------------------------- */
 /* Height sits on the root; padding-inline sits on the inner so bg layers
-   still extend full-width (see .btn__inner above). */
+   still extend full-width (see .btn__inner above).
+   Tightened scale:
+     sm  32 / 16 / 12 — inline, tertiary
+     md  40 / 20 / 14 — DEFAULT (covers most call-sites)
+     lg  48 / 24 / 14 — hero CTA
+     xl  56 / 32 / 16 — oversized full-width CTA */
 .btn--sm {
   height: var(--space-6);
 }
 
 .btn--sm .btn__inner {
-  padding-inline: var(--space-4);
+  padding-inline: var(--space-3);
 }
 
 .btn--md {
@@ -185,7 +190,7 @@
 }
 
 .btn--md .btn__inner {
-  padding-inline: var(--space-5);
+  padding-inline: var(--space-4);
 }
 
 .btn--lg {
@@ -193,15 +198,17 @@
 }
 
 .btn--lg .btn__inner {
-  padding-inline: var(--space-6);
+  padding-inline: var(--space-5);
 }
 
+/* xl sits between --space-8 (48) and --space-9 (64) — 56px is the
+   intentional "oversized CTA" height with no existing token. */
 .btn--xl {
-  height: var(--space-9);
+  height: 3.5rem;
 }
 
 .btn--xl .btn__inner {
-  padding-inline: var(--space-7);
+  padding-inline: var(--space-6);
 }
 
 .btn--sm .btn__label {

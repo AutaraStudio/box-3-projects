@@ -499,7 +499,7 @@ export default function ProjectGallery({
             <div className="project-gallery__cta-wrapper">
               <Button
                 variant="primary"
-                size="lg"
+                size="md"
                 full
                 ariaLabel={openLabel}
                 onClick={openGallery}

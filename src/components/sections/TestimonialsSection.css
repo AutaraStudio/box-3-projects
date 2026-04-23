@@ -79,7 +79,7 @@
   font-size: var(--font-size-h5);
   line-height: var(--line-height-tight);
   letter-spacing: var(--letter-spacing-tight);
-  margin: 0 0 var(--space-8) 0;
+  margin: 0 0 var(--space-9) 0;
 }
 
 /* Line reveal — mask clips the line, inner span slides up */
@@ -296,7 +296,7 @@
 
   .testimonials-quote {
     font-size: var(--font-size-h4);
-    margin-bottom: var(--space-11);
+    margin-bottom: var(--space-9);
   }
 
   /* Sidebar moves into its own column with a left border. Inner

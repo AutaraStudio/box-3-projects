@@ -42,23 +42,24 @@ Tailwind classes: `font-primary`, `font-secondary`
 
 ## Font Size Scale
 
-Heading scale bumped up in a site-wide pass — display is 128px,
-h1 is 96px. Body scale unchanged.
+Display is unchanged at 144px; h1–h6 tightened in the refinement
+pass so mid-scale headings read as measured rather than billboard.
 
-| Token                    | rem      | px at 1440 | Tailwind class  |
-|--------------------------|----------|------------|-----------------|
-| `--font-size-display`    | 9rem     | 144px      | `text-display`  |
-| `--font-size-h1`         | 7rem     | 112px      | `text-h1`       |
-| `--font-size-h2`         | 5.5rem   | 88px       | `text-h2`       |
-| `--font-size-h3`         | 4rem     | 64px       | `text-h3`       |
-| `--font-size-h4`         | 3rem     | 48px       | `text-h4`       |
-| `--font-size-h5`         | 2rem     | 32px       | `text-h5`       |
-| `--font-size-h6`         | 1.5rem   | 24px       | `text-h6`       |
-| `--font-size-text-lg`    | 1.5rem   | 24px       | `text-text-lg`  |
-| `--font-size-text-md`    | 1rem     | 16px       | `text-text-md`  |
-| `--font-size-text-sm`    | 0.875rem | 14px       | `text-text-sm`  |
-| `--font-size-text-xs`    | 0.75rem  | 12px       | `text-text-xs`  |
-| `--font-size-text-xxs`   | 0.625rem | 10px       | `text-text-xxs` |
+| Token                    | rem      | px at 1440 | Tailwind class   |
+|--------------------------|----------|------------|------------------|
+| `--font-size-display`    | 9rem     | 144px      | `text-display`   |
+| `--font-size-h1`         | 5.5rem   | 88px       | `text-h1`        |
+| `--font-size-h2`         | 4rem     | 64px       | `text-h2`        |
+| `--font-size-h3`         | 2.75rem  | 44px       | `text-h3`        |
+| `--font-size-h4`         | 2rem     | 32px       | `text-h4`        |
+| `--font-size-h5`         | 1.5rem   | 24px       | `text-h5`        |
+| `--font-size-h6`         | 1.125rem | 18px       | `text-h6`        |
+| `--font-size-text-lg`    | 1.5rem   | 24px       | `text-text-lg`   |
+| `--font-size-text-lede`  | 1.25rem  | 20px       | `text-text-lede` |
+| `--font-size-text-md`    | 1rem     | 16px       | `text-text-md`   |
+| `--font-size-text-sm`    | 0.875rem | 14px       | `text-text-sm`   |
+| `--font-size-text-xs`    | 0.75rem  | 12px       | `text-text-xs`   |
+| `--font-size-text-xxs`   | 0.625rem | 10px       | `text-text-xxs`  |
 
 ## Line Heights
 
@@ -83,21 +84,15 @@ h1 is 96px. Body scale unchanged.
 | `--letter-spacing-wide`      |  0.08em  | `tracking-wide`     | Labels, tags                |
 | `--letter-spacing-wider`     |  0.12em  | `tracking-wider`    | Very spaced caps            |
 
-## Word Spacing
-
-| Token                    | Value   | Tailwind class       |
-|--------------------------|---------|----------------------|
-| `--word-spacing-tight`   | -0.05em | `word-tight`         |
-| `--word-spacing-normal`  | 0em     | `word-normal`        |
-| `--word-spacing-wide`    | 0.1em   | `word-wide`          |
-
 ## Border Radius
 
-| Token            | Value  | Tailwind class |
-|------------------|--------|----------------|
-| `--radius-sm`    | 0.5rem | `rounded-sm`   |
-| `--radius-md`    | 1rem   | `rounded-md`   |
-| `--radius-full`  | 100vw  | `rounded-full` |
+Refined scale — barely-there softening, never obvious rounding.
+
+| Token            | Value    | px at 1440 | Tailwind class |
+|------------------|----------|------------|----------------|
+| `--radius-sm`    | 0.25rem  | 4px        | `rounded-sm`   |
+| `--radius-md`    | 0.5rem   | 8px        | `rounded-md`   |
+| `--radius-full`  | 100vw    | —          | `rounded-full` |
 
 ## Border Width
 
@@ -110,9 +105,11 @@ h1 is 96px. Body scale unchanged.
 These are applied directly to semantic HTML elements in `globals.css`:
 
 - **body** — `font-secondary`, regular weight, relaxed line height, theme text colour
-- **h1–h6** — `font-primary`, bold weight, tight line height, tight letter spacing, each heading maps to its `--font-size-*` token
+- **h1–h6** — `font-primary`, **medium** (500) weight, tight/snug/normal line height by tier, tight/snug/normal letter spacing by tier, each heading maps to its `--font-size-*` token
 - **p** — `font-secondary`, text-md size, relaxed line height
-- **.text-display** — `font-primary`, display size, bold, no line height, display letter spacing
+- **.text-display** — `font-primary`, display size, medium weight, tight line height, display letter spacing
+
+Headings default to **medium (500)** weight — never bold. `--font-weight-bold` (700) is reserved for rare emphasis within running text.
 
 ## Usage Rules
 
@@ -128,23 +125,24 @@ These are applied directly to semantic HTML elements in `globals.css`:
 These rules define exactly which token to use in each context.
 Follow them without exception across every component.
 
-| Context                          | Token            | Size     |
-|----------------------------------|------------------|----------|
-| Hero display heading             | `text-display`   | 9rem     |
-| Page primary heading             | `text-h1`        | 7rem     |
-| Page secondary heading           | `text-h2`        | 5.5rem   |
-| Section heading                  | `text-h3`        | 4rem     |
-| Card / feature heading           | `text-h4`        | 3rem     |
-| Sub-heading / list title         | `text-h5`        | 2rem     |
-| Small heading / label heading    | `text-h6`        | 1.5rem   |
-| Mega menu primary links          | `text-h5`        | 2rem     |
-| Mega menu secondary links        | `text-text-md`   | 1rem     |
-| Mega menu contact links          | `text-text-md`   | 1rem     |
-| Body copy / paragraphs           | `text-text-md`   | 1rem     |
-| Large body / intro copy          | `text-text-lg`   | 1.5rem   |
-| Nav links / footer links / UI    | `text-text-sm`   | 0.875rem |
-| Section labels / tags / captions | `text-text-xs`   | 0.75rem  |
-| Micro labels / legal text        | `text-text-xxs`  | 0.625rem |
+| Context                          | Token             | Size     |
+|----------------------------------|-------------------|----------|
+| Hero display heading             | `text-display`    | 9rem     |
+| Page primary heading             | `text-h1`         | 5.5rem   |
+| Page secondary heading           | `text-h2`         | 4rem     |
+| Section heading                  | `text-h3`         | 2.75rem  |
+| Card / feature heading           | `text-h4`         | 2rem     |
+| Sub-heading / list title         | `text-h5`         | 1.5rem   |
+| Small heading / label heading    | `text-h6`         | 1.125rem |
+| Mega menu primary links          | `text-h5`         | 1.5rem   |
+| Mega menu secondary links        | `text-text-md`    | 1rem     |
+| Mega menu contact links          | `text-text-md`    | 1rem     |
+| Body copy / paragraphs           | `text-text-md`    | 1rem     |
+| Large body / intro copy          | `text-text-lg`    | 1.5rem   |
+| Stat values / callout numbers    | `text-text-lede`  | 1.25rem  |
+| Nav links / footer links / UI    | `text-text-sm`    | 0.875rem |
+| Section labels / tags / captions | `text-text-xs`    | 0.75rem  |
+| Micro labels / legal text        | `text-text-xxs`   | 0.625rem |
 
 ### Rules
 - Never use a heading token (h1–h6) on body copy or UI elements

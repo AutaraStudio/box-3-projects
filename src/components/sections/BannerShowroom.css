@@ -17,7 +17,7 @@
   height: 200svh;
   background-color: var(--theme-bg);
   color: var(--theme-text);
-  padding-top: var(--space-9);
+  padding-top: var(--section-space-md);
 }
 
 /* ── Top-left section label (h4 heading, not caps) ─────────────────────── */
@@ -95,9 +95,7 @@
 /* ── Heading (line-mask reveal) ─────────────────────────────────────────── */
 
 .banner-showroom__heading {
-  /* 45rem ≈ 720px at 1440 — sized for the new heading scale so the
-     two-line headline reads as a measured block. No token. */
-  max-width: 45rem;
+  max-width: var(--measure-base);
   margin: var(--space-3) 0;
   color: var(--theme-text);
 }

@@ -17,7 +17,7 @@
  * The mask should be `display: block; overflow: clip`; the split
  * should be `display: block` with a tiny negative margin-bottom +
  * matching padding-bottom so descenders aren't clipped by the mask
- * (see TestimonialsSection.css / HomeIntro.css).
+ * (see TestimonialsSection.css).
  */
 
 export interface WordToken {

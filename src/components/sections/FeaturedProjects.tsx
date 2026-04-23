@@ -124,7 +124,7 @@ export default function FeaturedProjects({
               </dl>
 
               <div className="featured-projects__cta">
-                <Button href={href} variant="primary" size="lg">
+                <Button href={href} variant="primary" size="md">
                   View project
                 </Button>
               </div>

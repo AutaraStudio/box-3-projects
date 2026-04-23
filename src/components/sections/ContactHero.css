@@ -13,14 +13,14 @@
   color: var(--theme-text);
   padding-top: var(--section-space-xl);
   padding-bottom: var(--section-space-sm);
-  /* ~312 × 0.25rem = 78rem top padding at desktop in the reference,
-     but we use section tokens + extra nav clearance instead */
   min-height: 50svh;
 }
 
 @media (min-width: 992px) {
   .contact-hero {
-    padding-top: calc(var(--section-space-xl) + 6rem);
+    /* Page-top hero clears the fixed nav via a dedicated token —
+       every page-top hero uses the same additive pattern. */
+    padding-top: calc(var(--section-space-xl) + var(--nav-clearance));
     padding-bottom: var(--section-space-md);
   }
 }

@@ -171,9 +171,7 @@
 }
 
 .related-projects__title {
-  /* 40.625rem — no token equivalent. Approved: preserves the reference
-     upper bound on headline width (~650px at 1440). */
-  max-width: 40.625rem;
+  max-width: var(--measure-tight);
   text-wrap: balance;
   margin: 0;
   color: var(--tile-text-default);

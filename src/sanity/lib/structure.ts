@@ -19,11 +19,8 @@ const SINGLETONS = [
   "careersPage",
   "contactPage",
   "partnersSection",
-  "ourApproachSection",
   "bannerShowroom",
   "featuredProjectsSection",
-  "homeIntroSection",
-  "approachHeaderSection",
   "siteNav",
   "siteFooter",
 ];
@@ -95,24 +92,6 @@ export const structure: StructureResolver = (S) =>
             .title("Reusable Sections")
             .items([
               S.listItem()
-                .title("Approach Header")
-                .id("approachHeaderSection")
-                .child(
-                  S.document()
-                    .schemaType("approachHeaderSection")
-                    .documentId("approachHeaderSection")
-                    .title("Approach Header"),
-                ),
-              S.listItem()
-                .title("Home Intro Section")
-                .id("homeIntroSection")
-                .child(
-                  S.document()
-                    .schemaType("homeIntroSection")
-                    .documentId("homeIntroSection")
-                    .title("Home Intro Section"),
-                ),
-              S.listItem()
                 .title("Partners Section")
                 .id("partnersSection")
                 .child(
@@ -120,15 +99,6 @@ export const structure: StructureResolver = (S) =>
                     .schemaType("partnersSection")
                     .documentId("partnersSection")
                     .title("Partners Section"),
-                ),
-              S.listItem()
-                .title("Our Approach Section")
-                .id("ourApproachSection")
-                .child(
-                  S.document()
-                    .schemaType("ourApproachSection")
-                    .documentId("ourApproachSection")
-                    .title("Our Approach Section"),
                 ),
               S.listItem()
                 .title("Showroom Banner")

@@ -79,10 +79,7 @@
    ========================================================================== */
 
 .project-gallery__title {
-  /* 55rem ≈ 880px at 1440 — sized to the tightened heading scale
-     so the Explore headline reads as a single confident block.
-     No token equivalent for this exact measure. */
-  max-width: 55rem;
+  max-width: var(--measure-wide);
   text-align: center;
   text-wrap: balance;
   margin: 0;

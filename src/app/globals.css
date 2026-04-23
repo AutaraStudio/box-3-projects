@@ -214,14 +214,15 @@
      Osmo scales these automatically at every breakpoint.
      Scaled up in a site-wide pass — editorial emphasis on the
      display + heading scale, body sizes unchanged. */
-  --font-size-display: 9rem;        /* 144px at 1440 */
-  --font-size-h1: 7rem;             /* 112px at 1440 */
-  --font-size-h2: 5.5rem;           /* 88px at 1440 */
-  --font-size-h3: 4rem;             /* 64px at 1440 */
-  --font-size-h4: 3rem;             /* 48px at 1440 */
-  --font-size-h5: 2rem;             /* 32px at 1440 */
-  --font-size-h6: 1.5rem;           /* 24px at 1440 */
+  --font-size-display: 9rem;        /* 144px at 1440 — unchanged */
+  --font-size-h1: 5.5rem;           /* 88px at 1440  (was 7rem / 112) */
+  --font-size-h2: 4rem;             /* 64px at 1440  (was 5.5rem / 88) */
+  --font-size-h3: 2.75rem;          /* 44px at 1440  (was 4rem / 64) */
+  --font-size-h4: 2rem;             /* 32px at 1440  (was 3rem / 48) */
+  --font-size-h5: 1.5rem;           /* 24px at 1440  (was 2rem / 32) */
+  --font-size-h6: 1.125rem;         /* 18px at 1440  (was 1.5rem / 24) */
   --font-size-text-lg: 1.5rem;      /* 24px at 1440  */
+  --font-size-text-lede: 1.25rem;   /* 20px at 1440  — stat values, callouts */
   --font-size-text-md: 1rem;        /* 16px at 1440  */
   --font-size-text-sm: 0.875rem;    /* 14px at 1440  */
   --font-size-text-xs: 0.75rem;     /* 12px at 1440  */
@@ -247,16 +248,12 @@
   --letter-spacing-wider: 0.12em;
 
 
-  /* --- Word Spacing --- */
-  --word-spacing-tight: -0.05em;
-  --word-spacing-normal: 0em;
-  --word-spacing-wide: 0.1em;
-
-
-  /* --- Border Radius --- */
-  --radius-sm: 0.5rem;
-  --radius-md: 1rem;
-  --radius-full: 100vw;
+  /* --- Border Radius ---
+     Refined scale — barely-there softening rather than visible rounding.
+     `full` reserved for pills / circles. */
+  --radius-sm: 0.25rem;       /* 4px at 1440  (was 0.5rem / 8) */
+  --radius-md: 0.5rem;        /* 8px at 1440  (was 1rem / 16) */
+  --radius-full: 100vw;       /* pills / circles — unchanged */
 
 
   /* --- Border Width --- */
@@ -309,24 +306,56 @@
      lg:   spacious sections, feature areas
      xl:   page top padding (accounts for nav height) */
   --section-space-none: 0rem;
-  --section-space-xs: 2rem;      /* 32px at 1440  (was 48)  */
-  --section-space-sm: 3.5rem;    /* 56px at 1440  (was 80)  */
-  --section-space-md: 5rem;      /* 80px at 1440  (was 112) */
-  --section-space-lg: 7rem;      /* 112px at 1440 (was 160) */
-  --section-space-xl: 9rem;      /* 144px at 1440 (was 224) */
+  --section-space-xs: 2rem;      /* 32px at 1440  — unchanged */
+  --section-space-sm: 3rem;      /* 48px at 1440  (was 3.5rem / 56) */
+  --section-space-md: 4.5rem;    /* 72px at 1440  (was 5rem / 80) — default section padding */
+  --section-space-lg: 6rem;      /* 96px at 1440  (was 7rem / 112) */
+  --section-space-xl: 8rem;      /* 128px at 1440 (was 9rem / 144) */
 
 
   /* --- Gap Scale ---
      For grid column gaps, flex gaps, and layout spacing.
      Mirrors the base scale — tightened mid-to-large rungs only. */
-  --gap-1: 0.5rem;       /* 8px at 1440  — unchanged */
-  --gap-2: 0.75rem;      /* 12px at 1440 — unchanged */
-  --gap-3: 1rem;         /* 16px at 1440 — unchanged */
-  --gap-4: 1.25rem;      /* 20px at 1440 (was 24) */
-  --gap-5: 1.5rem;       /* 24px at 1440 (was 32) */
-  --gap-6: 2rem;         /* 32px at 1440 (was 40) */
-  --gap-7: 2.5rem;       /* 40px at 1440 (was 48) */
-  --gap-8: 3rem;         /* 48px at 1440 (was 64) */
+  --gap-1: 0.5rem;       /* 8px at 1440   — mirrors --space-1 */
+  --gap-2: 0.75rem;      /* 12px at 1440  — mirrors --space-2 */
+  --gap-3: 1rem;         /* 16px at 1440  — mirrors --space-3 */
+  --gap-4: 1.25rem;      /* 20px at 1440  — mirrors --space-4 */
+  --gap-5: 1.5rem;       /* 24px at 1440  — mirrors --space-5 */
+  --gap-6: 2rem;         /* 32px at 1440  — mirrors --space-6 */
+  --gap-7: 2.5rem;       /* 40px at 1440  — mirrors --space-7 */
+  --gap-8: 3rem;         /* 48px at 1440  — mirrors --space-8 */
+  --gap-9: 4rem;         /* 64px at 1440  — mirrors --space-9 */
+  --gap-10: 5rem;        /* 80px at 1440  — mirrors --space-10 */
+  --gap-11: 5.5rem;      /* 88px at 1440  — mirrors --space-11 */
+  --gap-12: 6.5rem;      /* 104px at 1440 — mirrors --space-12 */
+
+
+  /* --- Nav Clearance ---
+     Extra top padding page heroes add on top of --section-space-xl
+     so the hero headline sits below the fixed nav. Exactly one
+     value — change here and every page-top hero updates. */
+  --nav-clearance: 6rem;        /* 96px at 1440 */
+
+
+  /* --- Measure (max-width for prose/headings) ---
+     Three canonical content widths. Replaces the scatter of 38rem /
+     40.625rem / 45rem / 55rem found across components. Pick based
+     on the text's role, not its visual length. */
+  --measure-tight: 38rem;       /* 608px  — short headlines, dense text */
+  --measure-base:  45rem;       /* 720px  — body paragraphs, standard */
+  --measure-wide:  55rem;       /* 880px  — long intros, gallery titles */
+
+
+  /* --- Icon Size Scale ---
+     Canonical sizes for inline SVG / icon fixtures. Replaces
+     ad-hoc values like 1.8125rem, 1.5625rem, 1.0625rem, 1.125rem,
+     3.5rem scattered across components. Odd-pixel logo dimensions
+     that refuse to fit may stay as hardcoded rem with a comment. */
+  --size-icon-xs: 1rem;         /* 16px */
+  --size-icon-sm: 1.25rem;      /* 20px */
+  --size-icon-md: 1.5rem;       /* 24px */
+  --size-icon-lg: 2rem;         /* 32px */
+  --size-icon-xl: 2.75rem;      /* 44px */
 }
 
 
@@ -1811,10 +1840,6 @@ h5, h6 {
 .u-text-pretty {
   text-wrap: pretty;
 }
-
-/* Word spacing utilities */
-.u-word-tight   { word-spacing: var(--word-spacing-tight); }
-.u-word-wide    { word-spacing: var(--word-spacing-wide); }
 
 /* Tabular numbers — phone numbers, dates, prices */
 .u-nums {

@@ -147,7 +147,7 @@ export default function RelatedProjects({
 
       <div className="related-projects__footer container">
         <div className="related-projects__cta-btn">
-          <Button href={ctaHref} variant="primary" size="lg" full>
+          <Button href={ctaHref} variant="primary" size="md" full>
             {ctaLabel}
           </Button>
         </div>

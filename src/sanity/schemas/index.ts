@@ -22,12 +22,9 @@ import contactPage from "./pages/contactPage";
 
 /* Sections */
 import partnersSection from "./sections/partnersSection";
-import ourApproachSection from "./sections/ourApproachSection";
 import bannerShowroom from "./sections/bannerShowroom";
 import featuredProjectsSection from "./sections/featuredProjectsSection";
 import testimonialsSection from "./sections/testimonialsSection";
-import approachHeaderSection from "./sections/approachHeaderSection";
-import homeIntroSection from "./sections/homeIntroSection";
 
 /* Collections */
 import project from "./collections/project";
@@ -49,12 +46,9 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   siteNav,
   siteFooter,
   partnersSection,
-  ourApproachSection,
   bannerShowroom,
   featuredProjectsSection,
   testimonialsSection,
-  approachHeaderSection,
-  homeIntroSection,
   projectCategory,
   expertise,
   teamMember,

@@ -33,33 +33,73 @@ Works with all Tailwind spacing utilities: `p-`, `m-`, `px-`, `py-`, `mt-`, `mb-
 
 ## Section Spacing
 
-Vertical padding for page sections. Tightened ~30% from the original scale — the single biggest lever on perceived whitespace site-wide.
+Vertical padding for page sections. Tightened again in the refinement pass — `md` is now the **default** and every non-hero section should use it unless there's a documented reason to differ.
 
 | Token                   | rem    | px at 1440 | Tailwind class    | When to use                                        |
 |-------------------------|--------|------------|-------------------|----------------------------------------------------|
 | `--section-space-none`  | 0rem   | 0px        | `py-section-none` | Removing spacing entirely                          |
 | `--section-space-xs`    | 2rem   | 32px       | `py-section-xs`   | Tight sections, small gaps between related content |
-| `--section-space-sm`    | 3.5rem | 56px       | `py-section-sm`   | Standard tight section padding                     |
-| `--section-space-md`    | 5rem   | 80px       | `py-section-md`   | Standard section padding — most common             |
-| `--section-space-lg`    | 7rem   | 112px      | `py-section-lg`   | Spacious sections, feature areas                   |
-| `--section-space-xl`    | 9rem   | 144px      | `py-section-xl`   | Page top padding (accounts for nav height)         |
+| `--section-space-sm`    | 3rem   | 48px       | `py-section-sm`   | Standard tight section padding                     |
+| `--section-space-md`    | 4.5rem | 72px       | `py-section-md`   | **Default section padding — use this**             |
+| `--section-space-lg`    | 6rem   | 96px       | `py-section-lg`   | Spacious sections, feature areas                   |
+| `--section-space-xl`    | 8rem   | 128px      | `py-section-xl`   | Page top padding (hero base)                       |
+
+## Nav Clearance
+
+Page-top heroes add `--nav-clearance` on top of `--section-space-xl` so the headline sits below the fixed nav. Change the token and every hero shifts uniformly.
+
+```css
+.page-hero {
+  padding-top: calc(var(--section-space-xl) + var(--nav-clearance));
+}
+```
+
+| Token             | rem  | px at 1440 |
+|-------------------|------|------------|
+| `--nav-clearance` | 6rem | 96px       |
 
 ## Gap Scale
 
-For grid column gaps, flex gaps, and layout spacing between sibling elements. Mirrors the base scale — mid-to-large rungs tightened, steps 1–3 unchanged.
+For grid column gaps, flex gaps, and layout spacing between sibling elements. Mirrors the base scale 1–12 end-to-end — no gaps needed, no dropping into `--space-*` for large layouts.
 
-| Token     | rem     | px at 1440 | Tailwind class    |
-|-----------|---------|------------|-------------------|
-| `--gap-1` | 0.5rem  | 8px        | `gap-gap-1`, etc. |
-| `--gap-2` | 0.75rem | 12px       | `gap-gap-2`, etc. |
-| `--gap-3` | 1rem    | 16px       | `gap-gap-3`, etc. |
-| `--gap-4` | 1.25rem | 20px       | `gap-gap-4`, etc. |
-| `--gap-5` | 1.5rem  | 24px       | `gap-gap-5`, etc. |
-| `--gap-6` | 2rem    | 32px       | `gap-gap-6`, etc. |
-| `--gap-7` | 2.5rem  | 40px       | `gap-gap-7`, etc. |
-| `--gap-8` | 3rem    | 48px       | `gap-gap-8`, etc. |
+| Token      | rem     | px at 1440 | Tailwind class    |
+|------------|---------|------------|-------------------|
+| `--gap-1`  | 0.5rem  | 8px        | `gap-gap-1`, etc. |
+| `--gap-2`  | 0.75rem | 12px       | `gap-gap-2`, etc. |
+| `--gap-3`  | 1rem    | 16px       | `gap-gap-3`, etc. |
+| `--gap-4`  | 1.25rem | 20px       | `gap-gap-4`, etc. |
+| `--gap-5`  | 1.5rem  | 24px       | `gap-gap-5`, etc. |
+| `--gap-6`  | 2rem    | 32px       | `gap-gap-6`, etc. |
+| `--gap-7`  | 2.5rem  | 40px       | `gap-gap-7`, etc. |
+| `--gap-8`  | 3rem    | 48px       | `gap-gap-8`, etc. |
+| `--gap-9`  | 4rem    | 64px       | `gap-gap-9`, etc. |
+| `--gap-10` | 5rem    | 80px       | `gap-gap-10`, etc.|
+| `--gap-11` | 5.5rem  | 88px       | `gap-gap-11`, etc.|
+| `--gap-12` | 6.5rem  | 104px      | `gap-gap-12`, etc.|
 
 Works with `gap-`, `gap-x-`, and `gap-y-` Tailwind utilities.
+
+## Measure (content max-width)
+
+Three canonical content widths for prose and headings. Replaces the scatter of 38rem / 40.625rem / 45rem / 55rem previously inlined across components. Pick based on the text's role, not its visual length.
+
+| Token             | rem    | px at 1440 | When to use                                  |
+|-------------------|--------|------------|----------------------------------------------|
+| `--measure-tight` | 38rem  | 608px      | Short headlines, dense text, card titles     |
+| `--measure-base`  | 45rem  | 720px      | Body paragraphs, standard prose              |
+| `--measure-wide`  | 55rem  | 880px      | Long intros, gallery titles, hero copy       |
+
+## Icon Size Scale
+
+Canonical sizes for inline SVG / icon fixtures. Use these for every new icon. Odd-pixel legacy logo / arrow dimensions may stay as hardcoded rem with a comment — do not snap an asset whose pixel dimensions matter to a token.
+
+| Token             | rem     | px at 1440 | When to use                            |
+|-------------------|---------|------------|----------------------------------------|
+| `--size-icon-xs`  | 1rem    | 16px       | Inline icons in body text              |
+| `--size-icon-sm`  | 1.25rem | 20px       | Accordion toggles, chip icons          |
+| `--size-icon-md`  | 1.5rem  | 24px       | Button / form icons (default)          |
+| `--size-icon-lg`  | 2rem    | 32px       | Section labels, tooltip anchors        |
+| `--size-icon-xl`  | 2.75rem | 44px       | Large decorative or primary action icons|
 
 ## Container Padding
 
@@ -72,11 +112,15 @@ Horizontal padding applied to all `.container` elements. Automatically reduces t
 ## Usage Rules
 
 1. **Always use a token** — never hardcode a spacing value in components
-2. **Section padding** uses `--section-space-*` tokens (`py-section-md`, etc.)
-3. **Component internal spacing** uses `--space-*` tokens (`p-space-4`, `mb-space-2`, etc.)
-4. **Grid and flex gaps** use `--gap-*` tokens (`gap-gap-4`, `gap-x-gap-6`, etc.)
-5. All rem values **scale automatically** with the Osmo system across breakpoints
-6. No `clamp()` or `vw` — Osmo handles all fluid behaviour
+2. **Section padding** defaults to `--section-space-md` (`py-section-md`). Deviations must be documented.
+3. **Page-top heroes** use `calc(var(--section-space-xl) + var(--nav-clearance))`.
+4. **Component internal spacing** uses `--space-*` tokens (`p-space-4`, `mb-space-2`, etc.)
+5. **Grid and flex gaps** use `--gap-*` tokens (`gap-gap-4`, `gap-x-gap-6`, etc.)
+6. **Prose max-widths** use `--measure-*` tokens — no inline rem values.
+7. **Icons** use `--size-icon-*` tokens unless the asset has fixed pixel dimensions that must be preserved (comment inline when making an exception).
+8. **Prefer symmetric block padding** — `padding-block: var(--space-N)` unless asymmetry is intentional and documented.
+9. All rem values **scale automatically** with the Osmo system across breakpoints
+10. No `clamp()` or `vw` — Osmo handles all fluid behaviour
 
 ## Conversion Reference
 
@@ -86,20 +130,21 @@ To convert any Figma px value to a rem token:
 rem = px / 16
 ```
 
-| Figma px | rem     | Nearest token               |
-|----------|---------|-----------------------------|
-| 8px      | 0.5rem  | `--space-1` / `--gap-1`     |
-| 12px     | 0.75rem | `--space-2` / `--gap-2`     |
-| 16px     | 1rem    | `--space-3` / `--gap-3`     |
-| 20px     | 1.25rem | `--space-4` / `--gap-4`     |
-| 24px     | 1.5rem  | `--space-5` / `--gap-5`     |
-| 32px     | 2rem    | `--space-6` / `--gap-6` / `--section-space-xs` |
-| 40px     | 2.5rem  | `--space-7` / `--gap-7`     |
-| 48px     | 3rem    | `--space-8` / `--gap-8`     |
-| 56px     | 3.5rem  | `--section-space-sm`        |
-| 64px     | 4rem    | `--space-9`                 |
-| 80px     | 5rem    | `--space-10` / `--section-space-md` |
-| 88px     | 5.5rem  | `--space-11`                |
-| 104px    | 6.5rem  | `--space-12`                |
-| 112px    | 7rem    | `--section-space-lg`        |
-| 144px    | 9rem    | `--section-space-xl`        |
+| Figma px | rem     | Nearest token                                   |
+|----------|---------|-------------------------------------------------|
+| 8px      | 0.5rem  | `--space-1` / `--gap-1`                         |
+| 12px     | 0.75rem | `--space-2` / `--gap-2`                         |
+| 16px     | 1rem    | `--space-3` / `--gap-3` / `--size-icon-xs`      |
+| 20px     | 1.25rem | `--space-4` / `--gap-4` / `--size-icon-sm`      |
+| 24px     | 1.5rem  | `--space-5` / `--gap-5` / `--size-icon-md`      |
+| 32px     | 2rem    | `--space-6` / `--gap-6` / `--section-space-xs` / `--size-icon-lg` |
+| 40px     | 2.5rem  | `--space-7` / `--gap-7`                         |
+| 44px     | 2.75rem | `--size-icon-xl`                                |
+| 48px     | 3rem    | `--space-8` / `--gap-8` / `--section-space-sm`  |
+| 64px     | 4rem    | `--space-9` / `--gap-9`                         |
+| 72px     | 4.5rem  | `--section-space-md` (default)                  |
+| 80px     | 5rem    | `--space-10` / `--gap-10`                       |
+| 88px     | 5.5rem  | `--space-11` / `--gap-11`                       |
+| 96px     | 6rem    | `--section-space-lg` / `--nav-clearance`        |
+| 104px    | 6.5rem  | `--space-12` / `--gap-12`                       |
+| 128px    | 8rem    | `--section-space-xl`                            |

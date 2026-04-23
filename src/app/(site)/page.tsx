@@ -1,9 +1,6 @@
-import ApproachHeader from "@/components/sections/ApproachHeader";
 import BannerShowroom from "@/components/sections/BannerShowroom";
 import FeaturedProjects from "@/components/sections/FeaturedProjects";
 import HomeHero from "@/components/sections/HomeHero";
-import HomeIntro from "@/components/sections/HomeIntro";
-import OurApproach from "@/components/sections/OurApproach";
 import PartnersSection from "@/components/sections/PartnersSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import { loadPartners } from "@/lib/fetchPartners";
@@ -17,26 +14,11 @@ import {
   FEATURED_PROJECTS_QUERY,
   type FeaturedProjectsData,
 } from "@/sanity/queries/featuredProjectsSection";
-import {
-  APPROACH_HEADER_QUERY,
-  type ApproachHeaderData,
-} from "@/sanity/queries/approachHeaderSection";
-import {
-  HOME_INTRO_QUERY,
-  type HomeIntroData,
-} from "@/sanity/queries/homeIntroSection";
 import { HOME_PAGE_QUERY, type HomePageData } from "@/sanity/queries/homePage";
-import {
-  OUR_APPROACH_QUERY,
-  type OurApproachData,
-} from "@/sanity/queries/ourApproachSection";
 
 export default async function Home() {
-  const [homeData, intro, approach, approachHeader, featured, showroom, partners] = await Promise.all([
+  const [homeData, featured, showroom, partners] = await Promise.all([
     sanityFetch<HomePageData | null>({ query: HOME_PAGE_QUERY }),
-    sanityFetch<HomeIntroData | null>({ query: HOME_INTRO_QUERY }),
-    sanityFetch<OurApproachData | null>({ query: OUR_APPROACH_QUERY }),
-    sanityFetch<ApproachHeaderData | null>({ query: APPROACH_HEADER_QUERY }),
     sanityFetch<FeaturedProjectsData | null>({
       query: FEATURED_PROJECTS_QUERY,
     }),
@@ -50,65 +32,43 @@ export default async function Home() {
     homeData?.testimonialsSection,
   );
 
+  // Temporary holding page — restore the full composition (HomeHero,
+  // BannerShowroom, FeaturedProjects, Testimonials, Partners) when ready.
+  void homeData;
+  void featured;
+  void showroom;
+  void partners;
+  void testimonials;
+
   return (
     <main>
-      <HomeHero
-        heading={homeData?.heading ?? "Fit-Outs Done Differently"}
-        tagline={
-          homeData?.tagline ?? "London's trusted commercial fit-out partner."
-        }
-        image={homeData?.heroImage ?? null}
-        imageAlt={homeData?.heroImage?.alt ?? "Hero background"}
-      />
-      {intro ? (
-        <HomeIntro body={intro.body} points={intro.points ?? []} />
-      ) : null}
-      {showroom ? (
-        <BannerShowroom
-          sectionLabel={showroom.sectionLabel}
-          heading={showroom.heading}
-          cursorLabel={showroom.cursorLabel}
-          backgroundVideoUrl={showroom.backgroundVideoUrl}
-          modalVideoUrl={showroom.modalVideoUrl}
-        />
-      ) : null}
-      {featured && featured.projects && featured.projects.length > 0 ? (
-        <FeaturedProjects
-          sectionLabel={featured.sectionLabel}
-          ctaLabel={featured.ctaLabel}
-          ctaHref={featured.ctaHref}
-          projects={featured.projects}
-        />
-      ) : null}
-      {approach ? (
-        <OurApproach
-          sectionLabel={approach.sectionLabel}
-          intro={approach.intro}
-          steps={approach.steps}
-          completion={approach.completion}
-        />
-      ) : null}
-      {approachHeader ? (
-        <ApproachHeader
-          label={approachHeader.label}
-          heading={approachHeader.heading}
-          image1={approachHeader.image1}
-          image2={approachHeader.image2}
-        />
-      ) : null}
-      {testimonials ? (
-        <TestimonialsSection
-          sectionLabel={testimonials.sectionLabel}
-          reference={testimonials.reference}
-          testimonials={testimonials.testimonials}
-          theme="cream"
-        />
-      ) : null}
-      <PartnersSection
-        heading={partners.heading}
-        sectionLabel={partners.sectionLabel}
-        partners={partners.partners}
-      />
+      <section
+        data-theme="dark"
+        data-nav-theme="dark"
+        style={{
+          minHeight: "100svh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "var(--theme-bg)",
+          color: "var(--theme-text)",
+          paddingInline: "var(--space-6)",
+          textAlign: "center",
+        }}
+      >
+        <div style={{ maxWidth: "44rem" }}>
+          <h1 className="font-secondary font-size-h1 font-weight-regular line-height-tight">
+            Site updating
+          </h1>
+          <p
+            className="font-primary font-size-body-l font-weight-regular line-height-body"
+            style={{ marginTop: "var(--space-4)" }}
+          >
+            We&rsquo;re refreshing things behind the scenes. Please check back
+            shortly.
+          </p>
+        </div>
+      </section>
     </main>
   );
 }

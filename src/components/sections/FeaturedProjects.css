@@ -136,9 +136,7 @@
   column-gap: var(--gap-5);
   margin: 0;
   padding: 0;
-  /* 45rem ≈ 720px at 1440 — comfortable max-width for the stats
-     grid so long project labels break naturally across rows. */
-  max-width: 45rem;
+  max-width: var(--measure-base);
 }
 
 .featured-projects__stats-item {

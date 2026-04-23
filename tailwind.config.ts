@@ -188,6 +188,7 @@ const config: Config = {
         h5: "var(--font-size-h5)",
         h6: "var(--font-size-h6)",
         "text-lg": "var(--font-size-text-lg)",
+        "text-lede": "var(--font-size-text-lede)",
         "text-md": "var(--font-size-text-md)",
         "text-sm": "var(--font-size-text-sm)",
         "text-xs": "var(--font-size-text-xs)",
@@ -234,16 +235,6 @@ const config: Config = {
       },
 
       /* --------------------------------------------------------------------
-         Typography — Word Spacing
-         Usage: className="word-tight" or "word-wide"
-         -------------------------------------------------------------------- */
-      wordSpacing: {
-        tight: "var(--word-spacing-tight)",
-        normal: "var(--word-spacing-normal)",
-        wide: "var(--word-spacing-wide)",
-      },
-
-      /* --------------------------------------------------------------------
          Border Radius
          Usage: className="rounded-sm" or "rounded-full"
          -------------------------------------------------------------------- */
@@ -286,7 +277,24 @@ const config: Config = {
         "section-md": "var(--section-space-md)",
         "section-lg": "var(--section-space-lg)",
         "section-xl": "var(--section-space-xl)",
+        "nav-clearance": "var(--nav-clearance)",
         "container-padding": "var(--container-padding)",
+        "icon-xs": "var(--size-icon-xs)",
+        "icon-sm": "var(--size-icon-sm)",
+        "icon-md": "var(--size-icon-md)",
+        "icon-lg": "var(--size-icon-lg)",
+        "icon-xl": "var(--size-icon-xl)",
+      },
+
+      /* --------------------------------------------------------------------
+         Max Width (measure)
+         Three canonical content widths — replaces inline max-width rems.
+         Usage: className="max-w-measure-base"
+         -------------------------------------------------------------------- */
+      maxWidth: {
+        "measure-tight": "var(--measure-tight)",
+        "measure-base": "var(--measure-base)",
+        "measure-wide": "var(--measure-wide)",
       },
 
       /* --------------------------------------------------------------------
@@ -303,6 +311,10 @@ const config: Config = {
         "gap-6": "var(--gap-6)",
         "gap-7": "var(--gap-7)",
         "gap-8": "var(--gap-8)",
+        "gap-9": "var(--gap-9)",
+        "gap-10": "var(--gap-10)",
+        "gap-11": "var(--gap-11)",
+        "gap-12": "var(--gap-12)",
       },
 
       /* --------------------------------------------------------------------

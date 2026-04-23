@@ -193,7 +193,7 @@ export default function ContactSection({
         >
           {renderFields()}
 
-          <Button type="submit" variant="primary" size="lg">
+          <Button type="submit" variant="primary" size="md">
             {submitLabel}
           </Button>
         </form>
