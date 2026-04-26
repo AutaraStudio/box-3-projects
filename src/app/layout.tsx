@@ -72,6 +72,26 @@ const MENU_CONTENT = {
         { label: "Completion", value: "Autumn 2023" },
       ],
     },
+    {
+      title: "Saatchi & Saatchi",
+      href: "/projects/saatchi-and-saatchi",
+      details: [
+        { label: "Client", value: "Saatchi & Saatchi" },
+        { label: "Sector", value: "Workplace" },
+        { label: "Location", value: "Charlotte Street" },
+        { label: "Completion", value: "Spring 2023" },
+      ],
+    },
+    {
+      title: "Soho House",
+      href: "/projects/soho-house",
+      details: [
+        { label: "Client", value: "Soho House" },
+        { label: "Sector", value: "Hospitality" },
+        { label: "Location", value: "Shoreditch" },
+        { label: "Completion", value: "Winter 2022" },
+      ],
+    },
   ],
   contact: {
     addressLines: ["Level 5, 55 Broadway,", "London SW1H 0BD."],

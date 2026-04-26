@@ -6,23 +6,25 @@
  * reference: 12-column × 3-row grid that fills the modal height.
  *
  *   ┌───────────┬──────────────────────────┬───────────┐
- *   │   PAGES   │ ─ row 1 ─ Featured #1    │  SOCIAL   │
- *   │  (3 × 2)  │                          │  (2 × 2)  │
- *   │           │ ─ row 2 ─ Featured #2    │           │
- *   ├───────────┼──────────────────────────┼───────────┤
- *   │  CONTACT  │ ─ row 3 ─ Featured #3    │  LEGAL    │
+ *   │   PAGES   │ ─ Featured #1            │  SOCIAL   │
+ *   │  (3 × 2)  │ ─ Featured #2 (scrolls)  │  (2 × 2)  │
+ *   ├───────────┤ ─ Featured #N            ├───────────┤
+ *   │  CONTACT  │   ↓ scroll for more      │  LEGAL    │
  *   └───────────┴──────────────────────────┴───────────┘
  *
- * Each featured-project cell carries left + right border lines and
- * has its content anchored top (label + title) and bottom (View
- * Project + details table) so the typography pulls towards the
- * column lines.
+ * Vertical column dividers are rendered as absolutely positioned
+ * lines on the overlay itself so they span the full menu height
+ * (behind the corner Header squares) instead of being limited to
+ * one grid cell. Horizontal dividers between projects are
+ * border-bottom on each .menu-overlay__project.
+ *
+ * The middle column wraps up to 5 featured projects in a single
+ * scroll-y container with a mask-image bottom fade as the
+ * scrollable affordance (no visible scrollbar).
  *
  * Always rendered with `data-theme="dark"` so brown bg + pink text
  * apply regardless of the host page theme. Closes on Escape (handled
- * in MenuProvider) and when any internal nav link is clicked. Every
- * link/button text runs through SplitText so the editorial char
- * roll-over hover applies site-wide.
+ * in MenuProvider) and when any internal nav link is clicked.
  */
 
 "use client";
@@ -45,6 +47,7 @@ const CHAR_STAGGER = 0.0044;
 const WORD_DURATION = 1.2;
 const WORD_STAGGER = 0.001;
 const LG_BREAKPOINT = 1024;
+const MAX_FEATURED_PROJECTS = 5;
 
 interface PageLink {
   label: string;
@@ -70,7 +73,7 @@ interface ExternalLink {
 
 interface MenuOverlayProps {
   pages: PageLink[];
-  /** Up to 3 — fills one row each in the middle column. */
+  /** Up to 5 — middle column scrolls if more than fit. */
   featuredProjects: FeaturedProject[];
   contact: {
     addressLines: string[];
@@ -91,11 +94,8 @@ export default function MenuOverlay({
   legal,
 }: MenuOverlayProps) {
   const { isOpen, close } = useMenu();
-  const projects = featuredProjects.slice(0, 3);
+  const projects = featuredProjects.slice(0, MAX_FEATURED_PROJECTS);
   const overlayRef = useRef<HTMLElement>(null);
-  /* Skip animating on the very first render — the menu is closed by
-     default and there's no transition to play. After that, every
-     isOpen flip drives a GSAP timeline. */
   const isFirstRun = useRef(true);
 
   useEffect(() => {
@@ -107,10 +107,6 @@ export default function MenuOverlay({
     const overlay = overlayRef.current;
     if (!overlay) return;
 
-    /* Trigger square's footprint — used to size the closed clip-path
-       so the menu visually grows out of (and shrinks back into) the
-       trigger button. On mobile the menu fills full-bleed instead so
-       the corner clip becomes a 100%-by-0% strip. */
     const trigger = document.querySelector<HTMLElement>(
       "button.header__square",
     );
@@ -132,8 +128,6 @@ export default function MenuOverlay({
     if (isOpen) {
       tl = gsap
         .timeline()
-        /* Park chars below the line so they can roll in once the
-           clip-path has reached the content area. */
         .set(chars, { yPercent: 100 })
         .set(words, { yPercent: 100 })
         .set(overlay, {
@@ -166,11 +160,7 @@ export default function MenuOverlay({
           },
           0.4,
         )
-        /* Re-enable interaction the moment the menu has fully covered
-           the viewport — don't wait for the char cascade to finish. */
         .set(overlay, { pointerEvents: "auto" }, CLIP_OPEN_DURATION)
-        /* Hand the chars back to CSS so the per-link hover roll-over
-           takes over again once they're settled. */
         .set(chars, { clearProps: "transform" })
         .set(words, { clearProps: "transform" });
     } else {
@@ -199,6 +189,17 @@ export default function MenuOverlay({
       data-open={isOpen}
       aria-hidden={!isOpen}
     >
+      {/* Full-height vertical dividers — absolutely positioned so
+          they extend behind the Header squares to the very top. */}
+      <span
+        className="menu-overlay__divider menu-overlay__divider--left"
+        aria-hidden="true"
+      />
+      <span
+        className="menu-overlay__divider menu-overlay__divider--right"
+        aria-hidden="true"
+      />
+
       <div className="menu-overlay__grid">
         {/* ── Pages — left col, spans 3×2 ───────────────────────── */}
         <nav className="menu-overlay__pages" aria-label="Pages">
@@ -219,10 +220,19 @@ export default function MenuOverlay({
           </ul>
         </nav>
 
-        {/* ── Featured project 1 — middle, row 1 ───────────────── */}
-        {projects[0] && (
-          <FeaturedProjectBlock project={projects[0]} onLinkClick={close} />
-        )}
+        {/* ── Featured projects — middle col, spans all rows,
+              scrollable container with bottom mask fade ───────── */}
+        <div className="menu-overlay__projects-wrap">
+          <div className="menu-overlay__projects-scroll">
+            {projects.map((project) => (
+              <FeaturedProjectBlock
+                key={project.href}
+                project={project}
+                onLinkClick={close}
+              />
+            ))}
+          </div>
+        </div>
 
         {/* ── Social — right col, spans 2×2 ────────────────────── */}
         <section className="menu-overlay__social" aria-label="Social">
@@ -243,37 +253,27 @@ export default function MenuOverlay({
           </ul>
         </section>
 
-        {/* ── Featured project 2 — middle, row 2 ───────────────── */}
-        {projects[1] && (
-          <FeaturedProjectBlock project={projects[1]} onLinkClick={close} />
-        )}
-
         {/* ── Contact — left col, row 3 ────────────────────────── */}
         <section className="menu-overlay__contact" aria-label="Contact us">
           <p className="menu-overlay__label text-small text-caps">Contact us</p>
-          <address className="menu-overlay__address text-large">
+          <address className="menu-overlay__address text-small">
             {contact.addressLines.map((line) => (
               <span key={line}>{line}</span>
             ))}
           </address>
           <a
-            className="menu-overlay__contact-link link text-large"
+            className="menu-overlay__contact-link link text-small"
             href={`mailto:${contact.email}`}
           >
             <SplitText asWords>{contact.email}</SplitText>
           </a>
           <a
-            className="menu-overlay__contact-link link text-large"
+            className="menu-overlay__contact-link link text-small"
             href={contact.phoneHref}
           >
             <SplitText asWords>{contact.phone}</SplitText>
           </a>
         </section>
-
-        {/* ── Featured project 3 — middle, row 3 ───────────────── */}
-        {projects[2] && (
-          <FeaturedProjectBlock project={projects[2]} onLinkClick={close} />
-        )}
 
         {/* ── Legal — right col, row 3 ─────────────────────────── */}
         <section className="menu-overlay__legal" aria-label="Legal">
@@ -303,8 +303,8 @@ export default function MenuOverlay({
    --------------------------------------------------------------------------
    One row of the middle column. Top: small label + project title.
    Bottom (anchored): View Project link + 2-col label/value details.
-   The cell carries left + right border lines so the column reads as
-   a continuous editorial spine. */
+   Sits inside the scrollable middle-column container; horizontal
+   border-bottom separates it from the next block. */
 
 function FeaturedProjectBlock({
   project,
@@ -345,8 +345,12 @@ function FeaturedProjectBlock({
           <dl className="menu-overlay__details">
             {project.details.slice(0, 4).map((detail) => (
               <div key={detail.label} className="menu-overlay__detail-row">
-                <dt className="text-small text-caps">{detail.label}</dt>
-                <dd className="text-small">{detail.value}</dd>
+                <dt className="text-small text-caps menu-overlay__detail-label">
+                  {detail.label}
+                </dt>
+                <dd className="text-small text-caps menu-overlay__detail-value">
+                  {detail.value}
+                </dd>
               </div>
             ))}
           </dl>

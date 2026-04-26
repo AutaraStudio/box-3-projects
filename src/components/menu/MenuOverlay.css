@@ -2,12 +2,23 @@
  * MenuOverlay
  * ===========
  * 12-col × 3-row grid that fills the modal height. Left column holds
- * Pages (rows 1–2) + Contact (row 3); middle column stacks three
- * featured-project blocks (one per row) with left + right border
- * lines; right column holds Social (rows 1–2) + Legal (row 3).
+ * Pages (rows 1–2) + Contact (row 3); middle column is one
+ * scrollable container holding up to 5 featured projects with
+ * horizontal dividers between them; right column holds Social
+ * (rows 1–2) + Legal (row 3).
  *
- * Mobile: collapses to a single-column flex stack — column lines
- * become bottom borders between blocks.
+ * Vertical column dividers are absolutely-positioned line elements
+ * on the overlay itself so they span the full menu height (extending
+ * behind the corner Header squares to the very top edge of the
+ * viewport).
+ *
+ * The middle column has its scrollbar hidden; a CSS mask-image fade
+ * at the bottom of the scroll container is the visual scrollable
+ * affordance. When all projects fit, the fade still applies but is
+ * functionally invisible (no overflow content underneath).
+ *
+ * Mobile: collapses to a single-column flex stack with horizontal
+ * borders between blocks. Vertical dividers hidden.
  *
  * Inline easing comment: cubic-bezier(0.19, 1, 0.22, 1) is a long
  * pull-out + soft settle (matches the editorial reference). Kept
@@ -24,21 +35,47 @@
   pointer-events: none;
   /* Initial closed state — clipped to the trigger square in the
      top-right. GSAP takes over for opening/closing, so no CSS
-     transition is set here (GSAP would race against it). The
-     header's brown trigger overlaps this exact patch so the menu
-     visually grows out of the trigger button. */
+     transition is set here (GSAP would race against it). */
   clip-path: inset(0% 0% calc(100% - var(--space-6)) calc(100% - var(--space-6)));
   opacity: 0;
+}
+
+/* ── Vertical column dividers — full menu height ─────────────────── */
+
+.menu-overlay__divider {
+  display: none;
+}
+
+@media (min-width: 64rem) {
+  .menu-overlay__divider {
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-color: var(--theme-border-strong);
+    pointer-events: none;
+    z-index: 1;
+  }
+  /* 3fr / 7fr / 2fr column ratio means dividers sit at 3/12 = 25%
+     and 10/12 = ~83.33% across the viewport. */
+  .menu-overlay__divider--left {
+    left: 25%;
+  }
+  .menu-overlay__divider--right {
+    right: calc(100% / 6);
+  }
 }
 
 /* ── Grid ────────────────────────────────────────────────────────── */
 
 .menu-overlay__grid {
-  /* Mobile fallback — single column flex stack with bottom borders. */
+  /* Mobile fallback — single column flex stack. */
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: calc(var(--space-6) + var(--space-3)) var(--space-2) var(--space-2);
+  padding: calc(var(--space-6) + var(--space-2)) var(--space-2)
+    var(--space-2);
   gap: var(--space-3);
   overflow-y: auto;
 }
@@ -50,9 +87,9 @@
     grid-template-rows: 1fr 1fr 1fr;
     grid-auto-flow: row;
     height: 100%;
-    /* Top padding leaves room for the Header squares. */
-    padding: calc(var(--space-6) + var(--space-2)) var(--space-3)
-      var(--space-3);
+    /* Top padding clears the Header squares; sides go edge-to-edge
+       so the column dividers sit on real grid boundaries. */
+    padding: var(--space-6) 0 0 0;
     gap: 0;
     overflow: hidden;
   }
@@ -77,18 +114,18 @@
     grid-column: 3;
     grid-row: 3;
   }
-  .menu-overlay__project {
+  .menu-overlay__projects-wrap {
     grid-column: 2;
+    grid-row: 1 / -1;
   }
 }
 
-/* ── Common cell padding ─────────────────────────────────────────── */
+/* ── Side column padding ─────────────────────────────────────────── */
 
 .menu-overlay__pages,
 .menu-overlay__contact,
 .menu-overlay__social,
-.menu-overlay__legal,
-.menu-overlay__project {
+.menu-overlay__legal {
   padding-block: var(--space-2);
   display: flex;
   flex-direction: column;
@@ -100,7 +137,7 @@
   .menu-overlay__contact,
   .menu-overlay__social,
   .menu-overlay__legal {
-    padding-inline: var(--space-1);
+    padding-inline: var(--space-2);
   }
 }
 
@@ -136,55 +173,78 @@
   }
 }
 
-/* ── Featured project block (middle col) ─────────────────────────── */
+/* ── Featured projects scroll container (middle col) ─────────────── */
 
-.menu-overlay__project {
-  /* Mobile: bottom border separates blocks. */
-  border-bottom: 1px solid var(--theme-border-strong);
+.menu-overlay__projects-wrap {
+  position: relative;
+  height: 100%;
+  /* Mobile: lives in the flex column, doesn't need its own scroll. */
+  overflow: visible;
 }
 
 @media (min-width: 64rem) {
-  .menu-overlay__project {
-    /* Desktop: vertical column lines on both sides; no bottom border. */
-    border-left: 1px solid var(--theme-border-strong);
-    border-right: 1px solid var(--theme-border-strong);
-    border-bottom: 0;
+  .menu-overlay__projects-wrap {
+    overflow: hidden;
   }
 }
 
-/* Inner: full-height container with inset content cols (gutters left
-   and right). Internal layout splits top (label + title) from bottom
-   (View Project + details) with `space-between`. */
+.menu-overlay__projects-scroll {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 64rem) {
+  .menu-overlay__projects-scroll {
+    height: 100%;
+    overflow-y: auto;
+    /* Hide the scrollbar — fade is the visual affordance. */
+    scrollbar-width: none;
+    /* Mask the bottom of the visible area so overflowing content
+       fades into the page bg instead of meeting a hard edge. */
+    mask-image: linear-gradient(
+      to bottom,
+      black 0,
+      black calc(100% - var(--space-4)),
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      black 0,
+      black calc(100% - var(--space-4)),
+      transparent 100%
+    );
+  }
+  .menu-overlay__projects-scroll::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ── Single project block ────────────────────────────────────────── */
+
+.menu-overlay__project {
+  /* Horizontal divider between blocks; cleared on the last child. */
+  border-bottom: 1px solid var(--theme-border-strong);
+}
+
+.menu-overlay__project:last-child {
+  border-bottom: 0;
+}
+
 .menu-overlay__project-inner {
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
   gap: var(--space-2);
-  padding-block: var(--space-1);
+  padding: var(--space-2) var(--space-1-5);
+  min-height: 33vh;
 }
 
 @media (min-width: 64rem) {
   .menu-overlay__project-inner {
-    /* 7-col internal grid; content sits in cols 2–6 leaving cols 1
-       and 7 as gutters on either side of the column lines. */
-    display: grid;
-    grid-template-columns: 1fr 5fr 1fr;
-    grid-template-rows: 1fr auto;
-    gap: 0;
-  }
-  .menu-overlay__project-head,
-  .menu-overlay__project-foot {
-    grid-column: 2;
-  }
-  .menu-overlay__project-head {
-    grid-row: 1;
-    align-self: start;
-  }
-  .menu-overlay__project-foot {
-    grid-row: 2;
-    align-self: end;
+    /* Tighter padding so the heading + table get more breathing
+       room across the column width. */
+    padding: var(--space-2) var(--space-1-5);
   }
 }
 
@@ -198,8 +258,6 @@
   margin: 0;
 }
 
-/* Bottom row of the project block. Mobile = vertical stack; desktop =
-   View Project on the left, details table on the right. */
 .menu-overlay__project-foot {
   display: flex;
   flex-direction: column;
@@ -239,35 +297,32 @@
   }
 }
 
+/* ── Project details table ───────────────────────────────────────── */
+
 .menu-overlay__details {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
-  gap: var(--space-0-25) var(--space-1);
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  /* Generous horizontal gap between label and value, snug rows. */
+  gap: var(--space-0-5) var(--space-3);
   margin: 0;
   padding: 0;
-  min-width: 15rem;
+  min-width: 16rem;
 }
 
 .menu-overlay__detail-row {
   display: contents;
 }
 
-.menu-overlay__detail-row dt {
+.menu-overlay__detail-label {
   margin: 0;
   opacity: 0.6;
 }
 
-.menu-overlay__detail-row dd {
+.menu-overlay__detail-value {
   margin: 0;
 }
 
-/* ── Sidebar sections (Social + Legal) ───────────────────────────── */
-
-.menu-overlay__contact,
-.menu-overlay__social,
-.menu-overlay__legal {
-  /* Anchored to the start by default — no extra rules needed. */
-}
+/* ── Sidebar sections (Contact + Social + Legal) ─────────────────── */
 
 .menu-overlay__address {
   display: flex;
@@ -279,14 +334,8 @@
 .menu-overlay__contact-link {
   color: inherit;
   text-decoration: none;
-  transition: opacity 0.3s cubic-bezier(0.19, 1, 0.22, 1);
   display: inline-block;
   margin-bottom: var(--space-0-25);
-}
-@media (hover: hover) {
-  .menu-overlay__contact-link:hover {
-    opacity: 0.7;
-  }
 }
 
 .menu-overlay__simple-list {
@@ -301,10 +350,4 @@
 .menu-overlay__plain-link {
   color: inherit;
   text-decoration: none;
-  transition: opacity 0.3s cubic-bezier(0.19, 1, 0.22, 1);
-}
-@media (hover: hover) {
-  .menu-overlay__plain-link:hover {
-    opacity: 0.7;
-  }
 }
