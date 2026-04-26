@@ -1,21 +1,35 @@
 /**
  * ProjectsHero
  * ============
- * Generous editorial display headline + small counter superscript.
- * Inline-flex so the title and counter sit on a single line with a
- * fixed gap; the counter sits a touch lower so it aligns with the
- * cap-line rather than the baseline.
+ * Cinematic editorial hero — tall on desktop, title pinned to the
+ * bottom so the empty space above reads as deliberate breathing
+ * room. Inline-flex row so title + counter sit on a single line; the
+ * counter sits a touch lower so it aligns with the cap-line rather
+ * than the baseline.
+ *
+ * No clamp / vw — Osmo scaling makes the rem-based sizes fluid.
  */
 
 .projects-hero {
-  padding-top: var(--space-8);
-  padding-bottom: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: var(--space-12);
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-3);
+  /* Bottom hairline matches the reference's section divider so the
+     hero reads as its own block above the projects. */
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--theme-text) 10%, transparent);
 }
 
 @media (min-width: 64rem) {
   .projects-hero {
-    padding-top: var(--space-12);
-    padding-bottom: var(--space-8);
+    /* 32rem ≈ 512px @ design ideal — tall enough to read as
+       editorial without dominating typical laptop viewports. */
+    min-height: 32rem;
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-5-5);
   }
 }
 

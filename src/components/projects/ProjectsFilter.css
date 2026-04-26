@@ -1,17 +1,36 @@
 /**
  * ProjectsFilter
  * ==============
- * Sticky filter bar with category tabs. Sits below the page header
- * (sticks at top: var(--space-6) so the bar pins beneath the header
- * squares as the user scrolls). Backdrop-blur + semi-transparent bg
- * so the projects scroll under it.
+ * Sticky filter bar — sits below the page header (top: var(--space-6))
+ * once the user scrolls. Backdrop-blur over the cream theme so
+ * projects scroll under it.
+ *
+ * Inner layout uses a 12-col grid on desktop so the mode group sits
+ * left-of-centre and the category group sits right-of-centre with a
+ * deliberate empty band between them — matches the editorial
+ * reference. Mobile collapses to a flex stack that wraps if needed.
  */
+
+/* Layout host — the relative parent that the filter aside is
+   absolutely positioned within. The aside floats over the cards
+   instead of pushing them down, exactly like the reference. */
+.projects-content {
+  position: relative;
+}
+
+.projects-content__filter-aside {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 30;
+}
 
 .projects-filter {
   position: sticky;
   top: var(--space-6);
   z-index: 30;
-  background-color: color-mix(in srgb, var(--theme-bg) 70%, transparent);
+  pointer-events: auto;
+  background-color: color-mix(in srgb, var(--theme-bg) 65%, transparent);
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
   border-top: 1px solid
@@ -20,17 +39,42 @@
     color-mix(in srgb, var(--theme-text) 10%, transparent);
 }
 
+/* Inner — flex on mobile, 12-col grid on desktop. */
 .projects-filter__inner {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
-  padding-block: var(--space-1);
 }
 
 @media (min-width: 64rem) {
   .projects-filter__inner {
-    padding-block: var(--space-1-5);
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--space-1-25);
+    align-items: center;
+    gap: 0;
+  }
+
+  .projects-filter__group--mode {
+    grid-column: 2 / span 3;
+  }
+
+  .projects-filter__group--category {
+    grid-column: 7 / span 6;
+  }
+}
+
+.projects-filter__group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+@media (min-width: 64rem) {
+  .projects-filter__group {
+    gap: var(--space-3);
   }
 }
 
@@ -40,14 +84,14 @@
   flex-shrink: 0;
 }
 
-/* Tabs row — flex with a small gap between tabs. */
+/* Tabs container fills the rest of the group, justifying tabs to
+   the start by default; the legend pushes them to the right. */
 .projects-filter__tabs {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-2);
   flex: 1;
-  justify-content: flex-end;
 }
 
 @media (min-width: 64rem) {
@@ -56,24 +100,27 @@
   }
 }
 
-/* Each tab — a button that wraps the label and a positioned
-   underline indicator. The indicator is hidden by default and
-   shown on the active tab; GSAP Flip animates the morph between
-   the old + new positions. */
+/* Each tab — taller padding so the indicator lands at the bottom
+   edge of the bar, matching the editorial reference. */
 .projects-filter__tab {
   position: relative;
   display: inline-flex;
   align-items: center;
   cursor: pointer;
-  padding: var(--space-0-5) 0;
+  padding: var(--space-1) 0;
   background: none;
   border: 0;
   color: inherit;
   font: inherit;
   white-space: nowrap;
-  /* Inactive tabs read at 60% opacity; hover brings them to full. */
   transition: opacity 0.25s linear;
   opacity: 0.6;
+}
+
+@media (min-width: 64rem) {
+  .projects-filter__tab {
+    padding: var(--space-2) 0;
+  }
 }
 
 .projects-filter__tab:hover,
@@ -81,6 +128,8 @@
   opacity: 1;
 }
 
+/* Indicator — pinned to the bottom of the tab; visible only on the
+   active tab; GSAP Flip morphs the visible one between positions. */
 .projects-filter__indicator {
   position: absolute;
   left: 0;
@@ -98,16 +147,31 @@
 
 .projects-filter__label {
   display: inline-flex;
-  align-items: baseline;
-  gap: 0.15em;
+  align-items: center;
+  gap: var(--space-0-5);
 }
 
+.projects-filter__icon {
+  display: inline-flex;
+  align-items: center;
+  /* Optical alignment with the text cap-height. */
+  margin-top: -0.05em;
+}
+
+.projects-filter__icon svg {
+  display: block;
+}
+
+/* Tab counter superscript — distinctly smaller than text-small.
+   Inline value because no token covers this niche size; documented
+   inline so the next reader understands the choice. */
 .projects-filter__count {
-  font-size: var(--font-size-text-small);
+  font-size: 0.6875rem; /* 11px @ design baseline — tighter than text-small */
   letter-spacing: var(--letter-spacing-snug);
   vertical-align: super;
   margin-left: 0.15em;
   opacity: 0.7;
+  font-weight: var(--font-weight-regular);
 }
 
 @media (max-width: 64rem) {

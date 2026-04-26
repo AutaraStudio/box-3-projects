@@ -88,17 +88,26 @@ export default function ProjectsClient({
   }, [activeSlug, mode]);
 
   return (
-    <>
-      <ProjectsFilter
-        categories={categories}
-        activeSlug={activeSlug}
-        onCategoryChange={handleCategoryChange}
-        mode={mode}
-        onModeChange={handleModeChange}
-      />
+    <div className="projects-content">
+      {/* Filter floats over the projects via an absolutely positioned
+          aside — the bar inside is sticky and stays pinned at
+          top: var(--space-6) as the user scrolls. The aside itself
+          contributes no flow height so the cards start at the top
+          of this container, exactly as the editorial reference does.
+          pointer-events: none on the aside lets clicks reach the
+          cards beneath; the bar inside re-enables interaction. */}
+      <aside className="projects-content__filter-aside">
+        <ProjectsFilter
+          categories={categories}
+          activeSlug={activeSlug}
+          onCategoryChange={handleCategoryChange}
+          mode={mode}
+          onModeChange={handleModeChange}
+        />
+      </aside>
       <div data-mode={mode} className="projects-mode-wrap">
         <ProjectsGrid projects={filtered} />
       </div>
-    </>
+    </div>
   );
 }

@@ -1,11 +1,13 @@
 /**
  * ProjectsFilter
  * ==============
- * Sticky bar above the projects grid. Two groups:
+ * Sticky bar above the projects grid. Two groups laid out on a
+ * 12-col grid that mirrors the editorial reference:
  *
- *   ┌────────────────────────────────────────────────────────┐
- *   │  Grid · List          FILTER  All · Hospitality · …    │
- *   └────────────────────────────────────────────────────────┘
+ *   ┌──────┬─────────────┬──────┬───────────────────────────┐
+ *   │      │ Grid · List │      │ FILTER · All · Hospi… …   │
+ *   │ col1 │ cols 2–4    │ 5–6  │ cols 7–12                 │
+ *   └──────┴─────────────┴──────┴───────────────────────────┘
  *
  * Each group is a row of buttons; the active button carries a 1px
  * underline indicator. When the user picks a different option,
@@ -21,7 +23,7 @@
 
 "use client";
 
-import { useEffect, useRef } from "react";
+import { type ReactNode, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { Flip } from "gsap/Flip";
 
@@ -56,14 +58,16 @@ export default function ProjectsFilter({
     <div className="projects-filter">
       <div className="container projects-filter__inner">
         <FilterGroup
+          className="projects-filter__group--mode"
           activeKey={mode}
           options={[
-            { key: "grid", label: "Grid" },
-            { key: "list", label: "List" },
+            { key: "grid", label: "Grid", icon: <GridIcon /> },
+            { key: "list", label: "List", icon: <ListIcon /> },
           ]}
           onSelect={(k) => onModeChange(k as ProjectsViewMode)}
         />
         <FilterGroup
+          className="projects-filter__group--category"
           activeKey={activeSlug}
           legend="Filter"
           options={[
@@ -93,6 +97,7 @@ interface FilterOption {
   key: string;
   label: string;
   count?: number;
+  icon?: ReactNode;
 }
 
 function FilterGroup({
@@ -100,11 +105,13 @@ function FilterGroup({
   options,
   legend,
   onSelect,
+  className,
 }: {
   activeKey: string;
   options: FilterOption[];
   legend?: string;
   onSelect: (key: string) => void;
+  className?: string;
 }) {
   const groupRef = useRef<HTMLDivElement>(null);
   const prevKeyRef = useRef(activeKey);
@@ -138,7 +145,10 @@ function FilterGroup({
   }, [activeKey]);
 
   return (
-    <div className="projects-filter__group" ref={groupRef}>
+    <div
+      className={`projects-filter__group${className ? " " + className : ""}`}
+      ref={groupRef}
+    >
       {legend ? (
         <p className="projects-filter__legend text-small text-caps">
           {legend}
@@ -165,11 +175,17 @@ function FilterGroup({
                 aria-hidden="true"
               />
               <span className="projects-filter__label">
+                {opt.icon ? (
+                  <span
+                    className="projects-filter__icon"
+                    aria-hidden="true"
+                  >
+                    {opt.icon}
+                  </span>
+                ) : null}
                 {opt.label}
                 {padded ? (
-                  <sup className="projects-filter__count text-small">
-                    ({padded})
-                  </sup>
+                  <sup className="projects-filter__count">({padded})</sup>
                 ) : null}
               </span>
             </button>
@@ -177,6 +193,46 @@ function FilterGroup({
         })}
       </div>
     </div>
+  );
+}
+
+/* --------------------------------------------------------------------------
+   Mode-toggle icons — small currentColor SVGs sized to ride the
+   text baseline of the tab label.
+   -------------------------------------------------------------------------- */
+
+function GridIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="currentColor"
+      role="img"
+      aria-label="Grid view"
+    >
+      <rect x="0" y="0" width="6" height="6" />
+      <rect x="8" y="0" width="6" height="6" />
+      <rect x="0" y="8" width="6" height="6" />
+      <rect x="8" y="8" width="6" height="6" />
+    </svg>
+  );
+}
+
+function ListIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="currentColor"
+      role="img"
+      aria-label="List view"
+    >
+      <rect x="0" y="2" width="14" height="1.5" />
+      <rect x="0" y="6.25" width="14" height="1.5" />
+      <rect x="0" y="10.5" width="14" height="1.5" />
+    </svg>
   );
 }
 
