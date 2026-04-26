@@ -42,10 +42,16 @@ import "./MenuOverlay.css";
    modal lands. */
 const CLIP_OPEN_DURATION = 1.0;
 const CLIP_CLOSE_DURATION = 0.8;
-const CHAR_DURATION = 0.8;
-const CHAR_STAGGER = 0.0044;
-const WORD_DURATION = 1.2;
-const WORD_STAGGER = 0.001;
+/* Reveal hierarchy — each tier fades in (with a small lift) on
+   the timeline at its own offset. Inside a tier with multiple
+   elements, stagger spreads them out a touch. */
+const REVEAL_DURATION = 0.55;
+const REVEAL_LIFT = 12; /* px of subtle upward motion */
+const TIER_ONE_AT = 0.5;
+const TIER_TWO_AT = 0.7;
+const TIER_THREE_AT = 0.9;
+const PROJECT_STAGGER = 0.08;
+const SIDEBAR_STAGGER = 0.06;
 const LG_BREAKPOINT = 1024;
 const MAX_FEATURED_PROJECTS = 5;
 
@@ -120,16 +126,26 @@ export default function MenuOverlay({
     const closedClip = `inset(0% ${rightPct}% ${bottomPct}% 0%)`;
     const openClip = "inset(0% 0% 0% 0%)";
 
-    const chars = overlay.querySelectorAll<HTMLElement>(".split .char");
-    const words = overlay.querySelectorAll<HTMLElement>(".split .word");
+    /* Reveal hierarchy — three tiers. Each tier fades in with a
+       small upward lift; inside a tier with multiple elements,
+       members stagger so the whole menu unfolds in reading order
+       without any per-character motion. */
+    const tierOne = overlay.querySelector<HTMLElement>(".menu-overlay__pages");
+    const tierTwo =
+      overlay.querySelectorAll<HTMLElement>(".menu-overlay__project");
+    const tierThree = overlay.querySelectorAll<HTMLElement>(
+      ".menu-overlay__contact, .menu-overlay__social, .menu-overlay__legal",
+    );
+    const allReveal = [tierOne, ...tierTwo, ...tierThree].filter(
+      (el): el is HTMLElement => Boolean(el),
+    );
 
     let tl: gsap.core.Timeline;
 
     if (isOpen) {
       tl = gsap
         .timeline()
-        .set(chars, { yPercent: 100 })
-        .set(words, { yPercent: 100 })
+        .set(allReveal, { autoAlpha: 0, y: REVEAL_LIFT })
         .set(overlay, {
           opacity: 1,
           pointerEvents: "none",
@@ -141,28 +157,38 @@ export default function MenuOverlay({
           ease: "power4.out",
         })
         .to(
-          chars,
+          tierOne,
           {
-            yPercent: 0,
-            duration: CHAR_DURATION,
-            stagger: CHAR_STAGGER,
-            ease: "circ.out",
+            autoAlpha: 1,
+            y: 0,
+            duration: REVEAL_DURATION,
+            ease: "power2.out",
           },
-          0.4,
+          TIER_ONE_AT,
         )
         .to(
-          words,
+          tierTwo,
           {
-            yPercent: 0,
-            duration: WORD_DURATION,
-            stagger: WORD_STAGGER,
-            ease: "circ.out",
+            autoAlpha: 1,
+            y: 0,
+            duration: REVEAL_DURATION,
+            stagger: PROJECT_STAGGER,
+            ease: "power2.out",
           },
-          0.4,
+          TIER_TWO_AT,
         )
-        .set(overlay, { pointerEvents: "auto" }, CLIP_OPEN_DURATION)
-        .set(chars, { clearProps: "transform" })
-        .set(words, { clearProps: "transform" });
+        .to(
+          tierThree,
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: REVEAL_DURATION,
+            stagger: SIDEBAR_STAGGER,
+            ease: "power2.out",
+          },
+          TIER_THREE_AT,
+        )
+        .set(overlay, { pointerEvents: "auto" }, CLIP_OPEN_DURATION);
     } else {
       tl = gsap
         .timeline()
