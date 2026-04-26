@@ -276,16 +276,12 @@
   width: 100%;
   height: 100%;
   z-index: 1;
-  transform: translateY(-100%);
+  /* Initial off-canvas position is set by JS (gsap.set) so the X and
+     Y axes are owned by a single source of truth. CSS used to set a
+     translate here that GSAP then partially reset, leaving phantom
+     offsets that pushed the arrow off-button after the first hover. */
   color: var(--theme-accent);
 }
-.testimonials-btn.is-prev .testimonials-btn__arrow-hover {
-  transform: translateY(100%);
-}
-.testimonials-btn.is-prev .testimonials-btn__arrow-hover .testimonials-btn__arrow {
-  transform: scaleX(-1);
-}
-
 /* ── Desktop layout ──────────────────────────────────────── */
 @media (min-width: 64rem) {
   .testimonials-quote-block {
@@ -331,10 +327,6 @@
   .testimonials-btn.is-prev .testimonials-btn__arrow {
     transform: rotate(90deg) scaleX(-1);
   }
-  .testimonials-btn__arrow-hover {
-    transform: translateX(-100%);
-  }
-  .testimonials-btn.is-prev .testimonials-btn__arrow-hover {
-    transform: translateX(100%);
-  }
+  /* Arrow-hover translation is GSAP-owned at all breakpoints — see
+     wireArrowHover. Setting it here would clash with the JS init. */
 }

@@ -97,81 +97,40 @@ function wireArrowHover(btn: HTMLButtonElement): () => void {
   if (!bg || !arrowHover) return () => {};
 
   const isPrev = btn.classList.contains("is-prev");
-  const isLg = () => window.innerWidth >= 1024;
+  /* Slide direction: prev arrow comes up from below, next arrow comes
+     down from above. Both axes are always set so GSAP can never end
+     up holding a stale offset on the unused axis. */
+  const initY = isPrev ? 100 : -100;
+  const exitY = -initY;
 
-  let enterTl: gsap.core.Timeline | null = null;
-  let leaveTl: gsap.core.Timeline | null = null;
+  /* Bg fill grows out from the side the arrow is leaving from, so the
+     wash visually "follows" the arrow into the circle. */
+  const enterOrigin = isPrev ? "bottom center" : "top center";
+  const exitOrigin = isPrev ? "top center" : "bottom center";
 
-  function getOrigins() {
-    const lg = isLg();
-    return {
-      enter: lg
-        ? isPrev
-          ? "bottom center"
-          : "top center"
-        : isPrev
-          ? "right center"
-          : "left center",
-      leave: lg
-        ? isPrev
-          ? "top center"
-          : "bottom center"
-        : isPrev
-          ? "left center"
-          : "right center",
-    };
-  }
+  let active: gsap.core.Timeline | null = null;
 
-  function getInitOffset() {
-    const lg = isLg();
-    return lg
-      ? { yPercent: isPrev ? 100 : -100, xPercent: 0 }
-      : { xPercent: isPrev ? 100 : -100, yPercent: 0 };
-  }
-
-  function getLeaveOffset() {
-    const lg = isLg();
-    return lg
-      ? { yPercent: isPrev ? -100 : 100 }
-      : { xPercent: isPrev ? -100 : 100 };
-  }
-
-  gsap.set(bg, { scale: 0 });
-  gsap.set(arrowHover, getInitOffset());
+  /* Establish a clean, GSAP-owned starting transform so future tweens
+     have a known baseline regardless of any CSS defaults. */
+  gsap.set(bg, { scale: 0, transformOrigin: enterOrigin });
+  gsap.set(arrowHover, { xPercent: 0, yPercent: initY });
 
   const onEnter = () => {
-    if (leaveTl && leaveTl.progress() > 0 && leaveTl.progress() < 0.5) {
-      leaveTl.pause();
-    }
-    const origins = getOrigins();
-    gsap.set([bg, arrowHover], { transformOrigin: origins.enter });
-    gsap.set(arrowHover, getInitOffset());
-
-    enterTl = gsap
-      .timeline({ defaults: { ease: ease.splitText } })
-      .to(bg, { scale: 1, duration: animDuration.normal })
-      .to(
-        arrowHover,
-        { xPercent: 0, yPercent: 0, duration: animDuration.normal },
-        0,
-      );
+    active?.kill();
+    gsap.set([bg, arrowHover], { transformOrigin: enterOrigin });
+    active = gsap
+      .timeline({ defaults: { ease: ease.splitText, duration: animDuration.normal } })
+      .to(bg, { scale: 1 }, 0)
+      .to(arrowHover, { xPercent: 0, yPercent: 0 }, 0);
   };
 
   const onLeave = () => {
-    if (enterTl && enterTl.progress() > 0 && enterTl.progress() < 0.5) {
-      enterTl.pause();
-    }
-    const origins = getOrigins();
-    gsap.set([bg, arrowHover], { transformOrigin: origins.leave });
-
-    leaveTl = gsap
-      .timeline({ defaults: { ease: ease.splitText } })
-      .to(bg, { scale: 0, duration: animDuration.normal })
-      .to(
-        arrowHover,
-        { ...getLeaveOffset(), duration: animDuration.normal },
-        0,
-      );
+    active?.kill();
+    gsap.set([bg, arrowHover], { transformOrigin: exitOrigin });
+    active = gsap
+      .timeline({ defaults: { ease: ease.splitText, duration: animDuration.normal } })
+      .to(bg, { scale: 0 }, 0)
+      .to(arrowHover, { xPercent: 0, yPercent: exitY }, 0);
   };
 
   btn.addEventListener("mouseenter", onEnter);
@@ -180,6 +139,7 @@ function wireArrowHover(btn: HTMLButtonElement): () => void {
   return () => {
     btn.removeEventListener("mouseenter", onEnter);
     btn.removeEventListener("mouseleave", onLeave);
+    active?.kill();
   };
 }
 
