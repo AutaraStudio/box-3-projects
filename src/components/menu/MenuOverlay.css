@@ -22,20 +22,13 @@
   background-color: var(--theme-bg);
   color: var(--theme-text);
   pointer-events: none;
-  /* Closed state — clipped to the trigger square in the top-right.
-     The header's brown trigger overlaps this exact patch so the menu
+  /* Initial closed state — clipped to the trigger square in the
+     top-right. GSAP takes over for opening/closing, so no CSS
+     transition is set here (GSAP would race against it). The
+     header's brown trigger overlaps this exact patch so the menu
      visually grows out of the trigger button. */
   clip-path: inset(0% 0% calc(100% - var(--space-6)) calc(100% - var(--space-6)));
-  transition:
-    clip-path 0.8s cubic-bezier(0.19, 1, 0.22, 1),
-    opacity 0.3s ease;
   opacity: 0;
-}
-
-.menu-overlay[data-open="true"] {
-  clip-path: inset(0% 0% 0% 0%);
-  pointer-events: auto;
-  opacity: 1;
 }
 
 /* ── Grid ────────────────────────────────────────────────────────── */
