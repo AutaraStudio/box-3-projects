@@ -128,8 +128,11 @@
   align-items: baseline;
 }
 
-/* Image — small thumbnail on the right at col-span-2 on desktop;
-   full-width above everything else on mobile (order: -1). */
+/* Image — small thumbnail with a fixed 282/194 aspect at all
+   viewports so it never fills the full row height. On desktop it
+   sits in col-span-2 and aligns to the bottom of the row (matching
+   the title's bottom-alignment); on mobile it pulls to the top of
+   the stack via order: -1. */
 .projects-list__image {
   display: block;
   position: relative;
@@ -142,8 +145,7 @@
 @media (min-width: 64rem) {
   .projects-list__image {
     grid-column: span 2;
-    height: 100%;
-    aspect-ratio: auto;
+    align-self: end;
     order: 0;
   }
 }
