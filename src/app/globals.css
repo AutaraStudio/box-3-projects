@@ -238,6 +238,10 @@
 
   /* --- Line Heights --- */
   --line-height-none: 1;
+  /* Display sits tighter than --tight so oversized headlines crop
+     close to the cap height — editorial display rarely opens past
+     1.0 line-height. */
+  --line-height-display: 0.95;
   --line-height-tight: 1.05;
   --line-height-snug: 1.15;
   --line-height-normal: 1.25;
@@ -351,6 +355,14 @@
   --measure-tight: 38rem;       /* 608px  — short headlines, dense text */
   --measure-base:  45rem;       /* 720px  — body paragraphs, standard */
   --measure-wide:  55rem;       /* 880px  — long intros, gallery titles */
+
+  /* Character-based measures for body copy. Editorial typography
+     constrains line length to ~50–75 characters so the eye can
+     return to the next line without a long horizontal saccade.
+     Use these on long-form `<p>` blocks regardless of font size. */
+  --measure-ch-narrow: 52ch;
+  --measure-ch-body:   62ch;
+  --measure-ch-wide:   72ch;
 
 
   /* --- Icon Size Scale ---
@@ -1823,7 +1835,7 @@ h5, h6 {
   font-family: var(--font-primary);
   font-size: var(--font-size-display);
   font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-tight);
+  line-height: var(--line-height-display);
   letter-spacing: var(--letter-spacing-display);
   text-wrap: balance;
   font-feature-settings: "kern" 1, "liga" 1;
@@ -1860,6 +1872,33 @@ h5, h6 {
   line-height: var(--line-height-relaxed);
   font-family: var(--font-secondary);
   text-wrap: pretty;
+  max-width: var(--measure-ch-body);
+}
+
+/* Character-measure utilities — apply to long-form `<p>` blocks so
+   line length stays in the readable 50–75 char editorial range,
+   regardless of the surrounding column width. */
+.u-measure-narrow { max-width: var(--measure-ch-narrow); }
+.u-measure-body   { max-width: var(--measure-ch-body); }
+.u-measure-wide   { max-width: var(--measure-ch-wide); }
+
+/* Lede — first paragraph of a section. Slightly larger and looser
+   than body, with editorial small-caps available via .u-lede-caps.
+   Pair with .u-measure-narrow for short editorial intros. */
+.u-lede {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-text-lg);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--letter-spacing-snug);
+  font-weight: var(--font-weight-regular);
+  text-wrap: pretty;
+}
+
+/* Hanging punctuation — pulls opening quotes / dashes into the left
+   margin so blocks of body copy align flush. Safari only at the
+   moment; harmless elsewhere. */
+.u-hanging {
+  hanging-punctuation: first last;
 }
 
 

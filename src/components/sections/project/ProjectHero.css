@@ -158,17 +158,19 @@
   font-size: 1.25rem;
   line-height: var(--line-height-snug);
   letter-spacing: var(--letter-spacing-tight);
+  /* Tabular numerals so multi-digit values (year, sq ft) line up
+     vertically across the stats grid. */
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
 }
 
 /* ----- Right column gallery ----- */
 
 .project-hero__gallery {
-  /* Push the first image roughly 20% of viewport height below the
-     vertical centre — i.e. its top sits at ~70svh. Creates a
-     deliberate entry rhythm where the left column's sticky content
-     reads clearly before the right column's imagery arrives.
-     Mobile overrides below use token-based spacing instead. */
-  padding-top: 70svh;
+  /* First image enters just above the viewport midline so it clears
+     the nav at the top of the section but stays visible above the
+     fold. Mobile overrides below use token-based spacing. */
+  padding-top: 45svh;
 }
 
 @media (max-width: 999px) {

@@ -41,6 +41,7 @@
 .contact-info-text {
   font-size: var(--font-size-h6);
   margin-bottom: var(--space-5);
+  max-width: var(--measure-ch-body);
 }
 
 .contact-info-image {

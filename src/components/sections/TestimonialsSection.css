@@ -111,6 +111,10 @@
   color: inherit;
   gap: 0.25rem;
   opacity: 0;
+  /* Tabular numerals so the counter never reflows when the digit
+     width changes (e.g. 09 → 10). Editorial pagination behaviour. */
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
 }
 .testimonials-counter.is-visible {
   opacity: 1;

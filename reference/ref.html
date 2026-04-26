@@ -1,597 +1,401 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Testimonials</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<style>
-/* === ROOT === */
-:root {
-  --colors-blue: #1925aa;
-  --colors-mercury: #e8e6e0;
-  --colors-white: #fff;
-  --font-pp-neue: 'DM Sans', sans-serif;
-  --font-gta-mono: 'DM Mono', monospace;
-  --spacing: 0.25rem;
-  --ease-in-out: cubic-bezier(.4,0,.2,1);
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>"We" Section — Box 3 Palette</title>
 
-*, ::after, ::before { box-sizing: border-box; }
-* { margin: 0; -webkit-tap-highlight-color: transparent; }
-body { background: var(--colors-white); color: var(--colors-blue); }
-button { cursor: pointer; appearance: none; background: none; border: 0; color: inherit; font: inherit; padding: 0; }
-svg { overflow: visible; display: block; }
-img { display: block; max-width: 100%; }
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Inter is a clean, geometric sans-serif suitable as a stand-in for the
+       refined editorial typeface used on the original site. Swap if you have
+       brand fonts. -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet" />
 
-/* === SECTION === */
-.testimonials {
-  background: var(--colors-white);
-  padding-top:  calc(var(--spacing) * 50);
-  padding-bottom: calc(var(--spacing) * 56);
-  padding-left: calc(var(--spacing) * 15);
-  padding-right: calc(var(--spacing) * 15);
-}
+  <style>
+    /* ============================================================
+       BRAND TOKENS — Box 3 Projects
+       ============================================================ */
+    :root {
+      --color-dark:  #2c2524;   /* warm dark — background */
+      --color-blush: #fdcdcd;   /* soft blush — text */
 
-/* === LABEL ROW === */
-.label-row {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0,1fr));
-  column-gap: calc(var(--spacing) * 15);
-}
-.label-row-inner {
-  grid-column: 1 / -1;
-  display: flex;
-  justify-content: space-between;
-  color: var(--colors-blue);
-  font-family: var(--font-gta-mono);
-  font-weight: 400;
-  font-size: 0.75rem;
-  line-height: 1;
-  letter-spacing: 0;
-  text-transform: uppercase;
-}
+      /* Typography scale (lifted from the original :root) */
+      --font--primary-family: "Inter", sans-serif;
+      --font--primary-regular: 400;
+      --font--primary-medium: 500;
+      --font--primary-bold: 700;
 
-/* === MAIN GRID === */
-.main-grid {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0,1fr));
-  column-gap: calc(var(--spacing) * 15);
-  margin-top: calc(var(--spacing) * 50);
-}
+      --line-height--1-1: 1.1;
+      --line-height--1-2: 1.2;
+      --line-height--1-4: 1.4;
 
-/* === QUOTE BLOCK === */
-.quote-block {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: subgrid;
-  opacity: 0;
-}
-.quote-block.is-visible { opacity: 1; }
+      --letter-spacing--0em: 0em;
 
-.quote-inner {
-  grid-column: 1 / -1;
-}
+      --size--0rem: 0rem;
+      --size--0-125rem: 0.125rem;
+      --size--0-25rem: 0.25rem;
+      --size--0-5rem: 0.5rem;
+      --size--0-75rem: 0.75rem;
+      --size--1rem: 1rem;
+      --size--1-25rem: 1.25rem;
+      --size--1-5rem: 1.5rem;
+      --size--3rem: 3rem;
+      --size--5rem: 5rem;
+      --size--7rem: 7rem;
+      --size--9rem: 9rem;
+      --size--15rem: 15rem;
 
-/* Quote stack */
-.quote-stack-wrap {
-  display: grid;
-  grid-template-areas: "stack";
-}
-.quote-item {
-  grid-area: stack;
-  color: var(--colors-blue);
-  font-family: var(--font-pp-neue);
-  font-weight: 400;
-  font-size: 2rem;
-  line-height: 1;
-  letter-spacing: 0;
-  margin-bottom: calc(var(--spacing) * 80);
-}
+      --site--width: 120rem;
+      --site--gutter: 0.375rem;
 
-/* Line masking */
-.line-mask {
-  display: block;
-  overflow: clip;
-  position: relative;
-}
-.line-split {
-  display: block;
-  position: relative;
-  margin-bottom: -0.1em;
-  padding-bottom: 0.1em;
-  will-change: transform, opacity;
-}
+      /* Heading + small text variables (matching .u-text-style-h4 / -small) */
+      --h4--font-family: var(--font--primary-family);
+      --h4--font-size: 4rem;          /* desktop */
+      --h4--line-height: var(--line-height--1-2);
+      --h4--font-weight: var(--font--primary-medium);
+      --h4--letter-spacing: var(--letter-spacing--0em);
+      --h4--margin-bottom: 0;
 
-/* Counter */
-.quote-counter {
-  display: flex;
-  align-items: center;
-  font-family: var(--font-gta-mono);
-  font-weight: 400;
-  font-size: 0.75rem;
-  line-height: 1.2;
-  text-transform: uppercase;
-  letter-spacing: 0;
-  color: var(--colors-blue);
-  gap: 0.25rem;
-  opacity: 0;
-}
-.quote-counter.is-visible { opacity: 1; transition: opacity 0.4s var(--ease-in-out); }
-.counter-current {
-  transition: opacity 0.3s ease-in-out;
-}
-.counter-current.fade-out { opacity: 0; }
+      --text-small--font-family: var(--font--primary-family);
+      --text-small--font-size: 1rem;
+      --text-small--line-height: var(--line-height--1-4);
+      --text-small--font-weight: var(--font--primary-medium);
+      --text-small--letter-spacing: var(--letter-spacing--0em);
+      --text-small--margin-bottom: 0;
 
-/* Author info */
-.quote-info-wrap {
-  display: grid;
-  grid-template-areas: "stack";
-  opacity: 0;
-}
-.quote-info-wrap.is-visible { opacity: 1; transition: opacity 0.4s var(--ease-in-out) 0.15s; }
+      /* Grid templates from the original (1+7 = 8 columns) */
+      --grid-1: repeat(8, minmax(0, 1fr));     /* desktop layout */
+      --grid-main: repeat(8, minmax(0, 1fr));  /* desktop bottom row */
+      --grid-12: repeat(12, minmax(0, 1fr));   /* tablet — wider grid */
+    }
 
-.quote-info {
-  grid-area: stack;
-  font-family: var(--font-gta-mono);
-  font-weight: 400;
-  font-size: 0.75rem;
-  line-height: 1.2;
-  text-transform: uppercase;
-  letter-spacing: 0;
-  color: var(--colors-blue);
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-}
-.quote-info.is-active {
-  opacity: 1;
-  transition-delay: 0.3s;
-}
+    /* ============================================================
+       RESET / BASE
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background: var(--color-dark);
+      color: var(--color-blush);
+      font-family: var(--font--primary-family);
+      font-weight: var(--font--primary-medium);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
 
-/* === SIDEBAR (logo + controls) === */
-.sidebar {
-  grid-column: 1 / -1;
-  margin-top: calc(var(--spacing) * 80);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  opacity: 0;
-}
-.sidebar.is-visible { opacity: 1; transition: opacity 0.4s var(--ease-in-out) 0.2s; }
+    /* ─── stand-in scroll spacers so we can scroll into & past the section ── */
+    .scroll-spacer {
+      height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(253, 205, 205, 0.4);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+    }
 
-.logo-wrap {
-  position: relative;
-  height: calc(var(--spacing) * 60);
-  display: flex;
-  align-items: center;
-}
-.logo-wrap img {
-  max-width: 12rem;
-  height: 100%;
-  object-fit: contain;
-  width: auto;
-  transition: opacity 0.3s ease-in-out;
-}
-.logo-wrap img.fade-out { opacity: 0; }
+    /* ============================================================
+       UTILITIES — replicating the relevant parts of the framework
+       ============================================================ */
+    .u-container {
+      width: 100%;
+      max-width: var(--site--width);
+      padding: 0 var(--size--1-25rem);
+      margin: 0 auto;
+      position: relative;
+    }
 
-.controls-wrap {
-  display: flex;
-  gap: calc(var(--spacing) * 20);
-  position: relative;
-}
+    .u-grid-custom {
+      display: grid;
+      grid-template-columns: var(--grid-1);
+      grid-template-rows: auto;
+      grid-auto-columns: minmax(0, 1fr);
+      column-gap: var(--site--gutter);
+      row-gap: var(--site--gutter);
+    }
 
-/* === ARROW BUTTON === */
-.btn-controls {
-  color: var(--colors-blue);
-  border: 1px solid var(--colors-blue);
-  border-radius: 50%;
-  display: flex;
-  width:  calc(var(--spacing) * 57);
-  height: calc(var(--spacing) * 57);
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-  background: none;
-  padding: 0;
-  appearance: none;
-  font: inherit;
-}
+    .u-grid-desktop {
+      display: grid;
+      grid-template-columns: var(--grid-main);
+      grid-template-rows: auto;
+      grid-auto-columns: minmax(0, 1fr);
+      column-gap: var(--site--gutter);
+      row-gap: var(--site--gutter);
+    }
 
-.btn-controls .arrow-icon {
-  width: calc(var(--spacing) * 20);
-  height: calc(var(--spacing) * 9);
-  color: inherit;
-  position: relative;
-  z-index: 0;
-}
-.btn-controls.is-prev .arrow-icon { transform: scaleX(-1); }
+    .u-column-1 { grid-column: auto / span 1; }
+    .u-column-7 { grid-column: auto / span 7; }
 
-.btn-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--colors-blue);
-  border-radius: 50%;
-  transform: scale(0);
-  transform-origin: bottom center;
-}
+    .u-text-style-h4 {
+      margin: 0 0 var(--h4--margin-bottom) 0;
+      font-family: var(--h4--font-family);
+      font-size: var(--h4--font-size);
+      line-height: var(--h4--line-height);
+      font-weight: var(--h4--font-weight);
+      letter-spacing: var(--h4--letter-spacing);
+      text-wrap: balance;
+    }
 
-.btn-arrow-hover {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  transform: translateY(-100%);
-}
-.btn-controls.is-prev .btn-arrow-hover { transform: translateY(100%); }
+    .u-text-style-small {
+      margin: 0 0 var(--text-small--margin-bottom) 0;
+      font-family: var(--text-small--font-family);
+      font-size: var(--text-small--font-size);
+      line-height: var(--text-small--line-height);
+      font-weight: var(--text-small--font-weight);
+      letter-spacing: var(--text-small--letter-spacing);
+      text-wrap: pretty;
+    }
 
-.btn-arrow-hover .arrow-icon {
-  color: white;
-}
-.btn-controls.is-prev .btn-arrow-hover .arrow-icon { transform: scaleX(-1); }
+    /* ============================================================
+       WE SECTION
+       ============================================================ */
+    .we_section {
+      background: var(--color-dark);
+      color: var(--color-blush);
+      padding-top: var(--size--7rem);
+    }
 
-/* === DESKTOP === */
-@media (min-width: 1024px) {
-  .testimonials { padding-bottom: 0; }
+    .we_contain.u-container {
+      padding-bottom: var(--size--15rem);
+    }
 
-  .main-grid { margin-top: 0; }
+    /* TOP ROW — "we" label + values list */
+    .we_layout-top.u-grid-custom {
+      padding-bottom: var(--size--3rem);
+    }
 
-  .quote-block {
-    grid-column: 5 / -2;
-    padding-top:  calc(var(--spacing) * 122);
-    padding-bottom: calc(var(--spacing) * 124);
-  }
+    /* The "we" cell: in the original, grid-column-start: 5 makes it sit
+       in the middle of the grid, right-aligned, beside the values list. */
+    .we_scroll.u-column-1 {
+      grid-column-start: 5;
+      display: flex;
+      flex-flow: row;
+      justify-content: flex-end;
+      align-items: flex-start;
+      text-align: right;
+      align-self: start;       /* IMPORTANT — lets it pin to the top while we move it */
+      will-change: transform;  /* hint for the parallax */
+    }
 
-  .quote-item { font-size: 2.875rem; margin-bottom: calc(var(--spacing) * 128); }
+    /* The values list cell: starts at column 6, runs to the end */
+    .we_right.u-column-7 {
+      grid-column-start: 6;
+      width: 100%;
+      text-align: left;
+    }
 
-  .sidebar {
-    grid-column: 3 / span 2;
-    grid-row: 1;
-    margin-top: 0;
-    flex-direction: column;
-    align-items: flex-start;
-    padding-top:    calc(var(--spacing) * 122);
-    padding-bottom: calc(var(--spacing) * 112);
-    border-left: 1px solid var(--colors-blue);
-    padding-left: 0;
-    transform: translateX(-50%);
-  }
+    /* Heading text styling */
+    .we_text {
+      line-height: var(--line-height--1-1);
+      width: 21ch;             /* matches original — keeps line wrap predictable */
+    }
+    .we_text.u-text-style-h4 {
+      font-weight: var(--font--primary-medium);
+      color: var(--color-blush);
+    }
 
-  .logo-wrap {
-    transform: translateX(-50%);
-  }
+    /* ─── BOTTOM ROW — services label + description ─── */
+    .we_layout-bottom.u-grid-desktop {
+      /* same desktop grid as the top row */
+    }
 
-  .controls-wrap {
-    flex-direction: column;
-    gap: calc(var(--spacing) * 20);
-    transform: translateX(-50%);
-  }
+    .we_left.u-column-1 {
+      align-self: start;
+    }
 
-  .btn-controls .arrow-icon { transform: rotate(90deg); }
-  .btn-controls.is-prev .arrow-icon { transform: rotate(90deg) scaleX(-1); }
-  .btn-arrow-hover { transform: translateX(-100%); }
-  .btn-controls.is-prev .btn-arrow-hover { transform: translateX(100%); }
-}
-</style>
+    .we_right-bottom.u-column-7 {
+      grid-column-start: 6;
+      width: 60%;             /* matches original — narrow body text */
+    }
+
+    .we_text-bold {
+      font-weight: var(--font--primary-regular);
+    }
+    .we_text-bold.u-text-style-small {
+      font-weight: var(--font--primary-bold);
+    }
+
+    .we_text-normal {
+      font-weight: var(--font--primary-regular);
+    }
+
+    /* small inline highlight span — the original applied a colour swatch here */
+    .we_text-normal [data-color] {
+      color: var(--color-blush);
+      /* subtle underline as a stand-in for whatever inline styling was there */
+    }
+
+    /* ============================================================
+       MEDIA QUERIES (mirroring the original breakpoints)
+       ============================================================ */
+    @media screen and (max-width: 991px) {
+      :root {
+        --grid-1: repeat(12, minmax(0, 1fr));   /* tablet → 12-col grid */
+      }
+
+      .u-container {
+        max-width: none;
+        padding-left: var(--size--1rem);
+        padding-right: var(--size--1rem);
+      }
+
+      /* On tablet the bottom row collapses to a flex column stack */
+      .u-grid-desktop {
+        display: flex;
+        flex-flow: column;
+      }
+
+      .we_layout-top.u-grid-desktop { flex-flow: row; }
+      .we_layout-top.u-grid-custom {
+        padding-bottom: var(--size--9rem);
+      }
+
+      .we_scroll.u-column-1 {
+        grid-column: 1 / span 2;
+        justify-content: flex-start;
+        align-items: flex-start;
+      }
+
+      .we_right.u-column-7 {
+        grid-column: 3 / span 11;
+      }
+
+      .we_text.u-text-style-h4 {
+        width: 100%;
+        font-size: 5rem;
+      }
+
+      .we_right-bottom.u-column-7 {
+        width: 100%;
+      }
+    }
+
+    @media screen and (max-width: 767px) {
+      .we_text.u-text-style-h4 { font-size: 4rem; }
+    }
+
+    @media screen and (max-width: 479px) {
+      .we_right.u-column-7 {
+        padding-left: var(--size--0-125rem);
+      }
+      .we_text.u-text-style-h4 {
+        font-size: 2.5rem;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<section class="testimonials" data-slice-type="testimonials">
+  <section class="scroll-spacer">↓ scroll into the "we" section ↓</section>
 
-  <h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Testimonials</h2>
+  <!-- =========================================================
+       WE SECTION
+       Structure & class names match the original markup.
+       ========================================================= -->
+  <section class="we_section">
+    <div class="we_contain u-container">
 
-  <!-- Label row -->
-  <div class="label-row">
-    <div class="label-row-inner">
-      <div>Testimonials</div>
-      <div aria-hidden="true">[OCI.3]</div>
-    </div>
-  </div>
+      <!-- TOP ROW — "we" label + values list -->
+      <div class="we_layout-top u-grid-custom">
 
-  <!-- Main content grid -->
-  <div class="main-grid">
-
-    <!-- Quote block -->
-    <div class="quote-block js-quote-block" id="quoteBlock">
-
-      <div class="quote-inner">
-
-        <!-- Stacked quotes -->
-        <div class="quote-stack-wrap" id="quoteStack">
-          <!-- Quotes injected by JS -->
+        <div class="we_scroll u-column-1">
+          <h4 class="we_text u-text-style-h4">we</h4>
         </div>
 
-        <!-- Counter -->
-        <div class="quote-counter" id="quoteCounter">
-          <span class="counter-current" id="counterCurrent">01</span>
-          <span>&nbsp;/&nbsp;</span>
-          <span id="counterTotal">03</span>
-        </div>
-
-        <!-- Author info stack -->
-        <div class="quote-info-wrap" id="quoteInfoWrap" style="margin-top:1rem;">
-          <!-- Infos injected by JS -->
+        <div class="we_right u-column-7">
+          <h4 class="we_text u-text-style-h4">
+            stay curious, always.<br>
+            collaborate.<br>
+            nurture talent.<br>
+            design for the future.<br>
+          </h4>
         </div>
 
       </div>
-    </div>
 
-    <!-- Sidebar: logo + controls -->
-    <div class="sidebar" id="sidebar">
+      <!-- BOTTOM ROW — services label + description -->
+      <div class="we_layout-bottom u-grid-desktop">
 
-      <!-- Logo -->
-      <div class="logo-wrap" id="logoWrap">
-        <!-- Logo injected by JS -->
-      </div>
+        <div class="we_left u-column-1">
+          <div class="we_text-bold u-text-style-small">services</div>
+        </div>
 
-      <!-- Controls -->
-      <div class="controls-wrap">
-        <button class="btn-controls is-prev" id="btnPrev" aria-label="Previous Testimonial">
-          <svg class="arrow-icon" viewBox="0 0 20 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M19 4.5H1M1 4.5L5 1M1 4.5L5 8" stroke="currentColor" stroke-width="1.2"/>
-          </svg>
-          <span class="btn-bg"></span>
-          <span class="btn-arrow-hover">
-            <svg class="arrow-icon" viewBox="0 0 20 9" fill="none">
-              <path d="M19 4.5H1M1 4.5L5 1M1 4.5L5 8" stroke="currentColor" stroke-width="1.2"/>
-            </svg>
-          </span>
-        </button>
+        <div class="we_right-bottom u-column-7">
+          <div class="we_text-normal u-text-style-small">
+            We're architects, urban designers and
+            <span data-color="">interior designers</span>.
+            We deliver buildings, public spaces and interiors that are
+            contextually sensitive, environmentally responsible and
+            technically resilient.
+          </div>
+        </div>
 
-        <button class="btn-controls" id="btnNext" aria-label="Next Testimonial">
-          <svg class="arrow-icon" viewBox="0 0 20 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M1 4.5H19M19 4.5L15 1M19 4.5L15 8" stroke="currentColor" stroke-width="1.2"/>
-          </svg>
-          <span class="btn-bg"></span>
-          <span class="btn-arrow-hover">
-            <svg class="arrow-icon" viewBox="0 0 20 9" fill="none">
-              <path d="M1 4.5H19M19 4.5L15 1M19 4.5L15 8" stroke="currentColor" stroke-width="1.2"/>
-            </svg>
-          </span>
-        </button>
       </div>
 
     </div>
+  </section>
 
-  </div><!-- /.main-grid -->
+  <section class="scroll-spacer">↑ scroll back ↑</section>
 
-</section>
 
-<script>
-gsap.registerPlugin(ScrollTrigger);
+  <!-- =========================================================
+       LIBS — GSAP, ScrollTrigger, Lenis (smooth scroll)
+       ========================================================= -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lenis@1.3.23/dist/lenis.min.js"></script>
 
-/* ── DATA ──────────────────────────────────────────────────────────── */
-const testimonials = [
-  {
-    quote: '"I have worked with Outsource for many years on various projects, including the Lavelle School for the Blind. When we work with Outsource, we know that we are going to have a project that is completed on time."',
-    author: 'T. Hanks',
-    title: 'CRO',
-    company: 'Gensler',
-    logo: 'https://oci-awards.cdn.prismic.io/oci-awards/aYeO690YXLCxVj7r_Gensler_logo1.svg'
-  },
-  {
-    quote: '"I have worked with Outsource for many years on various projects, including the Lavelle School for the Blind. When we work with Outsource, we know that we are going to have a project that is completed on time, within budget, and is guided by experience and expertise."',
-    author: 'Ricky Gervais',
-    title: 'CEO',
-    company: 'Walmart',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Walmart_Spark.svg/120px-Walmart_Spark.svg.png'
-  },
-  {
-    quote: '"Outsource Consultants bring a level of professionalism and deep expertise that is unmatched in the industry. They have consistently delivered results for our most complex New York City projects."',
-    author: 'Stuart Pidd',
-    title: 'CMO',
-    company: 'Skanska',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Skanska_logo.svg/200px-Skanska_logo.svg.png'
-  }
-];
-
-/* ── STATE ─────────────────────────────────────────────────────────── */
-let current  = 0;
-let animating = false;
-const timelines = []; // one GSAP timeline per quote
-
-/* ── BUILD DOM ─────────────────────────────────────────────────────── */
-const stack    = document.getElementById('quoteStack');
-const infoWrap = document.getElementById('quoteInfoWrap');
-const logoWrap = document.getElementById('logoWrap');
-
-// Quotes
-testimonials.forEach((t, i) => {
-  const bq = document.createElement('blockquote');
-  bq.className = 'quote-item js-quote';
-  bq.setAttribute('role', 'group');
-  bq.setAttribute('aria-label', t.quote);
-  bq.innerHTML = splitIntoLines(t.quote);
-  stack.appendChild(bq);
-});
-
-// Author infos
-testimonials.forEach((t, i) => {
-  const div = document.createElement('div');
-  div.className = 'quote-info' + (i === 0 ? ' is-active' : '');
-  div.innerHTML = `<div>${t.author}, ${t.title}</div><span>${t.company}</span>`;
-  infoWrap.appendChild(div);
-});
-
-// Logo (first)
-const logoImg = document.createElement('img');
-logoImg.src = testimonials[0].logo;
-logoImg.alt = testimonials[0].company;
-logoImg.style.maxWidth = '12rem';
-logoImg.style.height = '100%';
-logoImg.style.objectFit = 'contain';
-logoWrap.appendChild(logoImg);
-
-// Counter total
-document.getElementById('counterTotal').textContent = String(testimonials.length).padStart(2, '0');
-
-/* ── SPLIT TEXT into line masks ──────────────────────────────────── */
-function splitIntoLines(text) {
-  // We wrap each word and let the browser reflow, then group by line.
-  // For simplicity, we pre-split into ~7-word chunks as line masks.
-  const words = text.split(' ');
-  const chunkSize = 7;
-  let html = '';
-  for (let i = 0; i < words.length; i += chunkSize) {
-    const line = words.slice(i, i + chunkSize).join(' ');
-    html += `<span class="line-mask"><span class="line-split">${line}</span></span>`;
-  }
-  return html;
-}
-
-/* ── BUILD TIMELINES ────────────────────────────────────────────── */
-function buildTimelines() {
-  timelines.length = 0;
-  document.querySelectorAll('.js-quote').forEach((bq, i) => {
-    const lines = bq.querySelectorAll('.line-split');
-    const tl = gsap.timeline({ paused: true });
-    tl.fromTo(lines,
-      { yPercent: 100, opacity: 0 },
-      { yPercent: 0, opacity: 1, duration: 0.3, stagger: 0.05 }
-    );
-    timelines.push(tl);
-    // Set initial state: first quote visible, rest hidden
-    if (i === 0) {
-      gsap.set(lines, { yPercent: 100, opacity: 0 });
-    } else {
-      gsap.set(lines, { yPercent: 100, opacity: 0 });
-    }
-  });
-}
-
-buildTimelines();
-
-/* ── SCROLL TRIGGER: play first quote on enter ───────────────────── */
-const quoteBlock = document.getElementById('quoteBlock');
-quoteBlock.classList.add('is-visible');
-
-ScrollTrigger.create({
-  trigger: quoteBlock,
-  start: 'top 50%',
-  onEnter: (self) => {
-    timelines[0].play();
-    document.getElementById('quoteCounter').classList.add('is-visible');
-    document.getElementById('quoteInfoWrap').classList.add('is-visible');
-    document.getElementById('sidebar').classList.add('is-visible');
-    self.kill();
-  }
-});
-
-/* ── NAVIGATION ─────────────────────────────────────────────────── */
-function goTo(next) {
-  if (animating) return;
-  animating = true;
-
-  const prev = current;
-  current = next;
-
-  // Reverse current quote, then play next
-  timelines[prev].reverse().then(() => {
-    timelines[current].play().then(() => {
-      animating = false;
+  <script>
+    // ── Lenis smooth scroll setup ───────────────────────────────
+    // Lenis intercepts native scroll and animates it on a curve, which
+    // makes scrubbed ScrollTriggers feel buttery rather than jittery.
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
     });
-  });
 
-  // Update author info
-  document.querySelectorAll('.quote-info').forEach((el, i) => {
-    el.classList.toggle('is-active', i === current);
-  });
+    // bridge Lenis → ScrollTrigger so the two stay in sync
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+    gsap.ticker.lagSmoothing(0);
 
-  // Update counter with fade
-  const counterEl = document.getElementById('counterCurrent');
-  counterEl.classList.add('fade-out');
-  setTimeout(() => {
-    counterEl.textContent = String(current + 1).padStart(2, '0');
-    counterEl.classList.remove('fade-out');
-  }, 300);
+    // ── matchMedia: parallax only runs on desktop (≥992px) ──────
+    // On smaller screens the layout collapses and parallax wouldn't read.
+    const mm = gsap.matchMedia();
 
-  // Update logo with fade
-  logoImg.classList.add('fade-out');
-  setTimeout(() => {
-    logoImg.src = testimonials[current].logo;
-    logoImg.alt = testimonials[current].company;
-    logoImg.classList.remove('fade-out');
-  }, 300);
-}
+    mm.add("(min-width: 992px)", () => {
 
-document.getElementById('btnNext').addEventListener('click', () => {
-  goTo((current + 1) % testimonials.length);
-});
-document.getElementById('btnPrev').addEventListener('click', () => {
-  goTo(current === 0 ? testimonials.length - 1 : current - 1);
-});
+      function heroWeScroll() {
+        const weRight = document.querySelector(".we_right");
+        const weText  = document.querySelector(".we_scroll .we_text");
+        if (!weRight || !weText) return;
 
-/* ── ARROW BUTTON HOVER ─────────────────────────────────────────── */
-function initArrowButton(btn) {
-  const bg       = btn.querySelector('.btn-bg');
-  const arrowHover = btn.querySelector('.btn-arrow-hover');
-  const isPrev   = btn.classList.contains('is-prev');
-  const isLg     = () => window.innerWidth >= 1024;
+        // Distance the "we" word travels = right column height − its own height.
+        // This makes "we" start aligned with the FIRST line of the values list
+        // and end aligned with the LAST line as the section scrolls past.
+        const movementHeight = weRight.offsetHeight - weText.offsetHeight;
 
-  let enterTl, leaveTl;
+        gsap.timeline({
+          scrollTrigger: {
+            trigger: ".we_layout-top",
+            start: "center bottom",
+            end:   "center top",
+            scrub: true,
+            // markers: true,  // uncomment to debug
+          }
+        }).fromTo(
+          ".we_scroll",
+          { yPercent: 0 },
+          { y: movementHeight, ease: "linear" },
+          0
+        );
+      }
+      heroWeScroll();
+    });
+  </script>
 
-  function getOrigins() {
-    const lg = isLg();
-    return {
-      enter: lg ? (isPrev ? 'bottom center' : 'top center') : (isPrev ? 'right center' : 'left center'),
-      leave: lg ? (isPrev ? 'top center'    : 'bottom center') : (isPrev ? 'left center'  : 'right center'),
-    };
-  }
-
-  function getInitOffset() {
-    const lg = isLg();
-    return lg
-      ? { yPercent: isPrev ? 100 : -100, xPercent: 0 }
-      : { xPercent: isPrev ? 100 : -100, yPercent: 0 };
-  }
-
-  function getLeaveOffset() {
-    const lg = isLg();
-    return lg
-      ? { yPercent: isPrev ? -100 : 100 }
-      : { xPercent: isPrev ? -100 : 100 };
-  }
-
-  // Init
-  gsap.set(bg, { scale: 0 });
-  gsap.set(arrowHover, getInitOffset());
-
-  btn.addEventListener('mouseenter', () => {
-    if (leaveTl && leaveTl.progress() > 0 && leaveTl.progress() < 0.5) leaveTl.pause();
-
-    const origins = getOrigins();
-    gsap.set([bg, arrowHover], { transformOrigin: origins.enter });
-    gsap.set(arrowHover, getInitOffset());
-
-    enterTl = gsap.timeline({ defaults: { ease: 'power4.out' } })
-      .to(bg, { scale: 1, duration: 0.5 })
-      .to(arrowHover, { xPercent: 0, yPercent: 0, duration: 0.4 }, 0.1);
-  });
-
-  btn.addEventListener('mouseleave', () => {
-    if (enterTl && enterTl.progress() > 0 && enterTl.progress() < 0.5) enterTl.pause();
-
-    const origins = getOrigins();
-    gsap.set([bg, arrowHover], { transformOrigin: origins.leave });
-
-    leaveTl = gsap.timeline({ defaults: { ease: 'power4.out' } })
-      .to(bg, { scale: 0, duration: 0.5 })
-      .to(arrowHover, { ...getLeaveOffset(), duration: 0.4 }, 0);
-  });
-}
-
-document.querySelectorAll('.btn-controls').forEach(initArrowButton);
-</script>
 </body>
 </html>

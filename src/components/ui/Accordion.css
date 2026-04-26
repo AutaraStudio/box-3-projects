@@ -106,6 +106,7 @@
 .accordion__body p {
   color: inherit;
   margin: 0;
+  max-width: var(--measure-ch-body);
 }
 
 .accordion__body p + p {

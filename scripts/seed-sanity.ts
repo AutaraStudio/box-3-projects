@@ -149,6 +149,20 @@ const documents: SeedDoc[] = [
     partners: [],
   },
   {
+    _id: "lineScrollSection",
+    _type: "lineScrollSection",
+    label: "we",
+    lines: [
+      "stay curious, always.",
+      "collaborate.",
+      "nurture talent.",
+      "design for the future.",
+    ],
+    bottomHeading: "services",
+    bottomBody:
+      "We're a commercial fit-out partner delivering workplaces, retail and hospitality interiors that are contextually sensitive, environmentally responsible and technically resilient.",
+  },
+  {
     _id: "contactPage",
     _type: "contactPage",
     heading: "Let's Connect",

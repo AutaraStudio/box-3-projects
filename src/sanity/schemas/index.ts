@@ -23,6 +23,7 @@ import contactPage from "./pages/contactPage";
 /* Sections */
 import partnersSection from "./sections/partnersSection";
 import testimonialsSection from "./sections/testimonialsSection";
+import lineScrollSection from "./sections/lineScrollSection";
 
 /* Collections */
 import project from "./collections/project";
@@ -45,6 +46,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   siteFooter,
   partnersSection,
   testimonialsSection,
+  lineScrollSection,
   projectCategory,
   expertise,
   teamMember,

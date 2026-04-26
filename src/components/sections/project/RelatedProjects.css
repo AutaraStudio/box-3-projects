@@ -206,7 +206,7 @@
 @media (min-width: 700px) {
   .related-projects__cta-label {
     opacity: 0;
-    transform: translate3d(-20px, 0, 0);
+    transform: translate3d(-1.25rem, 0, 0);
     transition:
       transform var(--duration-normal) var(--ease-brand),
       opacity var(--duration-normal) var(--ease-brand);

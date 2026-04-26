@@ -1,0 +1,122 @@
+/**
+ * LineScroll
+ * ==========
+ * Editorial two-row section. Top row pairs an anchor word with a
+ * vertical list of value statements; the anchor word
+ * scroll-parallaxes alongside the list (handled in the component
+ * with GSAP). Bottom row is a small heading + paragraph.
+ *
+ * All values flow through the project's token system — colours via
+ * the active theme, typography via the global scale, spacing via
+ * --space-* / --section-space-* tokens.
+ */
+
+.line-scroll {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  padding-top: var(--section-space-lg);
+  padding-bottom: var(--section-space-lg);
+}
+
+/* ── Top row — anchor word + lines ───────────────────────────────── */
+
+.line-scroll__top {
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: var(--space-7);
+  padding-bottom: var(--section-space-md);
+}
+
+.line-scroll__anchor {
+  align-self: start;
+  text-align: left;
+  /* will-change reserved for the scroll-parallax tween that runs in
+     the component on desktop only. */
+  will-change: transform;
+}
+
+.line-scroll__anchor-text,
+.line-scroll__line {
+  margin: 0;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-h2);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  font-weight: var(--font-weight-medium);
+  color: inherit;
+}
+
+.line-scroll__lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ── Bottom row — small heading + paragraph ──────────────────────── */
+
+.line-scroll__bottom {
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: var(--space-4);
+}
+
+.line-scroll__bottom-heading {
+  margin: 0;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-text-md);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--letter-spacing-caps);
+  text-transform: uppercase;
+  font-weight: var(--font-weight-medium);
+  color: inherit;
+}
+
+.line-scroll__bottom-body {
+  margin: 0;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-text-md);
+  line-height: var(--line-height-relaxed);
+  letter-spacing: var(--letter-spacing-normal);
+  font-weight: var(--font-weight-regular);
+  color: inherit;
+  max-width: var(--measure-ch-body);
+}
+
+/* ── Desktop layout ─────────────────────────────────────────────── */
+
+@media (min-width: 64rem) {
+  .line-scroll__top,
+  .line-scroll__bottom {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gap-5);
+  }
+
+  /* Anchor sits in cols 5/5, right-aligned so it visually hugs the
+     left edge of the lines list. */
+  .line-scroll__anchor {
+    grid-column: 5 / span 1;
+    justify-self: end;
+    text-align: right;
+  }
+
+  .line-scroll__lines-cell {
+    grid-column: 6 / -1;
+  }
+
+  /* Bottom heading hugs the far-left edge of the container so it
+     reads as a sub-section label rather than aligning with the
+     anchor word above. Body sits to its right, in the same column
+     as the lines list above for vertical rhythm. */
+  .line-scroll__bottom-heading-cell {
+    grid-column: 1 / span 1;
+    justify-self: start;
+    text-align: left;
+  }
+
+  .line-scroll__bottom-body-cell {
+    grid-column: 6 / span 5;
+  }
+}

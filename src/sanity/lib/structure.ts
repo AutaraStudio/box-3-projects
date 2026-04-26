@@ -19,6 +19,7 @@ const SINGLETONS = [
   "careersPage",
   "contactPage",
   "partnersSection",
+  "lineScrollSection",
   "siteNav",
   "siteFooter",
 ];
@@ -97,6 +98,15 @@ export const structure: StructureResolver = (S) =>
                     .schemaType("partnersSection")
                     .documentId("partnersSection")
                     .title("Partners Section"),
+                ),
+              S.listItem()
+                .title("Line Scroll Section")
+                .id("lineScrollSection")
+                .child(
+                  S.document()
+                    .schemaType("lineScrollSection")
+                    .documentId("lineScrollSection")
+                    .title("Line Scroll Section"),
                 ),
             ]),
         ),

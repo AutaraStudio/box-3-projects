@@ -26,9 +26,12 @@
 import { useEffect, useRef, type ReactNode } from "react";
 
 const SELECTOR = "[data-image-reveal]";
-/* Shrink the bottom half of the viewport — element is "intersecting"
-   once its top crosses the horizontal centre line. */
-const ROOT_MARGIN = "0px 0px -50% 0px";
+/* Shrink the bottom 65% of the viewport — element is "intersecting"
+   once its top crosses ~35% from the viewport top. Pushed higher
+   than 50% so images sitting above the midline at page load don't
+   auto-reveal on mount; they have to be scrolled up into the band
+   first. */
+const ROOT_MARGIN = "0px 0px -65% 0px";
 const INTERSECTION_THRESHOLD = 0;
 
 interface ImageRevealObserverProps {
