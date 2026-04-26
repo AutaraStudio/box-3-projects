@@ -6,7 +6,7 @@ import PageTransitionOverlay from "@/components/transition/PageTransitionOverlay
 import { MenuProvider } from "@/components/menu/MenuProvider";
 import Header from "@/components/menu/Header";
 import MenuOverlay from "@/components/menu/MenuOverlay";
-import "./globals.css";
+import "../globals.css";
 
 /* The site uses a single typeface — Neue Montreal — across body and
    headings. Hierarchy is built from size + weight (regular vs medium),
@@ -14,11 +14,11 @@ import "./globals.css";
    Exposed as --font-sans on the <html> element. */
 const neueMontreal = localFont({
   src: [
-    { path: "../../public/fonts/NeueMontreal-Light.woff2", weight: "300", style: "normal" },
-    { path: "../../public/fonts/NeueMontreal-Regular.woff2", weight: "400", style: "normal" },
-    { path: "../../public/fonts/NeueMontreal-Italic.woff2", weight: "400", style: "italic" },
-    { path: "../../public/fonts/NeueMontreal-Medium.woff2", weight: "500", style: "normal" },
-    { path: "../../public/fonts/NeueMontreal-Bold.woff2", weight: "700", style: "normal" },
+    { path: "../../../public/fonts/NeueMontreal-Light.woff2", weight: "300", style: "normal" },
+    { path: "../../../public/fonts/NeueMontreal-Regular.woff2", weight: "400", style: "normal" },
+    { path: "../../../public/fonts/NeueMontreal-Italic.woff2", weight: "400", style: "italic" },
+    { path: "../../../public/fonts/NeueMontreal-Medium.woff2", weight: "500", style: "normal" },
+    { path: "../../../public/fonts/NeueMontreal-Bold.woff2", weight: "700", style: "normal" },
   ],
   variable: "--font-sans",
   display: "swap",
