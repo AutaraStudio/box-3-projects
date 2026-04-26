@@ -153,7 +153,7 @@ function wireArrowHover(btn: HTMLButtonElement): () => void {
       .to(
         arrowHover,
         { xPercent: 0, yPercent: 0, duration: animDuration.normal },
-        0.1,
+        0,
       );
   };
 
