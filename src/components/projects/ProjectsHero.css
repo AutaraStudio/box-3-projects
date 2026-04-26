@@ -1,14 +1,11 @@
 /**
  * ProjectsHero
  * ============
- * Cinematic editorial hero — the title takes up almost all of the
- * space, sized at 3.75rem mobile / 13.75rem desktop. The counter
- * pins to the top-left of an h-full container next to the title so
- * it sits on the cap-line of "Projects" rather than the baseline.
- *
- * Sizes are inline rem (not tokens) because no v2 token covers the
- * 13.75rem hero scale yet — and this is component-specific. Add a
- * --font-size-mega token if a second use lands.
+ * Layout-only CSS — typography (font-size, line-height, letter-
+ * spacing, weight) is owned by the utility classes applied in the
+ * JSX (.text-display on the title, .text-h3 on the counter). This
+ * file only handles the section padding, the inline-flex row, and
+ * the absolutely-pinned counter.
  */
 
 .projects-hero-section {
@@ -30,8 +27,9 @@
 
 @media (min-width: 64rem) {
   .projects-hero {
-    /* The huge title naturally sets the hero height; min-height is
-       just a floor so empty / loading states still feel deliberate. */
+    /* The .text-display title naturally sets the hero height; the
+       min-height is just a floor so empty / loading states still
+       feel deliberate. */
     min-height: var(--space-12);
   }
 }
@@ -39,22 +37,11 @@
 .projects-hero__title {
   position: relative;
   margin: 0;
-  font-family: var(--font-sans), Arial, sans-serif;
-  font-weight: var(--font-weight-medium);
-  font-size: 3.75rem;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
   color: inherit;
-  /* Optical kerning hint — helps the giant display sit visually flush
-     to the left edge by pulling the first character ~5% leftward. */
+  /* Optical kerning hint — pulls the first character ~5% leftward
+     so the giant display sits visually flush to the left edge. */
   font-kerning: none;
   left: -0.05em;
-}
-
-@media (min-width: 64rem) {
-  .projects-hero__title {
-    font-size: 13.75rem;
-  }
 }
 
 /* Inline-flex row holding title text + counter — both stretch to
@@ -75,22 +62,11 @@
 }
 
 /* Counter container — relative + h-100% so the absolute child can
-   pin to the top of the row. Margin-left matches the editorial
-   reference's ml-7.5 (1.875rem). */
+   pin to the top of the row. Margin-left from the spacing scale. */
 .projects-hero__counter {
   position: relative;
   height: 100%;
-  margin-left: 1.875rem;
-  font-size: 1.875rem;
-  letter-spacing: -0.02em;
-  line-height: 1.05;
-  font-weight: var(--font-weight-regular);
-}
-
-@media (min-width: 64rem) {
-  .projects-hero__counter {
-    font-size: 3.125rem;
-  }
+  margin-left: var(--space-2);
 }
 
 /* Spacer — invisible copy that reserves horizontal width for the

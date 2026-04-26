@@ -1,24 +1,23 @@
 /**
  * ProjectsHero
  * ============
- * Cinematic hero matching the editorial reference exactly:
+ * Cinematic hero matching the editorial reference's structure:
  *
- *   <h1 class="hero-title title-big">
- *     <span class="hero-row">                       (h-100%, items-stretch)
- *       <span class="hero-title-text">Projects</span>
- *       <span class="hero-counter">                  (relative, h-100%)
- *         <span class="spacer">(NNN)</span>          (invisible — reserves W-space)
- *         <span class="visible">(NNN)</span>         (absolute top:0 left:0)
+ *   <h1 class="projects-hero__title">
+ *     <span class="projects-hero__row">                     (h-100%, items-stretch)
+ *       <span class="projects-hero__title-text text-display">Projects</span>
+ *       <span class="projects-hero__counter text-h3">       (relative, h-100%)
+ *         <span class="…spacer">(NNN)</span>                (invisible — reserves W)
+ *         <span class="…visible">(NNN)</span>               (absolute top:0 left:0)
  *       </span>
  *     </span>
  *   </h1>
  *
- * The counter doesn't sit on the baseline — it pins to the top-left
- * of an h-full container so it lines up with the cap-line of the
- * giant "Projects" title.
- *
- * Page-enter animation runs in ProjectsClient (slides title in from
- * x: 10vw); we just expose the elements via class names.
+ * Sizes come from v2 typography utilities — `.text-display` for the
+ * title, `.text-h3` for the counter — instead of inline rem values
+ * so the page stays on the token scale. The counter pins to the
+ * top-left of an h-full container so it sits at the cap-line of the
+ * giant title rather than the baseline.
  */
 
 import SplitText from "@/components/split-text/SplitText";
@@ -42,13 +41,10 @@ export default function ProjectsHero({
       <div className="container projects-hero">
         <h1 className="projects-hero__title">
           <span className="projects-hero__row">
-            <span className="projects-hero__title-text">
+            <span className="projects-hero__title-text text-display">
               <SplitText revealOnScroll>{title}</SplitText>
             </span>
-            <span className="projects-hero__counter">
-              {/* Spacer — invisible copy that reserves the horizontal
-                  space so the visible absolute one has a width to
-                  pin against. */}
+            <span className="projects-hero__counter text-h3">
               <span
                 className="projects-hero__counter-spacer"
                 aria-hidden="true"

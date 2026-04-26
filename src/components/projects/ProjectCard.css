@@ -54,19 +54,21 @@
   }
 }
 
-/* Meta row — N°### · project name */
+/* Meta row — N°### · project name. Padding from the v2 spacing
+   scale (--space-2 mobile, --space-1-25 desktop — the closest
+   tokens to the reference's 1.875rem / 1.25rem). */
 .project-card__meta {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.875rem 0;
+  padding: var(--space-2) 0;
   border-bottom: 1px solid currentColor;
   font-size: var(--font-size-text-main);
 }
 
 @media (min-width: 64rem) {
   .project-card__meta {
-    padding: 1.25rem 0;
+    padding: var(--space-1-25) 0;
   }
 }
 

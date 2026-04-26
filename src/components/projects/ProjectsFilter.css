@@ -180,11 +180,11 @@
   display: block;
 }
 
-/* Tab counter superscript — distinctly smaller than text-small.
-   Inline value because no token covers this niche size; documented
-   inline so the next reader understands the choice. */
+/* Tab counter superscript — uses our smallest size token
+   (text-small) and leans on `vertical-align: super` to read as
+   a superscript without needing a smaller font-size token. */
 .projects-filter__count {
-  font-size: 0.6875rem; /* 11px @ design baseline — tighter than text-small */
+  font-size: var(--font-size-text-small);
   letter-spacing: var(--letter-spacing-snug);
   vertical-align: super;
   margin-left: 0.15em;
