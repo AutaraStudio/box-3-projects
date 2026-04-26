@@ -1,0 +1,52 @@
+/**
+ * PageTransitionOverlay
+ * =====================
+ * A fixed full-viewport panel that wipes up over the current page,
+ * holds for a beat (during which the route swaps behind it), then
+ * continues up off the top to reveal the new page.
+ *
+ * Owned tokens:
+ *   --transition-bg     panel colour (defaults to brand brown)
+ *   --transition-text   label colour
+ *
+ * Both can be overridden per-page by a parent setting them inline,
+ * so a section can tint its own outgoing wipe.
+ */
+
+.page-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  overflow: clip;
+  /* Default value; overridable by overlay's own --transition-bg
+     custom property at consumer scope. */
+  --transition-bg: var(--color-brown);
+  --transition-text: var(--color-cream);
+}
+
+.page-transition__panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--transition-bg);
+  /* Hidden until a transition starts so the panel never flashes on
+     first paint or while idle. GSAP toggles autoAlpha at run time. */
+  visibility: hidden;
+  opacity: 0;
+}
+
+.page-transition__label {
+  color: var(--transition-text);
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 1.5rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  /* Hidden until the panel is mid-cover; GSAP fades it in. */
+  opacity: 0;
+}

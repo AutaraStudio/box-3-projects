@@ -1,8 +1,9 @@
 import TransitionLink from "@/components/transition/TransitionLink";
 
-export default function Home() {
+export default function About() {
   return (
     <main
+      data-theme="dark"
       style={{
         minHeight: "100vh",
         display: "flex",
@@ -11,22 +12,24 @@ export default function Home() {
         justifyContent: "center",
         gap: "1.5rem",
         padding: "3rem",
+        backgroundColor: "var(--theme-bg)",
+        color: "var(--theme-text)",
       }}
     >
-      <h1 style={{ fontSize: "3rem", margin: 0 }}>Home</h1>
+      <h1 style={{ fontSize: "3rem", margin: 0 }}>About</h1>
       <p style={{ margin: 0, opacity: 0.7 }}>
-        Click below to test the page transition.
+        Dark theme. Click below to wipe back home.
       </p>
       <TransitionLink
-        href="/about"
-        pageName="About"
+        href="/"
+        pageName="Home"
         style={{
           color: "var(--theme-text)",
           textDecoration: "underline",
           textUnderlineOffset: "0.25em",
         }}
       >
-        Go to About →
+        ← Back to Home
       </TransitionLink>
     </main>
   );

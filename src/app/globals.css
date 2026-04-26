@@ -1,5 +1,3 @@
-@import "tailwindcss";
-
 /* ==========================================================================
    FLUID SCALING SYSTEM (Osmo Supply pattern)
    ==========================================================================
@@ -63,4 +61,80 @@
 html,
 body {
   font-size: var(--size-font);
+}
+
+
+/* ==========================================================================
+   THEME SYSTEM
+   ==========================================================================
+   Three themes built from a three-colour brand palette (brown / cream /
+   pink). Each theme sets only `--theme-bg`, `--theme-text`, `--theme-accent`;
+   every other surface token (borders, hover wash, muted text, raised cards)
+   is derived from those two via `color-mix()` and defined ONCE at :root.
+   That keeps adding a new theme to a 3-line block.
+
+   Apply via `data-theme="dark|cream|pink"` on any element — themes cascade
+   so a section can swap theme inside an otherwise differently-themed page.
+
+   Tokens to use in components:
+     Surfaces      → --theme-bg, --theme-surface, --theme-surface-strong
+     Text          → --theme-text, --theme-text-muted, --theme-text-soft
+     Borders       → --theme-border, --theme-border-strong
+     Interaction   → --theme-hover-bg
+     Accent        → --theme-accent  (pink in non-pink themes, cream in pink)
+
+   Never reference --color-* primitives directly in component CSS — always
+   go through a --theme-* token so the colour follows the active theme. */
+
+:root {
+  /* Primitive palette — the only place raw colour values live. */
+  --color-brown: #2c2524;
+  --color-cream: #efe6d9;
+  --color-pink:  #fdcdcd;
+}
+
+/* Each named theme sets only --theme-bg / --theme-text / --theme-accent.
+   The derived tokens block below applies to ANY element with a data-theme
+   attribute, computing each derived value AT THAT SAME ELEMENT — so the
+   color-mix() always sees the theme's own bg/text in scope. Adding a new
+   theme is a 3-line block. */
+
+[data-theme="dark"] {
+  --theme-bg:     var(--color-brown);
+  --theme-text:   var(--color-pink);
+  --theme-accent: var(--color-cream);
+}
+
+[data-theme="cream"] {
+  --theme-bg:     var(--color-cream);
+  --theme-text:   var(--color-brown);
+  --theme-accent: var(--color-pink);
+}
+
+[data-theme="pink"] {
+  --theme-bg:     var(--color-pink);
+  --theme-text:   var(--color-brown);
+  --theme-accent: var(--color-cream);
+}
+
+/* Derived tokens — defined on the same element that sets --theme-bg /
+   --theme-text so color-mix() resolves with the active theme in scope.
+   Using :where([data-theme]) keeps specificity at zero so the rules
+   don't fight a section's own --theme-* overrides. Mix percentages
+   tuned for editorial subtlety; retune in one place. */
+:where([data-theme]) {
+  --theme-text-muted:     color-mix(in srgb, var(--theme-text) 65%, var(--theme-bg));
+  --theme-text-soft:      color-mix(in srgb, var(--theme-text) 40%, var(--theme-bg));
+  --theme-border:         color-mix(in srgb, var(--theme-text) 15%, var(--theme-bg));
+  --theme-border-strong:  color-mix(in srgb, var(--theme-text) 30%, var(--theme-bg));
+  --theme-surface:        color-mix(in srgb, var(--theme-text) 4%,  var(--theme-bg));
+  --theme-surface-strong: color-mix(in srgb, var(--theme-text) 8%,  var(--theme-bg));
+  --theme-hover-bg:       color-mix(in srgb, var(--theme-text) 8%,  var(--theme-bg));
+  --theme-overlay:        color-mix(in srgb, var(--theme-text) 50%, transparent);
+}
+
+body {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
