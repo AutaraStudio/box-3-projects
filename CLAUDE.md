@@ -74,16 +74,50 @@ blindly. This branch (`v2`) is the source of truth.
   a transition; use `window.__lenis?.scrollTo(...)`.
 
 ### Fonts
-- Two faces, both wired via `next/font`:
-  - **Neue Montreal** — sans workhorse, self-hosted woff2 in
-    `/public/fonts/`. Loaded as `--font-sans`. Body default.
-  - **Newsreader** — variable display serif (Google Fonts), variable
-    optical-size axis. Loaded as `--font-display`. Opt-in only.
-- **Apply the serif via `.font-display`** on individual headings or
-  ledes. Don't change `body { font-family }` — leave the workhorse
-  default in place.
-- New typefaces go through `next/font` too (no `<link>` to Google
-  Fonts CDN, no raw `@font-face` blocks).
+- **Single typeface — Neue Montreal — across the whole site.**
+  Hierarchy comes from SIZE + WEIGHT, not a serif/sans pair.
+- Self-hosted woff2 in `/public/fonts/`, loaded via `next/font/local`
+  in `layout.tsx`, exposed as `--font-sans` on `<html>`.
+- Static cuts available: 300 (light), 400 (regular), 500 (medium),
+  700 (bold). Two-weight system in active use:
+  - `--font-weight-regular: 400` — body text utilities
+  - `--font-weight-medium: 500` — headings, display
+- The reference's variable axis (PP Neue Montreal Variable, weights
+  530 + 650) needs the paid Pangram Pangram licence. Until then we
+  approximate with 400/500. To upgrade later: drop the variable
+  woff2 in `/public/fonts/`, replace the `localFont({ src: [...] })`
+  array with a single variable entry, and bump the weight tokens.
+
+### Typography tokens + utilities
+- Font sizes (extracted from the editorial reference):
+  `--font-size-display` 7rem · `--font-size-h1` 5rem · `h2` 4rem ·
+  `h3` 3rem · `h4` 2rem · `h5` 1.5rem · `h6` 1rem ·
+  `--font-size-text-large` 1.25rem · `text-main` 1rem ·
+  `text-small` 0.875rem.
+- Line-heights (unitless): `--line-height-display` 0.95 (display
+  only) · `tight` 1.05 (h1–h3) · `snug` 1.2 (h4–h6 + body) ·
+  `base` 1.5 (long-form paragraph override).
+- Letter-spacings: `--letter-spacing-display` -0.04em · `tight`
+  -0.03em (headings) · `snug` -0.01em (body) · `normal` 0em ·
+  `caps` 0.06em (ALL-CAPS labels).
+- **Element defaults** for `<h1>`…`<h6>`, `<body>`, `<p>` are wired
+  in `globals.css` so bare elements render correctly. Override only
+  when the design genuinely deviates.
+- **Utility classes** for applying any size to a non-semantic
+  element: `.text-display`, `.text-h1` … `.text-h6`, `.text-large`,
+  `.text-main`, `.text-small`, `.text-caps`. All inherit
+  Neue Montreal from `<body>`. Headings utilities use
+  `--font-weight-medium`; body utilities use `--font-weight-regular`.
+
+### Spacing scale
+- Numeric rem-based tokens extracted from the same reference. Names
+  mirror the rem value (decimals as hyphens for readability):
+  `--space-0-125` (0.125rem) → `--space-16` (16rem). Full scale
+  covers every common increment from hairline padding to giant
+  section gaps.
+- Always use these tokens for padding/margin/gap. New custom
+  spacings (e.g. a 17rem outlier) need either a new token or a
+  documented inline comment.
 
 ### Components
 - Fully prop-based, fully typed. Anticipate reuse across pages.
@@ -115,16 +149,19 @@ public/
 - **Page transition** — `src/components/transition/`
 - **Smooth scroll (Lenis)** — `src/components/scroll/SmoothScroll.tsx`,
   exposed on `window.__lenis`
-- **Fonts** — `next/font` setup in `src/app/layout.tsx`. Neue Montreal
-  → `--font-sans` (body default), Newsreader → `--font-display`
-  (opt-in via `.font-display`)
+- **Fonts** — Neue Montreal only, `next/font/local` setup in
+  `src/app/layout.tsx`. Exposed as `--font-sans`. Two static weights
+  (400 regular, 500 medium)
+- **Typography tokens + utilities** — `globals.css`. Sizes 7rem →
+  0.875rem, line-heights 0.95 / 1.05 / 1.2, letter-spacings -0.04em
+  → 0.06em. Utility classes `.text-display` / `.text-h1` … `h6` /
+  `.text-large` / `.text-main` / `.text-small` / `.text-caps`
+- **Spacing scale** — `globals.css`. `--space-0-125` → `--space-16`,
+  rem-based, derived from the same editorial reference
 
 ## Intentionally NOT set up yet
 
 - Sanity CMS — add when there's a page that needs CMS content
-- Spacing / type scale tokens — build the first real page with raw
-  rem values, then extract tokens from what was actually used. Avoids
-  over-engineering tokens for designs that don't exist yet
 - Layout primitives (`<Container>`, `<Stack>`) — extract from real
   pages, don't pre-build
 - Animation observers (parallax, image-reveal) — per use case, not
