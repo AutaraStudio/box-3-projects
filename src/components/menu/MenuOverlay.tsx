@@ -221,9 +221,15 @@ export default function MenuOverlay({
         </nav>
 
         {/* ── Featured projects — middle col, spans all rows,
-              scrollable container with bottom mask fade ───────── */}
+              scrollable container with bottom mask fade.
+              `data-lenis-prevent` opts this subtree out of Lenis's
+              wheel capture so native scroll works inside the
+              container while the rest of the page stays smooth. */}
         <div className="menu-overlay__projects-wrap">
-          <div className="menu-overlay__projects-scroll">
+          <div
+            className="menu-overlay__projects-scroll"
+            data-lenis-prevent
+          >
             {projects.map((project) => (
               <FeaturedProjectBlock
                 key={project.href}
