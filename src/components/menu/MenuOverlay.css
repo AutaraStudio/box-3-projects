@@ -197,25 +197,43 @@
   .menu-overlay__projects-scroll {
     height: 100%;
     overflow-y: auto;
-    /* Hide the scrollbar — fade is the visual affordance. */
+    /* Hide the scrollbar — the blurred glass overlay below acts as
+       the scrollable affordance. */
     scrollbar-width: none;
-    /* Mask the bottom of the visible area so overflowing content
-       fades into the page bg instead of meeting a hard edge. */
-    mask-image: linear-gradient(
-      to bottom,
-      black 0,
-      black calc(100% - var(--space-4)),
-      transparent 100%
-    );
-    -webkit-mask-image: linear-gradient(
-      to bottom,
-      black 0,
-      black calc(100% - var(--space-4)),
-      transparent 100%
-    );
+    /* Tail of empty space at the end of the scroll content so the
+       last project ends comfortably above the blur indicator. */
+    padding-bottom: var(--space-8);
   }
   .menu-overlay__projects-scroll::-webkit-scrollbar {
     display: none;
+  }
+}
+
+/* Glass-like blur at the bottom of the scroll area — the visible
+   scrollable affordance. backdrop-filter blurs the incoming scroll
+   content; the bg gradient fades the brown surface from opaque
+   (bottom) to transparent (top); mask-image fades the blur band
+   itself out toward the top so it doesn't read as a hard edge. */
+@media (min-width: 64rem) {
+  .menu-overlay__projects-wrap::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: var(--space-6);
+    background: linear-gradient(
+      to top,
+      var(--theme-bg) 0%,
+      var(--theme-bg) 30%,
+      transparent 100%
+    );
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    mask-image: linear-gradient(to top, black 50%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to top, black 50%, transparent 100%);
+    pointer-events: none;
+    z-index: 2;
   }
 }
 
@@ -300,26 +318,43 @@
 /* ── Project details table ───────────────────────────────────────── */
 
 .menu-overlay__details {
-  display: grid;
-  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
-  /* Generous horizontal gap between label and value, snug rows. */
-  gap: var(--space-0-5) var(--space-3);
+  display: flex;
+  flex-direction: column;
   margin: 0;
   padding: 0;
-  min-width: 16rem;
+  width: 100%;
+  max-width: 22rem;
 }
 
+/* Each row is its own flex container so the divider line spans the
+   full row width. Label sticks to the start, value to the end. */
 .menu-overlay__detail-row {
-  display: contents;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-0-5) 0;
+  border-bottom: 1px solid var(--theme-border);
 }
 
+.menu-overlay__detail-row:last-child {
+  border-bottom: 0;
+}
+
+/* Min-widths on both columns so every row aligns vertically across
+   all 4 detail rows (and across multiple project blocks). */
 .menu-overlay__detail-label {
   margin: 0;
   opacity: 0.6;
+  min-width: 6rem;
+  flex-shrink: 0;
 }
 
 .menu-overlay__detail-value {
   margin: 0;
+  min-width: 9rem;
+  flex-shrink: 0;
+  text-align: end;
 }
 
 /* ── Sidebar sections (Contact + Social + Legal) ─────────────────── */
