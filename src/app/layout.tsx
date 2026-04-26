@@ -1,26 +1,14 @@
 import type { Metadata } from "next";
-import { Newsreader } from "next/font/google";
 import localFont from "next/font/local";
 import SmoothScroll from "@/components/scroll/SmoothScroll";
 import { PageTransitionProvider } from "@/components/transition/PageTransitionProvider";
 import PageTransitionOverlay from "@/components/transition/PageTransitionOverlay";
 import "./globals.css";
 
-/* Display serif — Newsreader has an optical-size axis (`opsz`) so the
-   same font reads sharp at both 18px lede and 120px display sizes.
-   Self-hosted via next/font, no external request. Exposes
-   `--font-display` on the <html> element. */
-const newsreader = Newsreader({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
-  display: "swap",
-  variable: "--font-display",
-});
-
-/* Sans workhorse — Neue Montreal. Self-hosted woff2 from /public/fonts.
-   Exposes `--font-sans` on the <html> element. Matches the brand
-   carried over from the previous build. */
+/* The site uses a single typeface — Neue Montreal — across body and
+   headings. Hierarchy is built from size + weight (regular vs medium),
+   not from a serif/sans pairing. Self-hosted woff2 from /public/fonts.
+   Exposed as --font-sans on the <html> element. */
 const neueMontreal = localFont({
   src: [
     { path: "../../public/fonts/NeueMontreal-Light.woff2", weight: "300", style: "normal" },
@@ -44,10 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${neueMontreal.variable} ${newsreader.variable}`}
-    >
+    <html lang="en" className={neueMontreal.variable}>
       <body data-theme="cream">
         <SmoothScroll>
           <PageTransitionProvider>

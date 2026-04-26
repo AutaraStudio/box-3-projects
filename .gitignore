@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# reference material — temporary HTML/CSS/JS pulled from other sites
+# while building a section. Read for structure + intent only, never
+# committed. See CLAUDE.md "Adapting external references".
+/reference/

@@ -133,13 +133,106 @@ body {
   --theme-overlay:        color-mix(in srgb, var(--theme-text) 50%, transparent);
 }
 
+/* ==========================================================================
+   TYPOGRAPHY TOKENS
+   ==========================================================================
+   Single typeface — Neue Montreal — across the whole site. Hierarchy
+   comes from SIZE + WEIGHT, not a serif/sans pair.
+
+   Static cuts available: 300 (light), 400 (regular), 500 (medium),
+   700 (bold). The reference uses a variable axis with 530 + 650; we
+   approximate with 400 for body and 500 for headings.
+
+   Sizes / line-heights / letter-spacings are extracted from an
+   editorial reference scale. Adjust here to retune the whole site. */
+
+:root {
+  --font-weight-regular: 400;
+  --font-weight-medium:  500;
+
+  /* Sizes — rem so they scale via Osmo. */
+  --font-size-display:    7rem;     /* 112px @ ideal */
+  --font-size-h1:         5rem;     /*  80px */
+  --font-size-h2:         4rem;     /*  64px */
+  --font-size-h3:         3rem;     /*  48px */
+  --font-size-h4:         2rem;     /*  32px */
+  --font-size-h5:         1.5rem;   /*  24px */
+  --font-size-h6:         1rem;     /*  16px */
+  --font-size-text-large: 1.25rem;  /*  20px */
+  --font-size-text-main:  1rem;     /*  16px */
+  --font-size-text-small: 0.875rem; /*  14px */
+
+  /* Line-heights — unitless so they cascade reliably. */
+  --line-height-display: 0.95;  /* display only */
+  --line-height-tight:   1.05;  /* h1, h2, h3 */
+  --line-height-snug:    1.2;   /* h4–h6, body */
+  --line-height-base:    1.5;   /* long-form paragraphs (override) */
+
+  /* Letter-spacings */
+  --letter-spacing-display: -0.04em;
+  --letter-spacing-tight:   -0.03em;  /* default for headings */
+  --letter-spacing-snug:    -0.01em;  /* default for text */
+  --letter-spacing-normal:   0em;
+  --letter-spacing-caps:     0.06em;  /* ALL-CAPS labels */
+}
+
+
+/* ==========================================================================
+   SPACING SCALE
+   ==========================================================================
+   Rem-based numeric scale extracted from the editorial reference.
+   Use as padding / margin / gap throughout components. Names mirror
+   the rem value with a hyphen for the decimal point so the value is
+   readable at the call site. */
+
+:root {
+  --space-0-125: 0.125rem;
+  --space-0-25:  0.25rem;
+  --space-0-5:   0.5rem;
+  --space-0-75:  0.75rem;
+  --space-1:     1rem;
+  --space-1-25:  1.25rem;
+  --space-1-5:   1.5rem;
+  --space-2:     2rem;
+  --space-2-5:   2.5rem;
+  --space-3:     3rem;
+  --space-3-5:   3.5rem;
+  --space-4:     4rem;
+  --space-4-5:   4.5rem;
+  --space-5:     5rem;
+  --space-5-5:   5.5rem;
+  --space-6:     6rem;
+  --space-6-5:   6.5rem;
+  --space-7:     7rem;
+  --space-7-5:   7.5rem;
+  --space-8:     8rem;
+  --space-8-5:   8.5rem;
+  --space-9:     9rem;
+  --space-9-5:   9.5rem;
+  --space-10:    10rem;
+  --space-11:    11rem;
+  --space-12:    12rem;
+  --space-13:    13rem;
+  --space-14:    14rem;
+  --space-15:    15rem;
+  --space-16:    16rem;
+}
+
+
+/* ==========================================================================
+   ELEMENT DEFAULTS
+   ==========================================================================
+   Bare `<h1>`, `<p>`, `<body>` etc. render correctly out of the box.
+   Override in component CSS only when the design genuinely deviates. */
+
 body {
   background-color: var(--theme-bg);
   color: var(--theme-text);
-  /* Sans workhorse for body, UI, default headings. The serif is
-     opt-in via .font-display on individual elements. Both font
-     variables are loaded by next/font in (site)/layout. */
   font-family: var(--font-sans), Arial, sans-serif;
+  font-weight: var(--font-weight-regular);
+  font-size: var(--font-size-text-main);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--letter-spacing-snug);
   font-feature-settings: "kern" 1, "liga" 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -147,9 +240,131 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Editorial display serif — opt-in utility. Apply to a heading or
-   lede that should read as a typographic moment rather than UI. */
-.font-display {
-  font-family: var(--font-display), Georgia, "Times New Roman", serif;
-  font-optical-sizing: auto;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-sans), Arial, sans-serif;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-tight);
+  text-wrap: balance;
+  margin: 0;
+  color: inherit;
+}
+
+h1 { font-size: var(--font-size-h1); line-height: var(--line-height-tight); }
+h2 { font-size: var(--font-size-h2); line-height: var(--line-height-tight); }
+h3 { font-size: var(--font-size-h3); line-height: var(--line-height-tight); }
+h4 { font-size: var(--font-size-h4); line-height: var(--line-height-snug); }
+h5 { font-size: var(--font-size-h5); line-height: var(--line-height-snug); }
+h6 { font-size: var(--font-size-h6); line-height: var(--line-height-snug); }
+
+p {
+  margin: 0;
+  font-size: var(--font-size-text-main);
+  line-height: var(--line-height-snug);
+  text-wrap: pretty;
+}
+
+/* --------------------------------------------------------------------------
+   Typography utilities
+   --------------------------------------------------------------------------
+   Apply heading / body typography to any element without changing the
+   semantic tag. Useful when a `<span>`, `<button>`, or `<div>` needs to
+   read as h2 / lede / caption etc.
+
+   All utilities inherit font-family from <body> (Neue Montreal). They
+   set size + line-height + letter-spacing + weight only.
+
+   Display + heading utilities use medium weight; body utilities use
+   regular. Adjust per element with `font-weight: var(--font-weight-*)`
+   if a specific moment needs to deviate.   -------------------------------------------------------------------------- */
+
+.text-display {
+  font-size: var(--font-size-display);
+  line-height: var(--line-height-display);
+  letter-spacing: var(--letter-spacing-display);
+  font-weight: var(--font-weight-medium);
+  text-wrap: balance;
+}
+
+.text-h1 {
+  font-size: var(--font-size-h1);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  font-weight: var(--font-weight-medium);
+  text-wrap: balance;
+}
+
+.text-h2 {
+  font-size: var(--font-size-h2);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  font-weight: var(--font-weight-medium);
+  text-wrap: balance;
+}
+
+.text-h3 {
+  font-size: var(--font-size-h3);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  font-weight: var(--font-weight-medium);
+  text-wrap: balance;
+}
+
+.text-h4 {
+  font-size: var(--font-size-h4);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--letter-spacing-tight);
+  font-weight: var(--font-weight-medium);
+  text-wrap: balance;
+}
+
+.text-h5 {
+  font-size: var(--font-size-h5);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--letter-spacing-tight);
+  font-weight: var(--font-weight-medium);
+  text-wrap: balance;
+}
+
+.text-h6 {
+  font-size: var(--font-size-h6);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--letter-spacing-tight);
+  font-weight: var(--font-weight-medium);
+  text-wrap: balance;
+}
+
+.text-large {
+  font-size: var(--font-size-text-large);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--letter-spacing-snug);
+  font-weight: var(--font-weight-regular);
+  text-wrap: pretty;
+}
+
+.text-main {
+  font-size: var(--font-size-text-main);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--letter-spacing-snug);
+  font-weight: var(--font-weight-regular);
+  text-wrap: pretty;
+}
+
+.text-small {
+  font-size: var(--font-size-text-small);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--letter-spacing-snug);
+  font-weight: var(--font-weight-regular);
+  text-wrap: pretty;
+}
+
+/* Caps — ALL-CAPS labels with proper tracking. Compose with any size
+   utility: `<span class="text-small text-caps">label</span>`. */
+.text-caps {
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-caps);
 }

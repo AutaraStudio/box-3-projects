@@ -140,14 +140,83 @@ Button, LineScroll, etc.). Use `git show master:<path>` or
 `git diff master -- <path>` to look at any of it. Don't copy whole
 files across without rewriting to v2 conventions.
 
+## Adapting external references
+
+When the user drops in HTML/CSS/JS from another site (Webflow, CodePen,
+a tutorial, anything), it's reference material — never code to ship.
+Reference goes in `/reference/` (gitignored) and is read for *structure
+and intent only*. Every value gets converted to a v2 token before a
+single line of component code is written.
+
+This is the single most important uniformity rule on the project.
+A site that visibly mixes "our tokens" with "values from a Webflow
+export" reads as inconsistent regardless of how good the individual
+sections look.
+
+### The procedure — follow it every time
+
+1. **Drop the reference** into `/reference/` (e.g. `ref.html`,
+   `ref.css`, `ref.js`). It stays out of git.
+2. **Read for structure + intent only** — what's the layout? What's
+   the animation idea? Which interactions matter? Don't read for
+   values.
+3. **Pre-flight conversion sweep** — before writing component code,
+   walk the reference and answer for *every* foreign value:
+   - **Colours** — which `--theme-*` token? Pure colour-mix of two
+     theme tokens? Never `#hex`, `rgb()`, or `rgba()`. If a value
+     genuinely doesn't fit any theme token, *ask*.
+   - **Typography sizes** — which `--font-size-*` token (in rem)?
+     Never `px`. If the reference uses an unusual size, propose
+     adding a token first.
+   - **Spacing / gaps / padding** — which `--space-*` / `--gap-*`
+     token? Never `px` for layout. Same rule: missing token → propose.
+   - **Fonts** — `--font-sans` for body/UI, `.font-display` for
+     editorial typographic moments. Never raw `font-family` strings
+     or new `<link>` tags.
+   - **Easings + durations** — token (or propose one). Never inline
+     `cubic-bezier(...)` literals unless documented inline as a
+     component-specific exception.
+   - **Animation library calls** — built-in GSAP only (already in
+     deps); reuse v2 utilities like `<TransitionLink>`,
+     `window.__lenis`, etc. Don't pull in new libs without asking.
+   - **Class names** — rename to BEM-ish under the component prefix
+     (e.g. `.we_text` from a Webflow ref → `.line-scroll__line` in
+     v2). Never carry foreign class names verbatim.
+4. **If anything in step 3 has no clean answer — STOP and ask.** A
+   30-second clarification is cheaper than a 30-minute rework. Never
+   guess at a token, never inline a foreign value "just to get it
+   working."
+5. **Build using v2 conventions exclusively** — colocated CSS, BEM
+   names, theme tokens, rem values, `<TransitionLink>` for nav,
+   data-attributes for animation triggers. No `style=` props with
+   colour or size literals.
+6. **Verify** — open the built component in the preview (with the
+   user's permission per workflow) and compare side-by-side to the
+   reference. Same structure + intent, fully token-driven.
+7. **Delete the reference** when the section ships. The commit
+   message can mention the source for traceability; the repo doesn't
+   carry the foreign code.
+
+### Default behaviour: ask, don't guess
+
+If a token is missing, a class name is ambiguous, an easing isn't
+in the system, or the user's reference does something the v2 stack
+doesn't yet support — *ask*. Uniformity is preserved by **stopping
+the build and clarifying** rather than by improvising and fixing
+later. The user has been clear that this is the priority on v2.
+
 ## When starting any task
 
 1. Read this file
-2. If you're touching colour, spacing, or typography — confirm the
-   token exists, or add one with a comment explaining why no token
-   fit
-3. If you're adding a new internal link, use `<TransitionLink>`
-4. If you're animating with GSAP, register plugins inside a
+2. If the task involves an external reference — read the
+   "Adapting external references" section above
+3. If you're touching colour, spacing, or typography — confirm the
+   token exists, or *propose* one (with a comment explaining why no
+   existing token fit) before writing the value
+4. If you're adding a new internal link, use `<TransitionLink>`
+5. If you're animating with GSAP, register plugins inside a
    `typeof window !== 'undefined'` guard so SSR doesn't crash
-5. If uncertain about an editorial decision (font weight, exact
+6. If you're scrolling programmatically, use
+   `window.__lenis?.scrollTo(...)` not `window.scrollTo`
+7. If uncertain about an editorial decision (font weight, exact
    line-height, measure constraint) — ask before guessing
