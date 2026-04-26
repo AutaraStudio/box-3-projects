@@ -1,26 +1,66 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   FLUID SCALING SYSTEM (Osmo Supply pattern)
+   ==========================================================================
+   The base font-size on `html` (and inherited by `body`) is driven by the
+   current viewport width via a clamped `--size-container` and a fixed
+   "design ideal" width. Every `rem` value in the codebase therefore scales
+   fluidly with the viewport without `clamp()` or `vw` on every property.
+
+   How it works:
+     1. `--size-container` = clamp(min, 100vw, max).
+     2. `--size-font`      = container / (ideal / 16).
+        At ideal width:   1rem = 16px.
+        At max:           1rem caps (no further growth).
+        At min:           1rem floors (no further shrink at this breakpoint).
+     3. Each breakpoint overrides ideal/min/max so the scaling restarts at
+        a sensible base for tablet, mobile-landscape, mobile-portrait.
+
+   Important:
+     - `--size-font` MUST be applied to `html` (rem is relative to html).
+     - Do NOT use clamp() or vw for typography — this system handles it.
+     - Use `rem` for everything that should scale (type, spacing, gaps,
+       padding). Use `px` only for non-scaling concerns (1px borders,
+       SVG icon dimensions). */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --size-unit: 16;
+  --size-container-ideal: 1600;
+  --size-container-min: 992px;
+  --size-container-max: 1600px;
+  --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
+  --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+/* Tablet — 768px to 991px */
+@media (max-width: 991px) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --size-container-ideal: 850;
+    --size-container-min: 768px;
+    --size-container-max: 991px;
   }
 }
 
+/* Mobile Landscape — 480px to 767px */
+@media (max-width: 767px) {
+  :root {
+    --size-container-ideal: 390;
+    --size-container-min: 480px;
+    --size-container-max: 767px;
+  }
+}
+
+/* Mobile Portrait — 320px to 479px */
+@media (max-width: 479px) {
+  :root {
+    --size-container-ideal: 390;
+    --size-container-min: 320px;
+    --size-container-max: 479px;
+  }
+}
+
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-size: var(--size-font);
 }
