@@ -32,43 +32,46 @@ export default async function Home() {
     homeData?.testimonialsSection,
   );
 
-  // Temporary holding page — restore the full composition (HomeHero,
-  // BannerShowroom, FeaturedProjects, Testimonials, Partners) when ready.
-  void homeData;
-  void featured;
-  void showroom;
-  void partners;
-  void testimonials;
-
   return (
     <main>
-      <section
-        data-theme="dark"
-        data-nav-theme="dark"
-        style={{
-          minHeight: "100svh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "var(--theme-bg)",
-          color: "var(--theme-text)",
-          paddingInline: "var(--space-6)",
-          textAlign: "center",
-        }}
-      >
-        <div style={{ maxWidth: "44rem" }}>
-          <h1 className="font-secondary font-size-h1 font-weight-regular line-height-tight">
-            Site updating
-          </h1>
-          <p
-            className="font-primary font-size-body-l font-weight-regular line-height-body"
-            style={{ marginTop: "var(--space-4)" }}
-          >
-            We&rsquo;re refreshing things behind the scenes. Please check back
-            shortly.
-          </p>
-        </div>
-      </section>
+      <HomeHero
+        heading={homeData?.heading ?? "Fit-Outs Done Differently"}
+        tagline={
+          homeData?.tagline ?? "London's trusted commercial fit-out partner."
+        }
+        image={homeData?.heroImage ?? null}
+        imageAlt={homeData?.heroImage?.alt ?? "Hero background"}
+      />
+      {showroom ? (
+        <BannerShowroom
+          sectionLabel={showroom.sectionLabel}
+          heading={showroom.heading}
+          cursorLabel={showroom.cursorLabel}
+          backgroundVideoUrl={showroom.backgroundVideoUrl}
+          modalVideoUrl={showroom.modalVideoUrl}
+        />
+      ) : null}
+      {featured && featured.projects && featured.projects.length > 0 ? (
+        <FeaturedProjects
+          sectionLabel={featured.sectionLabel}
+          ctaLabel={featured.ctaLabel}
+          ctaHref={featured.ctaHref}
+          projects={featured.projects}
+        />
+      ) : null}
+      {testimonials ? (
+        <TestimonialsSection
+          sectionLabel={testimonials.sectionLabel}
+          reference={testimonials.reference}
+          testimonials={testimonials.testimonials}
+          theme="cream"
+        />
+      ) : null}
+      <PartnersSection
+        heading={partners.heading}
+        sectionLabel={partners.sectionLabel}
+        partners={partners.partners}
+      />
     </main>
   );
 }
