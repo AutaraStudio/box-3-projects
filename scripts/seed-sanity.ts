@@ -137,8 +137,6 @@ const documents: SeedDoc[] = [
   {
     _id: "homePage",
     _type: "homePage",
-    heading: "Fit-Outs Done Differently",
-    tagline: "London's trusted commercial fit-out partner.",
   },
   {
     _id: "partnersSection",
@@ -149,28 +147,6 @@ const documents: SeedDoc[] = [
        migration block below — it creates partner documents and
        rewrites this array as an ordered list of references. */
     partners: [],
-  },
-  {
-    _id: "featuredProjectsSection",
-    _type: "featuredProjectsSection",
-    sectionLabel: "Selected work",
-    ctaLabel: "Explore all projects",
-    ctaHref: "/projects",
-    /* Project references are added by the post-seed patch block
-       below (it resolves project docs by title and populates the
-       references array only if the section is otherwise empty). */
-    projects: [],
-  },
-  {
-    _id: "bannerShowroom",
-    _type: "bannerShowroom",
-    sectionLabel: "Showroom",
-    heading: "A team where quality\nand ambition meet.",
-    cursorLabel: "Play",
-    /* Videos default to empty — the client pastes direct MP4 URLs
-       once the films are hosted. */
-    backgroundVideoUrl: "",
-    modalVideoUrl: "",
   },
   {
     _id: "contactPage",
@@ -1759,59 +1735,6 @@ async function seed() {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error(`✘ failed to patch partnersSection: ${message}`);
-  }
-
-  /* bannerShowroom — update copy to the new "team" headline and
-     strip the now-removed address / CTA fields from the document. */
-  try {
-    await client
-      .patch("bannerShowroom")
-      .set({ heading: "A team where quality\nand ambition meet." })
-      .unset(["addressTitle", "addressText", "ctaLabel", "ctaHref"])
-      .commit();
-    console.log(
-      `✔ patched bannerShowroom heading + unset removed fields`,
-    );
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error(`✘ failed to patch bannerShowroom: ${message}`);
-  }
-
-  /* Seed featuredProjectsSection.projects if it's still empty —
-     picks the first three projects from the dataset by year desc.
-     Re-runs don't overwrite the client's selection because we only
-     patch when the array is empty. */
-  try {
-    const existing = await client.fetch<{ projects?: unknown[] } | null>(
-      '*[_id == "featuredProjectsSection"][0]{projects}',
-    );
-    if (!existing?.projects || existing.projects.length === 0) {
-      const picks = await client.fetch<Array<{ _id: string }>>(
-        '*[_type == "project"] | order(year desc, title asc)[0...3]{_id}',
-      );
-      if (picks.length > 0) {
-        await client
-          .patch("featuredProjectsSection")
-          .set({
-            projects: picks.map((p, i) => ({
-              _key: `fp-${i}`,
-              _type: "reference",
-              _ref: p._id,
-            })),
-          })
-          .commit();
-        console.log(
-          `✔ patched featuredProjectsSection with ${picks.length} project refs`,
-        );
-      }
-    } else {
-      console.log(
-        `↷ featuredProjectsSection already has ${existing.projects.length} project ref(s) — leaving alone`,
-      );
-    }
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error(`✘ failed to patch featuredProjectsSection: ${message}`);
   }
 
   /* Patch siteFooter with newly-added fields (idempotent). */

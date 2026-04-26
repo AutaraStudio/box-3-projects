@@ -14,7 +14,8 @@
       "mcp__9f361f19-2689-4b04-bc52-1639e32ae1e1__list_datasets",
       "Bash(npx tsx:*)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }

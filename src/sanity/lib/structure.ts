@@ -19,8 +19,6 @@ const SINGLETONS = [
   "careersPage",
   "contactPage",
   "partnersSection",
-  "bannerShowroom",
-  "featuredProjectsSection",
   "siteNav",
   "siteFooter",
 ];
@@ -99,24 +97,6 @@ export const structure: StructureResolver = (S) =>
                     .schemaType("partnersSection")
                     .documentId("partnersSection")
                     .title("Partners Section"),
-                ),
-              S.listItem()
-                .title("Showroom Banner")
-                .id("bannerShowroom")
-                .child(
-                  S.document()
-                    .schemaType("bannerShowroom")
-                    .documentId("bannerShowroom")
-                    .title("Showroom Banner"),
-                ),
-              S.listItem()
-                .title("Featured Projects Section")
-                .id("featuredProjectsSection")
-                .child(
-                  S.document()
-                    .schemaType("featuredProjectsSection")
-                    .documentId("featuredProjectsSection")
-                    .title("Featured Projects Section"),
                 ),
             ]),
         ),

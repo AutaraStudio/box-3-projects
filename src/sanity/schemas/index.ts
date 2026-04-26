@@ -22,8 +22,6 @@ import contactPage from "./pages/contactPage";
 
 /* Sections */
 import partnersSection from "./sections/partnersSection";
-import bannerShowroom from "./sections/bannerShowroom";
-import featuredProjectsSection from "./sections/featuredProjectsSection";
 import testimonialsSection from "./sections/testimonialsSection";
 
 /* Collections */
@@ -46,8 +44,6 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   siteNav,
   siteFooter,
   partnersSection,
-  bannerShowroom,
-  featuredProjectsSection,
   testimonialsSection,
   projectCategory,
   expertise,

@@ -11,15 +11,9 @@ import {
   type TestimonialsSectionData,
 } from "./testimonialsSection";
 
-/** Fetches the first homePage document with hero fields. */
+/** Fetches the first homePage document. */
 export const HOME_PAGE_QUERY = groq`
   *[_type == "homePage"][0] {
-    heading,
-    tagline,
-    heroImage {
-      asset,
-      alt
-    },
     testimonialsSection {
       ${TESTIMONIALS_SECTION_PROJECTION}
     }
@@ -28,11 +22,5 @@ export const HOME_PAGE_QUERY = groq`
 
 /** Shape of the data returned by HOME_PAGE_QUERY. */
 export interface HomePageData {
-  heading: string;
-  tagline: string;
-  heroImage: {
-    asset: { _ref: string };
-    alt: string;
-  };
   testimonialsSection?: TestimonialsSectionData;
 }
