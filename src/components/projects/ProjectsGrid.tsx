@@ -81,10 +81,18 @@ export default function ProjectsGrid({ projects }: ProjectsGridProps) {
             >
               <div className="container">
                 <div className="projects-grid__row">
-                  <div className="projects-grid__cell projects-grid__cell--left">
+                  <div
+                    className="projects-grid__cell projects-grid__cell--left project-card-wrap"
+                    data-flip-id={a._id}
+                    data-cat={a.category?.slug ?? ""}
+                  >
                     <ProjectCard project={a} index={section.startIndex} />
                   </div>
-                  <div className="projects-grid__cell projects-grid__cell--right">
+                  <div
+                    className="projects-grid__cell projects-grid__cell--right project-card-wrap"
+                    data-flip-id={b._id}
+                    data-cat={b.category?.slug ?? ""}
+                  >
                     <ProjectCard project={b} index={section.startIndex + 1} />
                   </div>
                 </div>
@@ -100,7 +108,11 @@ export default function ProjectsGrid({ projects }: ProjectsGridProps) {
           >
             <div className="container">
               <div className="projects-grid__row">
-                <div className="projects-grid__cell projects-grid__cell--wide">
+                <div
+                  className="projects-grid__cell projects-grid__cell--wide project-card-wrap"
+                  data-flip-id={only._id}
+                  data-cat={only.category?.slug ?? ""}
+                >
                   <ProjectCard project={only} index={section.startIndex} />
                 </div>
               </div>

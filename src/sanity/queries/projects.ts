@@ -27,6 +27,31 @@ export const PROJECTS_LIST_QUERY = groq`
   }
 `;
 
+/**
+ * Category list with per-category project counts. Counts respect
+ * the same `defined(featuredImage)` filter the listing uses so the
+ * tabs reflect what's actually rendered.
+ */
+export const PROJECT_CATEGORIES_QUERY = groq`
+  *[_type == "projectCategory"] | order(title asc) {
+    _id,
+    title,
+    "slug": slug.current,
+    "count": count(*[
+      _type == "project" &&
+      references(^._id) &&
+      defined(featuredImage)
+    ])
+  }
+`;
+
+export interface ProjectCategoryItem {
+  _id: string;
+  title: string;
+  slug: string;
+  count: number;
+}
+
 export interface ProjectListItem {
   _id: string;
   title: string;

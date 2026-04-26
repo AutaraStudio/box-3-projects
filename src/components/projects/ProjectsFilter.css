@@ -1,0 +1,117 @@
+/**
+ * ProjectsFilter
+ * ==============
+ * Sticky filter bar with category tabs. Sits below the page header
+ * (sticks at top: var(--space-6) so the bar pins beneath the header
+ * squares as the user scrolls). Backdrop-blur + semi-transparent bg
+ * so the projects scroll under it.
+ */
+
+.projects-filter {
+  position: sticky;
+  top: var(--space-6);
+  z-index: 30;
+  background-color: color-mix(in srgb, var(--theme-bg) 70%, transparent);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-top: 1px solid
+    color-mix(in srgb, var(--theme-text) 10%, transparent);
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--theme-text) 10%, transparent);
+}
+
+.projects-filter__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-block: var(--space-1);
+}
+
+@media (min-width: 64rem) {
+  .projects-filter__inner {
+    padding-block: var(--space-1-5);
+  }
+}
+
+.projects-filter__legend {
+  margin: 0;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+/* Tabs row — flex with a small gap between tabs. */
+.projects-filter__tabs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  flex: 1;
+  justify-content: flex-end;
+}
+
+@media (min-width: 64rem) {
+  .projects-filter__tabs {
+    gap: var(--space-3);
+  }
+}
+
+/* Each tab — a button that wraps the label and a positioned
+   underline indicator. The indicator is hidden by default and
+   shown on the active tab; GSAP Flip animates the morph between
+   the old + new positions. */
+.projects-filter__tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  padding: var(--space-0-5) 0;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  white-space: nowrap;
+  /* Inactive tabs read at 60% opacity; hover brings them to full. */
+  transition: opacity 0.25s linear;
+  opacity: 0.6;
+}
+
+.projects-filter__tab:hover,
+.projects-filter__tab.is-active {
+  opacity: 1;
+}
+
+.projects-filter__indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background-color: currentColor;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.projects-filter__tab.is-active .projects-filter__indicator {
+  visibility: visible;
+}
+
+.projects-filter__label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.15em;
+}
+
+.projects-filter__count {
+  font-size: var(--font-size-text-small);
+  letter-spacing: var(--letter-spacing-snug);
+  vertical-align: super;
+  margin-left: 0.15em;
+  opacity: 0.7;
+}
+
+@media (max-width: 64rem) {
+  .projects-filter__count {
+    display: none;
+  }
+}
