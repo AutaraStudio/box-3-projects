@@ -77,6 +77,11 @@ export default function PageTransitionOverlay() {
       if (labelText) labelText.textContent = pageName ?? "";
 
       const main = getMain();
+      const lenis = window.__lenis;
+
+      /* Pause smooth scroll during the wipe so the user's wheel/touch
+         can't shift the underlying page while the panel covers it. */
+      lenis?.stop();
 
       /* Leave timeline — panel up, page lifts, label fades in. */
       const leave = gsap.timeline();
@@ -110,7 +115,15 @@ export default function PageTransitionOverlay() {
       router.push(href);
       await new Promise((r) => requestAnimationFrame(r));
       await new Promise((r) => requestAnimationFrame(r));
-      window.scrollTo(0, 0);
+      /* Jump to top through Lenis when present, otherwise native. Lenis's
+         own scroll position needs to be reset alongside the document so
+         the next wheel event doesn't snap back to the previous page's
+         scroll. */
+      if (lenis) {
+        lenis.scrollTo(0, { immediate: true });
+      } else {
+        window.scrollTo(0, 0);
+      }
 
       /* Enter timeline — panel continues up off the top, new page rises. */
       const newMain = getMain();
@@ -147,6 +160,7 @@ export default function PageTransitionOverlay() {
       gsap.set(panel, { autoAlpha: 0, yPercent: 0 });
       gsap.set(label, { autoAlpha: 0 });
       gsap.set(newMain, { clearProps: "transform" });
+      lenis?.start();
     };
 
     return registerTransition(transition);

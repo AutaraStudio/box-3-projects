@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import SmoothScroll from "@/components/scroll/SmoothScroll";
 import { PageTransitionProvider } from "@/components/transition/PageTransitionProvider";
 import PageTransitionOverlay from "@/components/transition/PageTransitionOverlay";
 import "./globals.css";
@@ -16,10 +17,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body data-theme="cream">
-        <PageTransitionProvider>
-          {children}
-          <PageTransitionOverlay />
-        </PageTransitionProvider>
+        <SmoothScroll>
+          <PageTransitionProvider>
+            {children}
+            <PageTransitionOverlay />
+          </PageTransitionProvider>
+        </SmoothScroll>
       </body>
     </html>
   );
