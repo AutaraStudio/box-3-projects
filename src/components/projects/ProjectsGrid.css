@@ -1,0 +1,50 @@
+/**
+ * ProjectsGrid
+ * ============
+ * Stack of <section>s alternating between a 2-card pair and a single
+ * wide card. Each section uses a 12-col CSS grid; the cells inside
+ * sit on specific columns so the wide card centres and the pairs
+ * leave a gap between them.
+ *
+ * Mobile collapses everything to a single-column flex stack.
+ */
+
+.projects-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.projects-grid__section {
+  padding: var(--space-1) 0;
+}
+
+@media (min-width: 64rem) {
+  .projects-grid__section {
+    padding: var(--space-5-5) 0;
+  }
+}
+
+.projects-grid__row {
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: var(--space-3);
+  align-items: end;
+}
+
+@media (min-width: 64rem) {
+  .projects-grid__row {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--space-1-25);
+    row-gap: 0;
+  }
+
+  .projects-grid__section--pair .projects-grid__cell--left {
+    grid-column: 1 / span 5;
+  }
+  .projects-grid__section--pair .projects-grid__cell--right {
+    grid-column: 8 / span 5;
+  }
+  .projects-grid__section--wide .projects-grid__cell--wide {
+    grid-column: 3 / span 8;
+  }
+}

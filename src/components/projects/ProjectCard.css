@@ -1,0 +1,62 @@
+/**
+ * ProjectCard
+ * ===========
+ * Image with on-scroll reveal + meta row beneath. The image starts
+ * scaled up + offset down + transparent; an IntersectionObserver
+ * adds `is-inview` and the image settles into place.
+ */
+
+.project-card {
+  display: block;
+  position: relative;
+  width: 100%;
+}
+
+.project-card__image-wrap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.project-card__image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  display: block;
+  transform: translate3d(0, 8%, 0) scale(1.08);
+  opacity: 0;
+  transition:
+    transform 1.6s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.project-card.is-inview .project-card__image {
+  transform: translateZ(0) scale(1);
+  opacity: 1;
+}
+
+/* Meta row — N°### · project name. Bottom border keeps the row
+   visually anchored even on cards with darker images above. */
+.project-card__meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1);
+  padding: var(--space-1-5) 0;
+  border-bottom: 1px solid currentColor;
+}
+
+@media (min-width: 64rem) {
+  .project-card__meta {
+    padding: var(--space-1-25) 0;
+  }
+}
+
+.project-card__num {
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.project-card__name {
+  text-align: right;
+}

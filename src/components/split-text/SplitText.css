@@ -49,6 +49,26 @@
   pointer-events: none;
 }
 
+/* Reveal-on-scroll mode — opt-in via the `revealOnScroll` prop on
+   <SplitText>, which adds `data-observe` to the wrapper. Chars / words
+   start parked below the mask line and slide up to position once the
+   IntersectionObserver flips `is-inview`. Per-token --index spreads the
+   stagger via transition-delay. */
+.split[data-observe] .char,
+.split[data-observe] .word {
+  transform: translate3d(0, 105%, 0);
+  transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1)
+    calc(var(--index, 0) * 15ms);
+}
+.split[data-observe].is-inview .char,
+.split[data-observe].is-inview .word {
+  transform: translateZ(0);
+}
+/* Words tend to read better with a slightly heavier stagger. */
+.split[data-observe] .word {
+  transition-delay: calc(var(--index, 0) * 45ms);
+}
+
 /* Hover behaviour — only on devices that can hover. The parent
    .link rule activates per-token transitions; the parent .link:hover
    rule swaps the offset.

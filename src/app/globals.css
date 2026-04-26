@@ -288,6 +288,20 @@ p {
    regular. Adjust per element with `font-weight: var(--font-weight-*)`
    if a specific moment needs to deviate.   -------------------------------------------------------------------------- */
 
+/* Container — page-level horizontal padding. Use as the inner
+   wrapper of any section that needs to respect the site's edge
+   gutter. Width stays intrinsic; only the padding contributes. */
+.container {
+  padding-left: var(--space-1);
+  padding-right: var(--space-1);
+}
+@media (min-width: 64rem) {
+  .container {
+    padding-left: var(--space-3);
+    padding-right: var(--space-3);
+  }
+}
+
 .text-display {
   font-size: var(--font-size-display);
   line-height: var(--line-height-display);

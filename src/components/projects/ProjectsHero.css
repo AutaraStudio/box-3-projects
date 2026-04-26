@@ -1,0 +1,52 @@
+/**
+ * ProjectsHero
+ * ============
+ * Generous editorial display headline + small counter superscript.
+ * Inline-flex so the title and counter sit on a single line with a
+ * fixed gap; the counter sits a touch lower so it aligns with the
+ * cap-line rather than the baseline.
+ */
+
+.projects-hero {
+  padding-top: var(--space-8);
+  padding-bottom: var(--space-5);
+}
+
+@media (min-width: 64rem) {
+  .projects-hero {
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-8);
+  }
+}
+
+.projects-hero__row {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin: 0;
+  font-family: var(--font-sans), Arial, sans-serif;
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-display);
+  letter-spacing: var(--letter-spacing-display);
+  color: inherit;
+}
+
+.projects-hero__title {
+  display: inline-block;
+  /* Mask the chars that start below the baseline so the reveal
+     looks like the chars rise out of the cap-line. */
+  overflow: hidden;
+  padding-bottom: 0.1em;
+}
+
+.projects-hero__counter {
+  display: inline-block;
+  font-size: var(--font-size-text-large);
+  letter-spacing: var(--letter-spacing-snug);
+  font-weight: var(--font-weight-regular);
+  line-height: 1;
+  /* Drop the counter so it aligns with the cap-line of the title
+     rather than its baseline. */
+  margin-top: 0.4em;
+}
