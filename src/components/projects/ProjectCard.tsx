@@ -1,20 +1,21 @@
 /**
  * ProjectCard
  * ===========
- * Image + meta row (N°### · Project name) for the projects listing.
+ * Image + meta row (N°### · Project name). Image renders at
+ * `transform: scale(1.2)` by default; on card hover it scales to
+ * 1.28 with a brightness boost — verbatim from the reference's
+ * DynamicZone.css.
  *
- * v1: non-clickable (no project detail page in v2 yet). Wrap in <a>
- * later when the detail route lands.
+ * v1: non-clickable (no project detail page in v2 yet). Wrap the
+ * outer <article> in a TransitionLink later when the detail route
+ * lands.
  *
- * The image gets the on-scroll reveal via IntersectionObserver — a
- * subtle scale + translate + fade. The meta text uses SplitText so
- * the chars roll on hover (and on scroll if revealOnScroll is on).
+ * Aspect ratio is set as a CSS custom property `--ratio` from the
+ * project's Sanity image dimensions so each card preserves its
+ * native portrait / landscape / panoramic shape.
  */
 
-"use client";
-
 import Image from "next/image";
-import { useEffect, useRef } from "react";
 
 import SplitText from "@/components/split-text/SplitText";
 import { urlFor } from "@/sanity/lib/image";
@@ -29,56 +30,42 @@ interface ProjectCardProps {
 }
 
 export default function ProjectCard({ project, index }: ProjectCardProps) {
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  /* Reveal the image on scroll-into-view via the same approach
-     SplitText uses — IntersectionObserver toggles `is-inview` and
-     CSS handles the transform/opacity transition. */
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const el = cardRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            el.classList.add("is-inview");
-            observer.unobserve(el);
-          }
-        }
-      },
-      { threshold: 0, rootMargin: "0px 0px -10% 0px" },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  const num = String(index).padStart(3, "0");
+  const num = `N°${String(index).padStart(3, "0")}`;
+  const dims = project.featuredImage?.asset?.metadata?.dimensions;
+  const ratio = dims ? `${dims.width}/${dims.height}` : "3/2";
+  const renderWidth = 1600;
+  const renderHeight = dims
+    ? Math.round(renderWidth * (dims.height / dims.width))
+    : Math.round(renderWidth * (2 / 3));
   const src = project.featuredImage?.asset
-    ? urlFor(project.featuredImage).width(1600).url()
+    ? urlFor(project.featuredImage).width(renderWidth).url()
     : null;
   const alt = project.featuredImage?.alt ?? project.title;
 
   return (
-    <article ref={cardRef} className="project-card">
+    <article
+      className="project-card"
+      style={{ "--ratio": ratio } as React.CSSProperties}
+    >
       <div className="project-card__image-wrap">
-        {src ? (
-          <Image
-            src={src}
-            alt={alt}
-            width={1600}
-            height={1067}
-            sizes="(max-width: 64rem) 100vw, 50vw"
-            className="project-card__image"
-          />
-        ) : null}
+        <div className="project-card__image">
+          {src ? (
+            <Image
+              src={src}
+              alt={alt}
+              width={renderWidth}
+              height={renderHeight}
+              sizes="(max-width: 64rem) 100vw, 50vw"
+            />
+          ) : null}
+        </div>
       </div>
 
       <div className="project-card__meta">
-        <span className="project-card__num text-small text-caps">
-          N°{num}
+        <span className="project-card__num">
+          <SplitText>{num}</SplitText>
         </span>
-        <span className="project-card__name text-large">
+        <span className="project-card__name">
           <SplitText asWords>{project.title}</SplitText>
         </span>
       </div>

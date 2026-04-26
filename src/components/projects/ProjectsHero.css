@@ -1,66 +1,109 @@
 /**
  * ProjectsHero
  * ============
- * Cinematic editorial hero — tall on desktop, title pinned to the
- * bottom so the empty space above reads as deliberate breathing
- * room. Inline-flex row so title + counter sit on a single line; the
- * counter sits a touch lower so it aligns with the cap-line rather
- * than the baseline.
+ * Cinematic editorial hero — the title takes up almost all of the
+ * space, sized at 3.75rem mobile / 13.75rem desktop. The counter
+ * pins to the top-left of an h-full container next to the title so
+ * it sits on the cap-line of "Projects" rather than the baseline.
  *
- * No clamp / vw — Osmo scaling makes the rem-based sizes fluid.
+ * Sizes are inline rem (not tokens) because no v2 token covers the
+ * 13.75rem hero scale yet — and this is component-specific. Add a
+ * --font-size-mega token if a second use lands.
  */
 
-.projects-hero {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  min-height: var(--space-12);
-  padding-top: var(--space-6);
-  padding-bottom: var(--space-3);
-  /* Bottom hairline matches the reference's section divider so the
-     hero reads as its own block above the projects. */
+.projects-hero-section {
+  padding-block: var(--space-2);
   border-bottom: 1px solid
     color-mix(in srgb, var(--theme-text) 10%, transparent);
+  overflow: hidden;
+}
+
+@media (min-width: 64rem) {
+  .projects-hero-section {
+    padding-block: var(--space-5-5);
+  }
+}
+
+.projects-hero {
+  min-height: var(--space-6);
 }
 
 @media (min-width: 64rem) {
   .projects-hero {
-    /* 32rem ≈ 512px @ design ideal — tall enough to read as
-       editorial without dominating typical laptop viewports. */
-    min-height: 32rem;
-    padding-top: var(--space-8);
-    padding-bottom: var(--space-5-5);
+    /* The huge title naturally sets the hero height; min-height is
+       just a floor so empty / loading states still feel deliberate. */
+    min-height: var(--space-12);
   }
 }
 
-.projects-hero__row {
-  display: inline-flex;
-  align-items: flex-start;
-  gap: var(--space-2);
+.projects-hero__title {
+  position: relative;
   margin: 0;
   font-family: var(--font-sans), Arial, sans-serif;
-  font-size: var(--font-size-display);
   font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-display);
-  letter-spacing: var(--letter-spacing-display);
+  font-size: 3.75rem;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
   color: inherit;
+  /* Optical kerning hint — helps the giant display sit visually flush
+     to the left edge by pulling the first character ~5% leftward. */
+  font-kerning: none;
+  left: -0.05em;
 }
 
-.projects-hero__title {
+@media (min-width: 64rem) {
+  .projects-hero__title {
+    font-size: 13.75rem;
+  }
+}
+
+/* Inline-flex row holding title text + counter — both stretch to
+   the full height so the counter's absolute child can pin to the
+   row's top-left. */
+.projects-hero__row {
+  display: inline-flex;
+  align-items: stretch;
+  height: 100%;
+}
+
+.projects-hero__title-text {
   display: inline-block;
-  /* Mask the chars that start below the baseline so the reveal
-     looks like the chars rise out of the cap-line. */
+  /* Mask the chars that start below the baseline so the SplitText
+     reveal looks like the chars rise out of the cap-line. */
   overflow: hidden;
   padding-bottom: 0.1em;
 }
 
+/* Counter container — relative + h-100% so the absolute child can
+   pin to the top of the row. Margin-left matches the editorial
+   reference's ml-7.5 (1.875rem). */
 .projects-hero__counter {
-  display: inline-block;
-  font-size: var(--font-size-text-large);
-  letter-spacing: var(--letter-spacing-snug);
+  position: relative;
+  height: 100%;
+  margin-left: 1.875rem;
+  font-size: 1.875rem;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
   font-weight: var(--font-weight-regular);
-  line-height: 1;
-  /* Drop the counter so it aligns with the cap-line of the title
-     rather than its baseline. */
-  margin-top: 0.4em;
+}
+
+@media (min-width: 64rem) {
+  .projects-hero__counter {
+    font-size: 3.125rem;
+  }
+}
+
+/* Spacer — invisible copy that reserves horizontal width for the
+   absolute visible one to land on top of. */
+.projects-hero__counter-spacer {
+  visibility: hidden;
+}
+
+/* Visible counter — pinned to the top-left of the h-full container
+   so it sits at the cap-line of the title rather than the baseline. */
+.projects-hero__counter-visible {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
 }

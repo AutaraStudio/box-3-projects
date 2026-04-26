@@ -1,9 +1,15 @@
 /**
  * ProjectCard
  * ===========
- * Image with on-scroll reveal + meta row beneath. The image starts
- * scaled up + offset down + transparent; an IntersectionObserver
- * adds `is-inview` and the image settles into place.
+ * Image with the editorial scale-on-hover effect from the reference:
+ * starts at scale(1.2), expands to scale(1.28) + brightness(115%) on
+ * hover. The aspect ratio is driven by --ratio (set on the article
+ * from Sanity image dimensions) so each card keeps its native shape.
+ *
+ * Inline value note: the 1.2 / 1.28 scale + 2s transition + 1.875rem
+ * meta padding are verbatim from DynamicZone.css; documented inline
+ * because they're the single source of truth for this look and don't
+ * need to be tokens.
  */
 
 .project-card {
@@ -12,51 +18,59 @@
   width: 100%;
 }
 
+/* Image wrap — fixes the slot's aspect ratio so layout reserves
+   space before the image loads. overflow: hidden clips the scaled
+   image so the slot itself stays at its declared aspect. */
 .project-card__image-wrap {
   position: relative;
   width: 100%;
+  height: fit-content;
   overflow: hidden;
+  aspect-ratio: var(--ratio, 3 / 2);
 }
 
+/* Inner wrapper that carries the transform — splitting from the
+   wrap means the wrap's overflow:hidden clips the scale effect. */
 .project-card__image {
+  display: block;
+  overflow: hidden;
+  transform: scale(1.2);
+  transition:
+    transform 2s cubic-bezier(0.19, 1, 0.22, 1),
+    filter 2s cubic-bezier(0.19, 1, 0.22, 1);
+  will-change: transform, filter;
+}
+
+.project-card__image img {
   width: 100%;
   height: auto;
-  object-fit: cover;
   display: block;
-  transform: translate3d(0, 8%, 0) scale(1.08);
-  opacity: 0;
-  transition:
-    transform 1.6s cubic-bezier(0.19, 1, 0.22, 1),
-    opacity 1.2s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-.project-card.is-inview .project-card__image {
-  transform: translateZ(0) scale(1);
-  opacity: 1;
+@media (hover: hover) and (pointer: fine) {
+  .project-card:hover .project-card__image {
+    transform: scale(1.28);
+    filter: brightness(115%);
+  }
 }
 
-/* Meta row — N°### · project name. Bottom border keeps the row
-   visually anchored even on cards with darker images above. */
+/* Meta row — N°### · project name */
 .project-card__meta {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  gap: var(--space-1);
-  padding: var(--space-1-5) 0;
+  padding: 1.875rem 0;
   border-bottom: 1px solid currentColor;
+  font-size: var(--font-size-text-main);
 }
 
 @media (min-width: 64rem) {
   .project-card__meta {
-    padding: var(--space-1-25) 0;
+    padding: 1.25rem 0;
   }
 }
 
-.project-card__num {
-  opacity: 0.6;
-  flex-shrink: 0;
-}
-
+.project-card__num,
 .project-card__name {
-  text-align: right;
+  display: inline-block;
 }

@@ -21,7 +21,17 @@ export const PROJECTS_LIST_QUERY = groq`
       "slug": slug.current
     },
     featuredImage {
-      asset,
+      asset->{
+        _id,
+        url,
+        metadata {
+          dimensions {
+            width,
+            height,
+            aspectRatio
+          }
+        }
+      },
       alt
     }
   }
@@ -65,7 +75,15 @@ export interface ProjectListItem {
   } | null;
   featuredImage: {
     asset: {
-      _ref: string;
+      _id: string;
+      url: string;
+      metadata: {
+        dimensions: {
+          width: number;
+          height: number;
+          aspectRatio: number;
+        };
+      };
     };
     alt?: string;
   };

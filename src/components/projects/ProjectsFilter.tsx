@@ -165,7 +165,7 @@ function FilterGroup({
             <button
               key={opt.key}
               type="button"
-              className={`projects-filter__tab text-large${active ? " is-active" : ""}`}
+              className={`projects-filter__tab${active ? " is-active" : ""}`}
               onClick={() => onSelect(opt.key)}
               aria-pressed={active}
             >

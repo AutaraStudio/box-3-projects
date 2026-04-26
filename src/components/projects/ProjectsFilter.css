@@ -72,20 +72,18 @@
   gap: var(--space-2);
 }
 
-@media (min-width: 64rem) {
-  .projects-filter__group {
-    gap: var(--space-3);
-  }
-}
-
 .projects-filter__legend {
   margin: 0;
   opacity: 0.6;
   flex-shrink: 0;
+  font-size: var(--font-size-text-main);
+  text-transform: none;
+  letter-spacing: var(--letter-spacing-snug);
 }
 
-/* Tabs container fills the rest of the group, justifying tabs to
-   the start by default; the legend pushes them to the right. */
+/* Tabs container — flex on mobile so tabs wrap, grid on desktop so
+   each tab gets an equal column and the indicators sit at the same
+   width regardless of label length. */
 .projects-filter__tabs {
   display: flex;
   align-items: center;
@@ -95,23 +93,42 @@
 }
 
 @media (min-width: 64rem) {
-  .projects-filter__tabs {
-    gap: var(--space-3);
+  /* Mode group — 2 equal columns (Grid + List). */
+  .projects-filter__group--mode .projects-filter__tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-1-25);
+  }
+  /* Category group — equal columns for legend + 1 + N tabs.
+     Reference uses repeat(5, 1fr) for legend + 4 tabs; ours has a
+     dynamic count so we use auto-fit minmax to stay flexible. */
+  .projects-filter__group--category {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    column-gap: var(--space-1-25);
+  }
+  .projects-filter__group--category .projects-filter__tabs {
+    display: contents;
   }
 }
 
 /* Each tab — taller padding so the indicator lands at the bottom
-   edge of the bar, matching the editorial reference. */
+   edge of the bar, matching the editorial reference. Text size
+   matches the reference's text-regular: 0.875rem mobile / 1rem
+   desktop. */
 .projects-filter__tab {
   position: relative;
   display: inline-flex;
   align-items: center;
+  justify-content: flex-start;
   cursor: pointer;
   padding: var(--space-1) 0;
   background: none;
   border: 0;
   color: inherit;
   font: inherit;
+  font-size: var(--font-size-text-small);
+  line-height: 1;
   white-space: nowrap;
   transition: opacity 0.25s linear;
   opacity: 0.6;
@@ -120,6 +137,7 @@
 @media (min-width: 64rem) {
   .projects-filter__tab {
     padding: var(--space-2) 0;
+    font-size: var(--font-size-text-main);
   }
 }
 

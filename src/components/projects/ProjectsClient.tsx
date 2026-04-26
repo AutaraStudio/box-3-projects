@@ -18,7 +18,7 @@
 
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { Flip } from "gsap/Flip";
 
@@ -86,6 +86,26 @@ export default function ProjectsClient({
     });
     flipState.current = null;
   }, [activeSlug, mode]);
+
+  /* Page-enter animation — runs once on mount.
+       hero-title: slides from x: 10vw, opacity 0 → 1 (1.2s power4.out)
+       filter children: fade in (autoAlpha 0 → 1, 0.4s ease none)
+     Direct port of B1z_zFWV.js's onEnter timeline. */
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const tl = gsap.timeline({
+      defaults: { duration: 1.2, ease: "power4.out" },
+    });
+    tl.from(".projects-hero__title", { x: "10vw", autoAlpha: 0 });
+    tl.from(
+      ".projects-filter__group",
+      { autoAlpha: 0, ease: "none", duration: 0.4 },
+      0,
+    );
+    return () => {
+      tl.kill();
+    };
+  }, []);
 
   return (
     <div className="projects-content">
