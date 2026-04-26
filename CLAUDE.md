@@ -63,6 +63,28 @@ blindly. This branch (`v2`) is the source of truth.
 - The overlay panel colour is set by `--transition-bg` (defaults to
   brown). To change per page, set the variable on the page root.
 
+### Smooth scroll (Lenis)
+- Mounted once in the root layout via `<SmoothScroll>`. The active
+  Lenis instance is exposed on `window.__lenis` so other code can
+  pause/resume scrolling and jump-to-top through the same instance.
+- Driven by GSAP's ticker, so any future ScrollTrigger work syncs
+  automatically without extra setup.
+- The page transition pauses Lenis during the wipe and resumes after
+  the new page settles — don't call `window.scrollTo` directly during
+  a transition; use `window.__lenis?.scrollTo(...)`.
+
+### Fonts
+- Two faces, both wired via `next/font`:
+  - **Neue Montreal** — sans workhorse, self-hosted woff2 in
+    `/public/fonts/`. Loaded as `--font-sans`. Body default.
+  - **Newsreader** — variable display serif (Google Fonts), variable
+    optical-size axis. Loaded as `--font-display`. Opt-in only.
+- **Apply the serif via `.font-display`** on individual headings or
+  ledes. Don't change `body { font-family }` — leave the workhorse
+  default in place.
+- New typefaces go through `next/font` too (no `<link>` to Google
+  Fonts CDN, no raw `@font-face` blocks).
+
 ### Components
 - Fully prop-based, fully typed. Anticipate reuse across pages.
 - No hardcoded strings in components — content comes from props (and
@@ -79,8 +101,11 @@ src/
     page.tsx             home
     [route]/page.tsx     other pages
   components/
+    scroll/              SmoothScroll (Lenis boot)
     transition/          PageTransitionProvider, Overlay, TransitionLink
     [feature]/           future component groups
+public/
+  fonts/                 self-hosted woff2 (Neue Montreal)
 ```
 
 ## Active systems
@@ -88,14 +113,15 @@ src/
 - **Osmo fluid scaling** — `globals.css` SECTION 2
 - **3-theme system** — `globals.css` THEME SYSTEM
 - **Page transition** — `src/components/transition/`
+- **Smooth scroll (Lenis)** — `src/components/scroll/SmoothScroll.tsx`,
+  exposed on `window.__lenis`
+- **Fonts** — `next/font` setup in `src/app/layout.tsx`. Neue Montreal
+  → `--font-sans` (body default), Newsreader → `--font-display`
+  (opt-in via `.font-display`)
 
 ## Intentionally NOT set up yet
 
 - Sanity CMS — add when there's a page that needs CMS content
-- Lenis smooth scroll — adds when first ScrollTrigger or scroll-driven
-  animation lands
-- Fonts — currently system-ui; pick a pair (e.g. Newsreader +
-  Neue Montreal) before building any page with serious typography
 - Spacing / type scale tokens — build the first real page with raw
   rem values, then extract tokens from what was actually used. Avoids
   over-engineering tokens for designs that don't exist yet

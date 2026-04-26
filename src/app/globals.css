@@ -136,5 +136,20 @@ body {
 body {
   background-color: var(--theme-bg);
   color: var(--theme-text);
+  /* Sans workhorse for body, UI, default headings. The serif is
+     opt-in via .font-display on individual elements. Both font
+     variables are loaded by next/font in (site)/layout. */
+  font-family: var(--font-sans), Arial, sans-serif;
+  font-feature-settings: "kern" 1, "liga" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Editorial display serif — opt-in utility. Apply to a heading or
+   lede that should read as a typographic moment rather than UI. */
+.font-display {
+  font-family: var(--font-display), Georgia, "Times New Roman", serif;
+  font-optical-sizing: auto;
 }
