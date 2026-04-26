@@ -40,7 +40,7 @@ export default async function ProjectsPage() {
   const usefulCategories = categories.filter((c) => c.count > 0);
 
   return (
-    <main>
+    <main className="projects-page">
       <ProjectsHero count={projects.length} />
       <ProjectsClient projects={projects} categories={usefulCategories} />
     </main>

@@ -90,11 +90,31 @@
 
 [data-mode="list"] .project-card__image-wrap {
   height: 100%;
+  /* Override aspect-ratio so the wrap fills the row height in list
+     mode rather than enforcing the image's native aspect. */
+  aspect-ratio: auto;
 }
 
 [data-mode="list"] .project-card__image {
   height: 100%;
+  /* Reset the grid-mode scale(1.2) — list rows are short, the
+     scaled-up image looks oversized and jarring during the Flip
+     morph between modes. */
+  transform: scale(1);
+}
+
+[data-mode="list"] .project-card__image img {
+  height: 100%;
   object-fit: cover;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  /* List mode keeps a subtle hover but no scale-up — list cards
+     are already at their natural size. */
+  [data-mode="list"] .project-card:hover .project-card__image {
+    transform: scale(1);
+    filter: brightness(115%);
+  }
 }
 
 /* The meta row in list mode flattens — number on its own column,

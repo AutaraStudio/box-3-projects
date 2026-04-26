@@ -30,14 +30,17 @@
 }
 
 /* Inner wrapper that carries the transform — splitting from the
-   wrap means the wrap's overflow:hidden clips the scale effect. */
+   wrap means the wrap's overflow:hidden clips the scale effect.
+   Transition shortened to 0.8s (was 2s) so a Flip-driven layout
+   change between modes doesn't have a long-tail scale animation
+   playing past the layout morph. */
 .project-card__image {
   display: block;
   overflow: hidden;
   transform: scale(1.2);
   transition:
-    transform 2s cubic-bezier(0.19, 1, 0.22, 1),
-    filter 2s cubic-bezier(0.19, 1, 0.22, 1);
+    transform 0.8s cubic-bezier(0.19, 1, 0.22, 1),
+    filter 0.8s cubic-bezier(0.19, 1, 0.22, 1);
   will-change: transform, filter;
 }
 

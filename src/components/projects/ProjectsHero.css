@@ -8,6 +8,19 @@
  * the absolutely-pinned counter.
  */
 
+/* Page-level padding-top so the hero clears the fixed Header
+   squares at the top of the viewport. Lives here (rather than on
+   <main>) so it's colocated with the projects-hero rules. */
+.projects-page {
+  padding-top: var(--space-6);
+}
+
+@media (min-width: 64rem) {
+  .projects-page {
+    padding-top: var(--space-7);
+  }
+}
+
 .projects-hero-section {
   padding-block: var(--space-2);
   border-bottom: 1px solid
@@ -76,10 +89,17 @@
 }
 
 /* Visible counter — pinned to the top-left of the h-full container
-   so it sits at the cap-line of the title rather than the baseline. */
+   so it sits at the cap-line of the title rather than the baseline.
+   white-space: nowrap stops SplitText's per-char inline-block spans
+   from breaking onto a second line inside the narrow counter slot. */
 .projects-hero__counter-visible {
   position: absolute;
   top: 0;
   left: 0;
   overflow: hidden;
+  white-space: nowrap;
+}
+
+.projects-hero__counter-spacer {
+  white-space: nowrap;
 }

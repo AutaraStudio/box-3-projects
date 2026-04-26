@@ -16,6 +16,17 @@
    instead of pushing them down, exactly like the reference. */
 .projects-content {
   position: relative;
+  /* Padding top reserves the height of the filter bar so the first
+     project card never sits behind it at scroll 0. The aside (which
+     holds the sticky filter) is absolutely positioned to the parent's
+     padding box, so it sits in this top reserve naturally. */
+  padding-top: var(--space-6);
+}
+
+@media (min-width: 64rem) {
+  .projects-content {
+    padding-top: var(--space-7);
+  }
 }
 
 .projects-content__filter-aside {
