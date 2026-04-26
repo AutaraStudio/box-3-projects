@@ -4,18 +4,17 @@
  * Client wrapper that owns the filter (`activeSlug`) and view-mode
  * (`mode`) state for the projects index.
  *
- * Both the grid and the list views render side-by-side in the DOM —
- * one is `display: none` based on `data-mode` on the wrapper. Mode
- * changes use a fade-out/fade-in transition (Vue out-in style)
- * rather than a Flip layout morph because the two views have
- * fundamentally different DOM structures.
+ * Mode swap (grid ↔ list) — Vue `<Transition mode="out-in">` style:
+ *   1. fade the current view out (0.3s)
+ *   2. on complete, setState to swap which component is rendered
+ *      (the old view actually unmounts; the new one mounts in its
+ *      place — no two-views-in-DOM layout jolt)
+ *   3. useLayoutEffect runs after React commits the new view; fades
+ *      it in from opacity 0
  *
  * Filter behaviour is mode-aware:
- *   - Grid: cards regroup into the alternating pair/wide pattern
- *           and Flip animates the layout diff.
- *   - List: rows stay rendered but flip to inactive (greyscale +
- *           reduced opacity + no pointer events) when they don't
- *           match the active filter. No layout change.
+ *   grid → cards regroup; Flip animates the layout diff
+ *   list → rows stay; .is-active toggles greyscale on non-matches
  */
 
 "use client";
@@ -48,25 +47,26 @@ export default function ProjectsClient({
   categories,
 }: ProjectsClientProps) {
   const [activeSlug, setActiveSlug] = useState("");
+  /* `mode` drives the filter UI (which tab reads as active);
+     `renderedMode` drives which view component is mounted in the
+     DOM. They diverge for the duration of the fade-out so the
+     active tab updates immediately while the swap waits. */
   const [mode, setMode] = useState<ProjectsViewMode>("grid");
+  const [renderedMode, setRenderedMode] =
+    useState<ProjectsViewMode>("grid");
+
   const flipState = useRef<Flip.FlipState | null>(null);
-  const gridViewRef = useRef<HTMLDivElement>(null);
-  const listViewRef = useRef<HTMLDivElement>(null);
+  const viewRef = useRef<HTMLDivElement>(null);
+  const pendingFadeIn = useRef(false);
   const modeAnimating = useRef(false);
 
-  /* Grid receives a pre-filtered list — non-matching cards are
-     removed from the DOM, layout regroups around what remains.
-     List always receives the full set; per-row .is-active toggles
-     greyscale for non-matching items. */
   const gridProjects = activeSlug
     ? projects.filter((p) => p.category?.slug === activeSlug)
     : projects;
 
   const handleCategoryChange = (slug: string) => {
     if (slug === activeSlug) return;
-    /* Capture grid state for the Flip morph — only useful in grid
-       mode. List mode handles filter changes via CSS class swap. */
-    if (mode === "grid" && typeof window !== "undefined") {
+    if (renderedMode === "grid" && typeof window !== "undefined") {
       flipState.current = Flip.getState(".project-card-wrap", {
         props: "opacity",
       });
@@ -76,37 +76,30 @@ export default function ProjectsClient({
 
   const handleModeChange = (next: ProjectsViewMode) => {
     if (next === mode || modeAnimating.current) return;
+    setMode(next);
 
-    /* Out-in fade — fade current view, swap, fade in new. Each
-       view renders independently so a layout morph wouldn't make
-       sense; the fade reads as a clean view swap. */
-    const outEl =
-      mode === "grid" ? gridViewRef.current : listViewRef.current;
-    const inEl =
-      next === "grid" ? gridViewRef.current : listViewRef.current;
-    if (!outEl || !inEl) {
-      setMode(next);
+    const view = viewRef.current;
+    if (!view) {
+      setRenderedMode(next);
       return;
     }
 
     modeAnimating.current = true;
-    gsap
-      .timeline({
-        onComplete: () => {
-          modeAnimating.current = false;
-        },
-      })
-      .to(outEl, { opacity: 0, duration: 0.3, ease: "power2.out" })
-      .add(() => {
-        setMode(next);
-        gsap.set(outEl, { opacity: 1 });
-        gsap.set(inEl, { opacity: 0 });
-      })
-      .to(inEl, { opacity: 1, duration: 0.4, ease: "power2.out" });
+    gsap.to(view, {
+      opacity: 0,
+      duration: 0.3,
+      ease: "power2.out",
+      onComplete: () => {
+        /* Schedule the React re-render. The useLayoutEffect below
+           fires on the next render and runs the fade-in. */
+        pendingFadeIn.current = true;
+        setRenderedMode(next);
+      },
+    });
   };
 
-  /* Flip morph for filter changes in grid mode. Skipped in list
-     mode (no layout change to animate). */
+  /* Filter Flip morph (grid mode only) — runs after activeSlug
+     changes have committed. */
   useLayoutEffect(() => {
     if (!flipState.current) return;
     Flip.from(flipState.current, {
@@ -121,10 +114,27 @@ export default function ProjectsClient({
     flipState.current = null;
   }, [activeSlug]);
 
-  /* Page-enter animation — runs once on mount.
-       hero-title:        from x: 10vw, autoAlpha 0 (1.2s power4.out)
-       filter group:      autoAlpha 0 → 1 (0.4s ease none, t=0)
-     Direct port of B1z_zFWV.js's onEnter timeline. */
+  /* Fade in the new view after it has mounted. */
+  useLayoutEffect(() => {
+    if (!pendingFadeIn.current) return;
+    pendingFadeIn.current = false;
+    const view = viewRef.current;
+    if (!view) return;
+    gsap.fromTo(
+      view,
+      { opacity: 0 },
+      {
+        opacity: 1,
+        duration: 0.4,
+        ease: "power2.out",
+        onComplete: () => {
+          modeAnimating.current = false;
+        },
+      },
+    );
+  }, [renderedMode]);
+
+  /* Page-enter animation — runs once on mount. */
   useEffect(() => {
     if (typeof window === "undefined") return;
     const tl = gsap.timeline({
@@ -153,20 +163,12 @@ export default function ProjectsClient({
         />
       </aside>
 
-      <div
-        ref={gridViewRef}
-        className="projects-view"
-        data-active={mode === "grid"}
-      >
-        <ProjectsGrid projects={gridProjects} />
-      </div>
-
-      <div
-        ref={listViewRef}
-        className="projects-view"
-        data-active={mode === "list"}
-      >
-        <ProjectsList projects={projects} activeSlug={activeSlug} />
+      <div ref={viewRef} className="projects-view">
+        {renderedMode === "grid" ? (
+          <ProjectsGrid projects={gridProjects} />
+        ) : (
+          <ProjectsList projects={projects} activeSlug={activeSlug} />
+        )}
       </div>
     </div>
   );

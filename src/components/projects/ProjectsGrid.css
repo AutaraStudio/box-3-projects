@@ -49,12 +49,6 @@
   }
 }
 
-/* List mode is now its own component (ProjectsList) rather than a
-   CSS override on the grid — it has fundamentally different markup
-   and the reference renders it as a parallel view. The mode swap
-   in ProjectsClient toggles which `.projects-view` is visible via a
-   fade transition. */
-
-.projects-view[data-active="false"] {
-  display: none;
-}
+/* List mode is now its own component (ProjectsList) — the mode
+   swap in ProjectsClient renders one or the other inside a single
+   .projects-view wrapper and Vue-style out-in fades between them. */

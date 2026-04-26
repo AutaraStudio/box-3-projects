@@ -59,13 +59,8 @@ interface ProjectRowProps {
 
 function ProjectRow({ project, index, active }: ProjectRowProps) {
   const num = `N°${String(index).padStart(3, "0")}`;
-  const dims = project.featuredImage?.asset?.metadata?.dimensions;
-  const renderWidth = 600;
-  const renderHeight = dims
-    ? Math.round(renderWidth * (dims.height / dims.width))
-    : 400;
   const src = project.featuredImage?.asset
-    ? urlFor(project.featuredImage).width(renderWidth).url()
+    ? urlFor(project.featuredImage).width(600).url()
     : null;
   const alt = project.featuredImage?.alt ?? project.title;
 
@@ -94,12 +89,17 @@ function ProjectRow({ project, index, active }: ProjectRowProps) {
 
           <div className="projects-list__image">
             {src ? (
+              /* `fill` makes the image absolutely fill its
+                 (relative) wrap regardless of the source's intrinsic
+                 aspect ratio — without this, portrait Sanity images
+                 render taller than the 14rem row and visually
+                 overflow into the next one. */
               <Image
                 src={src}
                 alt={alt}
-                width={renderWidth}
-                height={renderHeight}
+                fill
                 sizes="(max-width: 64rem) 100vw, 16vw"
+                style={{ objectFit: "cover" }}
               />
             ) : null}
           </div>
