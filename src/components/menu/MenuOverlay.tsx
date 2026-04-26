@@ -368,7 +368,7 @@ function FeaturedProjectBlock({
           <TransitionLink
             href={project.href}
             pageName={project.title}
-            className="menu-overlay__view-link link text-large"
+            className="menu-overlay__view-link link text-small text-caps"
             onClick={onLinkClick}
           >
             <SplitText asWords>View Project →</SplitText>

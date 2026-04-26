@@ -295,9 +295,20 @@
 .menu-overlay__view-link {
   color: inherit;
   text-decoration: none;
+  /* Mobile (project-foot is a flex column): shrink to content
+     width so the link doesn't stretch full-width. */
   align-self: flex-start;
   position: relative;
   padding-bottom: 0.15em;
+}
+
+@media (min-width: 64rem) {
+  .menu-overlay__view-link {
+    /* Desktop (project-foot is a flex row): pin to the bottom of
+       the row so the link sits flush with the bottom edge of the
+       taller details table beside it. */
+    align-self: flex-end;
+  }
 }
 .menu-overlay__view-link::after {
   content: "";
