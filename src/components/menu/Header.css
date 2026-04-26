@@ -1,0 +1,43 @@
+/**
+ * Header
+ * ======
+ * Two square anchors fixed at the top corners. The .header itself is
+ * pointer-events: none so the rest of the page underneath stays
+ * interactive — only the squares re-enable interaction.
+ */
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  pointer-events: none;
+}
+
+.header__square {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-6);
+  height: var(--space-6);
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  text-decoration: none;
+  /* Reset button styling */
+  border: 0;
+  font-family: inherit;
+  cursor: pointer;
+  /* Subtle dim on hover so the squares feel like buttons. */
+  transition: opacity 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+@media (hover: hover) {
+  .header__square:hover {
+    opacity: 0.8;
+  }
+}

@@ -1,0 +1,317 @@
+/**
+ * MenuOverlay
+ * ===========
+ * 12-col × 3-row grid that fills the modal height. Left column holds
+ * Pages (rows 1–2) + Contact (row 3); middle column stacks three
+ * featured-project blocks (one per row) with left + right border
+ * lines; right column holds Social (rows 1–2) + Legal (row 3).
+ *
+ * Mobile: collapses to a single-column flex stack — column lines
+ * become bottom borders between blocks.
+ *
+ * Inline easing comment: cubic-bezier(0.19, 1, 0.22, 1) is a long
+ * pull-out + soft settle (matches the editorial reference). Kept
+ * inline because no token covers it yet — promote to a token if a
+ * second use lands.
+ */
+
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  pointer-events: none;
+  /* Closed state — clipped to the trigger square in the top-right.
+     The header's brown trigger overlaps this exact patch so the menu
+     visually grows out of the trigger button. */
+  clip-path: inset(0% 0% calc(100% - var(--space-6)) calc(100% - var(--space-6)));
+  transition:
+    clip-path 0.8s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0.3s ease;
+  opacity: 0;
+}
+
+.menu-overlay[data-open="true"] {
+  clip-path: inset(0% 0% 0% 0%);
+  pointer-events: auto;
+  opacity: 1;
+}
+
+/* ── Grid ────────────────────────────────────────────────────────── */
+
+.menu-overlay__grid {
+  /* Mobile fallback — single column flex stack with bottom borders. */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--space-6) + var(--space-3)) var(--space-2) var(--space-2);
+  gap: var(--space-3);
+  overflow-y: auto;
+}
+
+@media (min-width: 64rem) {
+  .menu-overlay__grid {
+    display: grid;
+    grid-template-columns: 3fr 7fr 2fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-auto-flow: row;
+    height: 100%;
+    /* Top padding leaves room for the Header squares. */
+    padding: calc(var(--space-6) + var(--space-2)) var(--space-3)
+      var(--space-3);
+    gap: 0;
+    overflow: hidden;
+  }
+}
+
+/* ── Cell placement on desktop ───────────────────────────────────── */
+
+@media (min-width: 64rem) {
+  .menu-overlay__pages {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+  .menu-overlay__social {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
+  .menu-overlay__contact {
+    grid-column: 1;
+    grid-row: 3;
+  }
+  .menu-overlay__legal {
+    grid-column: 3;
+    grid-row: 3;
+  }
+  .menu-overlay__project {
+    grid-column: 2;
+  }
+}
+
+/* ── Common cell padding ─────────────────────────────────────────── */
+
+.menu-overlay__pages,
+.menu-overlay__contact,
+.menu-overlay__social,
+.menu-overlay__legal,
+.menu-overlay__project {
+  padding-block: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+@media (min-width: 64rem) {
+  .menu-overlay__pages,
+  .menu-overlay__contact,
+  .menu-overlay__social,
+  .menu-overlay__legal {
+    padding-inline: var(--space-1);
+  }
+}
+
+.menu-overlay__label {
+  margin: 0 0 var(--space-1) 0;
+  opacity: 0.6;
+}
+
+/* ── Pages (left col, rows 1–2) ──────────────────────────────────── */
+
+.menu-overlay__page-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-25);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menu-overlay__page-link {
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
+  transition: opacity 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+@media (hover: hover) {
+  .menu-overlay__page-list:hover .menu-overlay__page-link {
+    opacity: 0.4;
+  }
+  .menu-overlay__page-list .menu-overlay__page-link:hover {
+    opacity: 1;
+  }
+}
+
+/* ── Featured project block (middle col) ─────────────────────────── */
+
+.menu-overlay__project {
+  /* Mobile: bottom border separates blocks. */
+  border-bottom: 1px solid var(--theme-border-strong);
+}
+
+@media (min-width: 64rem) {
+  .menu-overlay__project {
+    /* Desktop: vertical column lines on both sides; no bottom border. */
+    border-left: 1px solid var(--theme-border-strong);
+    border-right: 1px solid var(--theme-border-strong);
+    border-bottom: 0;
+  }
+}
+
+/* Inner: full-height container with inset content cols (gutters left
+   and right). Internal layout splits top (label + title) from bottom
+   (View Project + details) with `space-between`. */
+.menu-overlay__project-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  gap: var(--space-2);
+  padding-block: var(--space-1);
+}
+
+@media (min-width: 64rem) {
+  .menu-overlay__project-inner {
+    /* 7-col internal grid; content sits in cols 2–6 leaving cols 1
+       and 7 as gutters on either side of the column lines. */
+    display: grid;
+    grid-template-columns: 1fr 5fr 1fr;
+    grid-template-rows: 1fr auto;
+    gap: 0;
+  }
+  .menu-overlay__project-head,
+  .menu-overlay__project-foot {
+    grid-column: 2;
+  }
+  .menu-overlay__project-head {
+    grid-row: 1;
+    align-self: start;
+  }
+  .menu-overlay__project-foot {
+    grid-row: 2;
+    align-self: end;
+  }
+}
+
+.menu-overlay__project-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+}
+
+.menu-overlay__project-title {
+  margin: 0;
+}
+
+/* Bottom row of the project block. Mobile = vertical stack; desktop =
+   View Project on the left, details table on the right. */
+.menu-overlay__project-foot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: 100%;
+}
+
+@media (min-width: 64rem) {
+  .menu-overlay__project-foot {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: var(--space-3);
+  }
+}
+
+.menu-overlay__view-link {
+  color: inherit;
+  text-decoration: none;
+  align-self: flex-start;
+  position: relative;
+  padding-bottom: 0.15em;
+}
+.menu-overlay__view-link::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 1px;
+  background-color: currentColor;
+  transform-origin: 0 0;
+  transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+}
+@media (hover: hover) {
+  .menu-overlay__view-link:hover::after {
+    transform-origin: 100% 0;
+    transform: scaleX(0);
+  }
+}
+
+.menu-overlay__details {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+  gap: var(--space-0-25) var(--space-1);
+  margin: 0;
+  padding: 0;
+  min-width: 15rem;
+}
+
+.menu-overlay__detail-row {
+  display: contents;
+}
+
+.menu-overlay__detail-row dt {
+  margin: 0;
+  opacity: 0.6;
+}
+
+.menu-overlay__detail-row dd {
+  margin: 0;
+}
+
+/* ── Sidebar sections (Social + Legal) ───────────────────────────── */
+
+.menu-overlay__contact,
+.menu-overlay__social,
+.menu-overlay__legal {
+  /* Anchored to the start by default — no extra rules needed. */
+}
+
+.menu-overlay__address {
+  display: flex;
+  flex-direction: column;
+  font-style: normal;
+  margin: 0 0 var(--space-1) 0;
+}
+
+.menu-overlay__contact-link {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  display: inline-block;
+  margin-bottom: var(--space-0-25);
+}
+@media (hover: hover) {
+  .menu-overlay__contact-link:hover {
+    opacity: 0.7;
+  }
+}
+
+.menu-overlay__simple-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-25);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menu-overlay__plain-link {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+}
+@media (hover: hover) {
+  .menu-overlay__plain-link:hover {
+    opacity: 0.7;
+  }
+}

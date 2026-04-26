@@ -225,6 +225,12 @@ body {
    Bare `<h1>`, `<p>`, `<body>` etc. render correctly out of the box.
    Override in component CSS only when the design genuinely deviates. */
 
+/* Lock the underlying page scroll while the site menu is open.
+   `data-menu-open` is set on <html> by MenuProvider. */
+html[data-menu-open="true"] body {
+  overflow: hidden;
+}
+
 body {
   background-color: var(--theme-bg);
   color: var(--theme-text);
