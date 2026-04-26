@@ -27,10 +27,7 @@ export default function Header({ logoText = "BOX 3" }: HeaderProps) {
   const triggerLabel = isOpen ? "Close" : "Menu";
 
   return (
-    /* No data-theme override — the header inherits the page's
-       active theme so the corner squares blend with the body
-       background instead of always rendering as brown blocks. */
-    <header className="header">
+    <header className="header" data-theme="dark">
       <a className="header__square link text-h6 text-caps" href="/">
         <SplitText>{logoText}</SplitText>
       </a>
