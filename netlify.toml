@@ -1,6 +1,0 @@
-[build.environment]
-# Skip Netlify's secrets scanner for these public Sanity config values.
-# NEXT_PUBLIC_* variables are exposed to the browser by design — they are
-# not secrets. The actual credential (SANITY_API_TOKEN) is server-only and
-# correctly not listed here.
-SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SANITY_PROJECT_ID,NEXT_PUBLIC_SANITY_DATASET,NEXT_PUBLIC_SANITY_API_VERSION"
