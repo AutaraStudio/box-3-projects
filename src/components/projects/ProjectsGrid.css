@@ -48,3 +48,74 @@
     grid-column: 3 / span 8;
   }
 }
+
+/* ── List mode ───────────────────────────────────────────────────
+   When `data-mode="list"` is on the wrapper, every section becomes
+   a single full-width row with an image thumbnail on the left and
+   the project name/number on the right. The pair / wide grid
+   placements are overridden so all cards stack regardless of
+   section type. */
+
+[data-mode="list"] .projects-grid__section {
+  padding: 0;
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--theme-text) 15%, transparent);
+}
+
+[data-mode="list"] .projects-grid__row {
+  display: block;
+}
+
+[data-mode="list"] .projects-grid__cell {
+  grid-column: 1 / -1 !important;
+  grid-row: auto !important;
+}
+
+[data-mode="list"] .project-card {
+  display: grid;
+  grid-template-columns: minmax(0, 14rem) 1fr;
+  gap: var(--space-2);
+  align-items: center;
+  height: max(7rem, 9vw);
+  padding: var(--space-1) 0;
+}
+
+@media (min-width: 64rem) {
+  [data-mode="list"] .project-card {
+    grid-template-columns: minmax(0, 18rem) 1fr 1fr;
+    gap: var(--space-3);
+    height: max(10rem, 12vw);
+  }
+}
+
+[data-mode="list"] .project-card__image-wrap {
+  height: 100%;
+}
+
+[data-mode="list"] .project-card__image {
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The meta row in list mode flattens — number on its own column,
+   name on its own column, no border (the section already has one). */
+[data-mode="list"] .project-card__meta {
+  border: 0;
+  padding: 0;
+}
+
+@media (min-width: 64rem) {
+  [data-mode="list"] .project-card__meta {
+    display: contents;
+  }
+  [data-mode="list"] .project-card__num {
+    align-self: center;
+    opacity: 0.5;
+  }
+  [data-mode="list"] .project-card__name {
+    align-self: center;
+    text-align: left;
+    font-size: var(--font-size-h4);
+    line-height: var(--line-height-snug);
+  }
+}

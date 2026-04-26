@@ -1,23 +1,19 @@
 /**
  * ProjectsClient
  * ==============
- * Client-side wrapper for the projects listing. Owns the
- * `activeSlug` filter state, renders the sticky filter bar +
- * grid, and animates the card layout transition with GSAP Flip
- * whenever the filter changes.
+ * Client-side wrapper for the projects listing. Owns:
+ *   - `activeSlug`  — which category filter is selected
+ *   - `mode`        — grid (alternating pair / wide) vs list
  *
- * Pattern:
- *   1. User clicks a tab → filter state captured BEFORE setState
- *      via Flip.getState(allCards).
- *   2. setState triggers a re-render with the filtered list →
- *      ProjectsGrid regroups the visible cards into the alternating
- *      pair / wide pattern; React reconciles by stable key.
+ * Both interactions follow the same Flip pattern:
+ *   1. User clicks → state captured BEFORE setState via
+ *      Flip.getState(allCardWraps).
+ *   2. setState triggers a re-render — ProjectsGrid regroups the
+ *      visible cards (filter) and the data-mode attribute on the
+ *      wrapper toggles which CSS layout applies.
  *   3. useLayoutEffect fires after the DOM updates; Flip.from
- *      animates the position diff (moves) + opacity for newly
- *      added or removed cards (onEnter / onLeave).
- *
- * The page (server) fetches all projects + categories once and
- * passes both arrays here. Filtering is purely client-side.
+ *      animates the position diff and onEnter / onLeave handle
+ *      cards added or removed by the filter.
  */
 
 "use client";
@@ -26,7 +22,9 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { Flip } from "gsap/Flip";
 
-import ProjectsFilter from "./ProjectsFilter";
+import ProjectsFilter, {
+  type ProjectsViewMode,
+} from "./ProjectsFilter";
 import ProjectsGrid from "./ProjectsGrid";
 import type {
   ProjectCategoryItem,
@@ -47,48 +45,60 @@ export default function ProjectsClient({
   categories,
 }: ProjectsClientProps) {
   const [activeSlug, setActiveSlug] = useState("");
+  const [mode, setMode] = useState<ProjectsViewMode>("grid");
   const flipState = useRef<Flip.FlipState | null>(null);
 
-  /* Compute the filtered list — preserving the original order. */
   const filtered = activeSlug
     ? projects.filter((p) => p.category?.slug === activeSlug)
     : projects;
 
-  /* Capture state right before the React render that will move /
-     remove cards. Click handler runs synchronously, then setState
-     schedules the re-render. The captured state lives in a ref
-     until useLayoutEffect picks it up after the DOM updates. */
-  const handleChange = (slug: string) => {
+  /* Capture before setState — same pattern for category + mode
+     changes since both move cards around. */
+  const captureFlipState = () => {
+    if (typeof window === "undefined") return;
+    flipState.current = Flip.getState(".project-card-wrap", {
+      props: "opacity",
+    });
+  };
+
+  const handleCategoryChange = (slug: string) => {
     if (slug === activeSlug) return;
-    if (typeof window !== "undefined") {
-      flipState.current = Flip.getState(".project-card-wrap", {
-        props: "opacity",
-      });
-    }
+    captureFlipState();
     setActiveSlug(slug);
+  };
+
+  const handleModeChange = (next: ProjectsViewMode) => {
+    if (next === mode) return;
+    captureFlipState();
+    setMode(next);
   };
 
   useLayoutEffect(() => {
     if (!flipState.current) return;
     Flip.from(flipState.current, {
       duration: 0.7,
-      ease: "expo.out",
+      ease: "expo.inOut",
       absolute: false,
+      nested: true,
       onEnter: (el) =>
         gsap.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.4 }),
       onLeave: (el) => gsap.to(el, { opacity: 0, duration: 0.3 }),
     });
     flipState.current = null;
-  }, [activeSlug]);
+  }, [activeSlug, mode]);
 
   return (
     <>
       <ProjectsFilter
         categories={categories}
         activeSlug={activeSlug}
-        onChange={handleChange}
+        onCategoryChange={handleCategoryChange}
+        mode={mode}
+        onModeChange={handleModeChange}
       />
-      <ProjectsGrid projects={filtered} />
+      <div data-mode={mode} className="projects-mode-wrap">
+        <ProjectsGrid projects={filtered} />
+      </div>
     </>
   );
 }
