@@ -277,7 +277,7 @@
   height: 100%;
   z-index: 1;
   transform: translateY(-100%);
-  color: var(--theme-bg);
+  color: var(--theme-accent);
 }
 .testimonials-btn.is-prev .testimonials-btn__arrow-hover {
   transform: translateY(100%);
