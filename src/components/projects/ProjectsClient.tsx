@@ -1,19 +1,21 @@
 /**
  * ProjectsClient
  * ==============
- * Client-side wrapper for the projects listing. Owns:
- *   - `activeSlug`  — which category filter is selected
- *   - `mode`        — grid (alternating pair / wide) vs list
+ * Client wrapper that owns the filter (`activeSlug`) and view-mode
+ * (`mode`) state for the projects index.
  *
- * Both interactions follow the same Flip pattern:
- *   1. User clicks → state captured BEFORE setState via
- *      Flip.getState(allCardWraps).
- *   2. setState triggers a re-render — ProjectsGrid regroups the
- *      visible cards (filter) and the data-mode attribute on the
- *      wrapper toggles which CSS layout applies.
- *   3. useLayoutEffect fires after the DOM updates; Flip.from
- *      animates the position diff and onEnter / onLeave handle
- *      cards added or removed by the filter.
+ * Both the grid and the list views render side-by-side in the DOM —
+ * one is `display: none` based on `data-mode` on the wrapper. Mode
+ * changes use a fade-out/fade-in transition (Vue out-in style)
+ * rather than a Flip layout morph because the two views have
+ * fundamentally different DOM structures.
+ *
+ * Filter behaviour is mode-aware:
+ *   - Grid: cards regroup into the alternating pair/wide pattern
+ *           and Flip animates the layout diff.
+ *   - List: rows stay rendered but flip to inactive (greyscale +
+ *           reduced opacity + no pointer events) when they don't
+ *           match the active filter. No layout change.
  */
 
 "use client";
@@ -26,6 +28,7 @@ import ProjectsFilter, {
   type ProjectsViewMode,
 } from "./ProjectsFilter";
 import ProjectsGrid from "./ProjectsGrid";
+import ProjectsList from "./ProjectsList";
 import type {
   ProjectCategoryItem,
   ProjectListItem,
@@ -47,32 +50,63 @@ export default function ProjectsClient({
   const [activeSlug, setActiveSlug] = useState("");
   const [mode, setMode] = useState<ProjectsViewMode>("grid");
   const flipState = useRef<Flip.FlipState | null>(null);
+  const gridViewRef = useRef<HTMLDivElement>(null);
+  const listViewRef = useRef<HTMLDivElement>(null);
+  const modeAnimating = useRef(false);
 
-  const filtered = activeSlug
+  /* Grid receives a pre-filtered list — non-matching cards are
+     removed from the DOM, layout regroups around what remains.
+     List always receives the full set; per-row .is-active toggles
+     greyscale for non-matching items. */
+  const gridProjects = activeSlug
     ? projects.filter((p) => p.category?.slug === activeSlug)
     : projects;
 
-  /* Capture before setState — same pattern for category + mode
-     changes since both move cards around. */
-  const captureFlipState = () => {
-    if (typeof window === "undefined") return;
-    flipState.current = Flip.getState(".project-card-wrap", {
-      props: "opacity",
-    });
-  };
-
   const handleCategoryChange = (slug: string) => {
     if (slug === activeSlug) return;
-    captureFlipState();
+    /* Capture grid state for the Flip morph — only useful in grid
+       mode. List mode handles filter changes via CSS class swap. */
+    if (mode === "grid" && typeof window !== "undefined") {
+      flipState.current = Flip.getState(".project-card-wrap", {
+        props: "opacity",
+      });
+    }
     setActiveSlug(slug);
   };
 
   const handleModeChange = (next: ProjectsViewMode) => {
-    if (next === mode) return;
-    captureFlipState();
-    setMode(next);
+    if (next === mode || modeAnimating.current) return;
+
+    /* Out-in fade — fade current view, swap, fade in new. Each
+       view renders independently so a layout morph wouldn't make
+       sense; the fade reads as a clean view swap. */
+    const outEl =
+      mode === "grid" ? gridViewRef.current : listViewRef.current;
+    const inEl =
+      next === "grid" ? gridViewRef.current : listViewRef.current;
+    if (!outEl || !inEl) {
+      setMode(next);
+      return;
+    }
+
+    modeAnimating.current = true;
+    gsap
+      .timeline({
+        onComplete: () => {
+          modeAnimating.current = false;
+        },
+      })
+      .to(outEl, { opacity: 0, duration: 0.3, ease: "power2.out" })
+      .add(() => {
+        setMode(next);
+        gsap.set(outEl, { opacity: 1 });
+        gsap.set(inEl, { opacity: 0 });
+      })
+      .to(inEl, { opacity: 1, duration: 0.4, ease: "power2.out" });
   };
 
+  /* Flip morph for filter changes in grid mode. Skipped in list
+     mode (no layout change to animate). */
   useLayoutEffect(() => {
     if (!flipState.current) return;
     Flip.from(flipState.current, {
@@ -85,11 +119,11 @@ export default function ProjectsClient({
       onLeave: (el) => gsap.to(el, { opacity: 0, duration: 0.3 }),
     });
     flipState.current = null;
-  }, [activeSlug, mode]);
+  }, [activeSlug]);
 
   /* Page-enter animation — runs once on mount.
-       hero-title: slides from x: 10vw, opacity 0 → 1 (1.2s power4.out)
-       filter children: fade in (autoAlpha 0 → 1, 0.4s ease none)
+       hero-title:        from x: 10vw, autoAlpha 0 (1.2s power4.out)
+       filter group:      autoAlpha 0 → 1 (0.4s ease none, t=0)
      Direct port of B1z_zFWV.js's onEnter timeline. */
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -109,13 +143,6 @@ export default function ProjectsClient({
 
   return (
     <div className="projects-content">
-      {/* Filter floats over the projects via an absolutely positioned
-          aside — the bar inside is sticky and stays pinned at
-          top: var(--space-6) as the user scrolls. The aside itself
-          contributes no flow height so the cards start at the top
-          of this container, exactly as the editorial reference does.
-          pointer-events: none on the aside lets clicks reach the
-          cards beneath; the bar inside re-enables interaction. */}
       <aside className="projects-content__filter-aside">
         <ProjectsFilter
           categories={categories}
@@ -125,8 +152,21 @@ export default function ProjectsClient({
           onModeChange={handleModeChange}
         />
       </aside>
-      <div data-mode={mode} className="projects-mode-wrap">
-        <ProjectsGrid projects={filtered} />
+
+      <div
+        ref={gridViewRef}
+        className="projects-view"
+        data-active={mode === "grid"}
+      >
+        <ProjectsGrid projects={gridProjects} />
+      </div>
+
+      <div
+        ref={listViewRef}
+        className="projects-view"
+        data-active={mode === "list"}
+      >
+        <ProjectsList projects={projects} activeSlug={activeSlug} />
       </div>
     </div>
   );

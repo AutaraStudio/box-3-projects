@@ -1,0 +1,166 @@
+/**
+ * ProjectsList
+ * ============
+ * Flat list of full-width row cards. Each row is a 12-col grid on
+ * desktop with N° at col-1, large project title at col-2..10, and
+ * a small image at col-11..12. Mobile collapses to a single
+ * column with the image first (order: -1) so the small "N° · name"
+ * pretitle reads beneath the photo.
+ *
+ * Verbatim port of CardProduct (data-v-cd555a4b) from the editorial
+ * reference — sizes / paddings / hover transforms match the source.
+ */
+
+.projects-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+@media (min-width: 64rem) {
+  .projects-list {
+    padding-top: var(--space-2);
+  }
+}
+
+.projects-list__item {
+  margin: 0;
+}
+
+/* Row card — block on mobile (children stack), flex-end row on
+   desktop (the inner container is the actual grid). The card has
+   the bottom hairline that separates rows. */
+.projects-list__row {
+  display: block;
+  position: relative;
+  width: 100%;
+  border-bottom: 1px solid currentColor;
+  transition:
+    opacity 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+    filter 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+@media (min-width: 64rem) {
+  .projects-list__row {
+    display: flex;
+    align-items: flex-end;
+    height: max(14rem, 15vw);
+  }
+}
+
+.projects-list__row.is-active {
+  cursor: pointer;
+}
+
+.projects-list__row:not(.is-active) {
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.5;
+  filter: grayscale(100%);
+}
+
+/* Inner container — 12-col grid on desktop, full-bleed on mobile. */
+.projects-list__row-inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-1-25);
+  width: 100%;
+}
+
+@media (min-width: 64rem) {
+  .projects-list__row-inner {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    height: 100%;
+    align-items: end;
+    padding-block: var(--space-1-5);
+  }
+}
+
+/* Pretitle — N° (always) + name echo (mobile only). On mobile it's
+   a flex row with N° on the left and the name on the right; on
+   desktop it collapses to just the N° in col-1. */
+.projects-list__pretitle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-1) 0;
+  font-size: var(--font-size-text-small);
+  line-height: 1;
+}
+
+@media (min-width: 64rem) {
+  .projects-list__pretitle {
+    padding: 0;
+    grid-column: span 1;
+    display: block;
+    font-size: var(--font-size-text-main);
+  }
+  .projects-list__pretitle-name {
+    display: none;
+  }
+}
+
+.projects-list__num {
+  display: inline-block;
+}
+
+/* Content — full-width on mobile, col-span-9 on desktop. The
+   project title is the giant h2 at title-medium size. */
+.projects-list__content {
+  width: 100%;
+}
+
+@media (min-width: 64rem) {
+  .projects-list__content {
+    grid-column: span 9;
+  }
+}
+
+.projects-list__title {
+  margin: 0;
+  font-family: var(--font-sans), Arial, sans-serif;
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  display: flex;
+  gap: var(--space-1-25);
+  align-items: baseline;
+}
+
+/* Image — small thumbnail on the right at col-span-2 on desktop;
+   full-width above everything else on mobile (order: -1). */
+.projects-list__image {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 282 / 194;
+  order: -1;
+  width: 100%;
+}
+
+@media (min-width: 64rem) {
+  .projects-list__image {
+    grid-column: span 2;
+    height: 100%;
+    aspect-ratio: auto;
+    order: 0;
+  }
+}
+
+.projects-list__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition:
+    filter 1s cubic-bezier(0.19, 1, 0.22, 1),
+    transform 1s cubic-bezier(0.19, 1, 0.22, 1);
+  will-change: transform, filter;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .projects-list__row.is-active:hover .projects-list__image img {
+    filter: brightness(125%);
+    transform: scale(1.12);
+  }
+}
