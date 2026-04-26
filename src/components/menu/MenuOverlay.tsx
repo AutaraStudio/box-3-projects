@@ -6,11 +6,9 @@
  * reference: 12-column × 3-row grid that fills the modal height.
  *
  *   ┌───────────┬──────────────────────────┬───────────┐
- *   │           │ ─ row 1 ─ Featured #1    │           │
- *   │   PAGES   │                          │  SOCIAL   │
+ *   │   PAGES   │ ─ row 1 ─ Featured #1    │  SOCIAL   │
  *   │  (3 × 2)  │                          │  (2 × 2)  │
  *   │           │ ─ row 2 ─ Featured #2    │           │
- *   │           │                          │           │
  *   ├───────────┼──────────────────────────┼───────────┤
  *   │  CONTACT  │ ─ row 3 ─ Featured #3    │  LEGAL    │
  *   └───────────┴──────────────────────────┴───────────┘
@@ -22,11 +20,14 @@
  *
  * Always rendered with `data-theme="dark"` so brown bg + pink text
  * apply regardless of the host page theme. Closes on Escape (handled
- * in MenuProvider) and when any internal nav link is clicked.
+ * in MenuProvider) and when any internal nav link is clicked. Every
+ * link/button text runs through SplitText so the editorial char
+ * roll-over hover applies site-wide.
  */
 
 "use client";
 
+import SplitText from "@/components/split-text/SplitText";
 import TransitionLink from "@/components/transition/TransitionLink";
 import { useMenu } from "./MenuProvider";
 import "./MenuOverlay.css";
@@ -96,10 +97,10 @@ export default function MenuOverlay({
                 <TransitionLink
                   href={page.href}
                   pageName={page.label}
-                  className="menu-overlay__page-link text-h3"
+                  className="menu-overlay__page-link link text-h3"
                   onClick={close}
                 >
-                  {page.label}
+                  <SplitText>{page.label}</SplitText>
                 </TransitionLink>
               </li>
             ))}
@@ -118,12 +119,12 @@ export default function MenuOverlay({
             {social.map((item) => (
               <li key={item.href}>
                 <a
-                  className="menu-overlay__plain-link text-large"
+                  className="menu-overlay__plain-link link text-large"
                   href={item.href}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {item.label}
+                  <SplitText>{item.label}</SplitText>
                 </a>
               </li>
             ))}
@@ -144,16 +145,16 @@ export default function MenuOverlay({
             ))}
           </address>
           <a
-            className="menu-overlay__contact-link text-large"
+            className="menu-overlay__contact-link link text-large"
             href={`mailto:${contact.email}`}
           >
-            {contact.email}
+            <SplitText asWords>{contact.email}</SplitText>
           </a>
           <a
-            className="menu-overlay__contact-link text-large"
+            className="menu-overlay__contact-link link text-large"
             href={contact.phoneHref}
           >
-            {contact.phone}
+            <SplitText asWords>{contact.phone}</SplitText>
           </a>
         </section>
 
@@ -171,10 +172,10 @@ export default function MenuOverlay({
                 <TransitionLink
                   href={item.href}
                   pageName={item.label}
-                  className="menu-overlay__plain-link text-small"
+                  className="menu-overlay__plain-link link text-small"
                   onClick={close}
                 >
-                  {item.label}
+                  <SplitText asWords>{item.label}</SplitText>
                 </TransitionLink>
               </li>
             ))}
@@ -212,9 +213,9 @@ function FeaturedProjectBlock({
               href={project.href}
               pageName={project.title}
               onClick={onLinkClick}
-              className="menu-overlay__plain-link"
+              className="menu-overlay__plain-link link"
             >
-              {project.title}
+              <SplitText>{project.title}</SplitText>
             </TransitionLink>
           </h3>
         </header>
@@ -223,10 +224,10 @@ function FeaturedProjectBlock({
           <TransitionLink
             href={project.href}
             pageName={project.title}
-            className="menu-overlay__view-link text-large"
+            className="menu-overlay__view-link link text-large"
             onClick={onLinkClick}
           >
-            View Project →
+            <SplitText asWords>View Project →</SplitText>
           </TransitionLink>
 
           <dl className="menu-overlay__details">

@@ -1,0 +1,78 @@
+/**
+ * SplitText
+ * =========
+ * Char / word "roll-over" hover effect. The visible row's tokens
+ * translate up out of the mask while the clone row's tokens — which
+ * sit absolutely on top, offset 100% below the line — translate up
+ * into view. Per-token stagger via `--index` set inline by the
+ * SplitText component.
+ *
+ * The hover trigger is a `.link` ancestor. Anchors and buttons that
+ * should run the effect carry the `.link` class on the outer
+ * element; the SplitText sits inside.
+ */
+
+.split {
+  display: inline-block;
+  position: relative;
+  vertical-align: top;
+  /* Inherit the hosting element's line-height so wrapped text never
+     blows out the baseline. */
+  line-height: inherit;
+}
+
+.split__text {
+  display: inline-block;
+  line-height: inherit;
+}
+
+.split__mask {
+  display: inline-block;
+  overflow-y: hidden;
+  vertical-align: top;
+  /* Tiny vertical breathing room so descenders don't get clipped. */
+  padding-bottom: 0.05em;
+  margin-bottom: -0.05em;
+}
+
+.split__mask .char,
+.split__mask .word {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* Clone sits exactly on top of the original at top-left of .split.
+   Pointer-events disabled so the clone never intercepts hover. */
+.split__text--clone {
+  position: absolute;
+  inset: 0 auto auto 0;
+  pointer-events: none;
+}
+
+/* Hover behaviour — only on devices that can hover. The parent
+   .link rule activates per-token transitions; the parent .link:hover
+   rule swaps the offset.
+
+   Easing: cubic-bezier(0.19, 1, 0.22, 1) — long pull-out + soft
+   settle, matches the editorial reference. Inline because no token
+   covers it yet (and only used here + in the menu).
+*/
+@media (hover: hover) and (pointer: fine) {
+  .link .split__text .char,
+  .link .split__text .word {
+    transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1)
+                calc(var(--index, 0) * 2.4ms);
+  }
+  .link .split__text--clone .char,
+  .link .split__text--clone .word {
+    transform: translate3d(0, 100%, 0);
+  }
+  .link:hover .split__text:not(.split__text--clone) .char,
+  .link:hover .split__text:not(.split__text--clone) .word {
+    transform: translate3d(0, -100%, 0);
+  }
+  .link:hover .split__text--clone .char,
+  .link:hover .split__text--clone .word {
+    transform: translate3d(0, 0, 0);
+  }
+}
