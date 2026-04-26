@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Newsreader } from "next/font/google";
 import PageTransition from "@/components/layout/PageTransition";
 import Preloader from "@/components/layout/Preloader";
 import Providers from "@/components/layout/Providers";
@@ -8,6 +9,18 @@ import { sanityFetch } from "@/sanity/lib/fetch";
 import { NAV_QUERY, type SiteNavData } from "@/sanity/queries/siteNav";
 import { FOOTER_QUERY, type SiteFooterData } from "@/sanity/queries/siteFooter";
 import "../globals.css";
+
+/* Display serif — Newsreader has an optical-size axis (`opsz`) so
+   the same font reads well at both 18px lede and 120px display
+   sizes. Self-hosted via next/font, no external request. Exposes
+   --font-display globally so .text-display / h1 can pick it up. */
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  display: "swap",
+  variable: "--font-display",
+});
 
 export const metadata: Metadata = {
   title: "Box 3 Projects — Commercial Fit-Outs Done Differently",
@@ -92,7 +105,11 @@ export default async function RootLayout({
   const footer = footerData ?? DEFAULT_FOOTER;
 
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className={newsreader.variable}
+      suppressHydrationWarning
+    >
       <body data-theme="light">
         {/* First-load preloader — once per tab via sessionStorage.
             Renders no DOM itself; adds `.is-preloader` to the Nav's

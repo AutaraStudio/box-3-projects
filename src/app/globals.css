@@ -199,8 +199,13 @@
 :root {
 
   /* --- Font Families ---
-     Primary: Neue Montreal — headings, display, UI elements
-     Secondary: Instrument Sans — body copy, captions, labels */
+     Primary: Neue Montreal — body, UI, sans headings
+     Secondary: Instrument Sans — captions, labels, monospace-ish ui
+     Display: Newsreader — variable serif loaded via next/font in
+       (site)/layout. next/font sets --font-display on the html
+       element via a className; consumers reference it with a
+       Georgia fallback so SSR before hydration still reads as a
+       serif. */
   --font-primary: 'Neue Montreal', Arial, sans-serif;
   --font-secondary: 'Instrument Sans', Arial, sans-serif;
 
@@ -1788,6 +1793,16 @@ h1, h2 {
   font-feature-settings: "kern" 1, "liga" 1;
 }
 
+/* Editorial display serif — opt-in utility. Apply to a heading that
+   should read as a typographic moment rather than a UI label. The
+   .text-display class composes this with sizing + tracking; this
+   bare utility is for cases where you want serif at a non-display
+   size (e.g. an editorial quote or a page heading). */
+.font-display {
+  font-family: var(--font-display, 'Newsreader'), Georgia, 'Times New Roman', serif;
+  font-optical-sizing: auto;
+}
+
 h3, h4 {
   font-family: var(--font-primary);
   font-weight: var(--font-weight-medium);
@@ -1832,13 +1847,16 @@ h5, h6 {
 
 /* Display text — for hero headlines and oversized typographic moments */
 .text-display {
-  font-family: var(--font-primary);
+  font-family: var(--font-display, 'Newsreader'), Georgia, 'Times New Roman', serif;
   font-size: var(--font-size-display);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-regular);
   line-height: var(--line-height-display);
   letter-spacing: var(--letter-spacing-display);
   text-wrap: balance;
   font-feature-settings: "kern" 1, "liga" 1;
+  /* Newsreader has an optical-size axis; tell the browser to apply
+     the larger optical setting at display sizes for sharper terminals. */
+  font-optical-sizing: auto;
 }
 
 
@@ -1882,16 +1900,17 @@ h5, h6 {
 .u-measure-body   { max-width: var(--measure-ch-body); }
 .u-measure-wide   { max-width: var(--measure-ch-wide); }
 
-/* Lede — first paragraph of a section. Slightly larger and looser
-   than body, with editorial small-caps available via .u-lede-caps.
+/* Lede — first paragraph of a section. Uses the display serif for
+   an editorial intro feel; slightly larger and looser than body.
    Pair with .u-measure-narrow for short editorial intros. */
 .u-lede {
-  font-family: var(--font-primary);
+  font-family: var(--font-display, 'Newsreader'), Georgia, 'Times New Roman', serif;
   font-size: var(--font-size-text-lg);
   line-height: var(--line-height-snug);
   letter-spacing: var(--letter-spacing-snug);
   font-weight: var(--font-weight-regular);
   text-wrap: pretty;
+  font-optical-sizing: auto;
 }
 
 /* Hanging punctuation — pulls opening quotes / dashes into the left
