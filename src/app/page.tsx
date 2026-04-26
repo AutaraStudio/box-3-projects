@@ -13,13 +13,12 @@ export default function Home() {
         padding: "3rem",
       }}
     >
-      <h1 style={{ fontSize: "3rem", margin: 0 }}>Home</h1>
-      <p style={{ margin: 0, opacity: 0.7 }}>
-        Click below to test the page transition.
-      </p>
+      <h1 className="text-display">Home</h1>
+      <p className="text-large">Click below to test the page transition.</p>
       <TransitionLink
         href="/about"
         pageName="About"
+        className="text-large"
         style={{
           color: "var(--theme-text)",
           textDecoration: "underline",

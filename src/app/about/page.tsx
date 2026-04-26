@@ -16,13 +16,12 @@ export default function About() {
         color: "var(--theme-text)",
       }}
     >
-      <h1 style={{ fontSize: "3rem", margin: 0 }}>About</h1>
-      <p style={{ margin: 0, opacity: 0.7 }}>
-        Dark theme. Click below to wipe back home.
-      </p>
+      <h1 className="text-display">About</h1>
+      <p className="text-large">Dark theme. Click below to wipe back home.</p>
       <TransitionLink
         href="/"
         pageName="Home"
+        className="text-large"
         style={{
           color: "var(--theme-text)",
           textDecoration: "underline",
