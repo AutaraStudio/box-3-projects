@@ -98,9 +98,14 @@
 
 :root {
   --size-unit: 16;
-  --size-container-ideal: 1440;
+  /* Design ideal raised to 1600 and the max cap lowered to match, so
+     everything on large laptops + monitors renders smaller and never
+     scales beyond the baseline. At a 1440 viewport 1rem ≈ 14.4px
+     (was 16px), and anything ≥1600 caps at 16px. Keeps the fluid
+     scaling on tablet/mobile untouched. */
+  --size-container-ideal: 1600;
   --size-container-min: 992px;
-  --size-container-max: 1920px;
+  --size-container-max: 1600px;
   --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
   --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
 }
@@ -253,7 +258,7 @@
   /* --- Border Radius ---
      Refined scale — barely-there softening rather than visible rounding.
      `full` reserved for pills / circles. */
-  --radius-sm: 0.25rem;       /* 4px at 1440  (was 0.5rem / 8) */
+  --radius-sm: 0.18rem;       /* ~2.88px at 1440 (was 0.25rem / 4) */
   --radius-md: 0.5rem;        /* 8px at 1440  (was 1rem / 16) */
   --radius-full: 100vw;       /* pills / circles — unchanged */
 
