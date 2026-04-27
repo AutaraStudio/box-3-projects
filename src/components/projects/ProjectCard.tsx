@@ -18,6 +18,7 @@
 import Image from "next/image";
 
 import SplitText from "@/components/split-text/SplitText";
+import TransitionLink from "@/components/transition/TransitionLink";
 import { urlFor } from "@/sanity/lib/image";
 import type { ProjectListItem } from "@/sanity/queries/projects";
 
@@ -43,7 +44,9 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
   const alt = project.featuredImage?.alt ?? project.title;
 
   return (
-    <article
+    <TransitionLink
+      href={`/projects/${project.slug}`}
+      pageName={project.title}
       className="project-card"
       style={{ "--ratio": ratio } as React.CSSProperties}
     >
@@ -61,14 +64,26 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
         </div>
       </div>
 
-      <div className="project-card__meta">
-        <span className="project-card__num">
-          <SplitText>{num}</SplitText>
-        </span>
-        <span className="project-card__name">
+      <div className="project-card__text">
+        <div className="project-card__meta-row">
+          <span className="project-card__num text-small text-caps">
+            {num}
+          </span>
+          {project.year ? (
+            <span className="project-card__year text-small text-caps">
+              {project.year}
+            </span>
+          ) : null}
+        </div>
+        <h3 className="project-card__title text-h4">
           <SplitText asWords>{project.title}</SplitText>
-        </span>
+        </h3>
+        {project.category?.title ? (
+          <p className="project-card__category text-small text-caps">
+            {project.category.title}
+          </p>
+        ) : null}
       </div>
-    </article>
+    </TransitionLink>
   );
 }

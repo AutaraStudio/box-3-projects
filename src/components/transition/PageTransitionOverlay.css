@@ -22,7 +22,7 @@
   /* Default value; overridable by overlay's own --transition-bg
      custom property at consumer scope. */
   --transition-bg: var(--color-brown);
-  --transition-text: var(--color-cream);
+  --transition-text: var(--color-pink);
 }
 
 .page-transition__panel {
@@ -41,12 +41,15 @@
   opacity: 0;
 }
 
+/* Typography (size / weight / leading / tracking) comes from
+   the .text-h2 utility on the JSX. CSS only sets the
+   transition-bg-aware colour, layout, and the GSAP-managed
+   initial opacity. */
 .page-transition__label {
   color: var(--transition-text);
-  font-family: var(--font-display, Georgia, serif);
-  font-size: 1.5rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  text-align: center;
+  text-wrap: balance;
+  padding: 0 var(--space-3);
   /* Hidden until the panel is mid-cover; GSAP fades it in. */
   opacity: 0;
 }

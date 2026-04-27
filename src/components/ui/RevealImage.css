@@ -1,0 +1,42 @@
+/**
+ * RevealImage
+ * ===========
+ * Wrapper starts as a 0-height strip (clip-path collapsed to the
+ * top edge); on `.is-revealed` the clip expands to fill, revealing
+ * the photograph top-to-bottom. The direct child (image / figure)
+ * sits at scale(1.06) at rest and eases back to scale(1) over a
+ * slightly longer duration so the scale settles after the clip
+ * has finished its sweep.
+ *
+ * No layout impact at rest — the wrapper retains its natural
+ * dimensions; the clip-path is purely a paint-time operation.
+ */
+
+.reveal-image {
+  position: relative;
+  overflow: hidden;
+  /* Clip from full-height to 0 — nothing visible. inset(top right
+     bottom left). Bottom: 100% means clip everything below the top
+     edge, so the visible band is empty. */
+  clip-path: inset(0 0 100% 0);
+  /* Editorial easing — same in-out cubic as the page transition,
+     so reveals across the site feel like the same family. */
+  transition: clip-path 1.2s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* The single direct child carries the scale-in. Works for
+   <Image>, <img>, <figure>, or any wrapper element you pass. */
+.reveal-image > * {
+  transform: scale(1.06);
+  transform-origin: center center;
+  transition: transform 1.4s cubic-bezier(0.19, 1, 0.22, 1);
+  will-change: transform;
+}
+
+.reveal-image.is-revealed {
+  clip-path: inset(0 0 0 0);
+}
+
+.reveal-image.is-revealed > * {
+  transform: scale(1);
+}

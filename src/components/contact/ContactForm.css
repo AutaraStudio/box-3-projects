@@ -1,0 +1,123 @@
+/**
+ * ContactForm
+ * ===========
+ * Editorial form. Inputs are bottom-hairline only — no boxed
+ * outlines — so the form reads like a stacked ledger rather than
+ * a UI dashboard. Label sits above the input in small caps muted
+ * type; a single thin underline carries focus state.
+ *
+ * Field rhythm:
+ *   - Each field is a label / input pair with a hairline below.
+ *   - Vertical gap between fields = var(--space-3).
+ *   - Two-column rows (first / last name) collapse to one column
+ *     on mobile.
+ */
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+@media (min-width: 64rem) {
+  .contact-form {
+    gap: var(--space-4);
+  }
+}
+
+/* ── Sent state ───────────────────────────────────────────────── */
+
+.contact-form--sent {
+  gap: var(--space-2);
+  padding-block: var(--space-5);
+}
+
+.contact-form--sent p {
+  margin: 0;
+  text-wrap: balance;
+}
+
+/* ── Field rows ───────────────────────────────────────────────── */
+
+.contact-form__row--split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+@media (min-width: 64rem) {
+  .contact-form__row--split {
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--space-3);
+    gap: 0;
+  }
+}
+
+/* ── Field ───────────────────────────────────────────────────── */
+
+.contact-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.contact-form__label {
+  margin: 0;
+  color: var(--theme-text-muted);
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-0-25);
+}
+
+.contact-form__required {
+  color: var(--theme-accent);
+}
+
+/* ── Input / Textarea shared ──────────────────────────────────── */
+
+.contact-form__input,
+.contact-form__textarea {
+  width: 100%;
+  background: transparent;
+  color: inherit;
+  border: 0;
+  border-bottom: 1px solid var(--theme-border);
+  padding: var(--space-1) 0 var(--space-1-25);
+  font-family: inherit;
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 0;
+  transition: border-color 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.contact-form__input:hover,
+.contact-form__textarea:hover {
+  border-bottom-color: var(--theme-border-strong);
+}
+
+.contact-form__input:focus,
+.contact-form__textarea:focus {
+  outline: 0;
+  border-bottom-color: var(--theme-text);
+}
+
+.contact-form__input::placeholder,
+.contact-form__textarea::placeholder {
+  color: var(--theme-text-muted);
+}
+
+/* ── Textarea ─────────────────────────────────────────────────── */
+
+.contact-form__textarea {
+  resize: vertical;
+  min-height: 8rem;
+  line-height: var(--line-height-snug);
+}
+
+/* ── Actions ──────────────────────────────────────────────────── */
+
+.contact-form__actions {
+  margin-top: var(--space-2);
+  display: flex;
+  justify-content: flex-start;
+}

@@ -61,6 +61,10 @@
 html,
 body {
   font-size: var(--size-font);
+  /* Strip the browser-default 8px body margin so themed sections
+     (dark hero, footer, etc.) reach the viewport edges instead of
+     leaving a cream-coloured frame around the page. */
+  margin: 0;
 }
 
 
@@ -231,11 +235,28 @@ html[data-menu-open="true"] body {
   overflow: hidden;
 }
 
+/* Hide the page scrollbar site-wide without disabling scroll —
+   Lenis is doing the smooth scrolling, the native bar is just
+   visual noise. Firefox uses scrollbar-width; WebKit/Blink need
+   the ::-webkit-scrollbar pseudo. Applied to html, body, and any
+   future scroll container that opts into the editorial look. */
+html,
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
 body {
   background-color: var(--theme-bg);
   color: var(--theme-text);
   font-family: var(--font-sans), Arial, sans-serif;
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-medium);
   font-size: var(--font-size-text-main);
   line-height: var(--line-height-snug);
   letter-spacing: var(--letter-spacing-snug);
@@ -244,6 +265,20 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Form elements don't inherit typography from <body> by default —
+   they pick up the UA stylesheet's system font (Arial-ish). Force
+   them onto the site's typeface so weight/size utilities apply. */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+  color: inherit;
 }
 
 h1,
@@ -269,8 +304,17 @@ h6 { font-size: var(--font-size-h6); line-height: var(--line-height-snug); }
 
 p {
   margin: 0;
-  font-size: var(--font-size-text-main);
-  line-height: var(--line-height-snug);
+  /* `font-size` + `line-height` intentionally NOT set here.
+     - Bare <p> inherits text-main + snug line-height from <body>
+       (same size as before, so nothing visibly changes for plain
+       paragraphs).
+     - <p> nested inside a `.text-large` / `.text-main` /
+       `.text-small` utility now inherits the parent's size, which
+       previously didn't work because an explicit element rule on
+       <p> won over inheritance. This matters most for rich-text
+       blocks (Accordion bodies, blockquotes) where the consumer
+       puts the size utility on the wrapper but doesn't control
+       the inner <p> tags. */
   text-wrap: pretty;
 }
 
@@ -362,7 +406,7 @@ p {
   font-size: var(--font-size-text-large);
   line-height: var(--line-height-snug);
   letter-spacing: var(--letter-spacing-snug);
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-medium);
   text-wrap: pretty;
 }
 
@@ -370,7 +414,7 @@ p {
   font-size: var(--font-size-text-main);
   line-height: var(--line-height-snug);
   letter-spacing: var(--letter-spacing-snug);
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-medium);
   text-wrap: pretty;
 }
 
@@ -378,7 +422,7 @@ p {
   font-size: var(--font-size-text-small);
   line-height: var(--line-height-snug);
   letter-spacing: var(--letter-spacing-snug);
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-medium);
   text-wrap: pretty;
 }
 

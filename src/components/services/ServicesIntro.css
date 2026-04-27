@@ -1,0 +1,67 @@
+/**
+ * ServicesIntro
+ * =============
+ * 5fr / 1fr / 6fr grid — heading left, body right, with the
+ * middle track left empty as deliberate whitespace. Matches
+ * SustainabilityIntro + CareersIntro for cross-page rhythm.
+ */
+
+.services-intro {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  padding-block: var(--space-7);
+  border-top: 1px solid var(--theme-border-strong);
+}
+
+@media (min-width: 64rem) {
+  .services-intro {
+    padding-block: var(--space-9);
+  }
+}
+
+.services-intro__inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+@media (min-width: 64rem) {
+  .services-intro__inner {
+    /* 5fr / 1fr / 6fr — middle track is dead space so the body
+       column starts noticeably to the right of where the heading
+       ends, instead of butting straight up against it. */
+    grid-template-columns: 5fr 1fr 6fr;
+    column-gap: 0;
+    gap: 0;
+  }
+}
+
+.services-intro__heading {
+  margin: 0;
+  text-wrap: pretty;
+  max-width: 26ch;
+}
+
+@media (min-width: 64rem) {
+  .services-intro__heading {
+    grid-column: 1 / span 1;
+  }
+}
+
+.services-intro__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+@media (min-width: 64rem) {
+  .services-intro__body {
+    grid-column: 3 / span 1;
+  }
+}
+
+.services-intro__paragraph {
+  margin: 0;
+  text-wrap: pretty;
+  max-width: 32rem;
+}

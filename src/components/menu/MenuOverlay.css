@@ -29,7 +29,10 @@
 .menu-overlay {
   position: fixed;
   inset: 0;
-  z-index: 40;
+  /* Above the Header (z-index: 50) so the overlay covers the logo +
+     menu trigger squares. The overlay carries its own close button
+     in the top-right (replacing the trigger while open). */
+  z-index: 60;
   background-color: var(--theme-bg);
   color: var(--theme-text);
   pointer-events: none;
@@ -70,12 +73,16 @@
 /* ── Grid ────────────────────────────────────────────────────────── */
 
 .menu-overlay__grid {
-  /* Mobile fallback — single column flex stack. */
+  /* Mobile fallback — single column flex stack. The Header logo +
+     trigger sit underneath the overlay (z-index above), so the grid
+     no longer reserves the var(--space-6) top band that used to
+     clear them. The right-side close button is absolute and
+     overlaps the top-right corner; the first cell on mobile is
+     Pages (left-aligned) so it has no conflict. */
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: calc(var(--space-6) + var(--space-2)) var(--space-2)
-    var(--space-2);
+  padding: var(--space-2);
   gap: var(--space-3);
   overflow-y: auto;
 }
@@ -87,9 +94,11 @@
     grid-template-rows: 1fr 1fr 1fr;
     grid-auto-flow: row;
     height: 100%;
-    /* Top padding clears the Header squares; sides go edge-to-edge
-       so the column dividers sit on real grid boundaries. */
-    padding: var(--space-6) 0 0 0;
+    /* No top padding — content rises to the very top edge. The
+       absolute close button (var(--space-6) sq) sits over the
+       top-right; the Social section adds extra top padding below
+       to keep its label clear of the button. */
+    padding: 0;
     gap: 0;
     overflow: hidden;
   }
@@ -255,15 +264,11 @@
   justify-content: space-between;
   gap: var(--space-2);
   padding: var(--space-2) var(--space-1-5);
-  min-height: 33vh;
-}
-
-@media (min-width: 64rem) {
-  .menu-overlay__project-inner {
-    /* Tighter padding so the heading + table get more breathing
-       room across the column width. */
-    padding: var(--space-2) var(--space-1-5);
-  }
+  /* Compact row — was 33vh, now ~22vh so more featured projects
+     fit on screen at once and the column reads as a tight stack
+     rather than three full-height blocks. The hairline divider on
+     each .menu-overlay__project still visually separates them. */
+  min-height: 22vh;
 }
 
 .menu-overlay__project-head {
@@ -276,93 +281,25 @@
   margin: 0;
 }
 
+/* Foot — category bottom-left, View Project bottom-right. Always
+   a horizontal row so the two corners stay anchored even on
+   narrow viewports. */
 .menu-overlay__project-foot {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  width: 100%;
-}
-
-@media (min-width: 64rem) {
-  .menu-overlay__project-foot {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: var(--space-3);
-  }
-}
-
-.menu-overlay__view-link {
-  color: inherit;
-  text-decoration: none;
-  /* Mobile (project-foot is a flex column): shrink to content
-     width so the link doesn't stretch full-width. */
-  align-self: flex-start;
-  position: relative;
-  padding-bottom: 0.15em;
-}
-
-@media (min-width: 64rem) {
-  .menu-overlay__view-link {
-    /* Desktop (project-foot is a flex row): pin to the bottom of
-       the row so the link sits flush with the bottom edge of the
-       taller details table beside it. */
-    align-self: flex-end;
-  }
-}
-.menu-overlay__view-link::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 1px;
-  background-color: currentColor;
-  transform-origin: 0 0;
-  transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
-}
-@media (hover: hover) {
-  .menu-overlay__view-link:hover::after {
-    transform-origin: 100% 0;
-    transform: scaleX(0);
-  }
-}
-
-/* ── Project details table ───────────────────────────────────────── */
-
-.menu-overlay__details {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  max-width: 22rem;
-}
-
-/* Each row is its own flex container so label sticks to the start
-   and value to the end. No row divider — the rhythm of the rows is
-   carried by tracking + alignment alone. */
-.menu-overlay__detail-row {
-  display: flex;
+  flex-direction: row;
   justify-content: space-between;
-  align-items: baseline;
-  gap: var(--space-3);
-  padding: var(--space-0-5) 0;
+  align-items: flex-end;
+  gap: var(--space-2);
+  width: 100%;
 }
 
-/* Min-widths on both columns so every row aligns vertically across
-   all 4 detail rows (and across multiple project blocks). */
-.menu-overlay__detail-label {
+.menu-overlay__project-category {
   margin: 0;
-  opacity: 0.6;
-  min-width: 6rem;
-  flex-shrink: 0;
+  color: var(--theme-text-muted);
 }
 
-.menu-overlay__detail-value {
-  margin: 0;
-  min-width: 9rem;
-  flex-shrink: 0;
-  text-align: end;
-}
+/* Project-foot is now a row at every breakpoint, so the Button
+   uses its natural inline width with no extra alignment overrides. */
 
 /* ── Sidebar sections (Contact + Social + Legal) ─────────────────── */
 
@@ -392,4 +329,41 @@
 .menu-overlay__plain-link {
   color: inherit;
   text-decoration: none;
+}
+
+/* ── Close button ─────────────────────────────────────────────────────
+   Absolute, top-right corner, sized to match the Header trigger
+   square it replaces while the menu is open. Inherits the menu's
+   theme so it reads brown bg + pink text. */
+.menu-overlay__close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--space-6);
+  height: var(--space-6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: inherit;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+  z-index: 2;
+  transition: opacity 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+@media (hover: hover) {
+  .menu-overlay__close:hover {
+    opacity: 0.8;
+  }
+}
+
+/* Bottom-row cells (Contact + Legal) — push their content to the
+   bottom of the row so they sit hard against the menu floor with
+   the same var(--space-2) padding-block as Pages, instead of
+   leaving a tall empty band beneath them. */
+.menu-overlay__contact,
+.menu-overlay__legal {
+  justify-content: flex-end;
 }

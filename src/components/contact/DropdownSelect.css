@@ -1,0 +1,202 @@
+/**
+ * DropdownSelect
+ * ==============
+ * Editorial dropdown matching the contact form's hairline language.
+ * Trigger looks identical to a regular field input; the menu opens
+ * as a panel beneath with a soft expand animation.
+ */
+
+.dropdown-select {
+  position: relative;
+  width: 100%;
+}
+
+/* Hidden input used purely for HTML5 `required` validation —
+   we point its `required` flag at the form so an unselected
+   custom dropdown blocks submission the same way a native one
+   would. Visually invisible but kept focusable to the form. */
+.dropdown-select__validity {
+  position: absolute;
+  width: 0;
+  height: 0;
+  padding: 0;
+  border: 0;
+  clip: rect(0 0 0 0);
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Trigger ──────────────────────────────────────────────────── */
+
+.dropdown-select__trigger {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-1) 0 var(--space-1-25);
+  background: transparent;
+  color: inherit;
+  border: 0;
+  border-bottom: 1px solid var(--theme-border);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 0;
+  transition:
+    border-color 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+    color 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.dropdown-select__trigger:hover {
+  border-bottom-color: var(--theme-border-strong);
+}
+
+.dropdown-select__trigger:focus-visible {
+  outline: 0;
+  border-bottom-color: var(--theme-text);
+}
+
+.dropdown-select.is-open .dropdown-select__trigger {
+  border-bottom-color: var(--theme-text);
+}
+
+.dropdown-select__trigger.is-placeholder .dropdown-select__value {
+  color: var(--theme-text-muted);
+}
+
+.dropdown-select__value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropdown-select__caret {
+  display: inline-flex;
+  align-items: center;
+  color: var(--theme-text-muted);
+  transition:
+    color 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+    transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  transform-origin: center center;
+}
+
+.dropdown-select__trigger:hover .dropdown-select__caret,
+.dropdown-select__trigger:focus-visible .dropdown-select__caret,
+.dropdown-select.is-open .dropdown-select__caret {
+  color: var(--theme-text);
+}
+
+.dropdown-select.is-open .dropdown-select__caret {
+  transform: rotate(180deg);
+}
+
+/* ── Menu panel ───────────────────────────────────────────────── */
+
+.dropdown-select__menu {
+  position: absolute;
+  top: calc(100% + var(--space-1));
+  left: 0;
+  right: 0;
+  z-index: 20;
+  /* Grid-rows trick — collapses the menu to 0fr (height 0) at
+     rest, expands to 1fr when open. Works without knowing the
+     menu's content height ahead of time. */
+  display: grid;
+  grid-template-rows: 0fr;
+  background-color: var(--theme-bg);
+  /* Subtle elevation so the menu reads as a floating panel
+     above the form. The hairline border keeps it tied to the
+     form's editorial language. */
+  border: 1px solid var(--theme-border);
+  box-shadow: 0 12px 32px
+    color-mix(in srgb, var(--theme-text) 12%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    grid-template-rows 0.35s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0.25s cubic-bezier(0.19, 1, 0.22, 1);
+  /* Pull a little down so the open feels like the panel slides
+     into place rather than appearing instantly. */
+  transform: translate3d(0, -4px, 0);
+  transition: grid-template-rows 0.35s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0.25s cubic-bezier(0.19, 1, 0.22, 1),
+    transform 0.35s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.dropdown-select.is-open .dropdown-select__menu {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate3d(0, 0, 0);
+}
+
+.dropdown-select__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  /* min-height: 0 + overflow: hidden lets the grid-rows trick
+     actually clip the panel to 0 height when collapsed. */
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── Option ───────────────────────────────────────────────────── */
+
+.dropdown-select__option {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-1-5) var(--space-2);
+  background: transparent;
+  color: inherit;
+  border: 0;
+  border-radius: 0;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  /* Small staggered slide-in via --option-index when the menu
+     opens; resets at rest. */
+  opacity: 0;
+  transform: translate3d(0, 6px, 0);
+  transition:
+    background-color 0.2s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0.3s cubic-bezier(0.19, 1, 0.22, 1)
+      calc(var(--option-index, 0) * 30ms),
+    transform 0.3s cubic-bezier(0.19, 1, 0.22, 1)
+      calc(var(--option-index, 0) * 30ms);
+}
+
+.dropdown-select.is-open .dropdown-select__option {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.dropdown-select__option:hover,
+.dropdown-select__option.is-active,
+.dropdown-select__option:focus-visible {
+  outline: 0;
+  background-color: color-mix(in srgb, var(--theme-text) 6%, transparent);
+}
+
+.dropdown-select__option.is-selected {
+  color: var(--theme-text);
+}
+
+.dropdown-select__option-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.dropdown-select__option-mark {
+  display: inline-flex;
+  align-items: center;
+  width: 0.875em;
+  color: var(--theme-text);
+  flex-shrink: 0;
+}

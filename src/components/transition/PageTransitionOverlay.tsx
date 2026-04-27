@@ -26,19 +26,34 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import { usePageTransition } from "./PageTransitionProvider";
+import { beginTransition, endTransition } from "./transitionState";
 import "./PageTransitionOverlay.css";
 
-const LEAVE_PANEL_DURATION = 0.8;
-const ENTER_PANEL_DURATION = 1.0;
-const PAGE_LIFT = "-15vh";
-const PAGE_RISE = "15vh";
-/* Editorial cubic-bezier — long pull-out, soft settle. Matches the
-   "0.625, 0.05, 0, 1" feel from the Osmo reference. */
-const EASE = "cubic-bezier(0.625, 0.05, 0, 1)";
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
+const LEAVE_PANEL_DURATION = 0.6;
+const ENTER_PANEL_DURATION = 0.7;
+/* Minimum hold once the new route has committed — gives the
+   browser two paint cycles to render the new page behind the
+   panel before the enter timeline starts revealing it. */
+const HOLD_AFTER_COMMIT = 0.2;
+/* Hard ceiling on how long we wait for a route to commit before
+   we give up and reveal anyway. Stops the panel hanging forever
+   if a navigation stalls. */
+const COMMIT_TIMEOUT = 4;
+const PAGE_LIFT = "-12vh";
+const PAGE_RISE = "12vh";
+/* Subtle in-out cubic — even acceleration on both ends so neither
+   the leave nor the enter feels punchy. Matches the "easeInOutCubic"
+   curve commonly used for full-viewport editorial wipes. */
+const EASE = "cubic-bezier(0.65, 0, 0.35, 1)";
 
 export default function PageTransitionOverlay() {
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -47,6 +62,15 @@ export default function PageTransitionOverlay() {
   const labelTextRef = useRef<HTMLSpanElement>(null);
 
   const router = useRouter();
+  const pathname = usePathname();
+  /* Mirror pathname into a ref so the imperative transition function
+     (stored on the provider's ref, not closed over from this render)
+     can read the live value without becoming a dependency of the
+     registration effect. */
+  const pathnameRef = useRef(pathname);
+  useEffect(() => {
+    pathnameRef.current = pathname;
+  }, [pathname]);
   const { registerTransition } = usePageTransition();
 
   useEffect(() => {
@@ -83,6 +107,22 @@ export default function PageTransitionOverlay() {
          can't shift the underlying page while the panel covers it. */
       lenis?.stop();
 
+      /* Mark the document as mid-transition so any reveal-on-mount /
+         reveal-on-scroll observers on the new page can defer their
+         animation until the panel has fully slid off. */
+      beginTransition();
+
+      /* Force the panel's pre-leave state in one pass so neither
+         the GPU layer nor the visibility flips on a stale frame.
+         Without this, click-to-leave can occasionally show the
+         panel for a frame at its previous yPercent before the
+         tween catches up. */
+      gsap.set(panel, {
+        yPercent: 0,
+        autoAlpha: 0,
+        willChange: "transform, opacity",
+      });
+
       /* Leave timeline — panel up, page lifts, label fades in. */
       const leave = gsap.timeline();
       leave.set(panel, { autoAlpha: 1 }, 0);
@@ -109,21 +149,59 @@ export default function PageTransitionOverlay() {
 
       await leave.then();
 
-      /* Push the new route — Next.js mounts the new page behind the
-         panel. Wait two frames so the new <main> is in the DOM and
-         scrollY can be reset before we animate it in. */
+      /* Push the new route. Next.js fetches + renders behind the
+         panel; we then *wait for the React tree to actually commit
+         the new pathname* before revealing it. Without this, async
+         server components (which take a network round-trip) leave
+         the OLD <main> in the DOM during enter — the user sees the
+         old page peeking out from behind the panel. */
+      const targetPath = new URL(href, window.location.origin).pathname;
       router.push(href);
+
+      await new Promise<void>((resolve) => {
+        if (pathnameRef.current === targetPath) {
+          resolve();
+          return;
+        }
+        const start = performance.now();
+        const tick = () => {
+          if (pathnameRef.current === targetPath) {
+            resolve();
+            return;
+          }
+          if (performance.now() - start > COMMIT_TIMEOUT * 1000) {
+            /* Stalled — give up and reveal anyway. */
+            resolve();
+            return;
+          }
+          requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      });
+
+      /* Two paint cycles after the commit so first-paint flicker
+         (image decode, font swap) doesn't peek out from behind
+         the panel as it slides off. */
       await new Promise((r) => requestAnimationFrame(r));
       await new Promise((r) => requestAnimationFrame(r));
-      /* Jump to top through Lenis when present, otherwise native. Lenis's
-         own scroll position needs to be reset alongside the document so
-         the next wheel event doesn't snap back to the previous page's
-         scroll. */
-      if (lenis) {
-        lenis.scrollTo(0, { immediate: true });
-      } else {
-        window.scrollTo(0, 0);
-      }
+
+      /* Reset scroll to the top of the new page. Three writes,
+         one belt-and-braces: the window/document are reset
+         immediately (some browsers persist scroll on history
+         navigation), and Lenis is told to jump to 0 immediately —
+         while stopped, Lenis won't tick on its own, so we also
+         poke its internal scroll value via scrollTo+immediate
+         which writes synchronously regardless of stopped state.
+         Without this, navigating to a long page (e.g. /projects)
+         can leave the user landed mid-page with the sticky filter
+         bar already past its trigger. */
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      lenis?.scrollTo(0, { immediate: true, force: true });
+
+      /* Short held beat once we know the new page has rendered. */
+      await new Promise((r) => setTimeout(r, HOLD_AFTER_COMMIT * 1000));
 
       /* Enter timeline — panel continues up off the top, new page rises. */
       const newMain = getMain();
@@ -154,6 +232,21 @@ export default function PageTransitionOverlay() {
         0,
       );
 
+      /* Release the transition flag mid-enter so the new page's
+         reveal observers (Heading, RevealStack, RevealImage) can
+         start animating *in parallel* with the panel sliding off,
+         rather than waiting until the panel is fully gone. The
+         user sees content appearing as the panel uncovers it,
+         which feels continuous instead of staggered.
+
+         Refreshing ScrollTrigger up front (still safe — newMain's
+         enter transform is small and uniform across the whole
+         body, so trigger positions resolve correctly) means any
+         scroll-driven animations on the new page also rebuild
+         in time. */
+      ScrollTrigger.refresh();
+      endTransition();
+
       await enter.then();
 
       /* Reset for next run. */
@@ -169,7 +262,7 @@ export default function PageTransitionOverlay() {
   return (
     <div ref={overlayRef} className="page-transition" aria-hidden="true">
       <div ref={panelRef} className="page-transition__panel">
-        <span ref={labelRef} className="page-transition__label">
+        <span ref={labelRef} className="page-transition__label text-h2">
           <span ref={labelTextRef} />
         </span>
       </div>

@@ -1,0 +1,225 @@
+/**
+ * AboutTeam
+ * =========
+ * Two-column layout — sticky aside on the left, grouped team
+ * tiles on the right. Same pattern as SustainabilityPrinciples,
+ * just with grouped tile grids instead of an indexed list.
+ */
+
+.about-team {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  padding-block: var(--space-7);
+  border-top: 1px solid var(--theme-border-strong);
+}
+
+@media (min-width: 64rem) {
+  .about-team {
+    padding-block: var(--space-9);
+  }
+}
+
+.about-team__inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+@media (min-width: 64rem) {
+  .about-team__inner {
+    grid-template-columns: 1fr 2fr;
+    column-gap: var(--space-7);
+  }
+}
+
+/* ── Sticky aside ─────────────────────────────────────────── */
+
+.about-team__aside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+@media (min-width: 64rem) {
+  .about-team__aside {
+    /* Pin below the fixed site header (Header.css min-height
+       is --space-6); --space-7 gives 1rem clearance. Same offset
+       the other sticky asides on the site use (Sustainability
+       Principles, Careers Why Work, etc.). */
+    position: sticky;
+    top: var(--space-7);
+    align-self: start;
+    gap: var(--space-3);
+  }
+}
+
+.about-team__label {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+.about-team__heading {
+  margin: 0;
+  text-wrap: balance;
+  max-width: 14ch;
+}
+
+/* Optional CTA — sticky-aside button under the intro. Sticky
+   means the button stays in view while the user scans the
+   team groups, which is the affordance we want. */
+.about-team__cta {
+  margin-top: var(--space-1);
+}
+
+.about-team__intro {
+  margin: 0;
+  text-wrap: pretty;
+  max-width: 32rem;
+}
+
+/* ── Right column — vertical stack of grouped tiles ───────── */
+
+.about-team__groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+}
+
+@media (min-width: 64rem) {
+  .about-team__groups {
+    gap: var(--space-9);
+  }
+}
+
+.about-team__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  /* Top hairline so the group title reads as a labelled section
+     break rather than another tile row. */
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--theme-border-strong);
+}
+
+@media (min-width: 64rem) {
+  .about-team__group {
+    gap: var(--space-4);
+    padding-top: var(--space-4);
+  }
+}
+
+.about-team__group-title {
+  margin: 0;
+  text-wrap: balance;
+  color: var(--theme-text);
+}
+
+/* ── Tile grid ────────────────────────────────────────────── */
+
+.about-team__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: var(--space-3);
+  row-gap: var(--space-5);
+}
+
+@media (min-width: 48rem) {
+  .about-team__list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 64rem) {
+  .about-team__list {
+    column-gap: var(--space-4);
+    row-gap: var(--space-6);
+  }
+}
+
+.about-team__item {
+  margin: 0;
+  min-width: 0;
+}
+
+.about-team__link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ── Tile ─────────────────────────────────────────────────── */
+
+.about-team__tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Linked-tile hover wash — soft accent halo behind the tile,
+   same gesture used on the project-detail team tiles. */
+.about-team__tile--link::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(100% + var(--space-3));
+  height: calc(100% + var(--space-3));
+  transform: translate3d(-50%, -50%, 0);
+  opacity: 0;
+  background-color: color-mix(
+    in srgb,
+    var(--theme-accent) 16%,
+    transparent
+  );
+  transition: opacity 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  .about-team__link:hover .about-team__tile--link::before {
+    opacity: 1;
+  }
+}
+
+/* ── Media ────────────────────────────────────────────────── */
+
+.about-team__media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background-color: color-mix(in srgb, var(--theme-text) 8%, var(--theme-bg));
+}
+
+.about-team__image {
+  object-fit: cover;
+  object-position: center top;
+}
+
+.about-team__image--placeholder {
+  position: absolute;
+  inset: 0;
+  background-color: color-mix(in srgb, var(--theme-text) 8%, var(--theme-bg));
+}
+
+/* ── Info ─────────────────────────────────────────────────── */
+
+.about-team__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-25);
+}
+
+.about-team__name {
+  margin: 0;
+  text-wrap: balance;
+}
+
+.about-team__qual,
+.about-team__role {
+  margin: 0;
+  color: var(--theme-text-muted);
+}

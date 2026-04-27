@@ -1,0 +1,119 @@
+/**
+ * HomeCTA
+ * =======
+ * Pinned, full-viewport closing panel. Pink resting state, dark
+ * wipe scrubbed in from the left. All colour decisions go through
+ * `--theme-*` tokens — the section is `data-theme="pink"`, the
+ * wipe + clip-layer are `data-theme="dark"`. Re-theming is a one-
+ * line attribute change.
+ */
+
+.home-cta {
+  position: relative;
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  /* Section reserves a full viewport so the pin has somewhere to
+     hold. Min-height covers the case where 100vh is shorter than
+     the heading + button stack on landscape mobile. */
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.home-cta__stage {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 720px;
+}
+
+/* ── Dark wipe ─────────────────────────────────────────────────
+   Absolutely-positioned panel that grows from width 0 to 100%
+   under scrub. Theme set to `dark` so its background pulls from
+   --theme-bg in that scope rather than hardcoding a primitive. */
+.home-cta__wipe {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0%;
+  background-color: var(--theme-bg);
+  z-index: 1;
+  will-change: width;
+}
+
+/* ── Content layers ────────────────────────────────────────────
+   Both layers are absolutely-positioned full-bleed flex stacks
+   with identical content. Z-order:
+     wipe   (z 1)  → coloured backdrop
+     base   (z 2)  → resting-state text, pink theme inherited
+     clip   (z 3)  → dark-theme text, clip-path opens to reveal */
+.home-cta__layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--space-1-5);
+  padding: var(--space-3-5);
+  color: var(--theme-text);
+}
+
+@media (min-width: 64rem) {
+  .home-cta__layer {
+    gap: var(--space-2);
+    padding: var(--space-5);
+  }
+}
+
+.home-cta__layer--base {
+  z-index: 2;
+}
+
+.home-cta__layer--clip {
+  z-index: 3;
+  pointer-events: none;
+  /* Initially clipped from the right edge — the GSAP timeline
+     animates this to inset(0 0% 0 0) in lockstep with the wipe. */
+  clip-path: inset(0 100% 0 0);
+  will-change: clip-path;
+}
+
+/* ── Heading ───────────────────────────────────────────────────
+   text-display already supplies size + line-height +
+   letter-spacing; only the line-stacking behaviour is local. */
+
+.home-cta__heading {
+  margin: 0;
+}
+
+.home-cta__heading-line {
+  display: block;
+}
+
+/* ── Button ───────────────────────────────────────────────────
+   The button uses the site-wide editorial Button component and
+   inherits `currentColor` — so it auto-themes via the layer's
+   `--theme-text` value (brown in base, pink in clip). */
+
+.home-cta__actions {
+  margin-top: var(--space-1);
+}
+
+@media (min-width: 64rem) {
+  .home-cta__actions {
+    margin-top: var(--space-2);
+  }
+}
+
+/* ── Reduced motion ────────────────────────────────────────────
+   When the user prefers reduced motion, the JS skips creating
+   the ScrollTrigger so the wipe never animates. The clip layer
+   stays in its initial fully-clipped state via the static rule
+   above, so the section just reads as a pink CTA without the
+   transition. */
+@media (prefers-reduced-motion: reduce) {
+  .home-cta__layer--clip {
+    display: none;
+  }
+}

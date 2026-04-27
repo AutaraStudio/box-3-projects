@@ -1,0 +1,103 @@
+/**
+ * ServicesList
+ * ============
+ * Section label above a registry-style list of service
+ * categories. Hairlines + the directional hover-tile come from
+ * the <DirectionalHoverList> primitive — this file only owns
+ * the row-content layout (index gutter + title + description).
+ */
+
+.services-list {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  padding-block: var(--space-7);
+  border-top: 1px solid var(--theme-border-strong);
+}
+
+@media (min-width: 64rem) {
+  .services-list {
+    padding-block: var(--space-9);
+  }
+}
+
+.services-list__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@media (min-width: 64rem) {
+  .services-list__inner {
+    gap: var(--space-6);
+  }
+}
+
+.services-list__label {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+/* Optional CTA — right-aligned beneath the list so it reads as
+   a deliberate next-step closer rather than mid-list noise. */
+.services-list__cta {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ── Row content ──────────────────────────────────────────────── */
+
+/* Each row's clickable region — overrides the primitive's default
+   flex layout with a 3-col baseline grid: index gutter | title |
+   description. On mobile the description drops to a second row
+   beneath the title for legibility. */
+.services-list__row {
+  display: grid;
+  grid-template-columns: var(--space-4) 1fr;
+  grid-template-areas:
+    "index title"
+    ".     description";
+  align-items: baseline;
+  column-gap: var(--space-2);
+  row-gap: var(--space-1);
+  padding: var(--space-3) var(--space-1-5);
+}
+
+@media (min-width: 64rem) {
+  .services-list__row {
+    /* Desktop — title on the left side of the row, description
+       sat to the right. Description column tightened (3fr → was
+       4fr) so the supporting copy reads as a tighter footnote
+       rather than stretching to the row's right edge. */
+    grid-template-columns: var(--space-6) 6fr 3fr;
+    grid-template-areas: "index title description";
+    column-gap: var(--space-4);
+    row-gap: 0;
+    padding: var(--space-4) var(--space-1-5);
+    align-items: end;
+  }
+}
+
+.services-list__index {
+  grid-area: index;
+  margin: 0;
+  color: var(--theme-text-muted);
+  /* Tabular numerals so leading zeros align down the gutter. */
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.services-list__title {
+  grid-area: title;
+  margin: 0;
+  text-wrap: balance;
+  color: var(--theme-text);
+}
+
+.services-list__description {
+  grid-area: description;
+  margin: 0;
+  text-wrap: pretty;
+  /* Tight measure so the description column reads as a short
+     supporting note rather than running edge-to-edge. */
+  max-width: 22rem;
+}

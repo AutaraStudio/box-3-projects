@@ -1,0 +1,110 @@
+/**
+ * SustainabilityCommitment
+ * ========================
+ * Header above a 3-col grid. Each pillar item is index +
+ * heading + body, separated by a top hairline so they read
+ * as a ledger row rather than a card.
+ */
+
+.sustainability-commitment {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  padding-block: var(--space-7);
+  border-top: 1px solid var(--theme-border-strong);
+}
+
+@media (min-width: 64rem) {
+  .sustainability-commitment {
+    padding-block: var(--space-9);
+  }
+}
+
+.sustainability-commitment__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+@media (min-width: 64rem) {
+  .sustainability-commitment__inner {
+    gap: var(--space-7);
+  }
+}
+
+/* ── Head ─────────────────────────────────────────────────────── */
+
+.sustainability-commitment__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  /* Widened from 32rem so the headline doesn't wrap onto extra
+     lines unnecessarily. */
+  max-width: 50rem;
+}
+
+.sustainability-commitment__label {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+.sustainability-commitment__heading {
+  margin: 0;
+  text-wrap: balance;
+}
+
+/* ── Pillars grid ─────────────────────────────────────────────── */
+
+.sustainability-commitment__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+@media (min-width: 64rem) {
+  .sustainability-commitment__list {
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: var(--space-5);
+    gap: 0;
+  }
+}
+
+.sustainability-commitment__item {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--theme-border-strong);
+  min-width: 0;
+}
+
+@media (min-width: 64rem) {
+  .sustainability-commitment__item {
+    padding-top: var(--space-4);
+    gap: var(--space-2);
+  }
+}
+
+.sustainability-commitment__index {
+  margin: 0;
+  color: var(--theme-text-muted);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.sustainability-commitment__item-title {
+  margin: 0;
+  text-wrap: balance;
+}
+
+.sustainability-commitment__item-body {
+  margin: 0;
+  text-wrap: pretty;
+  /* Pull the measure in slightly so each pillar paragraph reads
+     as a tight column rather than filling its full grid track —
+     leaves a comfortable gutter to the right of the copy. */
+  max-width: 26rem;
+}

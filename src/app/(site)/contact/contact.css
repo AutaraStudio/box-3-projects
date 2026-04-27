@@ -1,0 +1,104 @@
+/**
+ * Contact page
+ * ============
+ * Top hero with a large display heading; below, a 2-col row with
+ * the small caps label + intro paragraph on the left and the form
+ * on the right.
+ */
+
+.contact-page {
+  /* Top padding clears the fixed header squares (var(--space-6))
+     and adds breathing room beneath them so the heading doesn't
+     read as cramped under the BOX 3 / Menu chips. */
+  padding-top: calc(var(--space-6) + var(--space-7));
+  padding-bottom: var(--space-9);
+}
+
+@media (min-width: 64rem) {
+  .contact-page {
+    padding-top: calc(var(--space-6) + var(--space-9));
+    padding-bottom: var(--space-9);
+  }
+}
+
+/* ── Hero ─────────────────────────────────────────────────────── */
+
+.contact-page__hero {
+  padding-bottom: var(--space-7);
+}
+
+@media (min-width: 64rem) {
+  .contact-page__hero {
+    padding-bottom: var(--space-9);
+  }
+}
+
+.contact-page__heading {
+  margin: 0;
+  text-wrap: balance;
+  /* Pull-back from the h1 token so an extra-long question doesn't
+     spill the layout — caps at a comfortable display measure. */
+  max-width: 22ch;
+}
+
+/* ── Body — 2-col row ─────────────────────────────────────────── */
+
+.contact-page__body {
+  border-top: 1px solid var(--theme-border-strong);
+  padding-top: var(--space-5);
+}
+
+@media (min-width: 64rem) {
+  .contact-page__body {
+    padding-top: var(--space-7);
+  }
+}
+
+.contact-page__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+@media (min-width: 64rem) {
+  .contact-page__grid {
+    grid-template-columns: 5fr 7fr;
+    column-gap: var(--space-7);
+    gap: 0;
+  }
+}
+
+/* ── Intro column ─────────────────────────────────────────────── */
+
+.contact-page__intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+@media (min-width: 64rem) {
+  .contact-page__intro {
+    /* Sticky on desktop so the intro stays beside the form even
+       on long-form messages. */
+    position: sticky;
+    top: var(--space-7);
+    align-self: start;
+  }
+}
+
+.contact-page__label {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+.contact-page__lede {
+  margin: 0;
+  text-wrap: pretty;
+  max-width: 28rem;
+}
+
+/* ── Form column ──────────────────────────────────────────────── */
+
+.contact-page__form-wrap {
+  min-width: 0;
+}

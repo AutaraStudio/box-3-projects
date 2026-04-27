@@ -1,0 +1,252 @@
+/**
+ * SustainabilityStats
+ * ===================
+ * Editorial impact band — staircase of square benefit cards on
+ * desktop, alternating left/right rows on mobile. Adapted from
+ * the AnucHome `blockBenefits` pattern.
+ *
+ * Layout intent (desktop):
+ *   - N-col grid (N = card count, max 4). Each column has N square
+ *     cells stacked; the card occupies cell `i` in column `i`, the
+ *     others are empty. Cards form a diagonal stair-step.
+ *   - Each card is `position: sticky; top: var(--space-3)`. As the
+ *     user scrolls, they pin to viewport top in sequence.
+ *   - Vertical hairlines between columns animate scaleY 0 → 1 from
+ *     top, scrubbed to scroll progress (driven by JS, see TSX).
+ */
+
+.sustainability-stats {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  padding-block: var(--space-5);
+  border-top: 1px solid
+    color-mix(in srgb, var(--theme-text) 18%, transparent);
+}
+
+@media (min-width: 64rem) {
+  .sustainability-stats {
+    padding-block: var(--space-7);
+  }
+}
+
+.sustainability-stats__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  /* `--head-offset` is the height of the sticky head band — used
+     by the staircase cards to pin BELOW the head rather than
+     behind it. Sized generously from: label + gap + h2 + padding
+     ≈ 14rem with breathing room. If a longer headline wraps the
+     h2 onto extra lines, bump this to match. */
+  --head-offset: 14rem;
+}
+
+@media (min-width: 64rem) {
+  .sustainability-stats__inner {
+    gap: var(--space-7);
+  }
+}
+
+/* ── Head ─────────────────────────────────────────────────────── */
+
+.sustainability-stats__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-width: 50rem;
+  /* Sticky to the top of the viewport so the label + h2 stay
+     visible the entire time the staircase below is being
+     scrolled past. `top: var(--space-7)` clears the 6rem fixed
+     site header (Header.css `min-height: --space-6`) with a
+     1rem breathing margin — without this the eyebrow label
+     gets covered by the header bar. Background covers scrolling
+     content beneath so the heading doesn't read as overlaid
+     text. z-index pushes it above the sticky cards in case they
+     ever vertically overlap during a fast scroll. */
+  position: sticky;
+  top: var(--space-7);
+  background-color: var(--theme-bg);
+  z-index: 3;
+  /* Bottom padding so the head's bottom edge has breathing room
+     against the first card's top border when both are pinned. */
+  padding-bottom: var(--space-3);
+}
+
+.sustainability-stats__head-label {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+.sustainability-stats__heading {
+  margin: 0;
+  text-wrap: balance;
+}
+
+/* ── Staircase wrapper ────────────────────────────────────────── */
+
+/* Position-relative so the absolute dividers anchor here. NO
+   overflow:hidden — would create a new scroll context and break
+   the sticky cards inside. */
+.sustainability-stats__staircase {
+  position: relative;
+}
+
+/* ── Desktop grid ─────────────────────────────────────────────── */
+
+.sustainability-stats__grid--desktop {
+  display: none;
+}
+
+@media (min-width: 64rem) {
+  .sustainability-stats__grid--desktop {
+    display: grid;
+    /* `--cols` is set inline by the component (1 → MAX_CARDS).
+       Falls back to 4 for visual symmetry if the var isn't set. */
+    grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
+  }
+
+  .sustainability-stats__grid--mobile {
+    display: none;
+  }
+}
+
+.sustainability-stats__col {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Empty cell — square placeholder that pushes the card to its
+   diagonal row position. `pointer-events: none` so the empty
+   areas don't intercept hover/click on anything beneath. */
+.sustainability-stats__cell {
+  aspect-ratio: 1 / 1;
+  pointer-events: none;
+}
+
+/* ── Card ─────────────────────────────────────────────────────── */
+
+.sustainability-stats__card {
+  position: sticky;
+  /* Pin offset = head's sticky top (clears the fixed site
+     header) + the sticky head's height, so cards pin BELOW
+     the head band rather than behind it. The `--head-offset`
+     var lives on `__inner`. */
+  top: calc(var(--space-7) + var(--head-offset));
+  display: flex;
+  flex-direction: column;
+  /* Top-aligned — value reads as the dominant heading, with the
+     label sitting tight underneath and the footnote at the
+     bottom of that stack. No empty space splitting the card. */
+  justify-content: flex-start;
+  gap: var(--space-1);
+  aspect-ratio: 1 / 1;
+  padding: var(--space-2);
+  margin: 0;
+  /* Opaque card surface (matches the section bg so it reads as
+     the same field, just with a higher stacking layer). When
+     scrolling past, this background obscures the sticky head
+     beneath any time the two would otherwise visually overlap —
+     cards always win. */
+  background-color: var(--theme-bg);
+  /* Above the head (z-index 3) and dividers (z-index 1). When a
+     card scrolls into the head's zone during scroll-past, the
+     card paints on top so the head doesn't read as "over the
+     blocks". */
+  z-index: 4;
+}
+
+@media (min-width: 64rem) {
+  .sustainability-stats__card {
+    padding: var(--space-3);
+    gap: var(--space-2);
+  }
+}
+
+/* The big number — first child, acts as the card's heading. */
+.sustainability-stats__card-value {
+  margin: 0;
+  color: var(--theme-text);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  /* Tighter leading than the .text-display default — makes the
+     number feel chiselled rather than display-spaced. */
+  line-height: 0.9;
+  /* Margin-bottom over `gap` so the value's deliberate space
+     below it is independent of the label/footnote gap. */
+  margin-bottom: var(--space-1-5);
+}
+
+.sustainability-stats__card-label {
+  margin: 0;
+  color: var(--theme-text);
+  text-wrap: pretty;
+  max-width: 22rem;
+}
+
+.sustainability-stats__card-footnote {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+/* ── Mobile grid ──────────────────────────────────────────────── */
+
+@media (max-width: 63.99rem) {
+  .sustainability-stats__grid--mobile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .sustainability-stats__mobile-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+  }
+
+  /* Alternate sides — even rows in col-1, odd rows in col-2. */
+  .sustainability-stats__mobile-row[data-position="right"]
+    > .sustainability-stats__card {
+    grid-column-start: 2;
+  }
+
+  /* On mobile each card sits in its own row in the natural
+     flow — no sticky pinning (single-column scroll doesn't
+     benefit from the staircase narrative). The 0.7:1 ratio
+     matches the reference's mobile aspect, taller than wide
+     so the value reads as the focal point. */
+  .sustainability-stats__mobile-row .sustainability-stats__card {
+    position: relative;
+    top: auto;
+    aspect-ratio: 0.7 / 1;
+  }
+}
+
+/* ── Dividers ─────────────────────────────────────────────────── */
+
+/* Static vertical hairlines between columns — full-height from
+   the start, no animation. Define the column boundaries against
+   which the staircase cards sit. */
+.sustainability-stats__dividers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  display: none;
+}
+
+@media (min-width: 64rem) {
+  .sustainability-stats__dividers {
+    display: block;
+  }
+}
+
+.sustainability-stats__divider {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background-color:
+    color-mix(in srgb, var(--theme-text) 22%, transparent);
+  /* `left` is set inline by the component to position each
+     divider at column boundaries (25 / 50 / 75% for 4 cols). */
+}

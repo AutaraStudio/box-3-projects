@@ -34,6 +34,7 @@ import { gsap } from "gsap";
 
 import SplitText from "@/components/split-text/SplitText";
 import TransitionLink from "@/components/transition/TransitionLink";
+import Button from "@/components/ui/Button";
 import { useMenu } from "./MenuProvider";
 import "./MenuOverlay.css";
 
@@ -60,16 +61,11 @@ interface PageLink {
   href: string;
 }
 
-interface ProjectDetail {
-  label: string;
-  value: string;
-}
-
 interface FeaturedProject {
   title: string;
   href: string;
-  /** Up to 4 label/value rows shown beneath the project title. */
-  details: ProjectDetail[];
+  /** Optional category label, shown bottom-left of the project block. */
+  category?: string;
 }
 
 interface ExternalLink {
@@ -226,6 +222,19 @@ export default function MenuOverlay({
         aria-hidden="true"
       />
 
+      {/* Close button — absolute top-right, sized to match the
+          Header trigger square. The menu sits above the Header so
+          the trigger is hidden; this provides the close affordance
+          in its place. */}
+      <button
+        type="button"
+        className="menu-overlay__close link text-h6 text-caps"
+        onClick={close}
+        aria-label="Close menu"
+      >
+        <SplitText>Close</SplitText>
+      </button>
+
       <div className="menu-overlay__grid">
         {/* ── Pages — left col, spans 3×2 ───────────────────────── */}
         <nav className="menu-overlay__pages" aria-label="Pages">
@@ -348,11 +357,12 @@ function FeaturedProjectBlock({
   return (
     <article className="menu-overlay__project">
       <div className="menu-overlay__project-inner">
+        {/* Title — top-left */}
         <header className="menu-overlay__project-head">
           <p className="menu-overlay__label text-small text-caps">
             Featured Project
           </p>
-          <h3 className="menu-overlay__project-title text-h3">
+          <h3 className="menu-overlay__project-title text-h4">
             <TransitionLink
               href={project.href}
               pageName={project.title}
@@ -364,28 +374,24 @@ function FeaturedProjectBlock({
           </h3>
         </header>
 
+        {/* Foot — category bottom-left, View Project button bottom-right. */}
         <div className="menu-overlay__project-foot">
-          <TransitionLink
+          {project.category ? (
+            <p className="menu-overlay__project-category text-small text-caps">
+              {project.category}
+            </p>
+          ) : (
+            <span aria-hidden="true" />
+          )}
+          <Button
             href={project.href}
             pageName={project.title}
-            className="menu-overlay__view-link link text-small text-caps"
+            size="sm"
+            className="menu-overlay__view-link"
             onClick={onLinkClick}
           >
-            <SplitText asWords>View Project →</SplitText>
-          </TransitionLink>
-
-          <dl className="menu-overlay__details">
-            {project.details.slice(0, 4).map((detail) => (
-              <div key={detail.label} className="menu-overlay__detail-row">
-                <dt className="text-small text-caps menu-overlay__detail-label">
-                  {detail.label}
-                </dt>
-                <dd className="text-small text-caps menu-overlay__detail-value">
-                  {detail.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
+            View Project →
+          </Button>
         </div>
       </div>
     </article>

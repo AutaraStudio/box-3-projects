@@ -1,0 +1,130 @@
+/**
+ * CareersWhyWork
+ * ==============
+ * 2-col on desktop: small caps label on the left (sticky), the
+ * indexed list on the right. Each list row is a 2-col mini-grid
+ * itself: padded index + title/body content.
+ */
+
+.careers-why {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  padding-block: var(--space-7);
+  border-top: 1px solid var(--theme-border-strong);
+}
+
+@media (min-width: 64rem) {
+  .careers-why {
+    padding-block: var(--space-9);
+  }
+}
+
+.careers-why__inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+@media (min-width: 64rem) {
+  .careers-why__inner {
+    grid-template-columns: 1fr 2fr;
+    column-gap: var(--space-7);
+  }
+}
+
+/* ── Header column ────────────────────────────────────────────── */
+
+.careers-why__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+}
+
+@media (min-width: 64rem) {
+  .careers-why__head {
+    /* Sticky on desktop so the label stays beside the list as
+       the eye runs down a long set of items. */
+    position: sticky;
+    top: var(--space-7);
+    align-self: start;
+  }
+}
+
+.careers-why__label {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+/* Optional CTA — sits in the right column on desktop (under the
+   list) and stacks naturally on mobile. */
+.careers-why__cta {
+  margin-top: var(--space-2);
+}
+
+@media (min-width: 64rem) {
+  .careers-why__cta {
+    grid-column: 2;
+    margin-top: var(--space-3);
+  }
+}
+
+/* ── Items list ───────────────────────────────────────────────── */
+
+.careers-why__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid var(--theme-border-strong);
+}
+
+.careers-why__item {
+  display: grid;
+  grid-template-columns: var(--space-4) 1fr;
+  align-items: baseline;
+  column-gap: var(--space-2);
+  padding-block: var(--space-4);
+  border-top: 1px solid var(--theme-border-strong);
+}
+
+@media (min-width: 64rem) {
+  .careers-why__item {
+    grid-template-columns: var(--space-6) 1fr;
+    column-gap: var(--space-4);
+    padding-block: var(--space-5);
+  }
+}
+
+.careers-why__index {
+  margin: 0;
+  color: var(--theme-text-muted);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.careers-why__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+@media (min-width: 64rem) {
+  .careers-why__content {
+    gap: var(--space-3);
+  }
+}
+
+.careers-why__title {
+  margin: 0;
+  text-wrap: balance;
+  color: var(--theme-text);
+}
+
+.careers-why__body {
+  margin: 0;
+  text-wrap: pretty;
+  /* Tightened measure so the body wraps at ~50 chars per line
+     at .text-large scale — keeps the prose comfortable to read
+     instead of running edge-to-edge of the column. */
+  max-width: 32rem;
+}

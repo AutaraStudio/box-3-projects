@@ -2,10 +2,25 @@
  * SplitText
  * =========
  * Char / word "roll-over" hover effect. The visible row's tokens
- * translate up out of the mask while the clone row's tokens — which
- * sit absolutely on top, offset 100% below the line — translate up
- * into view. Per-token stagger via `--index` set inline by the
- * SplitText component.
+ * translate up out of their per-token mask while the clone row's
+ * tokens — which sit absolutely on top of the visible row, offset
+ * 100% below the line — translate up into view. Per-token stagger
+ * via `--index` set inline by the SplitText component.
+ *
+ * Mask layering (top → bottom):
+ *   .split             — outer wrapper
+ *     .split__text     — visible row (in flow)
+ *       .split__mask   — kept for legacy; redundant once each token
+ *                        has its own mask, but cheap to keep + acts
+ *                        as a belt-and-braces clipper for any
+ *                        sub-pixel bleed at line edges.
+ *         .char|.word          ← per-token MASK (overflow: hidden)
+ *           .char__inner|.word__inner ← the element that translates
+ *
+ * Per-token masking matters most for `asWords` headings that wrap
+ * across multiple lines — each word gets its own clipping window
+ * so the slide reads as crisp per-word motion rather than the whole
+ * multi-line block translating inside one tall outer mask.
  *
  * The hover trigger is a `.link` ancestor. Anchors and buttons that
  * should run the effect carry the `.link` class on the outer
@@ -35,8 +50,61 @@
   margin-bottom: -0.05em;
 }
 
+/* ── Per-token mask + inner ──────────────────────────────────── */
+
+/* Both token kinds share the inline-block shell so the inner can
+   be transformed inside without breaking flow. */
 .split__mask .char,
 .split__mask .word {
+  display: inline-block;
+  position: relative;
+  vertical-align: top;
+  /* Preserve whitespace inside inline-block tokens so a per-char
+     space ("Carlton Gardens") doesn't collapse to zero width. */
+  white-space: pre;
+}
+
+/* Char-mode word grouping — wraps each run of non-whitespace
+   chars in a no-wrap inline-block so the browser doesn't pick a
+   line-break opportunity between adjacent chars within a word.
+   Without this, char-mode headings can break mid-word at any
+   inline-block boundary ("re-used" snapping to "r" + "e-used").
+   Whitespace between groups is rendered as a plain text node, so
+   the browser still breaks naturally between words. */
+.split__mask .char-group {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Per-token clip — each token (char OR word) is its own clipping
+   window. `overflow: clip` (rather than `hidden`) doesn't force a
+   new scroll context, and `overflow-clip-margin` lets the
+   rightmost glyph's anti-alias and descender tails bleed a sub-
+   pixel past the box edge without being trimmed. Critically, the
+   slide animation translates the inner by 105% which is far
+   greater than the clip-margin, so the slide IS still clipped
+   away when the inner is parked off-position.
+   Per-char clipping (in addition to per-word) is needed because
+   the outer .split__mask spans the full multi-line height of a
+   wrapped heading. Without per-char clipping, chars on the first
+   line of a 2-line heading would translate down into the second
+   line's position — still inside the outer mask, so visible at
+   the wrong place — and slide up from there. With per-char
+   clipping each char's inner is clipped against its own box, so
+   line-1 chars are properly hidden until they reach their final
+   position. */
+.split__mask .word,
+.split__mask .char {
+  overflow: clip;
+  /* Sub-pixel breathing room around the clip box — enough to
+     absorb glyph anti-aliasing and descender tails without being
+     visible during the slide animation. */
+  overflow-clip-margin: 0.05em;
+}
+
+/* The inner is what moves — transforms below target this element. */
+.split__mask .char__inner,
+.split__mask .word__inner {
   display: inline-block;
   will-change: transform;
 }
@@ -49,50 +117,52 @@
   pointer-events: none;
 }
 
-/* Reveal-on-scroll mode — opt-in via the `revealOnScroll` prop on
-   <SplitText>, which adds `data-observe` to the wrapper. Chars / words
-   start parked below the mask line and slide up to position once the
-   IntersectionObserver flips `is-inview`. Per-token --index spreads the
-   stagger via transition-delay. */
-.split[data-observe] .char,
-.split[data-observe] .word {
+/* ── Reveal-on-scroll mode ───────────────────────────────────── */
+
+/* Opt-in via the `revealOnScroll` prop on <SplitText>, which adds
+   `data-observe` to the wrapper. Inners start parked below their
+   own mask line and slide up to position once the
+   IntersectionObserver flips `is-inview`. Per-token --index spreads
+   the stagger via transition-delay. */
+.split[data-observe] .char__inner,
+.split[data-observe] .word__inner {
   transform: translate3d(0, 105%, 0);
   transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1)
     calc(var(--index, 0) * 15ms);
 }
-.split[data-observe].is-inview .char,
-.split[data-observe].is-inview .word {
+.split[data-observe].is-inview .char__inner,
+.split[data-observe].is-inview .word__inner {
   transform: translateZ(0);
 }
 /* Words tend to read better with a slightly heavier stagger. */
-.split[data-observe] .word {
+.split[data-observe] .word__inner {
   transition-delay: calc(var(--index, 0) * 45ms);
 }
 
-/* Hover behaviour — only on devices that can hover. The parent
-   .link rule activates per-token transitions; the parent .link:hover
-   rule swaps the offset.
+/* ── Hover roll-over ─────────────────────────────────────────── */
 
+/* Only on devices that can hover. The parent `.link` rule activates
+   per-token transitions; the parent `.link:hover` rule swaps the
+   offset.
    Easing: cubic-bezier(0.19, 1, 0.22, 1) — long pull-out + soft
    settle, matches the editorial reference. Inline because no token
-   covers it yet (and only used here + in the menu).
-*/
+   covers it yet (and only used here + in the menu). */
 @media (hover: hover) and (pointer: fine) {
-  .link .split__text .char,
-  .link .split__text .word {
+  .link .split__text .char__inner,
+  .link .split__text .word__inner {
     transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1)
                 calc(var(--index, 0) * 2.4ms);
   }
-  .link .split__text--clone .char,
-  .link .split__text--clone .word {
+  .link .split__text--clone .char__inner,
+  .link .split__text--clone .word__inner {
     transform: translate3d(0, 100%, 0);
   }
-  .link:hover .split__text:not(.split__text--clone) .char,
-  .link:hover .split__text:not(.split__text--clone) .word {
+  .link:hover .split__text:not(.split__text--clone) .char__inner,
+  .link:hover .split__text:not(.split__text--clone) .word__inner {
     transform: translate3d(0, -100%, 0);
   }
-  .link:hover .split__text--clone .char,
-  .link:hover .split__text--clone .word {
+  .link:hover .split__text--clone .char__inner,
+  .link:hover .split__text--clone .word__inner {
     transform: translate3d(0, 0, 0);
   }
 }

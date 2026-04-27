@@ -16,10 +16,42 @@
   justify-content: space-between;
   align-items: stretch;
   pointer-events: none;
+  /* Reserve the same height as the squares so the backdrop has
+     something to fill — the squares themselves are explicitly sized,
+     this keeps the header itself the same height. */
+  min-height: var(--space-6);
+}
+
+/* Backdrop — fills the full header width + height behind the
+   squares, transparent at the top of the page, fades to the body
+   theme's bg once .is-scrolled is set on the header. Pointer-events
+   stay disabled so it never intercepts clicks. */
+.header__backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: var(--theme-bg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  z-index: 0;
+}
+
+.header.is-scrolled .header__backdrop {
+  opacity: 1;
+}
+
+/* Menu open — fade the backdrop back out so the squares read as
+   floating over the menu overlay instead of sitting on a solid bar.
+   This wins over .is-scrolled because both classes can be set at
+   once. */
+.header.is-menu-open .header__backdrop {
+  opacity: 0;
 }
 
 .header__square {
   pointer-events: auto;
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;

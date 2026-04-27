@@ -1,0 +1,106 @@
+/**
+ * Button
+ * ======
+ * Editorial text button — small caps label + animated underline +
+ * SplitText char roll on hover (the `.link` class on the root
+ * activates the site-wide SplitText hover rules).
+ *
+ * Underline state:
+ *   - Default:   transform-origin: 0 0; transform: scaleX(1)
+ *                (full-width, anchored to the left edge).
+ *   - On hover:  transform-origin: 100% 0; transform: scaleX(0)
+ *                (collapses out to the right edge).
+ *   The two-step origin flip is what makes the line feel like it
+ *   wipes off rather than just shrinking — verbatim from the v1
+ *   "View Project" pattern.
+ */
+
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  /* `em`-based gap + bottom padding so the icon rhythm and the
+     underline offset both scale with the size's font-size automatically.
+     `--btn-icon-gap` is a per-size tuneable; default sits at 0.5em. */
+  gap: var(--btn-icon-gap, 0.5em);
+  padding-bottom: 0.15em;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  /* Reset native button chrome so <a> and <button> render
+     identically. The size-driven .text-* utility on the root supplies
+     font-size; .text-caps supplies uppercase + caps tracking. */
+  font-family: inherit;
+  letter-spacing: var(--letter-spacing-caps);
+}
+
+/* ── Sizes ─────────────────────────────────────────────────────
+   Typography handled by the .text-{size} utility set on the root
+   from the React side (sm → text-small, md → text-main, lg →
+   text-large, xl → text-h5). The size modifier here only tunes
+   gap + underline thickness so each step looks visually right. */
+
+.btn--sm {
+  --btn-icon-gap: 0.4em;
+}
+.btn--md {
+  --btn-icon-gap: 0.5em;
+}
+.btn--lg {
+  --btn-icon-gap: 0.6em;
+}
+.btn--xl {
+  --btn-icon-gap: 0.7em;
+}
+
+/* Larger sizes get a 2px underline so the rule still reads under
+   a heavier label rather than disappearing. */
+.btn--lg .btn__underline,
+.btn--xl .btn__underline {
+  height: 2px;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.btn__label {
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn__icon {
+  display: inline-flex;
+  align-items: center;
+  /* Optical alignment with the label cap-height. */
+  margin-top: -0.05em;
+}
+
+.btn__icon svg {
+  display: block;
+}
+
+/* ── Sliding underline ────────────────────────────────────────── */
+
+.btn__underline {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 1px;
+  background-color: currentColor;
+  transform-origin: 0 0;
+  transform: scaleX(1);
+  transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover .btn__underline {
+    transform-origin: 100% 0;
+    transform: scaleX(0);
+  }
+}

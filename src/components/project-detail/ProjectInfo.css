@@ -1,0 +1,74 @@
+/**
+ * ProjectInfo
+ * ===========
+ * Lede paragraph + 2-col objective / feedback split.
+ */
+
+.project-info {
+  padding-block: var(--space-5);
+}
+
+@media (min-width: 64rem) {
+  .project-info {
+    padding-block: var(--space-7);
+  }
+}
+
+.project-info__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@media (min-width: 64rem) {
+  .project-info__inner {
+    gap: var(--space-6);
+  }
+}
+
+/* Intro paragraph — wider track + balanced wrapping so it reads as
+   the editorial opening rather than long body copy. */
+.project-info__intro {
+  margin: 0;
+  max-width: 38rem;
+  text-wrap: balance;
+}
+
+/* Two-up split — single column on mobile, side-by-side on desktop. */
+.project-info__split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 64rem) {
+  .project-info__split {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+  }
+}
+
+.project-info__block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.project-info__label {
+  margin: 0;
+  opacity: 0.6;
+}
+
+.project-info__body,
+.project-info__quote {
+  margin: 0;
+  max-width: 32rem;
+}
+
+.project-info__quote {
+  /* The quote is editorial copy, not bibliographic — no italic, no
+     leading quote marks; the section label "Client feedback" already
+     names what it is. */
+  font-style: normal;
+}

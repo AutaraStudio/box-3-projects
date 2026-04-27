@@ -1,0 +1,123 @@
+/**
+ * Footer
+ * ======
+ * 4-column editorial footer. Tall padding to give the columns the
+ * editorial breathing room shown in the reference. Mobile collapses
+ * to a single-column flex stack.
+ *
+ * Carries `data-theme="dark"` so it renders on brown bg + pink text
+ * regardless of the page theme above it.
+ */
+
+.footer {
+  /* Positioned + z-index so the footer paints above the home
+     page's fixed hero (`.home-hero__fixed { z-index: 0 }`).
+     Footer is a sibling of <main> in the site layout, so the
+     `.home-hero ~ *` rule on the home page doesn't reach it —
+     this rule guarantees coverage everywhere. */
+  position: relative;
+  z-index: 1;
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  /* Bottom padding only — the partners marquee at the top of the
+     footer carries its own internal padding, so the footer's brown
+     surface begins where the marquee begins. */
+  padding-block: 0 var(--space-3);
+}
+
+.footer__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  /* Hairline divider between the marquee and the columns — same
+     stroke as the marquee's heading divider (--theme-border-strong)
+     so both lines read as one consistent system. */
+  border-top: 1px solid var(--theme-border-strong);
+  padding-top: var(--space-5);
+}
+
+/* The partners marquee is meant to read as the first band of the
+   footer — strip its bottom padding so the hairline divider hugs
+   the bottom edge of the marquee track. The marquee's heading
+   block keeps its own top padding so it still breathes from the
+   page above. */
+.footer .partners-section {
+  padding-block-end: 0;
+}
+
+/* ── Columns row ──────────────────────────────────────────────── */
+
+.footer__columns {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@media (min-width: 64rem) {
+  .footer__columns {
+    display: grid;
+    /* 5 equal columns — Pages, Featured Projects, Contact, Social,
+       Legal. The Featured Projects column is conditionally rendered
+       so the grid collapses to 4 cells when projects aren't passed
+       in; the auto-fit-on-1fr distribution keeps cell widths even
+       in either case. */
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    column-gap: var(--space-3);
+    align-items: start;
+  }
+}
+
+.footer__column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.footer__label {
+  margin: 0;
+  opacity: 0.6;
+}
+
+.footer__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+}
+
+.footer__link {
+  display: inline-block;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Address — multi-line block above the email/phone list. Each
+   line is its own span so they stack without the browser's italic
+   <address> default leaking through (font-style reset above). */
+.footer__address {
+  display: flex;
+  flex-direction: column;
+  font-style: normal;
+  margin: 0 0 var(--space-1) 0;
+}
+
+/* ── Bottom row — copyright ───────────────────────────────────── */
+
+.footer__bottom {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  /* Top hairline separates the columns from the copyright line —
+     same --theme-border-strong stroke as the marquee divider above
+     so every line in the footer reads as one consistent system. */
+  border-top: 1px solid var(--theme-border-strong);
+  padding-top: var(--space-3);
+}
+
+.footer__copyright {
+  margin: 0;
+  opacity: 0.6;
+}

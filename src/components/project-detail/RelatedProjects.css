@@ -1,0 +1,59 @@
+/**
+ * RelatedProjects
+ * ===============
+ * Section frame only — the actual list of project rows is rendered
+ * by <ProjectsList>, which carries its own row layout, hover, and
+ * transition behaviour. We just give the section its own padding,
+ * top hairline, and the small "More projects" label.
+ */
+
+.related-projects {
+  padding-block: var(--space-5);
+  border-top: 1px solid var(--theme-border-strong);
+}
+
+@media (min-width: 64rem) {
+  .related-projects {
+    padding-block: var(--space-7);
+  }
+}
+
+.related-projects__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+@media (min-width: 64rem) {
+  .related-projects__inner {
+    gap: var(--space-3);
+  }
+}
+
+/* Compact the archive's tall rows when reused inside this section.
+   On the archive page each row reserves `max(14rem, 15vw)` of
+   vertical space (with content bottom-aligned) so the grid feels
+   editorial. Here, after a heading, that whitespace reads as a
+   gap rather than breathing room — but the row still needs to be
+   taller than the col-span-2 thumbnail's natural height (~12vw
+   wide × 194/282 aspect ≈ 8.3vw tall + the row's own block
+   padding). 12vw bottoms-out comfortably above that. */
+.related-projects .projects-list {
+  padding-top: 0;
+}
+
+@media (min-width: 64rem) {
+  .related-projects .projects-list__row {
+    height: max(11rem, 12vw);
+  }
+}
+
+.related-projects__head {
+  display: flex;
+  align-items: center;
+}
+
+.related-projects__title {
+  margin: 0;
+  text-wrap: balance;
+}

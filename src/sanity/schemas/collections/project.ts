@@ -10,13 +10,17 @@
  *   4. Client         — objective and feedback quote
  *   5. Testimonials   — embedded testimonialsSection
  *
- * Note (v2): the master TaggedMediaPicker / TaggedMediaArrayPicker
- * custom inputs have been dropped for now — image fields use the
- * native Sanity image inputs. The pickers can be reintroduced later
- * if the editor wants the tag-filtered shortcut back.
+ * Image fields (featuredImage + additionalImages) use the v2-restored
+ * TaggedMediaPicker / TaggedMediaArrayPicker custom inputs. Editors
+ * still get the native upload + Select buttons; the pickers add a
+ * "Pick from library" shortcut that opens a tag-filtered grid of
+ * existing assets from sanity-plugin-media.
  */
 
 import { defineField, defineType } from "sanity";
+
+import { TaggedMediaPicker } from "../../components/TaggedMediaPicker";
+import { TaggedMediaArrayPicker } from "../../components/TaggedMediaArrayPicker";
 
 export default defineType({
   name: "project",
@@ -93,6 +97,15 @@ export default defineType({
       of: [{ type: "string" }],
       options: { layout: "tags" },
     }),
+    defineField({
+      name: "featured",
+      title: "Featured in menu",
+      description:
+        "When on, this project appears in the site-wide menu's Featured Projects column.",
+      type: "boolean",
+      group: "overview",
+      initialValue: false,
+    }),
 
     /* ── Images ───────────────────────────────────────────── */
     defineField({
@@ -103,6 +116,7 @@ export default defineType({
       type: "image",
       group: "images",
       options: { hotspot: true },
+      components: { input: TaggedMediaPicker },
       fields: [
         defineField({
           name: "alt",
@@ -119,6 +133,7 @@ export default defineType({
       description: "Project gallery images.",
       type: "array",
       group: "images",
+      components: { input: TaggedMediaArrayPicker },
       of: [
         {
           type: "image",

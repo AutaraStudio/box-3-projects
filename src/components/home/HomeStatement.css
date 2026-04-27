@@ -1,0 +1,117 @@
+/**
+ * HomeStatement
+ * =============
+ * Static editorial block — small caps label left of a stacked
+ * heading + supporting sentence. Mirrors LineScroll's 12-col
+ * grid arrangement so the page rhythm is unchanged.
+ */
+
+.home-statement {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  padding-block: var(--space-5);
+}
+
+@media (min-width: 64rem) {
+  .home-statement {
+    padding-block: var(--space-6);
+  }
+}
+
+.home-statement__inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: var(--space-2);
+}
+
+@media (min-width: 64rem) {
+  .home-statement__inner {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--space-4);
+    row-gap: var(--space-3);
+    align-items: start;
+  }
+}
+
+/* ── Label ───────────────────────────────────────────────────── */
+
+.home-statement__label-cell {
+  display: block;
+}
+
+@media (min-width: 64rem) {
+  .home-statement__label-cell {
+    /* Pulled to the far left so the content column can start
+       further left and breathe wider across the row. */
+    grid-column: 1 / span 2;
+    justify-self: start;
+    text-align: left;
+    /* Nudge down a touch so the label baseline reads against the
+       first line of the heading rather than its top edge. */
+    padding-top: var(--space-0-75);
+  }
+}
+
+.home-statement__label {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+/* ── Content stack ───────────────────────────────────────────── */
+
+.home-statement__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+@media (min-width: 64rem) {
+  .home-statement__content {
+    /* Starts at col 6 — content sits in the right half of the
+       row, label hangs in the left margin. Long heading wraps
+       across the right column, body sits beneath it. */
+    grid-column: 6 / -1;
+    gap: var(--space-3);
+    max-width: 60rem;
+  }
+}
+
+.home-statement__heading {
+  margin: 0;
+}
+
+.home-statement__body {
+  margin: 0;
+  color: var(--theme-text-muted);
+  max-width: 28rem;
+}
+
+@media (min-width: 64rem) {
+  .home-statement__body {
+    /* Tucked to the right edge of the content column, narrower
+       than the heading above — reads as a supporting footnote
+       rather than a body paragraph. */
+    align-self: flex-end;
+    text-align: left;
+    max-width: 24rem;
+    margin-top: var(--space-2);
+  }
+}
+
+/* ── CTA ─────────────────────────────────────────────────────── */
+
+.home-statement__cta {
+  margin-top: var(--space-1);
+}
+
+@media (min-width: 64rem) {
+  .home-statement__cta {
+    /* Same width as the body block above (24rem) and aligned to
+       the same right edge — so the button's left edge lines up
+       with the body's left edge, not the button's own intrinsic
+       width. Forms a tight bottom-right cluster. */
+    align-self: flex-end;
+    width: 24rem;
+    margin-top: var(--space-1-5);
+  }
+}

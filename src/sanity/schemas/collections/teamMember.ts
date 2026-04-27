@@ -32,6 +32,27 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: "category",
+      title: "Category / Group",
+      type: "string",
+      description:
+        "Group this member appears under on the about page (e.g. Leadership, Site Team). The group's display order on the page is set in the AboutTeam component, not here.",
+      options: {
+        list: [
+          { title: "Leadership", value: "leadership" },
+          { title: "Project Management", value: "project-management" },
+          { title: "Commercial", value: "commercial" },
+          { title: "Technical", value: "technical" },
+          { title: "Site Team", value: "site" },
+          { title: "Design", value: "design" },
+          { title: "Business Development", value: "business-development" },
+          { title: "Health & Safety", value: "health-safety" },
+          { title: "Bid + Marketing", value: "bid-marketing" },
+        ],
+        layout: "dropdown",
+      },
+    }),
+    defineField({
       name: "qualifications",
       title: "Qualifications",
       type: "string",

@@ -6,6 +6,12 @@ import PageTransitionOverlay from "@/components/transition/PageTransitionOverlay
 import { MenuProvider } from "@/components/menu/MenuProvider";
 import Header from "@/components/menu/Header";
 import MenuOverlay from "@/components/menu/MenuOverlay";
+import Footer from "@/components/footer/Footer";
+import { sanityFetch } from "@/sanity/lib/fetch";
+import {
+  FEATURED_PROJECTS_QUERY,
+  type FeaturedProjectItem,
+} from "@/sanity/queries/projects";
 import "../globals.css";
 
 /* The site uses a single typeface — Neue Montreal — across body and
@@ -29,10 +35,9 @@ export const metadata: Metadata = {
   description: "Coming soon.",
 };
 
-/* Site menu content. Placeholder featured projects until the projects
-   page lands and can supply real refs; everything else is the live
-   contact / social / legal copy from the brief. */
-const MENU_CONTENT = {
+/* Static menu content — pages, contact, social, legal stay
+   hardcoded for now; only featuredProjects flows from Sanity. */
+const STATIC_MENU = {
   pages: [
     { label: "Home", href: "/" },
     { label: "About", href: "/about" },
@@ -40,58 +45,6 @@ const MENU_CONTENT = {
     { label: "Projects", href: "/projects" },
     { label: "Careers", href: "/careers" },
     { label: "Sustainability", href: "/sustainability" },
-  ],
-  featuredProjects: [
-    {
-      title: "Tower 42",
-      href: "/projects/tower-42",
-      details: [
-        { label: "Client", value: "Confidential" },
-        { label: "Sector", value: "Workplace" },
-        { label: "Location", value: "City of London" },
-        { label: "Completion", value: "Spring 2024" },
-      ],
-    },
-    {
-      title: "Meta King's Cross",
-      href: "/projects/meta-kings-cross",
-      details: [
-        { label: "Client", value: "Meta" },
-        { label: "Sector", value: "Workplace" },
-        { label: "Location", value: "King's Cross" },
-        { label: "Completion", value: "Summer 2024" },
-      ],
-    },
-    {
-      title: "Carlton Gardens",
-      href: "/projects/carlton-gardens",
-      details: [
-        { label: "Client", value: "Confidential" },
-        { label: "Sector", value: "Hospitality" },
-        { label: "Location", value: "St James's" },
-        { label: "Completion", value: "Autumn 2023" },
-      ],
-    },
-    {
-      title: "Saatchi & Saatchi",
-      href: "/projects/saatchi-and-saatchi",
-      details: [
-        { label: "Client", value: "Saatchi & Saatchi" },
-        { label: "Sector", value: "Workplace" },
-        { label: "Location", value: "Charlotte Street" },
-        { label: "Completion", value: "Spring 2023" },
-      ],
-    },
-    {
-      title: "Soho House",
-      href: "/projects/soho-house",
-      details: [
-        { label: "Client", value: "Soho House" },
-        { label: "Sector", value: "Hospitality" },
-        { label: "Location", value: "Shoreditch" },
-        { label: "Completion", value: "Winter 2022" },
-      ],
-    },
   ],
   contact: {
     addressLines: ["Level 5, 55 Broadway,", "London SW1H 0BD."],
@@ -112,11 +65,24 @@ const MENU_CONTENT = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  /* Pull the projects flagged `featured == true` from Sanity. The
+     site-wide menu and the footer's "Featured Projects" column
+     both consume this list; toggling the field on a project
+     document adds or removes it from both surfaces. */
+  const featuredFromCms = await sanityFetch<FeaturedProjectItem[]>({
+    query: FEATURED_PROJECTS_QUERY,
+  });
+  const featuredProjects = featuredFromCms.map((p) => ({
+    title: p.title,
+    href: `/projects/${p.slug}`,
+    category: p.categoryTitle,
+  }));
+
   return (
     <html
       lang="en"
@@ -129,7 +95,20 @@ export default function RootLayout({
             <MenuProvider>
               <Header />
               {children}
-              <MenuOverlay {...MENU_CONTENT} />
+              <Footer
+                pages={STATIC_MENU.pages}
+                featuredProjects={featuredProjects}
+                contact={STATIC_MENU.contact}
+                social={STATIC_MENU.social}
+                legal={STATIC_MENU.legal}
+              />
+              <MenuOverlay
+                pages={STATIC_MENU.pages}
+                featuredProjects={featuredProjects}
+                contact={STATIC_MENU.contact}
+                social={STATIC_MENU.social}
+                legal={STATIC_MENU.legal}
+              />
               <PageTransitionOverlay />
             </MenuProvider>
           </PageTransitionProvider>

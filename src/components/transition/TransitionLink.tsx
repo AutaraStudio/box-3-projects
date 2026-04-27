@@ -12,7 +12,7 @@
 
 "use client";
 
-import { type AnchorHTMLAttributes, type MouseEvent } from "react";
+import { forwardRef, type AnchorHTMLAttributes, type MouseEvent } from "react";
 
 import { usePageTransition } from "./PageTransitionProvider";
 
@@ -40,33 +40,61 @@ function isExternal(href: string) {
   );
 }
 
-export default function TransitionLink({
-  href,
-  pageName,
-  onClick,
-  target,
-  download,
-  children,
-  ...rest
-}: TransitionLinkProps) {
-  const { triggerTransition } = usePageTransition();
+const TransitionLink = forwardRef<HTMLAnchorElement, TransitionLinkProps>(
+  function TransitionLink(
+    { href, pageName, onClick, target, download, children, ...rest },
+    ref,
+  ) {
+    const { triggerTransition } = usePageTransition();
 
-  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    onClick?.(event);
+    const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
+      onClick?.(event);
 
-    if (event.defaultPrevented) return;
-    if (target === "_blank") return;
-    if (download !== undefined) return;
-    if (isModifiedEvent(event)) return;
-    if (isExternal(href)) return;
+      if (event.defaultPrevented) return;
+      if (target === "_blank") return;
+      if (download !== undefined) return;
+      if (isModifiedEvent(event)) return;
+      if (isExternal(href)) return;
 
-    event.preventDefault();
-    void triggerTransition(href, pageName);
-  };
+      /* In-page anchor — scroll smoothly via Lenis if available,
+         fall back to native scrollIntoView. Skip the page
+         transition so the wipe panel doesn't fire on an anchor
+         jump. URL hash is updated via history.pushState so the
+         address bar reflects the new fragment without triggering
+         a navigation. */
+      if (href.startsWith("#")) {
+        event.preventDefault();
+        const targetEl = document.querySelector(href);
+        if (targetEl instanceof HTMLElement) {
+          if (window.__lenis) {
+            window.__lenis.scrollTo(targetEl);
+          } else {
+            targetEl.scrollIntoView({ behavior: "smooth" });
+          }
+        }
+        if (window.location.hash !== href) {
+          window.history.pushState(null, "", href);
+        }
+        return;
+      }
 
-  return (
-    <a href={href} target={target} download={download} onClick={handleClick} {...rest}>
-      {children}
-    </a>
-  );
-}
+      event.preventDefault();
+      void triggerTransition(href, pageName);
+    };
+
+    return (
+      <a
+        ref={ref}
+        href={href}
+        target={target}
+        download={download}
+        onClick={handleClick}
+        {...rest}
+      >
+        {children}
+      </a>
+    );
+  },
+);
+
+export default TransitionLink;

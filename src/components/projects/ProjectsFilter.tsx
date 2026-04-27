@@ -150,9 +150,7 @@ function FilterGroup({
       ref={groupRef}
     >
       {legend ? (
-        <p className="projects-filter__legend text-small text-caps">
-          {legend}
-        </p>
+        <p className="projects-filter__legend text-main">{legend}</p>
       ) : null}
       <div className="projects-filter__tabs">
         {options.map((opt) => {
@@ -165,7 +163,7 @@ function FilterGroup({
             <button
               key={opt.key}
               type="button"
-              className={`projects-filter__tab${active ? " is-active" : ""}`}
+              className={`projects-filter__tab text-main${active ? " is-active" : ""}`}
               onClick={() => onSelect(opt.key)}
               aria-pressed={active}
             >
@@ -185,7 +183,9 @@ function FilterGroup({
                 ) : null}
                 {opt.label}
                 {padded ? (
-                  <sup className="projects-filter__count">({padded})</sup>
+                  <sup className="projects-filter__count text-small">
+                    ({padded})
+                  </sup>
                 ) : null}
               </span>
             </button>

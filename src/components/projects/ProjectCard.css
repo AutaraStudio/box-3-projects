@@ -16,6 +16,12 @@
   display: block;
   position: relative;
   width: 100%;
+  /* Anchor reset — card is now a TransitionLink to the project
+     detail route. Strip the default underline + color so the meta
+     row stays themed. */
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 /* Image wrap — fixes the slot's aspect ratio so layout reserves
@@ -50,32 +56,73 @@
   display: block;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .project-card:hover .project-card__image {
-    transform: scale(1.28);
-    filter: brightness(115%);
-  }
-}
 
-/* Meta row — N°### · project name. Padding from the v2 spacing
-   scale (--space-2 mobile, --space-1-25 desktop — the closest
-   tokens to the reference's 1.875rem / 1.25rem). */
-.project-card__meta {
+/* Bottom block — three deliberate rows, mirroring the home
+   featured cards:
+     1. justified meta strip (N°### / year) with hairline beneath
+     2. title — main typographic moment (with SplitText hover)
+     3. category — small caps footnote */
+.project-card__text {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-2) 0;
-  border-bottom: 1px solid currentColor;
-  font-size: var(--font-size-text-main);
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-top: var(--space-1-25);
 }
 
-@media (min-width: 64rem) {
-  .project-card__meta {
-    padding: var(--space-1-25) 0;
-  }
+.project-card__meta-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1);
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--theme-border);
 }
 
 .project-card__num,
-.project-card__name {
-  display: inline-block;
+.project-card__year,
+.project-card__category {
+  margin: 0;
+  color: var(--theme-text-muted);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.project-card__title {
+  margin: 0;
+  text-wrap: balance;
+  color: var(--theme-text);
+}
+
+.project-card__category {
+  color: var(--theme-text-soft);
+}
+
+/* SplitText char roll-over on hover — targets the per-token
+   `__inner` element that does the translating (the outer .char /
+   .word is now the per-token mask, see SplitText.css). The visible
+   row of inners translates up out of its mask and the clone (offset
+   100% below the line) slides into view. Per-token --index (set by
+   SplitText) creates the staggered sweep. */
+/* SplitText word roll-over on card hover — visible row's word
+   inners translate up out of their mask; clone (offset 100%
+   below the line) slides into view. Per-token --index (set by
+   SplitText) staggers the sweep. */
+@media (hover: hover) and (pointer: fine) {
+  .project-card .split__text .char__inner,
+  .project-card .split__text .word__inner {
+    transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1)
+      calc(var(--index, 0) * 2.4ms);
+  }
+  .project-card .split__text--clone .char__inner,
+  .project-card .split__text--clone .word__inner {
+    transform: translate3d(0, 100%, 0);
+  }
+  .project-card:hover .split__text:not(.split__text--clone) .char__inner,
+  .project-card:hover .split__text:not(.split__text--clone) .word__inner {
+    transform: translate3d(0, -100%, 0);
+  }
+  .project-card:hover .split__text--clone .char__inner,
+  .project-card:hover .split__text--clone .word__inner {
+    transform: translate3d(0, 0, 0);
+  }
 }

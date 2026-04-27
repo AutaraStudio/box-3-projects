@@ -1,0 +1,131 @@
+/**
+ * SustainabilityPrinciples
+ * ========================
+ * 2-col on desktop: sticky label + heading + intro on the left,
+ * indexed list on the right.
+ */
+
+.sustainability-principles {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  padding-block: var(--space-7);
+  border-top: 1px solid var(--theme-border-strong);
+}
+
+@media (min-width: 64rem) {
+  .sustainability-principles {
+    padding-block: var(--space-9);
+  }
+}
+
+.sustainability-principles__inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 64rem) {
+  .sustainability-principles__inner {
+    grid-template-columns: 1fr 2fr;
+    column-gap: var(--space-7);
+  }
+}
+
+/* ── Aside ────────────────────────────────────────────────────── */
+
+.sustainability-principles__aside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+@media (min-width: 64rem) {
+  .sustainability-principles__aside {
+    position: sticky;
+    top: var(--space-7);
+    align-self: start;
+    gap: var(--space-3);
+  }
+}
+
+.sustainability-principles__label {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+.sustainability-principles__heading {
+  margin: 0;
+  /* `pretty` rather than `balance` — at heading scale with a tight
+     `ch`-based measure, `balance` can break mid-word to symmetrise
+     line lengths. `pretty` fixes orphans without slicing words. */
+  text-wrap: pretty;
+  /* Tight ch-based measure so the heading wraps onto two lines
+     ("How we work, / in practice."). */
+  max-width: 14ch;
+}
+
+.sustainability-principles__intro {
+  margin: 0;
+  text-wrap: pretty;
+  /* Tight measure so the supporting paragraph reads as a short
+     marginal note rather than a full body paragraph. */
+  max-width: 22rem;
+}
+
+/* ── List ─────────────────────────────────────────────────────── */
+
+.sustainability-principles__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid var(--theme-border-strong);
+}
+
+.sustainability-principles__item {
+  display: grid;
+  grid-template-columns: var(--space-4) 1fr;
+  align-items: baseline;
+  column-gap: var(--space-2);
+  padding-block: var(--space-4);
+  border-top: 1px solid var(--theme-border-strong);
+}
+
+@media (min-width: 64rem) {
+  .sustainability-principles__item {
+    grid-template-columns: var(--space-6) 1fr;
+    column-gap: var(--space-4);
+    padding-block: var(--space-5);
+  }
+}
+
+.sustainability-principles__index {
+  margin: 0;
+  color: var(--theme-text-muted);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.sustainability-principles__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+@media (min-width: 64rem) {
+  .sustainability-principles__content {
+    gap: var(--space-3);
+  }
+}
+
+.sustainability-principles__title {
+  margin: 0;
+  text-wrap: balance;
+  color: var(--theme-text);
+}
+
+.sustainability-principles__body {
+  margin: 0;
+  text-wrap: pretty;
+  max-width: 32rem;
+}

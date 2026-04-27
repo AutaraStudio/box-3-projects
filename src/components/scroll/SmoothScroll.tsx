@@ -19,8 +19,13 @@
 import { useEffect, type ReactNode } from "react";
 import Lenis from "lenis";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import "lenis/dist/lenis.css";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 declare global {
   interface Window {
@@ -44,7 +49,16 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
     gsap.ticker.add(raf);
     gsap.ticker.lagSmoothing(0);
 
+    /* Bridge Lenis ↔ ScrollTrigger. Without this, ScrollTrigger only
+       polls scroll position on its own cadence and any scrub-locked
+       tween appears to lag — motion only catches up once Lenis stops
+       moving. Updating on every Lenis scroll event keeps scrub-locked
+       parallax / pin animations 1:1 with the smooth-scroll output. */
+    const onScroll = () => ScrollTrigger.update();
+    lenis.on("scroll", onScroll);
+
     return () => {
+      lenis.off("scroll", onScroll);
       gsap.ticker.remove(raf);
       lenis.destroy();
       if (window.__lenis === lenis) delete window.__lenis;

@@ -1,0 +1,239 @@
+/**
+ * HomeFeaturedProjects
+ * ====================
+ * Masonry-style two-column layout — cards flow into the column
+ * with the most space, alternating portrait/landscape image
+ * aspects so the columns interlock with varied heights. Reads
+ * as a curated editorial spread rather than a uniform grid.
+ */
+
+.home-featured {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  padding-block: var(--space-4);
+}
+
+@media (min-width: 64rem) {
+  .home-featured {
+    padding-block: var(--space-5);
+  }
+}
+
+.home-featured__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+@media (min-width: 64rem) {
+  .home-featured__inner {
+    gap: var(--space-4);
+  }
+}
+
+/* ── Head ─────────────────────────────────────────────────── */
+
+.home-featured__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-width: 50rem;
+}
+
+.home-featured__label {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+.home-featured__heading {
+  margin: 0;
+  text-wrap: balance;
+}
+
+/* ── Editorial grid ───────────────────────────────────────── */
+
+/* Mobile: single-column stack. Tablet+: a 12-column CSS grid with
+   asymmetric per-card placement so the spread reads as an editorial
+   magazine layout — cards drift left/right and stagger vertically
+   instead of sitting in even columns. */
+.home-featured__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@media (min-width: 48rem) {
+  .home-featured__list {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--space-3);
+    row-gap: var(--space-5);
+  }
+}
+
+@media (min-width: 64rem) {
+  .home-featured__list {
+    column-gap: var(--space-4);
+    row-gap: var(--space-7);
+  }
+}
+
+.home-featured__item {
+  margin: 0;
+  display: block;
+}
+
+/* Asymmetric placement — 4-item cycle. Two items share each
+   visual row; the second item in each pair drops vertically to
+   create the staggered "drift" feel. Aspect ratios vary per
+   slot so neighbouring images never read the same shape. */
+@media (min-width: 48rem) {
+  /* Row A — wide left, narrow right (right drops down). */
+  .home-featured__item:nth-child(4n + 1) {
+    grid-column: 1 / span 7;
+  }
+  .home-featured__item:nth-child(4n + 2) {
+    grid-column: 9 / span 4;
+    margin-top: var(--space-6);
+  }
+  /* Row B — narrow left (indented), wide right (drops slightly). */
+  .home-featured__item:nth-child(4n + 3) {
+    grid-column: 2 / span 5;
+  }
+  .home-featured__item:nth-child(4n + 4) {
+    grid-column: 7 / span 6;
+    margin-top: var(--space-4);
+  }
+}
+
+@media (min-width: 64rem) {
+  .home-featured__item:nth-child(4n + 2) {
+    margin-top: var(--space-9);
+  }
+  .home-featured__item:nth-child(4n + 4) {
+    margin-top: var(--space-6);
+  }
+}
+
+/* ── Card ─────────────────────────────────────────────────── */
+
+.home-featured__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (min-width: 64rem) {
+  .home-featured__card {
+    gap: var(--space-3);
+  }
+}
+
+/* ── Image ────────────────────────────────────────────────── */
+
+/* Default aspect — used on mobile where the grid collapses to
+   a stack. Tablet+ overrides per slot below. */
+.home-featured__image {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  width: 100%;
+}
+
+/* Per-slot aspects — paired with the 4-item placement cycle so
+   each row mixes a wide image with a tall one. */
+@media (min-width: 48rem) {
+  .home-featured__item:nth-child(4n + 1) .home-featured__image {
+    aspect-ratio: 4 / 3;
+  }
+  .home-featured__item:nth-child(4n + 2) .home-featured__image {
+    aspect-ratio: 4 / 5;
+  }
+  .home-featured__item:nth-child(4n + 3) .home-featured__image {
+    aspect-ratio: 1 / 1;
+  }
+  .home-featured__item:nth-child(4n + 4) .home-featured__image {
+    aspect-ratio: 16 / 11;
+  }
+}
+
+.home-featured__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Text ─────────────────────────────────────────────────── */
+
+/* Bottom block of each card. Reads as three deliberate rows:
+     1. justified meta strip — N°### on the left, year on the
+        right, separated by a hairline beneath
+     2. title — main typographic moment
+     3. category — small caps footer  */
+.home-featured__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-top: var(--space-1-25);
+}
+
+.home-featured__meta-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1);
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--theme-border);
+}
+
+.home-featured__num,
+.home-featured__year,
+.home-featured__category {
+  margin: 0;
+  color: var(--theme-text-muted);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.home-featured__title {
+  margin: 0;
+  text-wrap: balance;
+  color: var(--theme-text);
+}
+
+.home-featured__category {
+  /* Sits as a small caps footnote beneath the title — clearly
+     supporting metadata, not a peer of the title. */
+  color: var(--theme-text-soft);
+}
+
+/* SplitText word roll-over on card hover — same family as the
+   project archive cards. Visible row of word inners translates
+   up out of its mask; the clone (offset 100% below the line)
+   slides into view. Per-token --index (set by SplitText) staggers
+   the sweep. */
+@media (hover: hover) and (pointer: fine) {
+  .home-featured__card .split__text .char__inner,
+  .home-featured__card .split__text .word__inner {
+    transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1)
+      calc(var(--index, 0) * 2.4ms);
+  }
+  .home-featured__card .split__text--clone .char__inner,
+  .home-featured__card .split__text--clone .word__inner {
+    transform: translate3d(0, 100%, 0);
+  }
+  .home-featured__card:hover .split__text:not(.split__text--clone) .char__inner,
+  .home-featured__card:hover .split__text:not(.split__text--clone) .word__inner {
+    transform: translate3d(0, -100%, 0);
+  }
+  .home-featured__card:hover .split__text--clone .char__inner,
+  .home-featured__card:hover .split__text--clone .word__inner {
+    transform: translate3d(0, 0, 0);
+  }
+}

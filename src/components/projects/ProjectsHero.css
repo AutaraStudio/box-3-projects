@@ -13,11 +13,17 @@
    <main>) so it's colocated with the projects-hero rules. */
 .projects-page {
   padding-top: var(--space-6);
+  /* Bottom padding so the last list row / last grid card has
+     breathing room before the site-wide footer's partners marquee
+     begins — without it the row's bottom hairline visually merges
+     with the marquee's top edge. */
+  padding-bottom: var(--space-7);
 }
 
 @media (min-width: 64rem) {
   .projects-page {
     padding-top: var(--space-7);
+    padding-bottom: var(--space-9);
   }
 }
 

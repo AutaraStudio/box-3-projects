@@ -22,6 +22,10 @@
 import Image from "next/image";
 
 import SplitText from "@/components/split-text/SplitText";
+import TransitionLink from "@/components/transition/TransitionLink";
+import RevealImage from "@/components/ui/RevealImage";
+import RevealStack from "@/components/ui/RevealStack";
+import { useDirectionalHover } from "@/components/ui/DirectionalHoverList";
 import { urlFor } from "@/sanity/lib/image";
 import type { ProjectListItem } from "@/sanity/queries/projects";
 
@@ -38,7 +42,7 @@ export default function ProjectsList({
   activeSlug,
 }: ProjectsListProps) {
   return (
-    <ul className="projects-list">
+    <RevealStack as="ul" className="projects-list">
       {projects.map((project, i) => (
         <ProjectRow
           key={project._id}
@@ -47,7 +51,7 @@ export default function ProjectsList({
           active={!activeSlug || project.category?.slug === activeSlug}
         />
       ))}
-    </ul>
+    </RevealStack>
   );
 }
 
@@ -64,14 +68,35 @@ function ProjectRow({ project, index, active }: ProjectRowProps) {
     : null;
   const alt = project.featuredImage?.alt ?? project.title;
 
+  /* Directional hover wired to the row anchor — tile slides in
+     from the cursor's entry edge, out the way it leaves. Disabled
+     when the row is filtered out (inactive) so the tile doesn't
+     fire on rows the user can't click. */
+  const dhover = useDirectionalHover<HTMLAnchorElement>({
+    axis: "y",
+    disabled: !active,
+  });
+
   return (
     <li className="projects-list__item" data-cat={project.category?.slug ?? ""}>
-      <article
+      <TransitionLink
+        ref={dhover.itemRef}
+        href={`/projects/${project.slug}`}
+        pageName={project.title}
         className={`projects-list__row${active ? " is-active" : ""}`}
         aria-disabled={!active}
+        onMouseEnter={dhover.onMouseEnter}
+        onMouseLeave={dhover.onMouseLeave}
       >
+        {/* Tile sits behind the row content — the existing row
+            layout/SplitText hover/image scale all play on top. */}
+        <span
+          ref={dhover.tileRef}
+          className="projects-list__tile"
+          aria-hidden="true"
+        />
         <div className="container projects-list__row-inner">
-          <div className="projects-list__pretitle">
+          <div className="projects-list__pretitle text-small">
             <span className="projects-list__num">{num}</span>
             {/* Mobile-only echo of the project name next to the
                 number — reference shows both the small label and
@@ -82,12 +107,12 @@ function ProjectRow({ project, index, active }: ProjectRowProps) {
           </div>
 
           <div className="projects-list__content">
-            <h2 className="projects-list__title">
+            <h2 className="projects-list__title text-h3">
               <SplitText asWords>{project.title}</SplitText>
             </h2>
           </div>
 
-          <div className="projects-list__image">
+          <RevealImage className="projects-list__image">
             {src ? (
               /* `fill` makes the image absolutely fill its
                  (relative) wrap regardless of the source's intrinsic
@@ -102,9 +127,9 @@ function ProjectRow({ project, index, active }: ProjectRowProps) {
                 style={{ objectFit: "cover" }}
               />
             ) : null}
-          </div>
+          </RevealImage>
         </div>
-      </article>
+      </TransitionLink>
     </li>
   );
 }

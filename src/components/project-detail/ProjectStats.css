@@ -1,0 +1,51 @@
+/**
+ * ProjectStats
+ * ============
+ * Fact-sheet grid. 2-col mobile, 4-col desktop. A hairline separates
+ * the section from neighbours so it reads as its own band on the
+ * page.
+ */
+
+.project-stats {
+  padding-block: var(--space-5);
+  border-top: 1px solid var(--theme-border-strong);
+  border-bottom: 1px solid var(--theme-border-strong);
+}
+
+@media (min-width: 64rem) {
+  .project-stats {
+    padding-block: var(--space-7);
+  }
+}
+
+.project-stats__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3) var(--space-2);
+  margin: 0;
+}
+
+@media (min-width: 64rem) {
+  .project-stats__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-4) var(--space-3);
+  }
+}
+
+.project-stats__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+  margin: 0;
+  min-width: 0;
+}
+
+.project-stats__label {
+  margin: 0;
+  opacity: 0.6;
+}
+
+.project-stats__value {
+  margin: 0;
+  text-wrap: balance;
+}

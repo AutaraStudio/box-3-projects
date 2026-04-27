@@ -1,0 +1,140 @@
+/**
+ * PartnersSection
+ * ===============
+ * Infinite 2-row checkerboard horizontal marquee. The track is an
+ * 18-col × 2-row CSS grid (6 per panel × 3 panels) so GSAP can wrap
+ * `x` at the panel boundary without a visible seam.
+ *
+ * Size note — cell dimensions are intentionally `vw`-based so the
+ * card size scales with viewport across breakpoints. CLAUDE.md
+ * forbids `vw` for typography but explicitly permits it for layout
+ * elements that genuinely need to be viewport-relative; documented
+ * inline since no token covers it.
+ */
+
+.partners-section {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  overflow: hidden;
+  padding-block: var(--space-7);
+}
+
+@media (min-width: 64rem) {
+  .partners-section {
+    padding-block: var(--space-9);
+  }
+}
+
+/* ── Heading band ─────────────────────────────────────────────── */
+
+.partners-section__header {
+  margin-bottom: var(--space-3);
+}
+
+.partners-section__heading {
+  margin: 0;
+  color: inherit;
+}
+
+.partners-section__divider {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid var(--theme-border-strong);
+  /* Zero bottom margin — the divider hairline sits flush against
+     the top row of marquee cards, matching the editorial reference
+     where heading band + grid read as one continuous strip. */
+  margin: 0;
+}
+
+/* ── Scroll-drift wrapper ────────────────────────────────────────
+   GSAP animates `x` on page scroll for the parallax. */
+.partners-section__scroll {
+  width: 100%;
+  will-change: transform;
+}
+
+/* ── Marquee track ───────────────────────────────────────────────
+   18 cols × 2 rows = three 6×2 panels. GSAP animates `x` for the
+   infinite loop. */
+.partners-section__track {
+  display: grid;
+  /* Card sizes nudged up a notch from the previous step so the
+     logos read at a more confident scale without becoming
+     billboards. Per breakpoint:
+       mobile  ~3 wide  (36vw)
+       tablet  ~5 wide  (24vw)
+       desktop ~7 wide  (14vw) */
+  grid-template-columns: repeat(18, 36vw);
+  grid-template-rows: 36vw 36vw;
+  gap: 1px;
+  width: max-content;
+  will-change: transform;
+}
+
+@media (min-width: 48rem) {
+  .partners-section__track {
+    grid-template-columns: repeat(18, 24vw);
+    grid-template-rows: 24vw 24vw;
+  }
+}
+
+@media (min-width: 64rem) {
+  .partners-section__track {
+    grid-template-columns: repeat(18, 14vw);
+    grid-template-rows: 14vw 14vw;
+  }
+}
+
+/* ── Cell ────────────────────────────────────────────────────────
+   Logo card — slightly tinted bg so the card reads as its own
+   surface against the brown section background. The empty
+   modifier knocks the bg back out to create the checkerboard. */
+.partners-section__cell {
+  background-color: color-mix(in srgb, var(--theme-text) 6%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  transition: background-color 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.partners-section__cell--empty {
+  background-color: transparent;
+  cursor: default;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .partners-section__cell:not(.partners-section__cell--empty):hover {
+    background-color: color-mix(
+      in srgb,
+      var(--theme-text) 12%,
+      transparent
+    );
+  }
+}
+
+/* ── SVG slot ────────────────────────────────────────────────────
+   Holds the inlined logo. currentColor inherits from the cell so
+   themed pages can recolour the logo by changing --theme-text. */
+.partners-section__svg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  height: 50%;
+  color: var(--theme-text);
+  transition: color 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  pointer-events: none;
+}
+
+.partners-section__cell:hover .partners-section__svg {
+  color: var(--theme-accent);
+}
+
+.partners-section__svg svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}

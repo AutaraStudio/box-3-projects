@@ -1,0 +1,141 @@
+/**
+ * LineScroll
+ * ==========
+ * Two-row editorial section. Top row: anchor word on the left,
+ * vertical list of statements on the right. Bottom row (optional):
+ * small caps heading + paragraph.
+ *
+ * Token translation from v1 → v2:
+ *   --section-space-lg   → var(--space-9)
+ *   --section-space-md   → var(--space-7)
+ *   --gap-5              → var(--space-4)
+ *   --font-primary       → var(--font-sans)
+ *   --measure-ch-body    → 60ch
+ *   --line-height-relaxed → var(--line-height-base)
+ */
+
+.line-scroll {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  padding-block: var(--space-5);
+}
+
+@media (min-width: 64rem) {
+  .line-scroll {
+    padding-block: var(--space-6);
+  }
+}
+
+/* ── Top row — anchor + lines ─────────────────────────────────── */
+
+.line-scroll__top {
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: var(--space-3);
+  padding-bottom: var(--space-3);
+}
+
+@media (min-width: 64rem) {
+  .line-scroll__top {
+    padding-bottom: var(--space-4);
+  }
+}
+
+.line-scroll__anchor {
+  align-self: start;
+  text-align: left;
+  /* Reserved for the GSAP scroll-parallax tween that runs only on
+     desktop. */
+  will-change: transform;
+}
+
+/* Anchor h2 — typography from the .text-h2 utility on the JSX. */
+.line-scroll__anchor-text,
+.line-scroll__line {
+  margin: 0;
+  color: inherit;
+}
+
+/* Tight stack — each line stacks with breathing space but no
+   hairline rules between them. The "we [verb]" sentence reads
+   continuously down the column. */
+.line-scroll__lines {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.line-scroll__line {
+  padding-block: var(--space-0-5);
+  text-wrap: balance;
+}
+
+@media (min-width: 64rem) {
+  .line-scroll__line {
+    padding-block: var(--space-0-75);
+  }
+}
+
+/* ── Bottom row — optional small heading + paragraph ─────────── */
+
+.line-scroll__bottom {
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: var(--space-3);
+}
+
+.line-scroll__bottom-heading {
+  margin: 0;
+  color: inherit;
+  opacity: 0.6;
+}
+
+.line-scroll__bottom-body {
+  margin: 0;
+  color: inherit;
+  max-width: 32rem;
+}
+
+/* ── Desktop layout ───────────────────────────────────────────── */
+
+@media (min-width: 64rem) {
+  .line-scroll__top,
+  .line-scroll__bottom {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--space-4);
+  }
+
+  /* Anchor sits in col 5, right-aligned so it visually hugs the
+     left edge of the lines list. Same `padding-block` as the
+     line rows so the anchor's text baseline aligns with the
+     first row's text at scroll start AND the last row's text
+     at scroll end — without this the anchor sits flush to the
+     top of the row and the line texts (which have padding
+     above them) appear offset down by the padding amount. */
+  .line-scroll__anchor {
+    grid-column: 5 / span 1;
+    justify-self: end;
+    text-align: right;
+    padding-block: var(--space-0-75);
+  }
+
+  .line-scroll__lines-cell {
+    grid-column: 6 / -1;
+  }
+
+  /* Bottom heading hugs the far-left edge of the container so it
+     reads as a sub-section label rather than aligning with the
+     anchor word above. Body sits in the same column as the lines
+     list above for vertical rhythm. */
+  .line-scroll__bottom-heading-cell {
+    grid-column: 1 / span 1;
+    justify-self: start;
+    text-align: left;
+  }
+
+  .line-scroll__bottom-body-cell {
+    grid-column: 6 / span 5;
+  }
+}

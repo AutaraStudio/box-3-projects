@@ -1,0 +1,179 @@
+/**
+ * HomeHero
+ * ========
+ * 100svh hero with a looping background video covering the full
+ * frame, a dark overlay so white type reads, and a bottom-aligned
+ * copy block sitting on the page container's gutter.
+ */
+
+/* Outer section reserves 100vh of document-flow scroll budget
+   so the next section starts at scroll-y 100vh. No background
+   on this element — the fixed inner carries the visuals. */
+.home-hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
+  /* Dark theme so descendant tokens resolve to brown bg / pink
+     text. The overlay carries the actual mood. */
+  color: var(--theme-text);
+}
+
+/* Fixed inner — viewport-anchored visual layer. Stays glued to
+   the viewport while the user scrolls past the outer section's
+   100vh budget. The sibling rule below ensures subsequent
+   sections paint above this layer as they scroll up, producing
+   the "slide over the hero" effect. */
+.home-hero__fixed {
+  position: fixed;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
+  background-color: var(--theme-bg);
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  z-index: 0;
+}
+
+/* Stack every sibling section that follows the hero above the
+   fixed visual layer. `.home-hero ~ *` matches every following
+   sibling inside `<main>`, which is every section on the home
+   page below the hero. Each themed section already supplies its
+   own opaque `background-color: var(--theme-bg)`, so once a
+   sibling scrolls up over the hero it cleanly covers it.
+   `position: relative` is required for `z-index` to apply on
+   otherwise-static blocks. */
+.home-hero ~ * {
+  position: relative;
+  z-index: 1;
+  background-color: var(--theme-bg);
+}
+
+/* ── Video ────────────────────────────────────────────────────── */
+
+.home-hero__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Behind the overlay + content. */
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── Overlay tint ─────────────────────────────────────────────── */
+
+.home-hero__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  /* Slight gradient — heavier at the bottom where the copy sits,
+     lighter at the top so the upper third of the footage shows
+     more clearly. */
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-brown) 35%, transparent) 0%,
+    color-mix(in srgb, var(--color-brown) 55%, transparent) 60%,
+    color-mix(in srgb, var(--color-brown) 70%, transparent) 100%
+  );
+}
+
+/* ── Scroll-driven darken ───────────────────────────────────────
+   Opaque brown layer that GSAP scrubs from opacity 0 → 0.7 as
+   the user scrolls past the hero. Sits above the static
+   gradient overlay but below the copy block, so the heading
+   stays clean while the footage recedes into shadow underneath
+   it. */
+.home-hero__darken {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background-color: var(--color-brown);
+  opacity: 0;
+  will-change: opacity;
+}
+
+/* ── Copy block — bottom-left ─────────────────────────────────
+   `.home-hero` is `display: flex; align-items: flex-end`, so
+   the inner block lands at the bottom of the section by default.
+   `.container` supplies the left/right gutter. */
+
+/* Bottom row — flex laying the paragraph out at the left and
+   the scroll-down affordance at the right. Both bottom-aligned
+   to the same baseline. z-index 3 so the copy sits above the
+   scroll-driven darken layer (z-index 2). */
+.home-hero__inner {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-bottom: var(--space-3);
+}
+
+@media (min-width: 64rem) {
+  .home-hero__inner {
+    gap: var(--space-4);
+    padding-bottom: var(--space-5);
+  }
+}
+
+/* Statement column — left side. Constrains the paragraph
+   measure so the line lengths read as a tidy editorial block
+   rather than running edge-to-edge. Wider on desktop because
+   the statement now uses `.text-h2` (4rem) — needs room for
+   the `text-wrap: balance` algorithm to pick even-length line
+   breaks across multiple lines. */
+.home-hero__content {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 40rem;
+}
+
+@media (min-width: 64rem) {
+  .home-hero__content {
+    /* Tight measure so the display statement reads as a left-
+       side editorial block rather than spanning the full
+       viewport width. */
+    max-width: 65rem;
+  }
+}
+
+.home-hero__statement {
+  margin: 0;
+  color: var(--theme-text);
+  /* `pretty` — natural greedy wrap with orphan prevention on
+     the last line. Line lengths can vary, but no single short
+     widow at the end. */
+  text-wrap: pretty;
+}
+
+/* Scroll-down affordance — right side. Plain caps button, no
+   underline, hover lifts opacity. Stays visible through the
+   statement's fade because it sits outside the `__content`
+   wrapper. */
+.home-hero__scroll {
+  flex: 0 0 auto;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: var(--theme-text-muted);
+  font-family: inherit;
+  letter-spacing: var(--letter-spacing-caps);
+  transition: color 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+@media (hover: hover) {
+  .home-hero__scroll:hover {
+    color: var(--theme-text);
+  }
+}

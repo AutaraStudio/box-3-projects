@@ -1,0 +1,132 @@
+/**
+ * CareersJobs
+ * ===========
+ * Editorial list of open roles. Each row is a flex split: title +
+ * meta on the left, "Apply →" Button on the right (desktop) /
+ * stacked beneath (mobile). Hairline above every row, closing
+ * hairline below the list.
+ */
+
+.careers-jobs {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  padding-block: var(--space-7);
+  border-top: 1px solid var(--theme-border-strong);
+}
+
+@media (min-width: 64rem) {
+  .careers-jobs {
+    padding-block: var(--space-9);
+  }
+}
+
+.careers-jobs__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@media (min-width: 64rem) {
+  .careers-jobs__inner {
+    gap: var(--space-5);
+  }
+}
+
+/* ── Head ─────────────────────────────────────────────────────── */
+
+.careers-jobs__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.careers-jobs__heading {
+  margin: 0;
+  text-wrap: balance;
+}
+
+.careers-jobs__count {
+  margin: 0;
+  color: var(--theme-text-muted);
+  /* Tabular nums so 09 → 10 doesn't shift. */
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* ── Empty state ──────────────────────────────────────────────── */
+
+.careers-jobs__empty {
+  margin: 0;
+  max-width: 32rem;
+}
+
+/* ── List ─────────────────────────────────────────────────────── */
+
+.careers-jobs__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid var(--theme-border-strong);
+}
+
+/* ── Row ──────────────────────────────────────────────────────── */
+
+.careers-jobs__row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-2);
+  padding-block: var(--space-3);
+  border-top: 1px solid var(--theme-border-strong);
+}
+
+@media (min-width: 64rem) {
+  .careers-jobs__row {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-5);
+    padding-block: var(--space-4);
+  }
+}
+
+.careers-jobs__row-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+  flex: 1;
+}
+
+.careers-jobs__title {
+  margin: 0;
+  text-wrap: balance;
+}
+
+.careers-jobs__summary {
+  margin: 0;
+  text-wrap: pretty;
+  max-width: 32rem;
+}
+
+.careers-jobs__meta {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+.careers-jobs__row-cta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+}
+
+@media (min-width: 64rem) {
+  .careers-jobs__row-cta {
+    /* Pin the button to the bottom of the flex row so it sits
+       flush with the meta line beside it. */
+    align-self: flex-end;
+    padding-bottom: 0.15em;
+  }
+}

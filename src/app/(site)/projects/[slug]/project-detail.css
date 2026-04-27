@@ -1,0 +1,19 @@
+/**
+ * Project detail page wrapper
+ * ===========================
+ * Page-level rules that apply to the project detail surface as a
+ * whole. Per-section styles live next to each section component.
+ */
+
+.project-detail-page {
+  /* Bottom padding so the last section breathes before the
+     site-wide footer's partners marquee begins — same rhythm as the
+     projects index page. */
+  padding-bottom: var(--space-7);
+}
+
+@media (min-width: 64rem) {
+  .project-detail-page {
+    padding-bottom: var(--space-9);
+  }
+}

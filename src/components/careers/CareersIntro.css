@@ -1,0 +1,68 @@
+/**
+ * CareersIntro
+ * ============
+ * 2-col grid on desktop: heading on the left, body paragraphs
+ * on the right (5/7 fr split). Single-column stack on mobile.
+ */
+
+.careers-intro {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  padding-block: var(--space-7);
+  border-top: 1px solid var(--theme-border-strong);
+}
+
+@media (min-width: 64rem) {
+  .careers-intro {
+    padding-block: var(--space-9);
+  }
+}
+
+.careers-intro__inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+@media (min-width: 64rem) {
+  .careers-intro__inner {
+    /* 5fr / 1fr / 6fr — middle track is dead space so the
+       body column starts visibly to the right of where the
+       heading ends, instead of butting straight up against it. */
+    grid-template-columns: 5fr 1fr 6fr;
+    column-gap: 0;
+    gap: 0;
+  }
+}
+
+.careers-intro__heading {
+  margin: 0;
+  text-wrap: balance;
+  /* Pull-back so a long statement still reads as one block at
+     huge viewports. */
+  max-width: 18ch;
+}
+
+@media (min-width: 64rem) {
+  .careers-intro__heading {
+    grid-column: 1 / span 1;
+  }
+}
+
+.careers-intro__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+@media (min-width: 64rem) {
+  .careers-intro__body {
+    grid-column: 3 / span 1;
+  }
+}
+
+.careers-intro__paragraph {
+  margin: 0;
+  text-wrap: pretty;
+  max-width: 32rem;
+}

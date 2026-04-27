@@ -1,0 +1,401 @@
+/**
+ * ProcessTimeline
+ * ===============
+ * Sticky scroll-driven orbit. Section is tall (height set inline
+ * by JS = max(N, 6) × 0.7 × 100vh) with a `position: sticky`
+ * inner viewport that stays in view through the section's
+ * height. NO `pin: true`. GSAP scrubs draw-in / translate /
+ * draw-out phases against the section's scroll progress.
+ *
+ * Layout (≥768px):
+ *
+ *  ────────────────────────────────────────────────────────  ← top line (scaleX)
+ *                       │
+ *                       │  vert line (scaleY, glitch mask)
+ *                       │
+ *  ─────────────────────●───────  arm-content                 ← arm 1 (full-width)
+ *                       │
+ *                       │
+ *  ─────────────────────●───────  arm-content                 ← arm 2
+ *                       │
+ *                       │
+ *                  └ vertical line at left: 20vw
+ *                  └ dot sits ON the line
+ *                  └ content at left: calc(20vw + 6rem)
+ *
+ * Mobile (≤767px): canvas hides, mobile-list takes over.
+ */
+
+.process-timeline {
+  position: relative;
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  border-top: 1px solid var(--theme-border-strong);
+  z-index: 2;
+  /* `height` is set inline by the JS based on step count. */
+}
+
+/* ── Heading (in normal flow at top of section) ───────────── */
+
+/* Flex row — heading on the left, subheading on the right,
+   bottom-aligned. Stacks vertically on mobile. */
+.process-timeline__heading-wrap {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 90rem;
+  margin-inline: auto;
+  padding-inline: var(--space-3);
+  padding-top: var(--space-7);
+  padding-bottom: var(--space-5);
+}
+
+@media (min-width: 64rem) {
+  .process-timeline__heading-wrap {
+    padding-inline: var(--space-5);
+    padding-top: var(--space-9);
+    padding-bottom: var(--space-7);
+  }
+}
+
+.process-timeline__heading-inner {
+  flex: 0 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.process-timeline__label {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+.process-timeline__heading {
+  margin: 0;
+  text-wrap: balance;
+  max-width: 17ch;
+}
+
+.process-timeline__subheading {
+  margin: 0;
+  text-wrap: pretty;
+  max-width: 32ch;
+  /* Full text colour — paragraphs in the rest of the site read
+     at full colour and we're following that here too. */
+  color: var(--theme-text);
+}
+
+/* ── Sticky viewport ──────────────────────────────────────── */
+
+.process-timeline__sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Canvas fills the sticky viewport — all lines + arms position
+   absolute inside this. */
+.process-timeline__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* ── Backbone lines ──────────────────────────────────────── */
+
+/* Top horizontal — sits at the very top of the canvas, spans
+   full width. JS animates `scaleX 0 → 1` from the left at the
+   start of the timeline, reverses at the end. */
+.process-timeline__top-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background-color: var(--theme-border-strong);
+}
+
+/* Vertical — runs from canvas top to bottom at 20vw. JS animates
+   `scaleY 0 → 1` from the top, with a periodic noise mask for
+   the glitch effect. */
+.process-timeline__vert-line {
+  position: absolute;
+  left: 20vw;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: var(--theme-border-strong);
+}
+
+/* ── Arms wrap (the moving thing) ─────────────────────────── */
+
+/* Anchored a third of the way down the canvas (rather than the
+   geometric centre). Pulls the active row higher in the viewport
+   so there's less empty air above the heading + first arm,
+   and more breathing room for the timeline below. */
+.process-timeline__arms-wrap {
+  position: absolute;
+  left: 0;
+  top: 35%;
+  width: 100%;
+  height: 0;
+  z-index: 5;
+  will-change: transform;
+}
+
+/* ── Arm ──────────────────────────────────────────────────── */
+
+/* Each arm is a zero-height row. Children position themselves
+   against the arm's top line. */
+.process-timeline__arm {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 0;
+}
+
+/* Arm horizontal line — spans the FULL width, crossing the
+   vertical backbone. JS animates `scaleX 0 → 1` from the left,
+   staggered top to bottom on draw-in. */
+.process-timeline__arm-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background-color: var(--theme-border-strong);
+  transform-origin: left center;
+  transform: scaleX(0);
+}
+
+/* Dot — small square marker on the cross-point of the arm-line
+   and the vertical backbone. JS animates opacity + scale per-
+   frame based on distance from active centre. The static
+   `translate(-50%, -50%)` centring is on the separate composite
+   property so the scale tween (on `transform`) doesn't fight it. */
+.process-timeline__arm-dot {
+  position: absolute;
+  left: 20vw;
+  top: 0;
+  translate: -50% -50%;
+  width: 0.4rem;
+  height: 0.4rem;
+  /* Dark/text colour rather than the bright accent — reads as a
+     deliberate ink mark on the line rather than a colour pop.
+     Adapts: brown on cream, pink on dark. */
+  background-color: var(--theme-text);
+  opacity: 0;
+}
+
+/* Content — two-column row spanning from the dot to the right
+   edge of the canvas. Lede (number + title) anchored to the
+   left of the row; body paragraph anchored to the far end on
+   the right. JS animates `opacity` per-frame for the fade-in /
+   out as the arm passes through centre.
+   Sits entirely BELOW the horizontal arm-line — `top` pushes
+   the row down by `var(--space-2)` so the line sits as a clean
+   rule above the content rather than cutting through it. */
+.process-timeline__arm-content {
+  position: absolute;
+  left: calc(20vw + 6rem);
+  /* Right padding from the canvas edge — leaves a clean gutter
+     so the body paragraph doesn't kiss the viewport edge. */
+  right: var(--space-5);
+  top: var(--space-2);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-7);
+  opacity: 0;
+}
+
+@media (min-width: 64rem) {
+  .process-timeline__arm-content {
+    top: var(--space-3);
+    gap: var(--space-9);
+  }
+}
+
+/* Left — chapter number + title stacked. */
+.process-timeline__arm-lede {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 0 0 auto;
+  max-width: 22rem;
+}
+
+@media (min-width: 64rem) {
+  .process-timeline__arm-lede {
+    gap: var(--space-2);
+  }
+}
+
+/* The step number — small caps chapter eyebrow, muted so the
+   title carries the visual weight. Sits above the title in the
+   lede column. */
+.process-timeline__arm-num {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  color: var(--theme-text-muted);
+}
+
+.process-timeline__arm-title {
+  margin: 0;
+  text-wrap: balance;
+  color: var(--theme-text);
+}
+
+/* Right — body paragraph at the far end of the row. Capped
+   measure so the prose reads as a single tidy column rather
+   than running edge-to-edge. */
+.process-timeline__arm-body {
+  margin: 0;
+  text-wrap: pretty;
+  max-width: 28rem;
+  color: var(--theme-text);
+  /* Pull the body down so its first line sits opposite the
+     title's baseline (title is below the small-caps eyebrow).
+     Number is now ~1rem tall + space-1 gap = ~2rem before the
+     title. */
+  padding-top: 2rem;
+  flex: 1 1 0;
+}
+
+@media (min-width: 64rem) {
+  .process-timeline__arm-body {
+    padding-top: 2.5rem;
+  }
+}
+
+/* ── Tablet (768–991px) ──────────────────────────────────── */
+
+/* Tighter horizontal real estate — pull the lede in and tighten
+   the gap so the two columns still fit cleanly without the body
+   wrapping aggressively. */
+@media (max-width: 61.9375rem) {
+  .process-timeline__arm-content {
+    left: calc(20vw + 4rem);
+    gap: var(--space-4);
+  }
+  .process-timeline__arm-lede {
+    max-width: 16rem;
+  }
+  .process-timeline__arm-body {
+    max-width: 20rem;
+  }
+}
+
+/* ── Mobile (≤767px) ─────────────────────────────────────── */
+
+.process-timeline__mobile-list {
+  display: none;
+}
+
+@media (max-width: 47.9375rem) {
+  .process-timeline {
+    height: auto !important;
+  }
+  .process-timeline__sticky {
+    position: relative;
+    height: auto;
+    overflow: visible;
+  }
+  .process-timeline__canvas {
+    display: none;
+  }
+  .process-timeline__heading-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding-bottom: var(--space-3);
+  }
+  .process-timeline__subheading {
+    max-width: 100%;
+  }
+  .process-timeline__mobile-list {
+    list-style: none;
+    margin: 0;
+    padding: 0 var(--space-3) var(--space-7);
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - var(--space-3) * 2);
+    max-width: 90rem;
+    margin-inline: auto;
+  }
+  .process-timeline__mobile-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding-block: var(--space-3);
+    border-top: 1px solid var(--theme-border-strong);
+  }
+  .process-timeline__mobile-item:last-child {
+    border-bottom: 1px solid var(--theme-border-strong);
+  }
+  .process-timeline__mobile-num {
+    margin: 0;
+    color: var(--theme-text);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+  .process-timeline__mobile-title {
+    margin: 0;
+    text-wrap: balance;
+  }
+  .process-timeline__mobile-body {
+    margin: 0;
+    text-wrap: pretty;
+    max-width: 32rem;
+    color: var(--theme-text);
+  }
+}
+
+/* ── Reduced motion ──────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .process-timeline {
+    height: auto !important;
+  }
+  .process-timeline__sticky {
+    position: relative;
+    height: auto;
+    overflow: visible;
+  }
+  .process-timeline__canvas {
+    display: none;
+  }
+  .process-timeline__heading-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+  .process-timeline__mobile-list {
+    list-style: none;
+    margin: 0;
+    padding: 0 var(--space-3) var(--space-7);
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - var(--space-3) * 2);
+    max-width: 90rem;
+    margin-inline: auto;
+  }
+  .process-timeline__mobile-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding-block: var(--space-3);
+    border-top: 1px solid var(--theme-border-strong);
+  }
+  .process-timeline__mobile-item:last-child {
+    border-bottom: 1px solid var(--theme-border-strong);
+  }
+}

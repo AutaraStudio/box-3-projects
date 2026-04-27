@@ -1,0 +1,65 @@
+/**
+ * AboutIntro
+ * ==========
+ * 5fr / 1fr / 6fr grid — heading left, body right, with the
+ * middle track left empty as deliberate whitespace. Matches
+ * SustainabilityIntro / CareersIntro / ServicesIntro for cross-
+ * page rhythm.
+ */
+
+.about-intro {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  padding-block: var(--space-7);
+  border-top: 1px solid var(--theme-border-strong);
+}
+
+@media (min-width: 64rem) {
+  .about-intro {
+    padding-block: var(--space-9);
+  }
+}
+
+.about-intro__inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+@media (min-width: 64rem) {
+  .about-intro__inner {
+    grid-template-columns: 5fr 1fr 6fr;
+    column-gap: 0;
+    gap: 0;
+  }
+}
+
+.about-intro__heading {
+  margin: 0;
+  text-wrap: pretty;
+  max-width: 22ch;
+}
+
+@media (min-width: 64rem) {
+  .about-intro__heading {
+    grid-column: 1 / span 1;
+  }
+}
+
+.about-intro__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+@media (min-width: 64rem) {
+  .about-intro__body {
+    grid-column: 3 / span 1;
+  }
+}
+
+.about-intro__paragraph {
+  margin: 0;
+  text-wrap: pretty;
+  max-width: 32rem;
+}

@@ -1,0 +1,352 @@
+/**
+ * ApplyModal
+ * ==========
+ * Fullscreen modal with a centered dialog card. Backdrop fades in,
+ * dialog slides up from below.
+ */
+
+html.is-modal-open {
+  overflow: hidden;
+}
+
+.apply-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    visibility 0s 0.4s,
+    opacity 0.3s linear;
+}
+
+.apply-modal.is-open {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.3s linear;
+}
+
+/* ── Backdrop ─────────────────────────────────────────────────── */
+
+.apply-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: color-mix(in srgb, var(--color-brown) 75%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 0;
+  cursor: pointer;
+  /* Keyboard focus is on the dialog form fields, not the
+     backdrop — but it's still an interactive close target. */
+  appearance: none;
+}
+
+/* ── Dialog ───────────────────────────────────────────────────── */
+
+.apply-modal__dialog {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 44rem;
+  margin: var(--space-3) auto;
+  align-self: stretch;
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  border: 1px solid var(--theme-border-strong);
+  /* Animate up from below on open. */
+  transform: translate3d(0, 16px, 0);
+  transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  /* Cap to viewport so the form scrolls internally on small screens. */
+  max-height: calc(100vh - var(--space-6));
+}
+
+@media (min-width: 64rem) {
+  .apply-modal__dialog {
+    margin: var(--space-5) auto;
+  }
+}
+
+.apply-modal.is-open .apply-modal__dialog {
+  transform: translate3d(0, 0, 0);
+}
+
+/* ── Head ─────────────────────────────────────────────────────── */
+
+.apply-modal__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--theme-border-strong);
+}
+
+@media (min-width: 64rem) {
+  .apply-modal__head {
+    padding: var(--space-4) var(--space-5);
+  }
+}
+
+.apply-modal__head-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+  min-width: 0;
+}
+
+.apply-modal__eyebrow {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+.apply-modal__title {
+  margin: 0;
+  text-wrap: balance;
+}
+
+.apply-modal__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-4);
+  height: var(--space-4);
+  background: transparent;
+  border: 1px solid var(--theme-border);
+  border-radius: 999px;
+  color: var(--theme-text);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background-color 0.2s cubic-bezier(0.19, 1, 0.22, 1),
+    border-color 0.2s cubic-bezier(0.19, 1, 0.22, 1),
+    color 0.2s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.apply-modal__close:hover,
+.apply-modal__close:focus-visible {
+  outline: 0;
+  background-color: var(--theme-text);
+  border-color: var(--theme-text);
+  color: var(--theme-bg);
+}
+
+/* ── Form ─────────────────────────────────────────────────────── */
+
+.apply-modal__form,
+.apply-modal__sent {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  /* Custom scrollbar — Firefox (thin track, theme-aware thumb). */
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--theme-text) 22%, transparent)
+    transparent;
+}
+
+/* Custom scrollbar — WebKit / Blink. The track is invisible so
+   the rail reads as a single hairline, and the thumb is a
+   rounded pill in muted theme colour that fills on hover. */
+.apply-modal__form::-webkit-scrollbar,
+.apply-modal__sent::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.apply-modal__form::-webkit-scrollbar-track,
+.apply-modal__sent::-webkit-scrollbar-track {
+  background: transparent;
+  /* Inset margin so the thumb doesn't kiss the dialog's top /
+     bottom borders. */
+  margin-block: var(--space-1);
+}
+
+.apply-modal__form::-webkit-scrollbar-thumb,
+.apply-modal__sent::-webkit-scrollbar-thumb {
+  background-color: color-mix(in srgb, var(--theme-text) 22%, transparent);
+  border-radius: 999px;
+  transition: background-color 0.2s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.apply-modal__form:hover::-webkit-scrollbar-thumb,
+.apply-modal__sent:hover::-webkit-scrollbar-thumb {
+  background-color: color-mix(in srgb, var(--theme-text) 38%, transparent);
+}
+
+.apply-modal__form::-webkit-scrollbar-thumb:hover,
+.apply-modal__sent::-webkit-scrollbar-thumb:hover {
+  background-color: color-mix(in srgb, var(--theme-text) 55%, transparent);
+}
+
+@media (min-width: 64rem) {
+  .apply-modal__form,
+  .apply-modal__sent {
+    padding: var(--space-5);
+    gap: var(--space-4);
+  }
+}
+
+.apply-modal__sent {
+  align-items: flex-start;
+}
+
+.apply-modal__sent h3,
+.apply-modal__sent p {
+  margin: 0;
+  text-wrap: balance;
+  max-width: 36rem;
+}
+
+/* ── Row split ────────────────────────────────────────────────── */
+
+.apply-modal__row--split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+@media (min-width: 48rem) {
+  .apply-modal__row--split {
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--space-3);
+    gap: 0;
+  }
+}
+
+/* ── Field ────────────────────────────────────────────────────── */
+
+.apply-modal__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.apply-modal__label {
+  margin: 0;
+  color: var(--theme-text-muted);
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-0-25);
+}
+
+.apply-modal__required {
+  color: var(--theme-accent);
+}
+
+.apply-modal__input,
+.apply-modal__textarea {
+  width: 100%;
+  background: transparent;
+  color: inherit;
+  border: 0;
+  border-bottom: 1px solid var(--theme-border);
+  padding: var(--space-1) 0 var(--space-1-25);
+  font-family: inherit;
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 0;
+  transition: border-color 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.apply-modal__input:hover,
+.apply-modal__textarea:hover {
+  border-bottom-color: var(--theme-border-strong);
+}
+
+.apply-modal__input:focus,
+.apply-modal__textarea:focus {
+  outline: 0;
+  border-bottom-color: var(--theme-text);
+}
+
+.apply-modal__textarea {
+  resize: vertical;
+  min-height: 8rem;
+  line-height: var(--line-height-snug);
+}
+
+/* ── File upload ──────────────────────────────────────────────── */
+
+.apply-modal__file {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1-5) var(--space-2);
+  border: 1px dashed var(--theme-border-strong);
+  cursor: pointer;
+  transition:
+    background-color 0.2s cubic-bezier(0.19, 1, 0.22, 1),
+    border-color 0.2s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.apply-modal__file:hover,
+.apply-modal__file:focus-within {
+  border-color: var(--theme-text);
+  background-color: color-mix(in srgb, var(--theme-text) 4%, transparent);
+}
+
+.apply-modal__file-icon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--theme-text-muted);
+  flex-shrink: 0;
+}
+
+.apply-modal__file-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.apply-modal__file-clear {
+  margin: 0;
+  background: transparent;
+  border: 0;
+  color: var(--theme-text-muted);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: color 0.2s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.apply-modal__file-clear:hover {
+  color: var(--theme-text);
+}
+
+/* Hide native file input — the styled label is the click target. */
+.apply-modal__file-input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Actions ──────────────────────────────────────────────────── */
+
+.apply-modal__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.apply-modal__legal {
+  margin: 0;
+  color: var(--theme-text-muted);
+  max-width: 38rem;
+}

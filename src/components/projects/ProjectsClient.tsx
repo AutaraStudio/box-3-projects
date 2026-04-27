@@ -134,22 +134,15 @@ export default function ProjectsClient({
     );
   }, [renderedMode]);
 
-  /* Page-enter animation — runs once on mount. */
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const tl = gsap.timeline({
-      defaults: { duration: 1.2, ease: "power4.out" },
-    });
-    tl.from(".projects-hero__title", { x: "10vw", autoAlpha: 0 });
-    tl.from(
-      ".projects-filter__group",
-      { autoAlpha: 0, ease: "none", duration: 0.4 },
-      0,
-    );
-    return () => {
-      tl.kill();
-    };
-  }, []);
+  /* Removed — the legacy gsap.from() left autoAlpha: 0
+     (visibility: hidden + opacity: 0) on the title and filter
+     groups when its timeline got killed mid-flight by a page
+     transition or React strict-mode remount. The new
+     SplitText revealOnScroll on the hero title + counter handles
+     the entrance via IntersectionObserver, gated by
+     awaitTransitionEnd, so the title and filter render
+     reliably whether you arrive via TransitionLink or a hard
+     reload. */
 
   return (
     <div className="projects-content">

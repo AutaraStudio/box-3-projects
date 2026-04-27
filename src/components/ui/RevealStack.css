@@ -1,0 +1,28 @@
+/**
+ * RevealStack
+ * ===========
+ * Each direct child starts offset 1.5rem below + faded out. The
+ * `is-revealed` class on the wrapper moves them back to their
+ * resting position, with a per-item delay derived from
+ * `--reveal-index` (set inline by RevealStack.tsx at mount).
+ *
+ * Tokens kept inline for now — these are component-local timing
+ * choices, not shared design tokens. Promote to globals if a
+ * second use lands with different timings.
+ */
+
+.reveal-stack > * {
+  transform: translate3d(0, 2.5rem, 0);
+  opacity: 0;
+  transition:
+    transform 1s cubic-bezier(0.19, 1, 0.22, 1)
+      calc(var(--reveal-index, 0) * 90ms),
+    opacity 1s cubic-bezier(0.19, 1, 0.22, 1)
+      calc(var(--reveal-index, 0) * 90ms);
+  will-change: transform, opacity;
+}
+
+.reveal-stack.is-revealed > * {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+}

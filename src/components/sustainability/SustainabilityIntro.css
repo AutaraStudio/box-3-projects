@@ -1,0 +1,70 @@
+/**
+ * SustainabilityIntro
+ * ===================
+ * 2-col grid on desktop (5/7 fr split): heading left, body right.
+ * Mobile stacks vertically.
+ */
+
+.sustainability-intro {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  padding-block: var(--space-7);
+  border-top: 1px solid var(--theme-border-strong);
+}
+
+@media (min-width: 64rem) {
+  .sustainability-intro {
+    padding-block: var(--space-9);
+  }
+}
+
+.sustainability-intro__inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+@media (min-width: 64rem) {
+  .sustainability-intro__inner {
+    /* 5fr / 1fr / 6fr — middle track is dead space so the body
+       column starts noticeably to the right of where the heading
+       ends, instead of butting straight up against it. */
+    grid-template-columns: 5fr 1fr 6fr;
+    column-gap: 0;
+    gap: 0;
+  }
+}
+
+.sustainability-intro__heading {
+  margin: 0;
+  /* `pretty` rather than `balance` to avoid mid-word breaks at
+     display scale with a `ch`-based measure. */
+  text-wrap: pretty;
+  /* Widened from 18ch — the previous measure was forcing the
+     heading onto more lines than it needed. */
+  max-width: 26ch;
+}
+
+@media (min-width: 64rem) {
+  .sustainability-intro__heading {
+    grid-column: 1 / span 1;
+  }
+}
+
+.sustainability-intro__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+@media (min-width: 64rem) {
+  .sustainability-intro__body {
+    grid-column: 3 / span 1;
+  }
+}
+
+.sustainability-intro__paragraph {
+  margin: 0;
+  text-wrap: pretty;
+  max-width: 32rem;
+}

@@ -1,0 +1,478 @@
+/* ==========================================================================
+   ProjectGallery
+   ==========================================================================
+   Two-part section, ported from v1: a 300svh scroll-driven Explore
+   stage and a fullscreen Swiper lightbox. v1 → v2 token map:
+
+     --svh                   → 1svh (no token; used directly)
+     --measure-wide          → 56rem max-width
+     --font-primary          → var(--font-sans)
+     --color-white-500       → var(--color-cream)
+     --container-padding     → handled by .container; here we use
+                               var(--space-2)/var(--space-3) directly
+     --duration-fast         → 0.2s
+     --duration-slow         → 0.6s
+     --ease-out              → cubic-bezier(0.19, 1, 0.22, 1)
+     --ease-in-out           → cubic-bezier(0.65, 0, 0.35, 1)
+     --border-width          → 1px
+     --gap-3                 → var(--space-2)
+     --gap-4                 → var(--space-3)
+     --theme-highlight       → color-mix(theme-text 16%, transparent)
+     --font-size-text-lg     → var(--font-size-text-large)
+     --line-height-normal    → var(--line-height-snug)
+     --letter-spacing-normal → var(--letter-spacing-snug)
+   ========================================================================== */
+
+.project-gallery {
+  position: relative;
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+}
+
+/* Soft top rule separating from the previous section. */
+.project-gallery::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: var(--theme-border);
+}
+
+/* ==========================================================================
+   Explore wrap
+   ========================================================================== */
+
+.project-gallery__cta-wrap {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+.project-gallery__explore {
+  position: relative;
+  width: 100%;
+}
+
+.project-gallery__inner {
+  position: relative;
+  width: 100%;
+}
+
+@media (min-width: 62.5rem) {
+  /* 300svh — drives the scale + translate scrub range. */
+  .project-gallery__inner {
+    min-height: 300svh;
+  }
+}
+
+.project-gallery__sticky-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.project-gallery__sticky {
+  position: sticky;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100svh;
+  text-align: center;
+  z-index: 1;
+}
+
+/* ==========================================================================
+   Title
+   ========================================================================== */
+
+.project-gallery__title {
+  max-width: 56rem;
+  text-align: center;
+  text-wrap: balance;
+  margin: 0;
+  color: var(--theme-text);
+}
+
+/* The duplicate is a <p> with .text-h1 on the JSX — mirrors
+   the static heading's typography via the utility class. CSS
+   only handles the cream colour override (the duplicate must
+   read as crisp light type over the revealing image regardless
+   of section palette). */
+.project-gallery__title--duplicate {
+  color: var(--color-cream);
+}
+
+/* ==========================================================================
+   Translate parent + child
+   ========================================================================== */
+
+.project-gallery__translate-parent {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  overflow: hidden;
+  color: var(--theme-text);
+  transform-origin: center center;
+  /* Default clip — overwritten inline by GSAP once ratios compute. */
+  clip-path: inset(50% 50% 50% 50%);
+}
+
+.project-gallery__translate-child {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 3;
+}
+
+/* ==========================================================================
+   Ref — invisible measurement element that drives the idle scale.
+   ========================================================================== */
+
+.project-gallery__ref {
+  position: absolute;
+  width: 100%;
+  height: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@media (min-width: 43.75rem) and (max-width: 62.4375rem) {
+  /* 87.5% idle width on tablet — matches reference fluid scale. */
+  .project-gallery__ref {
+    width: 87.5%;
+  }
+}
+
+@media (min-width: 62.5rem) {
+  /* 37.5% idle width on desktop — matches reference fluid scale. */
+  .project-gallery__ref {
+    width: 37.5%;
+  }
+}
+
+/* ==========================================================================
+   Media — scale set inline by GSAP on desktop.
+   ========================================================================== */
+
+.project-gallery__media {
+  position: relative;
+  width: 100%;
+  transform-origin: center center;
+  background-color: var(--theme-bg);
+}
+
+.project-gallery__media-image {
+  object-fit: cover;
+}
+
+@media (max-width: 62.4375rem) {
+  .project-gallery__media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: none !important;
+  }
+}
+
+/* Persistent dark-tint overlay so the image reads as a moodboard
+   plate, with the duplicate cream heading sitting clearly on top. */
+.project-gallery__media-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  pointer-events: none;
+  background-color: color-mix(in srgb, var(--color-brown) 40%, transparent);
+}
+
+.project-gallery__media-btn {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+/* Sticky CTA styles removed alongside the JSX — the hero media
+   itself is the click target. */
+
+/* ==========================================================================
+   Lightbox — two-stage clip-path reveal
+   ========================================================================== */
+
+html.has-gallery-open {
+  overflow: hidden;
+}
+
+/* Lightbox open + close are symmetric — both directions use the
+   same 0.6s clip-path transition. Toggling .is-active flips clip
+   targets; visibility waits for the clip animation to finish on
+   close (delayed 0.6s) and switches on instantly on open. */
+.project-gallery__lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  visibility: hidden;
+  /* Outer clip starts as a 1px vertical line at centre — opens
+     horizontally to reveal, collapses back the same way on close. */
+  clip-path: inset(0 calc(50% - 1px) 0 calc(50% - 1px));
+  transition:
+    visibility 0s 0.6s,
+    clip-path 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.project-gallery__lightbox.is-active {
+  visibility: visible;
+  clip-path: inset(0 0 0 0);
+  transition:
+    visibility 0s 0s,
+    clip-path 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.project-gallery__lightbox-inner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  /* Inner clip starts split horizontally at mid-height — reveals
+     vertically on open and collapses back the same way on close. */
+  clip-path: inset(50% 0 50% 0);
+  transition: clip-path 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.project-gallery__lightbox.is-active .project-gallery__lightbox-inner {
+  clip-path: inset(0 0 0 0);
+}
+
+/* ==========================================================================
+   Lightbox — top (carousel)
+   ========================================================================== */
+
+.project-gallery__lightbox-top {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  padding: var(--space-5) 0;
+  min-height: 0;
+}
+
+.project-gallery__carousel {
+  width: 100%;
+  height: 100%;
+}
+
+.project-gallery__carousel-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.project-gallery__carousel-item {
+  width: auto !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-gallery__carousel-media {
+  position: relative;
+  height: var(--gallery-top-height, 60vh);
+  width: calc(
+    var(--gallery-top-height, 60vh) * var(--width) / var(--height)
+  );
+  max-width: 90vw;
+  background-color: var(--theme-bg);
+  overflow: hidden;
+  /* Entrance + exit: slide + clip-reveal, both directions
+     share the same transition so the carousel cards retract
+     in reverse order on close. The per-item delay is the same
+     on both ways (open: stagger in, close: stagger out). */
+  transform: translate3d(20vw, 0, 0);
+  clip-path: inset(100% 0 0 0);
+  transition:
+    transform 0.6s cubic-bezier(0.19, 1, 0.22, 1)
+      calc(var(--item-index) * 0.08s + 0.2s),
+    clip-path 0.6s cubic-bezier(0.19, 1, 0.22, 1)
+      calc(var(--item-index) * 0.08s + 0.2s);
+}
+
+.project-gallery__lightbox.is-active .project-gallery__carousel-media {
+  transform: translate3d(0, 0, 0);
+  clip-path: inset(0 0 0 0);
+}
+
+.project-gallery__carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+@media (min-width: 62.5rem) {
+  .project-gallery__carousel-media {
+    /* 68.75% cap on desktop — matches reference max slide width. */
+    max-width: 68.75vw;
+  }
+}
+
+@media (max-width: 62.4375rem) {
+  .project-gallery__carousel-media {
+    /* 75% cap below desktop — matches reference fluid slide width. */
+    max-width: 75vw;
+  }
+}
+
+/* ==========================================================================
+   Lightbox — bottom bar
+   ==========================================================================
+   Editorial nav bar. Two regions, baseline-aligned:
+     LEFT  — project title (anchors the bar).
+     RIGHT — one cluster: counter · prev/next nav · close button.
+
+   On mobile the cluster wraps below the title via the flex
+   `flex-wrap: wrap` so everything stays readable on narrow widths.
+   ========================================================================== */
+
+.project-gallery__lightbox-bottom {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  column-gap: var(--space-4);
+  row-gap: var(--space-2);
+  padding: var(--space-2) var(--space-2) var(--space-3);
+}
+
+@media (min-width: 64rem) {
+  .project-gallery__lightbox-bottom {
+    padding: var(--space-3);
+  }
+}
+
+.project-gallery__lightbox-title {
+  margin: 0;
+  color: var(--theme-text);
+  /* Slide-up entrance + exit — both directions share the same
+     transition so closing reverses the open animation. */
+  transform: translate3d(0, 50%, 0);
+  opacity: 0;
+  transition:
+    transform 0.6s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.project-gallery__lightbox.is-active .project-gallery__lightbox-title {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+  /* Stagger after the clip-path reveals on open. */
+  transition-delay: 0.2s;
+}
+
+/* ── Cluster — counter · nav · close ─────────────────────────── */
+
+.project-gallery__cluster {
+  display: inline-flex;
+  align-items: center;
+  /* Larger gap before the close button than between the inline
+     counter / nav, so the close reads as a separate action. */
+  gap: var(--space-3);
+}
+
+.project-gallery__pagination {
+  margin: 0;
+  color: var(--theme-text);
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-0-25);
+  /* Tabular nums so 09 → 10 doesn't shimmy as the counter ticks. */
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  /* Reserve enough width for "00 / 00" so the counter doesn't
+     reflow the nav buttons as the index changes width. */
+  min-width: 5ch;
+}
+
+.project-gallery__pagination > span {
+  display: inline-block;
+  transform: translate3d(0, 20%, 0);
+  opacity: 0;
+  transition:
+    transform 0.6s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.project-gallery__lightbox.is-active .project-gallery__pagination > span {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+  transition-delay: 0.2s;
+}
+
+/* ── Nav buttons (prev / next) ───────────────────────────────── */
+
+.project-gallery__navigation {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-0-5);
+}
+
+.project-gallery__nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-4);
+  height: var(--space-4);
+  border: 1px solid var(--theme-border);
+  background: transparent;
+  color: var(--theme-text);
+  cursor: pointer;
+  border-radius: 999px;
+  transition:
+    color 0.2s cubic-bezier(0.19, 1, 0.22, 1),
+    border-color 0.2s cubic-bezier(0.19, 1, 0.22, 1),
+    background-color 0.2s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.project-gallery__nav-btn:hover,
+.project-gallery__nav-btn:focus-visible {
+  border-color: var(--theme-text);
+  background-color: var(--theme-text);
+  color: var(--theme-bg);
+}
+
+.project-gallery__nav-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── Close — uses the global Button at sm size ────────────────
+   The cluster's gap already gives the close a clear separation
+   from the nav buttons, so no explicit divider is needed. We
+   just make sure the close icon sits at a size that matches the
+   inline cluster's visual weight. */
+
+.project-gallery__close .btn__icon svg {
+  width: 12px;
+  height: 12px;
+}

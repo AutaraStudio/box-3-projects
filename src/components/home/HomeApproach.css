@@ -1,0 +1,118 @@
+/**
+ * HomeApproach
+ * ============
+ * Asymmetric two-column block. Aside (label + numbered
+ * principles) on the left; headline/body/CTA on the right.
+ * Mobile stacks the aside above the body.
+ */
+
+.home-approach {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  padding-block: var(--space-7);
+  border-top: 1px solid var(--theme-border-strong);
+}
+
+@media (min-width: 64rem) {
+  .home-approach {
+    padding-block: var(--space-10);
+  }
+}
+
+.home-approach__inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 64rem) {
+  .home-approach__inner {
+    /* 2fr aside / 3fr body — narrower aside reads as marginalia,
+       body carries the headline. */
+    grid-template-columns: 2fr 3fr;
+    gap: var(--space-6);
+    align-items: start;
+  }
+}
+
+/* ── Aside ───────────────────────────────────────────────────── */
+
+.home-approach__aside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+@media (min-width: 64rem) {
+  .home-approach__aside {
+    /* Sit the aside near the top of the row regardless of body
+       height — cleaner editorial alignment than centring.
+       `--space-7` clears the 6rem fixed site header. */
+    position: sticky;
+    top: var(--space-7);
+    gap: var(--space-3);
+  }
+}
+
+.home-approach__label {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+.home-approach__principles {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1-25);
+  border-top: 1px solid var(--theme-border);
+  padding-top: var(--space-2);
+}
+
+.home-approach__principle {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1-5);
+  align-items: baseline;
+  margin: 0;
+}
+
+.home-approach__num {
+  margin: 0;
+  color: var(--theme-text-muted);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.home-approach__principle-text {
+  color: var(--theme-text);
+}
+
+/* ── Body ────────────────────────────────────────────────────── */
+
+.home-approach__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 50rem;
+}
+
+@media (min-width: 64rem) {
+  .home-approach__body {
+    gap: var(--space-4);
+  }
+}
+
+.home-approach__heading {
+  margin: 0;
+}
+
+.home-approach__paragraph {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+.home-approach__cta {
+  margin-top: var(--space-1);
+}

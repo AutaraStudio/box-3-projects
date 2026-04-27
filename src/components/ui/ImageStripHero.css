@@ -1,0 +1,229 @@
+/**
+ * ImageStripHero
+ * ==============
+ * Two stacked regions inside one section:
+ *   1. .image-strip-hero__inner — centred title + CTA, fills ~1
+ *      viewport on first paint.
+ *   2. .image-strip-hero__progress — 200vh tall trigger area whose
+ *      sticky inner band holds the 3-image strip. Scroll-driven
+ *      JS in the component lerps `--item-width` from the ref
+ *      width to the full viewport.
+ *
+ * Token translations from the Populous reference:
+ *   --grid-margin → var(--space-3) (desktop) / var(--space-2) (mobile)
+ *   --grid-gutter → var(--space-1-25)
+ *   --color       → var(--theme-text)
+ *   --color-bg    → var(--theme-bg)
+ */
+
+.image-strip-hero {
+  --hero-grid-margin: var(--space-2);
+  --hero-grid-gutter: var(--space-1-25);
+  position: relative;
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+}
+
+@media (min-width: 64rem) {
+  .image-strip-hero {
+    --hero-grid-margin: var(--space-3);
+  }
+}
+
+/* ── Title block ──────────────────────────────────────────────── */
+
+.image-strip-hero__inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-inline: auto;
+  padding-inline: var(--hero-grid-margin);
+  /* Title block fills roughly one viewport so it reads as a
+     standalone band before the image strip enters. The header
+     squares are var(--space-6) tall, so subtract a little to
+     keep the title visually centred. */
+  min-height: calc(100svh - var(--space-6));
+}
+
+.image-strip-hero__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding-block: var(--space-7);
+  text-align: center;
+}
+
+@media (min-width: 64rem) {
+  .image-strip-hero__content {
+    gap: var(--space-4);
+    padding-block: var(--space-9);
+  }
+}
+
+/* Typography (size / weight / leading / tracking) comes from
+   the .text-display utility on the JSX. CSS only handles the
+   layout-level constraints. */
+.image-strip-hero__title {
+  margin: 0;
+  /* `pretty` rather than `balance` — at display scale with a tight
+     `ch`-based measure, `balance` will occasionally break mid-word
+     to keep line lengths symmetric. `pretty` only fixes orphans
+     and never slices a word. */
+  text-wrap: pretty;
+  /* Pulled in from 18ch — narrower measure forces the headline
+     to stack onto more lines, which reads as a deliberate
+     editorial statement rather than a wide billboard line. */
+  max-width: 14ch;
+}
+
+/* ── Image strip wrapper ──────────────────────────────────────── */
+
+.image-strip-hero__progress {
+  position: relative;
+  /* 200vh of scroll distance gives the sticky inner room to
+     stay pinned while the user scrolls past it — that's what
+     drives the progress 0→1. */
+  min-height: 200vh;
+  pointer-events: none;
+  /* Pull the strip up so the centre image sits under the
+     heading on first paint — same calc as the reference,
+     keeping the visual overlap. */
+  margin-top: calc(
+    (
+        100vw * 9 / 16 - (
+            0.5 * (100vw - 2 * var(--hero-grid-margin)) -
+              0.5 * var(--hero-grid-gutter)
+          ) * 9 / 16
+      ) * -0.5
+  );
+}
+
+html.is-touch-device .image-strip-hero__progress {
+  margin-top: 0;
+  min-height: 150vh;
+}
+
+/* The sticky band holds the 3 images while the user scrolls
+   through the 200vh trigger area. */
+.image-strip-hero__progress-inner {
+  position: sticky;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+/* Forces the sticky band to be 16:9 — gives it a known height
+   so the layout doesn't collapse when the images haven't
+   loaded yet. */
+.image-strip-hero__progress-inner::before {
+  content: "";
+  display: block;
+  aspect-ratio: 16 / 9;
+}
+
+/* Trigger area whose intersection with the viewport drives the
+   0→1 progress value the JS reads. Position-absolute, anchored
+   to the bottom of .image-strip-hero__progress so it spans the
+   whole trigger range. */
+.image-strip-hero__progress-area {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Reference element used to measure the centre image's start
+   width (50% of the container minus half a gutter). The JS
+   reads its offsetWidth on mount + on resize. */
+.image-strip-hero__progress-ref {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(
+    0.5 * (100vw - 2 * var(--hero-grid-margin)) -
+      0.5 * var(--hero-grid-gutter)
+  );
+}
+
+/* ── Image strip — three items in a row ───────────────────────── */
+
+.image-strip-hero__listing {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--hero-grid-gutter);
+  transform: translate3d(-50%, -50%, 0);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.image-strip-hero__listing li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-strip-hero__item {
+  position: relative;
+  width: calc(
+    0.3333 * (100vw - 2 * var(--hero-grid-margin)) -
+      0.6667 * var(--hero-grid-gutter)
+  );
+  aspect-ratio: 16 / 9;
+}
+
+/* Centre image: starts at 50% wide, grows to viewport width as
+   --item-width is lerped by the JS. */
+.image-strip-hero__item--fluid {
+  width: max(
+    calc(
+      0.5 * (100vw - 2 * var(--hero-grid-margin)) -
+        0.5 * var(--hero-grid-gutter)
+    ),
+    var(--item-width, 0px)
+  );
+}
+
+/* Touch devices: hide the side images + let the centre take
+   the full screen, since the side images won't be shown
+   alongside a fluid centre on small viewports. */
+html.is-touch-device .image-strip-hero__listing li:nth-child(1) .image-strip-hero__item,
+html.is-touch-device .image-strip-hero__listing li:nth-child(3) .image-strip-hero__item {
+  display: none;
+}
+
+html.is-touch-device .image-strip-hero__item {
+  width: 100vw;
+}
+
+/* ── Image inside an item ─────────────────────────────────────── */
+
+.image-strip-hero__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 4px;
+  background-color: color-mix(in srgb, var(--theme-text) 6%, transparent);
+}
+
+.image-strip-hero__image-el {
+  object-fit: cover;
+  object-position: center;
+}
+
+.image-strip-hero__image-placeholder {
+  position: absolute;
+  inset: 0;
+  background-color: color-mix(in srgb, var(--theme-text) 6%, transparent);
+}

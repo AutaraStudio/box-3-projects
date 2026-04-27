@@ -21,8 +21,12 @@ import teamMember from "./collections/teamMember";
 import expertise from "./collections/expertise";
 import testimonial from "./collections/testimonial";
 import partner from "./collections/partner";
+import vacancy from "./collections/vacancy";
 
 import testimonialsSection from "./sections/testimonialsSection";
+import partnersSection from "./sections/partnersSection";
+import careersPage from "./pages/careersPage";
+import sustainabilityPage from "./pages/sustainabilityPage";
 
 export const schemaTypes: SchemaTypeDefinition[] = [
   project,
@@ -31,5 +35,9 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   expertise,
   testimonial,
   partner,
+  vacancy,
   testimonialsSection,
+  partnersSection,
+  careersPage,
+  sustainabilityPage,
 ];
