@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import Script from "next/script";
 import SmoothScroll from "@/components/scroll/SmoothScroll";
 import { PageTransitionProvider } from "@/components/transition/PageTransitionProvider";
 import PageTransitionOverlay from "@/components/transition/PageTransitionOverlay";
@@ -89,6 +90,22 @@ export default async function RootLayout({
       className={neueMontreal.variable}
       suppressHydrationWarning
     >
+      {/* Google Analytics (GA4) — loaded with `afterInteractive`
+          so it doesn't block first paint. Mounted on the (site)
+          group layout, not the (studio) one, so the CMS admin
+          isn't tracked. */}
+      <Script
+        src="https://www.googletagmanager.com/gtag/js?id=G-5VFLZ1919K"
+        strategy="afterInteractive"
+      />
+      <Script id="gtag-init" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-5VFLZ1919K');
+        `}
+      </Script>
       <body data-theme="cream">
         <SmoothScroll>
           <PageTransitionProvider>
