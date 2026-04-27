@@ -142,7 +142,7 @@
     /* Tight measure so the display statement reads as a left-
        side editorial block rather than spanning the full
        viewport width. */
-    max-width: 65rem;
+    max-width: 55rem;
   }
 }
 

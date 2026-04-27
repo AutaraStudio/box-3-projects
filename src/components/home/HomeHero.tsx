@@ -38,6 +38,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+import SplitText from "@/components/split-text/SplitText";
 import { awaitTransitionEnd } from "@/components/transition/transitionState";
 
 import "./HomeHero.css";
@@ -174,7 +175,9 @@ export default function HomeHero({
               leaving the scroll-down affordance visible. */}
           <div ref={contentRef} className="home-hero__content">
             <p className="home-hero__statement text-display">
-              {statement}
+              <SplitText asWords revealOnScroll>
+                {statement}
+              </SplitText>
             </p>
           </div>
 
