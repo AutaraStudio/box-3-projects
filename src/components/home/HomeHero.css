@@ -155,6 +155,18 @@
   text-wrap: pretty;
 }
 
+/* CTA beneath the statement — fades + scales with the rest
+   of the copy block via the GSAP scrub on `__content`. */
+.home-hero__cta {
+  margin-top: var(--space-2);
+}
+
+@media (min-width: 64rem) {
+  .home-hero__cta {
+    margin-top: var(--space-3);
+  }
+}
+
 /* Scroll-down affordance — right side. Plain caps button, no
    underline, hover lifts opacity. Stays visible through the
    statement's fade because it sits outside the `__content`

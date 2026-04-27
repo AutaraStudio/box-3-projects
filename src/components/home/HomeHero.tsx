@@ -38,6 +38,8 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+import Button from "@/components/ui/Button";
+import RevealStack from "@/components/ui/RevealStack";
 import SplitText from "@/components/split-text/SplitText";
 import { awaitTransitionEnd } from "@/components/transition/transitionState";
 
@@ -56,6 +58,12 @@ interface HomeHeroProps {
   /** Bottom-right scroll affordance label. Defaults to
    *  "Scroll down". Wrapped in parentheses by the component. */
   scrollLabel?: string;
+  /** Optional CTA beneath the statement. Defaults to
+   *  "View projects →" linking to /projects. Pass empty
+   *  string for either to suppress. */
+  ctaLabel?: string;
+  ctaHref?: string;
+  ctaPageName?: string;
 }
 
 const DEFAULT_VIDEO =
@@ -67,6 +75,9 @@ export default function HomeHero({
   videoSrc = DEFAULT_VIDEO,
   statement = DEFAULT_STATEMENT,
   scrollLabel = "Scroll down",
+  ctaLabel = "View projects →",
+  ctaHref = "/projects",
+  ctaPageName = "Projects",
 }: HomeHeroProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -179,6 +190,22 @@ export default function HomeHero({
                 {statement}
               </SplitText>
             </p>
+            {ctaLabel && ctaHref ? (
+              /* RevealStack handles the entrance: button starts
+                 translated 2.5rem below + faded out, slides up
+                 to position via IntersectionObserver-gated CSS
+                 transition (gated by awaitTransitionEnd so it
+                 doesn't fire behind the page-transition panel). */
+              <RevealStack className="home-hero__cta">
+                <Button
+                  href={ctaHref}
+                  pageName={ctaPageName}
+                  size="lg"
+                >
+                  {ctaLabel}
+                </Button>
+              </RevealStack>
+            ) : null}
           </div>
 
           {/* Scroll-down affordance — bottom-right. Stays visible
