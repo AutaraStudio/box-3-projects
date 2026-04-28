@@ -32,9 +32,30 @@
   }
 }
 
+/* Header band — small caps label + optional display heading.
+   Stacks vertically; heading constrains to a comfortable
+   measure so a long phrase wraps editorially. */
+.services-list__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+@media (min-width: 64rem) {
+  .services-list__head {
+    gap: var(--space-3);
+  }
+}
+
 .services-list__label {
   margin: 0;
   color: var(--theme-text-muted);
+}
+
+.services-list__heading {
+  margin: 0;
+  text-wrap: balance;
+  max-width: 22ch;
 }
 
 /* Optional CTA — right-aligned beneath the list so it reads as

@@ -125,6 +125,7 @@ export default async function Home() {
 
       <ServicesList
         label="What we do"
+        heading="Design and build, end to end."
         items={SERVICES}
         ctaLabel="Explore services →"
         ctaHref="/services"

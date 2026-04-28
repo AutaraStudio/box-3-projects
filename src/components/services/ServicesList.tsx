@@ -20,6 +20,7 @@
  */
 
 import Button from "@/components/ui/Button";
+import Heading from "@/components/ui/Heading";
 import {
   DirectionalHoverList,
   DirectionalHoverItem,
@@ -35,6 +36,10 @@ export interface ServiceItem {
 
 interface ServicesListProps {
   label?: string;
+  /** Optional display heading above the registry. Renders via
+   *  <Heading> so it gets the SplitText word-stagger reveal.
+   *  Existing call-sites without a heading stay unaffected. */
+  heading?: string;
   items: ServiceItem[];
   /** Optional CTA below the list. Both must be set for it to
    *  render — keeps existing call-sites unaffected. */
@@ -45,6 +50,7 @@ interface ServicesListProps {
 
 export default function ServicesList({
   label = "What we do",
+  heading,
   items,
   ctaLabel,
   ctaHref,
@@ -55,7 +61,16 @@ export default function ServicesList({
   return (
     <section className="services-list" data-theme="cream">
       <div className="container services-list__inner">
-        <p className="services-list__label text-small text-caps">{label}</p>
+        <header className="services-list__head">
+          <p className="services-list__label text-small text-caps">
+            {label}
+          </p>
+          {heading ? (
+            <Heading as="h2" className="services-list__heading text-h2">
+              {heading}
+            </Heading>
+          ) : null}
+        </header>
         <DirectionalHoverList
           axis="y"
           className="services-list__list"
