@@ -151,10 +151,15 @@ export default function HomeCTA({
           data-theme="dark"
           aria-hidden="true"
         >
+          {/* Clip layer's SplitText omits `revealOnScroll` — the
+              base layer already runs the word-slide-up reveal once.
+              Its visual reveal is the clip-path itself, scrubbed
+              by the wipe; firing a second IntersectionObserver
+              here would double the animation. */}
           <h2 className="home-cta__heading text-display">
             {lines.map((line, i) => (
               <span key={i} className="home-cta__heading-line">
-                <SplitText asWords revealOnScroll>
+                <SplitText asWords>
                   {line}
                 </SplitText>
               </span>
