@@ -1,12 +1,11 @@
 /**
  * HomeFeaturedProjects
  * ====================
- * 12-col asymmetric editorial spread — each card is placed in a
- * specific column range and offset vertically so the four cards
- * read as a curated magazine layout rather than a uniform grid.
- * Image aspect ratios are *not* enforced per slot; each card
- * renders at its source image's native aspect (set as `--ratio`
- * on the wrapper from the Sanity dimensions).
+ * Mirrors ProjectsGrid so the home spread reads as a teaser of
+ * the archive layout: 12-col grid, three cards per row, widths
+ * cycle 5 / 4 / 3 reshuffling per row (5+4+3, 3+5+4, 4+3+5).
+ * Each card renders at its source image's native aspect (set
+ * as `--ratio` on the wrapper from the Sanity dimensions).
  */
 
 .home-featured {
@@ -54,10 +53,11 @@
 
 /* ── Editorial grid ───────────────────────────────────────── */
 
-/* Mobile: single-column stack. Tablet+: a 12-column CSS grid with
-   asymmetric per-card placement so the spread reads as an editorial
-   magazine layout — cards drift left/right and stagger vertically
-   instead of sitting in even columns. */
+/* Matches ProjectsGrid exactly so the home spread reads as a
+   teaser of the same archive layout: 12-col grid, three cards
+   per row, widths cycling 5 / 4 / 3 with each row reshuffling
+   them. Tablet collapses to 2-col, mobile to a single-column
+   flex stack. */
 .home-featured__list {
   list-style: none;
   margin: 0;
@@ -70,16 +70,21 @@
 @media (min-width: 48rem) {
   .home-featured__list {
     display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: var(--space-3);
     row-gap: var(--space-5);
+    /* Don't stretch cards — each card sizes to its own content
+       so short / tall pairs don't leave empty space below the
+       text. */
+    align-items: start;
   }
 }
 
 @media (min-width: 64rem) {
   .home-featured__list {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: var(--space-4);
-    row-gap: var(--space-7);
+    row-gap: var(--space-6);
   }
 }
 
@@ -88,36 +93,24 @@
   display: block;
 }
 
-/* Asymmetric placement — 4-item cycle. Two items share each
-   visual row; the second item in each pair drops vertically to
-   create the staggered "drift" feel. Aspect ratios vary per
-   slot so neighbouring images never read the same shape. */
-@media (min-width: 48rem) {
-  /* Row A — wide left, narrow right (right drops down). */
-  .home-featured__item:nth-child(4n + 1) {
-    grid-column: 1 / span 7;
-  }
-  .home-featured__item:nth-child(4n + 2) {
-    grid-column: 9 / span 4;
-    margin-top: var(--space-6);
-  }
-  /* Row B — narrow left (indented), wide right (drops slightly). */
-  .home-featured__item:nth-child(4n + 3) {
-    grid-column: 2 / span 5;
-  }
-  .home-featured__item:nth-child(4n + 4) {
-    grid-column: 7 / span 6;
-    margin-top: var(--space-4);
-  }
-}
-
+/* 9-card cycle — three rows of three, every row sums to 12,
+   widths reshuffle so the rhythm reads varied across the page:
+     row A: 5 + 4 + 3
+     row B: 3 + 5 + 4
+     row C: 4 + 3 + 5  */
 @media (min-width: 64rem) {
-  .home-featured__item:nth-child(4n + 2) {
-    margin-top: var(--space-9);
-  }
-  .home-featured__item:nth-child(4n + 4) {
-    margin-top: var(--space-6);
-  }
+  /* Row A */
+  .home-featured__item:nth-child(9n + 1) { grid-column: span 5; }
+  .home-featured__item:nth-child(9n + 2) { grid-column: span 4; }
+  .home-featured__item:nth-child(9n + 3) { grid-column: span 3; }
+  /* Row B */
+  .home-featured__item:nth-child(9n + 4) { grid-column: span 3; }
+  .home-featured__item:nth-child(9n + 5) { grid-column: span 5; }
+  .home-featured__item:nth-child(9n + 6) { grid-column: span 4; }
+  /* Row C */
+  .home-featured__item:nth-child(9n + 7) { grid-column: span 4; }
+  .home-featured__item:nth-child(9n + 8) { grid-column: span 3; }
+  .home-featured__item:nth-child(9n + 9) { grid-column: span 5; }
 }
 
 /* ── Card ─────────────────────────────────────────────────── */

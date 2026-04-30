@@ -58,15 +58,16 @@ export const FEATURED_PROJECTS_QUERY = groq`
 /**
  * Home featured projects — same `featured == true` filter as the
  * menu query, but returns the full ProjectListItem shape (image,
- * year, location, category) and caps at 4 so the home page section
+ * year, location, category) and caps at 6 so the home page section
  * doesn't grow unbounded as the editor adds more featured work.
+ * 6 items fills two rows of the 12-col / 5+4+3 reshuffling grid.
  */
 export const HOME_FEATURED_PROJECTS_QUERY = groq`
   *[_type == "project"
     && featured == true
     && defined(featuredImage)
     && defined(slug.current)]
-    | order(year desc, title asc) [0...4] {
+    | order(year desc, title asc) [0...6] {
       _id,
       title,
       "slug": slug.current,
