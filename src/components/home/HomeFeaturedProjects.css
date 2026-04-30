@@ -1,10 +1,12 @@
 /**
  * HomeFeaturedProjects
  * ====================
- * Masonry-style two-column layout — cards flow into the column
- * with the most space, alternating portrait/landscape image
- * aspects so the columns interlock with varied heights. Reads
- * as a curated editorial spread rather than a uniform grid.
+ * 12-col asymmetric editorial spread — each card is placed in a
+ * specific column range and offset vertically so the four cards
+ * read as a curated magazine layout rather than a uniform grid.
+ * Image aspect ratios are *not* enforced per slot; each card
+ * renders at its source image's native aspect (set as `--ratio`
+ * on the wrapper from the Sanity dimensions).
  */
 
 .home-featured {
@@ -136,31 +138,16 @@
 
 /* ── Image ────────────────────────────────────────────────── */
 
-/* Default aspect — used on mobile where the grid collapses to
-   a stack. Tablet+ overrides per slot below. */
+/* Aspect comes from `--ratio` (forwarded onto the wrapper from
+   JSX, derived from the Sanity image dimensions) so every card
+   renders at its source image's true shape. Width is still
+   controlled by the grid via per-slot column spans. */
 .home-featured__image {
   display: block;
   position: relative;
   overflow: hidden;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: var(--ratio, 4 / 5);
   width: 100%;
-}
-
-/* Per-slot aspects — paired with the 4-item placement cycle so
-   each row mixes a wide image with a tall one. */
-@media (min-width: 48rem) {
-  .home-featured__item:nth-child(4n + 1) .home-featured__image {
-    aspect-ratio: 4 / 3;
-  }
-  .home-featured__item:nth-child(4n + 2) .home-featured__image {
-    aspect-ratio: 4 / 5;
-  }
-  .home-featured__item:nth-child(4n + 3) .home-featured__image {
-    aspect-ratio: 1 / 1;
-  }
-  .home-featured__item:nth-child(4n + 4) .home-featured__image {
-    aspect-ratio: 16 / 11;
-  }
 }
 
 .home-featured__image img {

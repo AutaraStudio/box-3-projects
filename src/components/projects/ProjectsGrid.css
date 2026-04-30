@@ -1,15 +1,16 @@
 /**
  * ProjectsGrid
  * ============
- * Single 12-col grid, asymmetric 4-slot card placement — same
- * pattern as the home featured grid. Mobile collapses to a
+ * 3-column grid with mixed column spans for editorial rhythm.
+ * Cards cycle through a 4-slot pattern: wide(2) + narrow(1) on
+ * one row, narrow(1) + wide(2) on the next — every row totals
+ * 3 columns. Tablet drops to 2 columns; mobile collapses to a
  * single-column flex stack.
  *
- * The per-slot `aspect-ratio` overrides on `.project-card__image-
- * wrap` win against ProjectCard's intrinsic `--ratio` because
- * they're more specific. This makes every card on the listing
- * conform to the editorial slot ratio rather than its own native
- * image shape, which is what gives the listing its rhythm.
+ * Each card keeps its native image aspect ratio (set as `--ratio`
+ * on ProjectCard from the Sanity image dimensions). The grid
+ * controls *width* via column spans only — height follows the
+ * source image, so nothing gets cropped or padded.
  */
 
 .projects-grid {
@@ -33,68 +34,35 @@
 @media (min-width: 48rem) {
   .projects-grid__row {
     display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: var(--space-3);
     row-gap: var(--space-5);
+    /* Don't stretch cards — each card sizes to its own content so
+       short / tall pairs don't leave empty space below the text. */
+    align-items: start;
   }
 }
 
 @media (min-width: 64rem) {
   .projects-grid__row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     column-gap: var(--space-4);
-    row-gap: var(--space-7);
+    row-gap: var(--space-6);
   }
 }
 
-/* ── Asymmetric 4-slot placement ─────────────────────────────── */
+/* ── Mixed column spans (desktop, 3-col) ─────────────────────── */
 
-@media (min-width: 48rem) {
-  .projects-grid__row .project-card-wrap:nth-child(4n + 1) {
-    grid-column: 1 / span 7;
-  }
-  .projects-grid__row .project-card-wrap:nth-child(4n + 2) {
-    grid-column: 9 / span 4;
-    margin-top: var(--space-6);
-  }
-  .projects-grid__row .project-card-wrap:nth-child(4n + 3) {
-    grid-column: 2 / span 5;
-  }
-  .projects-grid__row .project-card-wrap:nth-child(4n + 4) {
-    grid-column: 7 / span 6;
-    margin-top: var(--space-4);
-  }
-}
-
+/* 4-slot cycle — every row sums to 3 cols:
+     row A: wide (span 2) + narrow (span 1)
+     row B: narrow (span 1) + wide (span 2) */
 @media (min-width: 64rem) {
-  .projects-grid__row .project-card-wrap:nth-child(4n + 2) {
-    margin-top: var(--space-9);
-  }
+  .projects-grid__row .project-card-wrap:nth-child(4n + 1),
   .projects-grid__row .project-card-wrap:nth-child(4n + 4) {
-    margin-top: var(--space-6);
+    grid-column: span 2;
   }
-}
-
-/* ── Per-slot image aspect ratios ────────────────────────────── */
-
-/* Override ProjectCard's intrinsic `--ratio` so each slot enforces
-   the editorial shape regardless of the source image's native
-   aspect. Wide slots get landscape ratios; narrow / indented
-   slots get portrait or square. */
-@media (min-width: 48rem) {
-  .projects-grid__row .project-card-wrap:nth-child(4n + 1)
-    .project-card__image-wrap {
-    aspect-ratio: 4 / 3;
-  }
-  .projects-grid__row .project-card-wrap:nth-child(4n + 2)
-    .project-card__image-wrap {
-    aspect-ratio: 4 / 5;
-  }
-  .projects-grid__row .project-card-wrap:nth-child(4n + 3)
-    .project-card__image-wrap {
-    aspect-ratio: 1 / 1;
-  }
-  .projects-grid__row .project-card-wrap:nth-child(4n + 4)
-    .project-card__image-wrap {
-    aspect-ratio: 16 / 11;
+  .projects-grid__row .project-card-wrap:nth-child(4n + 2),
+  .projects-grid__row .project-card-wrap:nth-child(4n + 3) {
+    grid-column: span 1;
   }
 }

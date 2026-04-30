@@ -160,6 +160,11 @@ export default function HomeFeaturedProjects({
               ? urlFor(project.featuredImage).width(1600).url()
               : null;
             const alt = project.featuredImage?.alt ?? project.title;
+            /* Native aspect from Sanity dims — drives the image
+               wrapper's aspect-ratio so each card renders at the
+               source image's true shape (no cropping, no padding). */
+            const dims = project.featuredImage?.asset?.metadata?.dimensions;
+            const ratio = dims ? `${dims.width}/${dims.height}` : "4/5";
 
             return (
               <li key={project._id} className="home-featured__item">
@@ -168,7 +173,10 @@ export default function HomeFeaturedProjects({
                   pageName={project.title}
                   className="home-featured__card"
                 >
-                  <RevealImage className="home-featured__image">
+                  <RevealImage
+                    className="home-featured__image"
+                    style={{ "--ratio": ratio } as React.CSSProperties}
+                  >
                     {src ? (
                       <Image
                         src={src}
