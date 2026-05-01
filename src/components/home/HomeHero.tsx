@@ -82,6 +82,34 @@ export default function HomeHero({
   const sectionRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const darkenRef = useRef<HTMLSpanElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  /* Firefox + Safari are strict about autoplay even with `muted` +
+     `playsInline` set: if the playback hasn't been kicked off before
+     the user interacts (or if React hydration completes after the
+     element is in the DOM), they leave the video paused. We force
+     `.play()` once the element can play, and re-try on visibility
+     changes so a tab returning from background doesn't stay frozen. */
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    /* Some browsers don't honour the `muted` attribute set via JSX
+       reliably until reflected on the property — set both. */
+    video.muted = true;
+    const tryPlay = () => {
+      const p = video.play();
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    };
+    if (video.readyState >= 2) tryPlay();
+    video.addEventListener("loadeddata", tryPlay);
+    video.addEventListener("canplay", tryPlay);
+    document.addEventListener("visibilitychange", tryPlay);
+    return () => {
+      video.removeEventListener("loadeddata", tryPlay);
+      video.removeEventListener("canplay", tryPlay);
+      document.removeEventListener("visibilitychange", tryPlay);
+    };
+  }, []);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -164,15 +192,17 @@ export default function HomeHero({
     <section ref={sectionRef} className="home-hero" data-theme="dark">
       <div className="home-hero__fixed">
         <video
+          ref={videoRef}
           className="home-hero__video"
-          src={videoSrc}
           autoPlay
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
           aria-hidden="true"
-        />
+        >
+          <source src={videoSrc} type="video/mp4" />
+        </video>
         <span className="home-hero__overlay" aria-hidden="true" />
         <span
           ref={darkenRef}
