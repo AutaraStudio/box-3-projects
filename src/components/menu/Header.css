@@ -30,22 +30,25 @@
 }
 
 
-/* 12-col grid on desktop; on mobile the brand takes 60vw, the
-   actions take the rest, and the link columns are hidden.
-   align-items: start so every cell pins to the top of the row,
-   keeping logo / first-link / menu+contact tops level. */
+/* 12-col grid on desktop; on mobile we drop to a flex row so the
+   actions can size to their content (the brand pill takes the
+   remaining space) and stay snug against the right gutter — a
+   `60vw` brand column was overflowing the row when the menu +
+   contact buttons combined width exceeded the leftover 40vw. */
 .header__nav {
-  display: grid;
-  grid-template-columns: 60vw 1fr;
-  grid-auto-rows: max-content;
-  column-gap: var(--space-0-25);
-  align-items: start;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-0-5);
 }
 
 @media (min-width: 992px) {
   .header__nav {
+    display: grid;
     grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: max-content;
     column-gap: var(--space-1);
+    align-items: start;
   }
 }
 

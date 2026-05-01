@@ -37,11 +37,17 @@
   top: 0;
   right: 0;
   bottom: 0;
+  /* border-box so the side padding stays inside the declared
+     width — without it, `width: 100vw` + padding = wider than
+     the viewport on mobile. */
+  box-sizing: border-box;
   width: min(36rem, 100vw);
+  max-width: 100vw;
   background-color: var(--theme-bg);
   color: var(--theme-text);
   padding: var(--space-5) var(--space-1-5) var(--space-1-5);
   overflow-y: auto;
+  overflow-x: hidden;
   pointer-events: auto;
   display: flex;
   flex-direction: column;
