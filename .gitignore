@@ -44,3 +44,4 @@ next-env.d.ts
 # while building a section. Read for structure + intent only, never
 # committed. See CLAUDE.md "Adapting external references".
 /reference/
+/refference/

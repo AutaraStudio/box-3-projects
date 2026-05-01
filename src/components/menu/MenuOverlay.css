@@ -1,369 +1,211 @@
-/**
- * MenuOverlay
- * ===========
- * 12-col × 3-row grid that fills the modal height. Left column holds
- * Pages (rows 1–2) + Contact (row 3); middle column is one
- * scrollable container holding up to 5 featured projects with
- * horizontal dividers between them; right column holds Social
- * (rows 1–2) + Legal (row 3).
- *
- * Vertical column dividers are absolutely-positioned line elements
- * on the overlay itself so they span the full menu height (extending
- * behind the corner Header squares to the very top edge of the
- * viewport).
- *
- * The middle column has its scrollbar hidden; a CSS mask-image fade
- * at the bottom of the scroll container is the visual scrollable
- * affordance. When all projects fit, the fade still applies but is
- * functionally invisible (no overflow content underneath).
- *
- * Mobile: collapses to a single-column flex stack with horizontal
- * borders between blocks. Vertical dividers hidden.
- *
- * Inline easing comment: cubic-bezier(0.19, 1, 0.22, 1) is a long
- * pull-out + soft settle (matches the editorial reference). Kept
- * inline because no token covers it yet — promote to a token if a
- * second use lands.
- */
+/* ==========================================================================
+   MenuOverlay
+   ==========================================================================
+   Slide-in panel anchored top-right. Wrapper covers the full viewport so
+   the panel can sit at any width without leaking layout, and so the
+   inner cream theme blocks the page underneath. */
 
 .menu-overlay {
   position: fixed;
   inset: 0;
-  /* Above the Header (z-index: 50) so the overlay covers the logo +
-     menu trigger squares. The overlay carries its own close button
-     in the top-right (replacing the trigger while open). */
-  z-index: 60;
-  background-color: var(--theme-bg);
-  color: var(--theme-text);
+  z-index: 999; /* below header (1000) so the Menu button stays on top */
   pointer-events: none;
-  /* Initial closed state — clipped to the trigger square in the
-     top-right. GSAP takes over for opening/closing, so no CSS
-     transition is set here (GSAP would race against it). */
-  clip-path: inset(0% 0% calc(100% - var(--space-6)) calc(100% - var(--space-6)));
-  opacity: 0;
-}
-
-/* ── Vertical column dividers — full menu height ─────────────────── */
-
-.menu-overlay__divider {
   display: none;
+  overflow: hidden;
 }
 
-@media (min-width: 64rem) {
-  .menu-overlay__divider {
-    display: block;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background-color: var(--theme-border-strong);
-    pointer-events: none;
-    z-index: 1;
-  }
-  /* 3fr / 7fr / 2fr column ratio means dividers sit at 3/12 = 25%
-     and 10/12 = ~83.33% across the viewport. */
-  .menu-overlay__divider--left {
-    left: 25%;
-  }
-  .menu-overlay__divider--right {
-    right: calc(100% / 6);
-  }
+.menu-overlay[aria-hidden="false"] {
+  pointer-events: auto;
 }
 
-/* ── Grid ────────────────────────────────────────────────────────── */
-
-.menu-overlay__grid {
-  /* Mobile fallback — single column flex stack. The Header logo +
-     trigger sit underneath the overlay (z-index above), so the grid
-     no longer reserves the var(--space-6) top band that used to
-     clear them. The right-side close button is absolute and
-     overlaps the top-right corner; the first cell on mobile is
-     Pages (left-aligned) so it has no conflict. */
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: var(--space-2);
-  gap: var(--space-3);
-  overflow-y: auto;
-}
-
-@media (min-width: 64rem) {
-  .menu-overlay__grid {
-    display: grid;
-    grid-template-columns: 3fr 7fr 2fr;
-    grid-template-rows: 1fr 1fr 1fr;
-    grid-auto-flow: row;
-    height: 100%;
-    /* No top padding — content rises to the very top edge. The
-       absolute close button (var(--space-6) sq) sits over the
-       top-right; the Social section adds extra top padding below
-       to keep its label clear of the button. */
-    padding: 0;
-    gap: 0;
-    overflow: hidden;
-  }
-}
-
-/* ── Cell placement on desktop ───────────────────────────────────── */
-
-@media (min-width: 64rem) {
-  .menu-overlay__pages {
-    grid-column: 1;
-    grid-row: 1 / span 2;
-  }
-  .menu-overlay__social {
-    grid-column: 3;
-    grid-row: 1 / span 2;
-  }
-  .menu-overlay__contact {
-    grid-column: 1;
-    grid-row: 3;
-  }
-  .menu-overlay__legal {
-    grid-column: 3;
-    grid-row: 3;
-  }
-  .menu-overlay__projects-wrap {
-    grid-column: 2;
-    grid-row: 1 / -1;
-  }
-}
-
-/* ── Side column padding ─────────────────────────────────────────── */
-
-.menu-overlay__pages,
-.menu-overlay__contact,
-.menu-overlay__social,
-.menu-overlay__legal {
-  padding-block: var(--space-2);
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-@media (min-width: 64rem) {
-  .menu-overlay__pages,
-  .menu-overlay__contact,
-  .menu-overlay__social,
-  .menu-overlay__legal {
-    padding-inline: var(--space-2);
-  }
-}
-
-.menu-overlay__label {
-  margin: 0 0 var(--space-1) 0;
-  opacity: 0.6;
-}
-
-/* ── Pages (left col, rows 1–2) ──────────────────────────────────── */
-
-.menu-overlay__page-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-0-25);
-  margin: 0;
+/* Scrim — full-viewport click-to-close button that dims the page
+   behind the panel. Color is a brown wash via theme primitive so
+   it stays in the brand palette. */
+.menu-overlay__scrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
   padding: 0;
-  list-style: none;
-}
-
-.menu-overlay__page-link {
-  text-decoration: none;
-  color: inherit;
-  display: inline-block;
-  transition: opacity 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-}
-
-@media (hover: hover) {
-  .menu-overlay__page-list:hover .menu-overlay__page-link {
-    opacity: 0.4;
-  }
-  .menu-overlay__page-list .menu-overlay__page-link:hover {
-    opacity: 1;
-  }
-}
-
-/* ── Featured projects scroll container (middle col) ─────────────── */
-
-.menu-overlay__projects-wrap {
-  position: relative;
-  height: 100%;
-  /* Mobile: lives in the flex column, doesn't need its own scroll. */
-  overflow: visible;
-}
-
-@media (min-width: 64rem) {
-  .menu-overlay__projects-wrap {
-    overflow: hidden;
-  }
-}
-
-.menu-overlay__projects-scroll {
-  display: flex;
-  flex-direction: column;
-}
-
-@media (min-width: 64rem) {
-  .menu-overlay__projects-scroll {
-    height: 100%;
-    overflow-y: auto;
-    /* Hide the scrollbar — the blurred glass overlay below acts as
-       the scrollable affordance. */
-    scrollbar-width: none;
-    /* Tail of empty space at the end of the scroll content so the
-       last project ends comfortably above the blur indicator. */
-    padding-bottom: var(--space-8);
-  }
-  .menu-overlay__projects-scroll::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-/* Glass-like blur at the bottom of the scroll area — the visible
-   scrollable affordance. backdrop-filter blurs the incoming scroll
-   content; the bg gradient fades the brown surface from opaque
-   (bottom) to transparent (top); mask-image fades the blur band
-   itself out toward the top so it doesn't read as a hard edge. */
-@media (min-width: 64rem) {
-  .menu-overlay__projects-wrap::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: var(--space-6);
-    background: linear-gradient(
-      to top,
-      var(--theme-bg) 0%,
-      var(--theme-bg) 30%,
-      transparent 100%
-    );
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    mask-image: linear-gradient(to top, black 50%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to top, black 50%, transparent 100%);
-    pointer-events: none;
-    z-index: 2;
-  }
-}
-
-/* ── Single project block ────────────────────────────────────────── */
-
-.menu-overlay__project {
-  /* Horizontal divider between blocks; cleared on the last child. */
-  border-bottom: 1px solid var(--theme-border-strong);
-}
-
-.menu-overlay__project:last-child {
-  border-bottom: 0;
-}
-
-.menu-overlay__project-inner {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-1-5);
-  /* Compact row — was 33vh, now ~22vh so more featured projects
-     fit on screen at once and the column reads as a tight stack
-     rather than three full-height blocks. The hairline divider on
-     each .menu-overlay__project still visually separates them. */
-  min-height: 22vh;
-}
-
-.menu-overlay__project-head {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-0-5);
-}
-
-.menu-overlay__project-title {
   margin: 0;
+  cursor: pointer;
+  background-color: color-mix(in srgb, var(--color-brown) 55%, transparent);
+  pointer-events: auto;
 }
 
-/* Foot — category bottom-left, View Project bottom-right. Always
-   a horizontal row so the two corners stay anchored even on
-   narrow viewports. */
-.menu-overlay__project-foot {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: var(--space-2);
-  width: 100%;
-}
-
-.menu-overlay__project-category {
-  margin: 0;
-  color: var(--theme-text-muted);
-}
-
-/* Project-foot is now a row at every breakpoint, so the Button
-   uses its natural inline width with no extra alignment overrides. */
-
-/* ── Sidebar sections (Contact + Social + Legal) ─────────────────── */
-
-.menu-overlay__address {
-  display: flex;
-  flex-direction: column;
-  font-style: normal;
-  margin: 0 0 var(--space-1) 0;
-}
-
-.menu-overlay__contact-link {
-  color: inherit;
-  text-decoration: none;
-  display: inline-block;
-  margin-bottom: var(--space-0-25);
-}
-
-.menu-overlay__simple-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-0-25);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.menu-overlay__plain-link {
-  color: inherit;
-  text-decoration: none;
-}
-
-/* ── Close button ─────────────────────────────────────────────────────
-   Absolute, top-right corner, sized to match the Header trigger
-   square it replaces while the menu is open. Inherits the menu's
-   theme so it reads brown bg + pink text. */
-.menu-overlay__close {
+.menu-overlay__panel {
   position: absolute;
   top: 0;
   right: 0;
-  width: var(--space-6);
-  height: var(--space-6);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background-color: transparent;
-  color: inherit;
-  border: 0;
-  cursor: pointer;
-  font-family: inherit;
-  z-index: 2;
-  transition: opacity 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  bottom: 0;
+  width: min(36rem, 100vw);
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  padding: var(--space-5) var(--space-1-5) var(--space-1-5);
+  overflow-y: auto;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1-5);
 }
 
-@media (hover: hover) {
-  .menu-overlay__close:hover {
-    opacity: 0.8;
+@media (max-width: 991px) {
+  .menu-overlay__panel {
+    width: 100vw;
+    padding: var(--space-4) var(--space-1-5) var(--space-1-5);
   }
 }
 
-/* Bottom-row cells (Contact + Legal) — push their content to the
-   bottom of the row so they sit hard against the menu floor with
-   the same var(--space-2) padding-block as Pages, instead of
-   leaving a tall empty band beneath them. */
-.menu-overlay__contact,
-.menu-overlay__legal {
-  justify-content: flex-end;
+/* --- Primary links -------------------------------------------------- */
+.menu-overlay__primary {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-overlay__primary-link {
+  overflow: hidden;
+  position: relative;
+}
+
+/* Inner span carries the Y-translate so the parent's overflow:hidden
+   creates the wipe on open. */
+.menu-overlay__primary-link-inner {
+  display: block;
+  position: relative;
+}
+
+.menu-overlay__primary-anchor {
+  display: inline-block;
+  color: var(--theme-text);
+  text-decoration: none;
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  padding-block: var(--space-0-125);
+}
+
+@media (max-width: 991px) {
+  .menu-overlay__primary-anchor {
+    font-size: var(--font-size-h4);
+  }
+}
+
+/* --- HR dividers --------------------------------------------------- */
+.menu-overlay__hr {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid var(--theme-border-strong);
+  margin: 0;
+}
+
+/* --- Section blocks ------------------------------------------------ */
+.menu-overlay__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-75);
+}
+
+.menu-overlay__section-title {
+  margin: 0;
+  color: var(--theme-text-muted);
+  font-weight: var(--font-weight-medium);
+}
+
+/* --- More links ---------------------------------------------------- */
+.menu-overlay__more {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-overlay__more-item {
+  overflow: hidden;
+}
+
+.menu-overlay__more-link {
+  display: inline-block;
+  color: var(--theme-text);
+  text-decoration: none;
+  font-size: var(--font-size-text-large);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-snug);
+  padding-block: var(--space-0-125);
+}
+
+/* --- Contact block ------------------------------------------------- */
+.menu-overlay__contact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-25);
+}
+
+.menu-overlay__contact-line {
+  overflow: hidden;
+}
+
+.menu-overlay__contact-row {
+  display: inline-block;
+  color: var(--theme-text);
+  text-decoration: none;
+  font-size: var(--font-size-text-main);
+  line-height: var(--line-height-snug);
+  padding-block: var(--space-0-125);
+}
+
+.menu-overlay__address {
+  font-style: normal;
+  display: block;
+  font-size: var(--font-size-text-main);
+  line-height: var(--line-height-snug);
+  margin-top: var(--space-0-5);
+}
+
+/* --- Contact form -------------------------------------------------- */
+.menu-overlay__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.menu-overlay__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-25);
+}
+
+.menu-overlay__field-label {
+  color: var(--theme-text-muted);
+  font-weight: var(--font-weight-medium);
+}
+
+.menu-overlay__input {
+  font-family: inherit;
+  font-size: var(--font-size-text-main);
+  line-height: var(--line-height-snug);
+  color: var(--theme-text);
+  background-color: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--theme-border-strong);
+  padding: var(--space-0-25) 0;
+  outline: none;
+  transition: border-color 300ms ease;
+  width: 100%;
+  resize: none;
+}
+
+.menu-overlay__input:focus {
+  border-bottom-color: var(--theme-text);
+}
+
+.menu-overlay__input--textarea {
+  min-height: 4.5rem;
+}
+
+.menu-overlay__submit-row {
+  margin-top: var(--space-0-5);
 }

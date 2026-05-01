@@ -47,6 +47,31 @@ const STATIC_MENU = {
     { label: "Careers", href: "/careers" },
     { label: "Sustainability", href: "/sustainability" },
   ],
+  /* Header link split — primary column gets the editorial pages,
+     secondary column gets the supporting ones. */
+  headerPrimary: [
+    { label: "About", href: "/about" },
+    { label: "Services", href: "/services" },
+    { label: "Projects", href: "/projects" },
+    { label: "Sustainability", href: "/sustainability" },
+  ],
+  headerSecondary: [
+    { label: "Careers", href: "/careers" },
+    { label: "Contact", href: "/contact" },
+  ],
+  /* Sidebar split — three large editorial links + everything else
+     in a "More" group. */
+  menuPrimary: [
+    { label: "Home", href: "/" },
+    { label: "About", href: "/about" },
+    { label: "Projects", href: "/projects" },
+  ],
+  menuMore: [
+    { label: "Services", href: "/services" },
+    { label: "Careers", href: "/careers" },
+    { label: "Sustainability", href: "/sustainability" },
+    { label: "Contact", href: "/contact" },
+  ],
   contact: {
     addressLines: ["Level 5, 55 Broadway,", "London SW1H 0BD."],
     email: "hello@box3projects.co.uk",
@@ -110,7 +135,11 @@ export default async function RootLayout({
         <SmoothScroll>
           <PageTransitionProvider>
             <MenuProvider>
-              <Header />
+              <Header
+                brand="Box 3 Projects"
+                primaryLinks={STATIC_MENU.headerPrimary}
+                secondaryLinks={STATIC_MENU.headerSecondary}
+              />
               {children}
               <Footer
                 pages={STATIC_MENU.pages}
@@ -120,11 +149,9 @@ export default async function RootLayout({
                 legal={STATIC_MENU.legal}
               />
               <MenuOverlay
-                pages={STATIC_MENU.pages}
-                featuredProjects={featuredProjects}
+                primaryLinks={STATIC_MENU.menuPrimary}
+                moreLinks={STATIC_MENU.menuMore}
                 contact={STATIC_MENU.contact}
-                social={STATIC_MENU.social}
-                legal={STATIC_MENU.legal}
               />
               <PageTransitionOverlay />
             </MenuProvider>

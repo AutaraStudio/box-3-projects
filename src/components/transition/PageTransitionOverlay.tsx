@@ -83,6 +83,28 @@ export default function PageTransitionOverlay() {
     const getMain = () =>
       document.querySelector<HTMLElement>("main") || document.body;
 
+    /* Snapshot of the site header's interactive pieces. We animate
+       these alongside the wipe panel so the bar lifts off the top
+       on leave and drops back into place on enter — keeping the
+       transition reading as a single coherent sweep instead of
+       leaving the (high z-index, fixed) header sitting on top of
+       the wipe panel. Returns null if the header isn't mounted
+       (e.g. studio routes). */
+    const getHeaderEls = () => {
+      const header = document.querySelector<HTMLElement>(".header");
+      if (!header) return null;
+      const home = header.querySelector<HTMLElement>(".header__home");
+      const links = Array.from(
+        header.querySelectorAll<HTMLElement>(".header__link"),
+      );
+      const lines = Array.from(
+        header.querySelectorAll<HTMLElement>(".header__line"),
+      );
+      const menuBtn = header.querySelector<HTMLElement>(".header__menu-btn");
+      const contact = header.querySelector<HTMLElement>(".header__contact-btn");
+      return { home, links, lines, menuBtn, contact };
+    };
+
     const transition = async (href: string, pageName?: string) => {
       const overlay = overlayRef.current;
       const panel = panelRef.current;
@@ -123,7 +145,10 @@ export default function PageTransitionOverlay() {
         willChange: "transform, opacity",
       });
 
-      /* Leave timeline — panel up, page lifts, label fades in. */
+      const headerEls = getHeaderEls();
+
+      /* Leave timeline — panel up, page lifts, header pieces lift,
+         label fades in. */
       const leave = gsap.timeline();
       leave.set(panel, { autoAlpha: 1 }, 0);
       leave.fromTo(
@@ -138,6 +163,38 @@ export default function PageTransitionOverlay() {
         { y: PAGE_LIFT, duration: LEAVE_PANEL_DURATION, ease: EASE },
         0,
       );
+      if (headerEls) {
+        const liftItems = [
+          headerEls.home,
+          ...headerEls.links,
+          headerEls.contact,
+          headerEls.menuBtn,
+        ].filter(Boolean) as HTMLElement[];
+        if (liftItems.length) {
+          leave.to(
+            liftItems,
+            {
+              yPercent: -130,
+              duration: 0.35,
+              ease: "power3.in",
+              overwrite: "auto",
+            },
+            0,
+          );
+        }
+        if (headerEls.lines.length) {
+          leave.to(
+            headerEls.lines,
+            {
+              scaleY: 0,
+              duration: 0.35,
+              ease: "power3.in",
+              overwrite: "auto",
+            },
+            0,
+          );
+        }
+      }
       if (pageName) {
         leave.fromTo(
           label,
@@ -203,7 +260,30 @@ export default function PageTransitionOverlay() {
       /* Short held beat once we know the new page has rendered. */
       await new Promise((r) => setTimeout(r, HOLD_AFTER_COMMIT * 1000));
 
-      /* Enter timeline — panel continues up off the top, new page rises. */
+      /* Re-query header in the new tree. The Header component itself
+         doesn't unmount across route changes (it's in the layout),
+         but we re-query to stay robust if that ever changes. We
+         also force the lifted state immediately so the Header's
+         own React effects (which may have queued tweens to settle
+         positions to 0 on render) don't pop the bar back in early. */
+      const newHeaderEls = getHeaderEls();
+      if (newHeaderEls) {
+        const liftItems = [
+          newHeaderEls.home,
+          ...newHeaderEls.links,
+          newHeaderEls.contact,
+          newHeaderEls.menuBtn,
+        ].filter(Boolean) as HTMLElement[];
+        if (liftItems.length) {
+          gsap.set(liftItems, { yPercent: -130, overwrite: true });
+        }
+        if (newHeaderEls.lines.length) {
+          gsap.set(newHeaderEls.lines, { scaleY: 0, overwrite: true });
+        }
+      }
+
+      /* Enter timeline — panel continues up off the top, new page
+         rises, header pieces drop back in. */
       const newMain = getMain();
       const enter = gsap.timeline();
       enter.fromTo(
@@ -231,6 +311,55 @@ export default function PageTransitionOverlay() {
         { y: 0, duration: ENTER_PANEL_DURATION, ease: EASE },
         0,
       );
+      if (newHeaderEls) {
+        if (newHeaderEls.home) {
+          enter.to(
+            newHeaderEls.home,
+            { yPercent: 0, duration: 0.6, ease: EASE, overwrite: "auto" },
+            0.15,
+          );
+        }
+        if (newHeaderEls.contact) {
+          enter.to(
+            newHeaderEls.contact,
+            { yPercent: 0, duration: 0.6, ease: EASE, overwrite: "auto" },
+            0.15,
+          );
+        }
+        if (newHeaderEls.links.length) {
+          enter.to(
+            newHeaderEls.links,
+            {
+              yPercent: 0,
+              duration: 0.6,
+              ease: EASE,
+              stagger: 0.04,
+              overwrite: "auto",
+            },
+            0.2,
+          );
+        }
+        if (newHeaderEls.lines.length) {
+          enter.to(
+            newHeaderEls.lines,
+            {
+              scaleY: 1,
+              duration: 0.6,
+              ease: EASE,
+              stagger: 0.04,
+              overwrite: "auto",
+            },
+            0.25,
+          );
+        }
+        /* Menu button stays hidden on a fresh page top — Header's
+           own scroll-state effect manages its xPercent. Just snap
+           yPercent back to 0 so when the user scrolls and the
+           button slides in, it's not lifted. */
+        if (newHeaderEls.menuBtn) {
+          gsap.set(newHeaderEls.menuBtn, { yPercent: 0 });
+        }
+      }
 
       /* Release the transition flag mid-enter so the new page's
          reveal observers (Heading, RevealStack, RevealImage) can

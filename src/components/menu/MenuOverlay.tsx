@@ -1,399 +1,356 @@
+"use client";
+
 /**
  * MenuOverlay
  * ===========
- * Full-viewport modal that animates open from the top-right corner
- * (where the Header trigger sits). Layout mirrors the editorial
- * reference: 12-column × 3-row grid that fills the modal height.
+ * Slide-in side panel triggered from the header's Menu button.
+ * Layout (top → bottom):
  *
- *   ┌───────────┬──────────────────────────┬───────────┐
- *   │   PAGES   │ ─ Featured #1            │  SOCIAL   │
- *   │  (3 × 2)  │ ─ Featured #2 (scrolls)  │  (2 × 2)  │
- *   ├───────────┤ ─ Featured #N            ├───────────┤
- *   │  CONTACT  │   ↓ scroll for more      │  LEGAL    │
- *   └───────────┴──────────────────────────┴───────────┘
+ *   - Large primary links     (Home, About, Projects)
+ *   - hr divider
+ *   - "More" section: small links for the rest of the site
+ *   - hr divider
+ *   - "Stay in touch" — phone, email, address
+ *   - hr divider
+ *   - Contact form: Name / Email / Message / Submit
  *
- * Vertical column dividers are rendered as absolutely positioned
- * lines on the overlay itself so they span the full menu height
- * (behind the corner Header squares) instead of being limited to
- * one grid cell. Horizontal dividers between projects are
- * border-bottom on each .menu-overlay__project.
+ * Animations (GSAP):
+ *   1. Panel slides from translateX(101%) → 0
+ *   2. Each text row reveals up from translateY(100%) (parent has
+ *      overflow:hidden, so the slide creates a wipe)
+ *   3. hr lines scale-x from 0 → 1
+ *   4. Form fades + slides in last
  *
- * The middle column wraps up to 5 featured projects in a single
- * scroll-y container with a mask-image bottom fade as the
- * scrollable affordance (no visible scrollbar).
+ * Reverse plays on close. Reduced-motion users get instant
+ * show/hide via gsap.matchMedia.
  *
- * Always rendered with `data-theme="dark"` so brown bg + pink text
- * apply regardless of the host page theme. Closes on Escape (handled
- * in MenuProvider) and when any internal nav link is clicked.
+ * Carries data-theme="cream" so the panel reads cream/brown,
+ * contrasting with the dark header.
  */
 
-"use client";
-
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { gsap } from "gsap";
-
-import SplitText from "@/components/split-text/SplitText";
 import TransitionLink from "@/components/transition/TransitionLink";
+import SplitText from "@/components/split-text/SplitText";
 import Button from "@/components/ui/Button";
 import { useMenu } from "./MenuProvider";
 import "./MenuOverlay.css";
 
-/* Open / close timing constants. Kept inline because they're
-   specific to this single timeline; promote to tokens if a second
-   modal lands. */
-const CLIP_OPEN_DURATION = 1.0;
-const CLIP_CLOSE_DURATION = 0.8;
-/* Reveal hierarchy — each tier fades in (with a small lift) on
-   the timeline at its own offset. Inside a tier with multiple
-   elements, stagger spreads them out a touch. */
-const REVEAL_DURATION = 0.55;
-const REVEAL_LIFT = 12; /* px of subtle upward motion */
-const TIER_ONE_AT = 0.5;
-const TIER_TWO_AT = 0.7;
-const TIER_THREE_AT = 0.9;
-const PROJECT_STAGGER = 0.08;
-const SIDEBAR_STAGGER = 0.06;
-const LG_BREAKPOINT = 1024;
-const MAX_FEATURED_PROJECTS = 5;
-
-interface PageLink {
-  label: string;
-  href: string;
-}
-
-interface FeaturedProject {
-  title: string;
-  href: string;
-  /** Optional category label, shown bottom-left of the project block. */
-  category?: string;
-}
-
-interface ExternalLink {
+interface MenuLink {
   label: string;
   href: string;
 }
 
 interface MenuOverlayProps {
-  pages: PageLink[];
-  /** Up to 5 — middle column scrolls if more than fit. */
-  featuredProjects: FeaturedProject[];
+  primaryLinks: MenuLink[];
+  moreLinks: MenuLink[];
   contact: {
     addressLines: string[];
     email: string;
     phone: string;
-    /** href value, e.g. "tel:02080507815" */
     phoneHref: string;
   };
-  social: ExternalLink[];
-  legal: PageLink[];
 }
 
 export default function MenuOverlay({
-  pages,
-  featuredProjects,
+  primaryLinks,
+  moreLinks,
   contact,
-  social,
-  legal,
 }: MenuOverlayProps) {
   const { isOpen, close } = useMenu();
-  const projects = featuredProjects.slice(0, MAX_FEATURED_PROJECTS);
-  const overlayRef = useRef<HTMLElement>(null);
-  const isFirstRun = useRef(true);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const tlRef = useRef<gsap.core.Timeline | null>(null);
 
+  /* Build the open/close timeline once on mount and reuse it.
+     We always run forward on `open`, reverse on `close`. */
   useEffect(() => {
-    if (isFirstRun.current) {
-      isFirstRun.current = false;
-      return;
-    }
     if (typeof window === "undefined") return;
-    const overlay = overlayRef.current;
-    if (!overlay) return;
+    const wrapper = wrapperRef.current;
+    const panel = panelRef.current;
+    if (!wrapper || !panel) return;
 
-    const trigger = document.querySelector<HTMLElement>(
-      "button.header__square",
-    );
-    const isLg = window.innerWidth >= LG_BREAKPOINT;
-    const triggerW = trigger?.offsetWidth ?? 0;
-    const triggerH = trigger?.offsetHeight ?? 0;
-    const rightPct =
-      100 - (isLg && trigger ? (triggerW / window.innerWidth) * 100 : 0);
-    const bottomPct =
-      100 - (isLg && trigger ? (triggerH / window.innerHeight) * 100 : 0);
-    const closedClip = `inset(0% ${rightPct}% ${bottomPct}% 0%)`;
-    const openClip = "inset(0% 0% 0% 0%)";
+    const primary = panel.querySelectorAll<HTMLElement>(".menu-overlay__primary-link-inner");
+    const more = panel.querySelectorAll<HTMLElement>(".menu-overlay__more-link");
+    const lines = panel.querySelectorAll<HTMLElement>(".menu-overlay__hr");
+    const contactRows = panel.querySelectorAll<HTMLElement>(".menu-overlay__contact-row");
+    const form = panel.querySelector<HTMLElement>(".menu-overlay__form");
+    const scrim = wrapper.querySelector<HTMLElement>(".menu-overlay__scrim");
 
-    /* Reveal hierarchy — three tiers. Each tier fades in with a
-       small upward lift; inside a tier with multiple elements,
-       members stagger so the whole menu unfolds in reading order
-       without any per-character motion. */
-    const tierOne = overlay.querySelector<HTMLElement>(".menu-overlay__pages");
-    const tierTwo =
-      overlay.querySelectorAll<HTMLElement>(".menu-overlay__project");
-    const tierThree = overlay.querySelectorAll<HTMLElement>(
-      ".menu-overlay__contact, .menu-overlay__social, .menu-overlay__legal",
-    );
-    const allReveal = [tierOne, ...tierTwo, ...tierThree].filter(
-      (el): el is HTMLElement => Boolean(el),
-    );
+    const mm = gsap.matchMedia();
 
-    let tl: gsap.core.Timeline;
+    /* Show/hide the wrapper imperatively from the timeline's
+       open + reverse-complete callbacks, not from in-timeline
+       set tweens — those re-fire on reverse and fight the
+       intended state. */
+    const showWrapper = () => {
+      wrapper.style.display = "block";
+    };
+    const hideWrapper = () => {
+      wrapper.style.display = "none";
+    };
 
-    if (isOpen) {
-      tl = gsap
-        .timeline()
-        .set(allReveal, { autoAlpha: 0, y: REVEAL_LIFT })
-        .set(overlay, {
-          opacity: 1,
-          pointerEvents: "none",
-          clipPath: closedClip,
-        })
-        .to(overlay, {
-          clipPath: openClip,
-          duration: CLIP_OPEN_DURATION,
-          ease: "power4.out",
-        })
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      hideWrapper();
+      gsap.set(panel, { xPercent: 101 });
+      gsap.set([primary, more, contactRows, form], { yPercent: 100, opacity: 1 });
+      gsap.set(lines, { scaleX: 0, transformOrigin: "0% 50%" });
+      if (form) gsap.set(form, { opacity: 0 });
+      if (scrim) gsap.set(scrim, { opacity: 0 });
+
+      const tl = gsap.timeline({
+        paused: true,
+        onStart: showWrapper,
+        onReverseComplete: hideWrapper,
+      });
+      if (scrim) {
+        tl.to(scrim, { opacity: 1, duration: 0.4, ease: "power2.out" }, 0);
+      }
+      tl.to(panel, { xPercent: 0, duration: 0.7, ease: "expo.inOut" }, 0)
         .to(
-          tierOne,
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: REVEAL_DURATION,
-            ease: "power2.out",
-          },
-          TIER_ONE_AT,
+          primary,
+          { yPercent: 0, duration: 0.7, ease: "expo.out", stagger: 0.06 },
+          "-=0.35",
         )
         .to(
-          tierTwo,
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: REVEAL_DURATION,
-            stagger: PROJECT_STAGGER,
-            ease: "power2.out",
-          },
-          TIER_TWO_AT,
+          lines,
+          { scaleX: 1, duration: 0.6, ease: "expo.out", stagger: 0.05 },
+          "-=0.5",
         )
         .to(
-          tierThree,
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: REVEAL_DURATION,
-            stagger: SIDEBAR_STAGGER,
-            ease: "power2.out",
-          },
-          TIER_THREE_AT,
+          more,
+          { yPercent: 0, duration: 0.5, ease: "expo.out", stagger: 0.04 },
+          "-=0.5",
         )
-        .set(overlay, { pointerEvents: "auto" }, CLIP_OPEN_DURATION);
-    } else {
-      tl = gsap
-        .timeline()
-        .set(overlay, { pointerEvents: "none" })
-        .to(overlay, {
-          clipPath: closedClip,
-          duration: CLIP_CLOSE_DURATION,
-          ease: "power4.out",
-        })
-        .set(overlay, { opacity: 0 });
-    }
+        .to(
+          contactRows,
+          { yPercent: 0, duration: 0.5, ease: "expo.out", stagger: 0.04 },
+          "-=0.4",
+        )
+        .to(
+          form,
+          { yPercent: 0, opacity: 1, duration: 0.5, ease: "expo.out" },
+          "-=0.3",
+        );
+
+      tlRef.current = tl;
+    });
+
+    mm.add("(prefers-reduced-motion: reduce)", () => {
+      hideWrapper();
+      gsap.set(panel, { xPercent: 0 });
+      gsap.set([primary, more, contactRows, form], { yPercent: 0, opacity: 1 });
+      gsap.set(lines, { scaleX: 1 });
+      if (scrim) gsap.set(scrim, { opacity: 1 });
+
+      const tl = gsap.timeline({
+        paused: true,
+        onStart: showWrapper,
+        onReverseComplete: hideWrapper,
+      });
+      /* Empty timeline with non-zero duration so reverse
+         actually plays and onReverseComplete fires. */
+      tl.to({}, { duration: 0.01 });
+
+      tlRef.current = tl;
+    });
 
     return () => {
-      tl.kill();
+      mm.revert();
+      tlRef.current = null;
     };
+  }, []);
+
+  /* Drive the timeline from React state. Reverse plays at ~2.5×
+     speed so closing feels snappy compared to the editorial open.
+     We also force the wrapper display imperatively here as a
+     belt-and-braces alongside the timeline's onStart — GSAP's
+     ticker has been intermittently dropping the onStart fire in
+     this stack, leaving the wrapper hidden. */
+  useEffect(() => {
+    const tl = tlRef.current;
+    if (!tl) return;
+    const wrapper = wrapperRef.current;
+    if (isOpen) {
+      if (wrapper) wrapper.style.display = "block";
+      tl.timeScale(1);
+      tl.play();
+    } else {
+      tl.timeScale(2.5);
+      tl.reverse();
+    }
   }, [isOpen]);
 
+  /* Local form state — purely UI for now, no backend wired up.
+     Submit clears + shows a confirmation; replace with a real
+     handler when the contact endpoint exists. */
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [sent, setSent] = useState(false);
+
+  function onSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    /* TODO: wire to real contact endpoint when available. */
+    setSent(true);
+    setForm({ name: "", email: "", message: "" });
+    window.setTimeout(() => setSent(false), 4000);
+  }
+
   return (
-    <aside
-      id="site-menu"
-      ref={overlayRef}
+    <div
+      ref={wrapperRef}
       className="menu-overlay"
-      data-theme="dark"
-      data-open={isOpen}
+      id="site-menu"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Site menu"
       aria-hidden={!isOpen}
     >
-      {/* Full-height vertical dividers — absolutely positioned so
-          they extend behind the Header squares to the very top. */}
-      <span
-        className="menu-overlay__divider menu-overlay__divider--left"
-        aria-hidden="true"
-      />
-      <span
-        className="menu-overlay__divider menu-overlay__divider--right"
-        aria-hidden="true"
-      />
-
-      {/* Close button — absolute top-right, sized to match the
-          Header trigger square. The menu sits above the Header so
-          the trigger is hidden; this provides the close affordance
-          in its place. */}
+      {/* Scrim — semi-transparent dim over the page beneath the
+          slide-in panel. Click-to-close so users can dismiss the
+          menu without aiming for the Close button. */}
       <button
         type="button"
-        className="menu-overlay__close link text-h6 text-caps"
-        onClick={close}
+        className="menu-overlay__scrim"
         aria-label="Close menu"
+        tabIndex={isOpen ? 0 : -1}
+        onClick={close}
+      />
+      <div
+        ref={panelRef}
+        className="menu-overlay__panel"
+        data-theme="dark"
+        data-lenis-prevent
       >
-        <SplitText>Close</SplitText>
-      </button>
-
-      <div className="menu-overlay__grid">
-        {/* ── Pages — left col, spans 3×2 ───────────────────────── */}
-        <nav className="menu-overlay__pages" aria-label="Pages">
-          <p className="menu-overlay__label text-small text-caps">Pages</p>
-          <ul className="menu-overlay__page-list">
-            {pages.map((page) => (
-              <li key={page.href}>
+        {/* Primary links — large editorial type with global
+            SplitText roll-over hover via the `.link` class. */}
+        <ul className="menu-overlay__primary" role="menu">
+          {primaryLinks.map((l) => (
+            <li key={l.href} className="menu-overlay__primary-link" role="none">
+              <span className="menu-overlay__primary-link-inner">
                 <TransitionLink
-                  href={page.href}
-                  pageName={page.label}
-                  className="menu-overlay__page-link link text-h3"
+                  href={l.href}
+                  pageName={l.label}
+                  className="menu-overlay__primary-anchor link"
+                  role="menuitem"
                   onClick={close}
                 >
-                  <SplitText>{page.label}</SplitText>
+                  <SplitText asWords>{l.label}</SplitText>
+                </TransitionLink>
+              </span>
+            </li>
+          ))}
+        </ul>
+
+        <hr className="menu-overlay__hr" />
+
+        {/* More links — Services, Careers, Sustainability, Contact. */}
+        <section className="menu-overlay__section">
+          <h2 className="menu-overlay__section-title text-small text-caps">
+            More
+          </h2>
+          <ul className="menu-overlay__more" role="menu">
+            {moreLinks.map((l) => (
+              <li key={l.href} className="menu-overlay__more-item" role="none">
+                <TransitionLink
+                  href={l.href}
+                  pageName={l.label}
+                  className="menu-overlay__more-link link"
+                  role="menuitem"
+                  onClick={close}
+                >
+                  <SplitText asWords>{l.label}</SplitText>
                 </TransitionLink>
               </li>
             ))}
           </ul>
-        </nav>
+        </section>
 
-        {/* ── Featured projects — middle col, spans all rows,
-              scrollable container with bottom mask fade.
-              `data-lenis-prevent` opts this subtree out of Lenis's
-              wheel capture so native scroll works inside the
-              container while the rest of the page stays smooth. */}
-        <div className="menu-overlay__projects-wrap">
-          <div
-            className="menu-overlay__projects-scroll"
-            data-lenis-prevent
-          >
-            {projects.map((project) => (
-              <FeaturedProjectBlock
-                key={project.href}
-                project={project}
-                onLinkClick={close}
-              />
-            ))}
+        <hr className="menu-overlay__hr" />
+
+        {/* Stay in touch. */}
+        <section className="menu-overlay__section menu-overlay__section--contact">
+          <h2 className="menu-overlay__section-title text-small text-caps">
+            Stay in touch
+          </h2>
+          <div className="menu-overlay__contact">
+            <div className="menu-overlay__contact-line">
+              <a
+                className="menu-overlay__contact-row link"
+                href={contact.phoneHref}
+              >
+                <SplitText asWords>{contact.phone}</SplitText>
+              </a>
+            </div>
+            <div className="menu-overlay__contact-line">
+              <a
+                className="menu-overlay__contact-row link"
+                href={`mailto:${contact.email}`}
+              >
+                <SplitText asWords>{contact.email}</SplitText>
+              </a>
+            </div>
+            <div className="menu-overlay__contact-line">
+              <address className="menu-overlay__contact-row menu-overlay__address">
+                {contact.addressLines.map((line, i) => (
+                  <span key={i}>
+                    {line}
+                    {i < contact.addressLines.length - 1 && <br />}
+                  </span>
+                ))}
+              </address>
+            </div>
           </div>
-        </div>
-
-        {/* ── Social — right col, spans 2×2 ────────────────────── */}
-        <section className="menu-overlay__social" aria-label="Social">
-          <p className="menu-overlay__label text-small text-caps">Social</p>
-          <ul className="menu-overlay__simple-list">
-            {social.map((item) => (
-              <li key={item.href}>
-                <a
-                  className="menu-overlay__plain-link link text-large"
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <SplitText>{item.label}</SplitText>
-                </a>
-              </li>
-            ))}
-          </ul>
         </section>
 
-        {/* ── Contact — left col, row 3 ────────────────────────── */}
-        <section className="menu-overlay__contact" aria-label="Contact us">
-          <p className="menu-overlay__label text-small text-caps">Contact us</p>
-          <address className="menu-overlay__address text-small">
-            {contact.addressLines.map((line) => (
-              <span key={line}>{line}</span>
-            ))}
-          </address>
-          <a
-            className="menu-overlay__contact-link link text-small"
-            href={`mailto:${contact.email}`}
-          >
-            <SplitText asWords>{contact.email}</SplitText>
-          </a>
-          <a
-            className="menu-overlay__contact-link link text-small"
-            href={contact.phoneHref}
-          >
-            <SplitText asWords>{contact.phone}</SplitText>
-          </a>
-        </section>
+        <hr className="menu-overlay__hr" />
 
-        {/* ── Legal — right col, row 3 ─────────────────────────── */}
-        <section className="menu-overlay__legal" aria-label="Legal">
-          <p className="menu-overlay__label text-small text-caps">Legal</p>
-          <ul className="menu-overlay__simple-list">
-            {legal.map((item) => (
-              <li key={item.href}>
-                <TransitionLink
-                  href={item.href}
-                  pageName={item.label}
-                  className="menu-overlay__plain-link link text-small"
-                  onClick={close}
-                >
-                  <SplitText asWords>{item.label}</SplitText>
-                </TransitionLink>
-              </li>
-            ))}
-          </ul>
-        </section>
+        {/* Contact form. */}
+        <form className="menu-overlay__form" onSubmit={onSubmit} noValidate>
+          <label className="menu-overlay__field">
+            <span className="menu-overlay__field-label text-small text-caps">
+              Name
+            </span>
+            <input
+              type="text"
+              required
+              value={form.name}
+              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              className="menu-overlay__input"
+            />
+          </label>
+          <label className="menu-overlay__field">
+            <span className="menu-overlay__field-label text-small text-caps">
+              Email
+            </span>
+            <input
+              type="email"
+              required
+              value={form.email}
+              onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+              className="menu-overlay__input"
+            />
+          </label>
+          <label className="menu-overlay__field">
+            <span className="menu-overlay__field-label text-small text-caps">
+              Message
+            </span>
+            <textarea
+              required
+              rows={3}
+              value={form.message}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, message: e.target.value }))
+              }
+              className="menu-overlay__input menu-overlay__input--textarea"
+            />
+          </label>
+          <div className="menu-overlay__submit-row">
+            <Button type="submit" size="md">
+              {sent ? "Thanks — we'll be in touch" : "Submit"}
+            </Button>
+          </div>
+        </form>
       </div>
-    </aside>
-  );
-}
-
-/* --------------------------------------------------------------------------
-   FeaturedProjectBlock
-   --------------------------------------------------------------------------
-   One row of the middle column. Top: small label + project title.
-   Bottom (anchored): View Project link + 2-col label/value details.
-   Sits inside the scrollable middle-column container; horizontal
-   border-bottom separates it from the next block. */
-
-function FeaturedProjectBlock({
-  project,
-  onLinkClick,
-}: {
-  project: FeaturedProject;
-  onLinkClick: () => void;
-}) {
-  return (
-    <article className="menu-overlay__project">
-      <div className="menu-overlay__project-inner">
-        {/* Title — top-left */}
-        <header className="menu-overlay__project-head">
-          <p className="menu-overlay__label text-small text-caps">
-            Featured Project
-          </p>
-          <h3 className="menu-overlay__project-title text-h4">
-            <TransitionLink
-              href={project.href}
-              pageName={project.title}
-              onClick={onLinkClick}
-              className="menu-overlay__plain-link link"
-            >
-              <SplitText>{project.title}</SplitText>
-            </TransitionLink>
-          </h3>
-        </header>
-
-        {/* Foot — category bottom-left, View Project button bottom-right. */}
-        <div className="menu-overlay__project-foot">
-          {project.category ? (
-            <p className="menu-overlay__project-category text-small text-caps">
-              {project.category}
-            </p>
-          ) : (
-            <span aria-hidden="true" />
-          )}
-          <Button
-            href={project.href}
-            pageName={project.title}
-            size="sm"
-            className="menu-overlay__view-link"
-            onClick={onLinkClick}
-          >
-            View Project →
-          </Button>
-        </div>
-      </div>
-    </article>
+    </div>
   );
 }

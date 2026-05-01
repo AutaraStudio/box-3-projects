@@ -15,11 +15,13 @@
  */
 
 const HTML_FLAG = "is-page-transitioning";
+const BEGIN_EVENT = "pagetransition:begin";
 const END_EVENT = "pagetransition:end";
 
 export function beginTransition(): void {
   if (typeof document === "undefined") return;
   document.documentElement.classList.add(HTML_FLAG);
+  window.dispatchEvent(new Event(BEGIN_EVENT));
 }
 
 export function endTransition(): void {

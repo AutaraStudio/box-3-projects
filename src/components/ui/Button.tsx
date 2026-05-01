@@ -2,9 +2,7 @@
  * Button
  * ======
  * Global text button with a sliding underline + SplitText char
- * roll-over hover. Lifted from the editorial "View Project →"
- * pattern in the MenuOverlay so the same affordance is available
- * everywhere on the site.
+ * roll-over hover.
  *
  * Polymorphic — renders as:
  *   - <TransitionLink>  when an internal `href` is supplied

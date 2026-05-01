@@ -39,8 +39,6 @@ interface ExternalLink {
   href: string;
 }
 
-/** Same shape as the MenuOverlay's featured project — the footer
- *  only needs title + href, the per-project details are ignored. */
 interface FeaturedProject {
   title: string;
   href: string;
