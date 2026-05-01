@@ -17,17 +17,18 @@
   left: 0;
   right: 0;
   z-index: 1000;
+  /* Match the site-wide `.container` gutter so the nav lines up
+     with every other section. */
   padding-inline: var(--space-1);
   pointer-events: none;
 }
 
-
-@media (min-width: 992px) {
+@media (min-width: 64rem) {
   .header {
-    top: var(--space-1);
-    padding-inline: var(--space-1);
+    padding-inline: var(--space-3);
   }
 }
+
 
 /* 12-col grid on desktop; on mobile the brand takes 60vw, the
    actions take the rest, and the link columns are hidden.
