@@ -58,7 +58,7 @@ interface ProjectsHeroProps {
 export default function ProjectsHero({
   count,
   label = "Selected projects",
-  heading = "Built spaces, sketched and made.",
+  heading = "Designed, built, delivered.",
   baseImage,
   overlayImage,
 }: ProjectsHeroProps) {
