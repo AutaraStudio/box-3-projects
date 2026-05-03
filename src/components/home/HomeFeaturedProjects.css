@@ -53,11 +53,10 @@
 
 /* ── Editorial grid ───────────────────────────────────────── */
 
-/* Matches ProjectsGrid exactly so the home spread reads as a
-   teaser of the same archive layout: 12-col grid, three cards
-   per row, widths cycling 5 / 4 / 3 with each row reshuffling
-   them. Tablet collapses to 2-col, mobile to a single-column
-   flex stack. */
+/* Matches ProjectsGrid: three equal-width cards per row at
+   tablet+, single-column flex stack on mobile. Every card
+   renders at the same aspect ratio (set on the card's image
+   wrap) so the rows read as a regular editorial grid. */
 .home-featured__list {
   list-style: none;
   margin: 0;
@@ -70,19 +69,15 @@
 @media (min-width: 48rem) {
   .home-featured__list {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     column-gap: var(--space-3);
     row-gap: var(--space-5);
-    /* Don't stretch cards — each card sizes to its own content
-       so short / tall pairs don't leave empty space below the
-       text. */
     align-items: start;
   }
 }
 
 @media (min-width: 64rem) {
   .home-featured__list {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: var(--space-4);
     row-gap: var(--space-6);
   }
@@ -91,26 +86,6 @@
 .home-featured__item {
   margin: 0;
   display: block;
-}
-
-/* 9-card cycle — three rows of three, every row sums to 12,
-   widths reshuffle so the rhythm reads varied across the page:
-     row A: 5 + 4 + 3
-     row B: 3 + 5 + 4
-     row C: 4 + 3 + 5  */
-@media (min-width: 64rem) {
-  /* Row A */
-  .home-featured__item:nth-child(9n + 1) { grid-column: span 5; }
-  .home-featured__item:nth-child(9n + 2) { grid-column: span 4; }
-  .home-featured__item:nth-child(9n + 3) { grid-column: span 3; }
-  /* Row B */
-  .home-featured__item:nth-child(9n + 4) { grid-column: span 3; }
-  .home-featured__item:nth-child(9n + 5) { grid-column: span 5; }
-  .home-featured__item:nth-child(9n + 6) { grid-column: span 4; }
-  /* Row C */
-  .home-featured__item:nth-child(9n + 7) { grid-column: span 4; }
-  .home-featured__item:nth-child(9n + 8) { grid-column: span 3; }
-  .home-featured__item:nth-child(9n + 9) { grid-column: span 5; }
 }
 
 /* ── Card ─────────────────────────────────────────────────── */
@@ -131,15 +106,14 @@
 
 /* ── Image ────────────────────────────────────────────────── */
 
-/* Aspect comes from `--ratio` (forwarded onto the wrapper from
-   JSX, derived from the Sanity image dimensions) so every card
-   renders at its source image's true shape. Width is still
-   controlled by the grid via per-slot column spans. */
+/* Fixed 4:5 portrait so every card in the grid is the same
+   shape — image is `object-fit: cover` so source images of
+   any aspect crop into the slot. */
 .home-featured__image {
   display: block;
   position: relative;
   overflow: hidden;
-  aspect-ratio: var(--ratio, 4 / 5);
+  aspect-ratio: 4 / 5;
   width: 100%;
 }
 

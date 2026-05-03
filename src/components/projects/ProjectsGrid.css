@@ -1,23 +1,10 @@
 /**
  * ProjectsGrid
  * ============
- * 12-column grid, three cards per row. Each card spans a
- * varied number of columns so the row reads with editorial
- * rhythm rather than even thirds. Cycle is 3 cards long, with
- * each row reshuffling the same 5 / 4 / 3 widths so no two
- * adjacent rows match:
- *
- *   row A:  5 + 4 + 3
- *   row B:  3 + 5 + 4
- *   row C:  4 + 3 + 5
- *
- * Tablet collapses to a 2-col layout (cards alternate wider /
- * narrower); mobile is a single-column flex stack.
- *
- * Each card keeps its native image aspect ratio (set as
- * `--ratio` on ProjectCard from the Sanity image dimensions).
- * The grid controls *width* via column spans only — height
- * follows the source image, so nothing gets cropped or padded.
+ * Three-up grid of equal-width project cards. Mobile stacks to a
+ * single column. Every card uses the same aspect ratio (set on
+ * `.project-card__image-wrap`) so the rows read as a regular
+ * editorial grid rather than mixed editorial spans.
  */
 
 .projects-grid {
@@ -41,7 +28,7 @@
 @media (min-width: 48rem) {
   .projects-grid__row {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     column-gap: var(--space-3);
     row-gap: var(--space-5);
     /* Don't stretch cards — each card sizes to its own content so
@@ -52,30 +39,7 @@
 
 @media (min-width: 64rem) {
   .projects-grid__row {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: var(--space-4);
     row-gap: var(--space-6);
   }
-}
-
-/* ── Mixed column spans (desktop, 12-col, 3 per row) ─────────── */
-
-/* 9-card cycle — three rows of three, every row sums to 12,
-   widths reshuffle so the rhythm reads varied across the page:
-     row A: 5 + 4 + 3
-     row B: 3 + 5 + 4
-     row C: 4 + 3 + 5  */
-@media (min-width: 64rem) {
-  /* Row A */
-  .projects-grid__row .project-card-wrap:nth-child(9n + 1) { grid-column: span 5; }
-  .projects-grid__row .project-card-wrap:nth-child(9n + 2) { grid-column: span 4; }
-  .projects-grid__row .project-card-wrap:nth-child(9n + 3) { grid-column: span 3; }
-  /* Row B */
-  .projects-grid__row .project-card-wrap:nth-child(9n + 4) { grid-column: span 3; }
-  .projects-grid__row .project-card-wrap:nth-child(9n + 5) { grid-column: span 5; }
-  .projects-grid__row .project-card-wrap:nth-child(9n + 6) { grid-column: span 4; }
-  /* Row C */
-  .projects-grid__row .project-card-wrap:nth-child(9n + 7) { grid-column: span 4; }
-  .projects-grid__row .project-card-wrap:nth-child(9n + 8) { grid-column: span 3; }
-  .projects-grid__row .project-card-wrap:nth-child(9n + 9) { grid-column: span 5; }
 }

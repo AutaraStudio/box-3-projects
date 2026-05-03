@@ -1,48 +1,47 @@
 /**
  * /projects
  * =========
- * Projects index. Server component — pulls every project + every
- * category from Sanity in parallel, then hands both arrays to the
- * client-side ProjectsClient which owns the filter state and
- * animates layout transitions with GSAP Flip.
+ * Projects index. Server component — pulls every project from
+ * Sanity, then renders the hero (sketch → photo image wipe) +
+ * a three-up parallax grid. No filters or list-view toggle on
+ * the archive itself; categories are surfaced inside each
+ * project's detail page.
  *
- * Stage 2 of the projects build: hero + sticky filter bar +
- * category-driven filter behaviour.
- * Stage 3 will add the Grid ↔ List mode toggle.
+ * The hero's two images are static assets in `/public` — the
+ * sketch overlay sits on top and wipes bottom-up on scroll to
+ * reveal the photograph beneath.
  */
 
 import ProjectsHero from "@/components/projects/ProjectsHero";
-import ProjectsClient from "@/components/projects/ProjectsClient";
+import ProjectsGrid from "@/components/projects/ProjectsGrid";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
-  PROJECT_CATEGORIES_QUERY,
   PROJECTS_LIST_QUERY,
-  type ProjectCategoryItem,
   type ProjectListItem,
 } from "@/sanity/queries/projects";
 
 export const revalidate = 60;
 
 export default async function ProjectsPage() {
-  const [projects, categories] = await Promise.all([
-    sanityFetch<ProjectListItem[]>({
-      query: PROJECTS_LIST_QUERY,
-      revalidate: 60,
-    }),
-    sanityFetch<ProjectCategoryItem[]>({
-      query: PROJECT_CATEGORIES_QUERY,
-      revalidate: 60,
-    }),
-  ]);
-
-  /* Drop categories that have no projects with featuredImage —
-     they'd render as a tab with "(000)" and never match. */
-  const usefulCategories = categories.filter((c) => c.count > 0);
+  const projects = await sanityFetch<ProjectListItem[]>({
+    query: PROJECTS_LIST_QUERY,
+    revalidate: 60,
+  });
 
   return (
     <main className="projects-page">
-      <ProjectsHero count={projects.length} />
-      <ProjectsClient projects={projects} categories={usefulCategories} />
+      <ProjectsHero
+        count={projects.length}
+        baseImage={{
+          src: "/reveal.webp",
+          alt: "Completed fit-out — finished space",
+        }}
+        overlayImage={{
+          src: "/sketch.webp",
+          alt: "Initial sketch — line drawing",
+        }}
+      />
+      <ProjectsGrid projects={projects} />
     </main>
   );
 }

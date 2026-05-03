@@ -1,111 +1,172 @@
 /**
  * ProjectsHero
  * ============
- * Layout-only CSS — typography (font-size, line-height, letter-
- * spacing, weight) is owned by the utility classes applied in the
- * JSX (.text-display on the title, .text-h3 on the counter). This
- * file only handles the section padding, the inline-flex row, and
- * the absolutely-pinned counter.
+ * Editorial archive hero. Small caps label + display heading at
+ * the top, then a sticky scroll-driven clip-path image wipe.
+ *
+ * Desktop: wrapper is 200svh tall; the assets frame sticks at the
+ * top and the wipe + scale scrub across the full transit.
+ * Mobile: shorter, no sticky — images sit inline below the heading
+ * in a 16:9 aspect frame.
  */
 
-/* Page-level padding-top so the hero clears the fixed Header
-   squares at the top of the viewport. Lives here (rather than on
-   <main>) so it's colocated with the projects-hero rules. */
+/* Page-level wrapper — bottom padding so the last grid row has
+   breathing room before the site-wide footer's marquee begins. */
 .projects-page {
-  padding-top: var(--space-6);
-  /* Bottom padding so the last list row / last grid card has
-     breathing room before the site-wide footer's partners marquee
-     begins — without it the row's bottom hairline visually merges
-     with the marquee's top edge. */
   padding-bottom: var(--space-7);
 }
 
 @media (min-width: 64rem) {
   .projects-page {
-    padding-top: var(--space-7);
     padding-bottom: var(--space-9);
   }
 }
 
-.projects-hero-section {
-  padding-block: var(--space-2);
-  border-bottom: 1px solid
-    color-mix(in srgb, var(--theme-text) 10%, transparent);
-  overflow: hidden;
-}
-
-@media (min-width: 64rem) {
-  .projects-hero-section {
-    padding-block: var(--space-5-5);
-  }
-}
+/* ── Section ─────────────────────────────────────────────── */
 
 .projects-hero {
-  min-height: var(--space-6);
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  padding-bottom: var(--space-6);
 }
 
 @media (min-width: 64rem) {
   .projects-hero {
-    /* The .text-display title naturally sets the hero height; the
-       min-height is just a floor so empty / loading states still
-       feel deliberate. */
-    min-height: var(--space-12);
+    padding-bottom: var(--space-9);
   }
 }
 
-.projects-hero__title {
-  position: relative;
+/* ── Head (label + heading) ──────────────────────────────── */
+
+.projects-hero__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: center;
+  text-align: center;
+  padding-top: var(--space-10);
+  padding-bottom: var(--space-5);
+  margin-inline: auto;
+  max-width: 60rem;
+}
+
+@media (min-width: 64rem) {
+  .projects-hero__head {
+    padding-top: var(--space-14);
+    padding-bottom: var(--space-7);
+    gap: var(--space-3);
+  }
+}
+
+.projects-hero__label {
   margin: 0;
-  color: inherit;
-  /* Optical kerning hint — pulls the first character ~5% leftward
-     so the giant display sits visually flush to the left edge. */
-  font-kerning: none;
-  left: -0.05em;
-}
-
-/* Inline-flex row holding title text + counter — both stretch to
-   the full height so the counter's absolute child can pin to the
-   row's top-left. */
-.projects-hero__row {
+  color: var(--theme-text-muted);
   display: inline-flex;
-  align-items: stretch;
-  height: 100%;
+  align-items: baseline;
+  gap: var(--space-0-5);
 }
 
-.projects-hero__title-text {
-  display: inline-block;
-  /* Mask the chars that start below the baseline so the SplitText
-     reveal looks like the chars rise out of the cap-line. */
-  overflow: hidden;
-  padding-bottom: 0.1em;
+.projects-hero__count {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  color: var(--theme-text-soft);
 }
 
-/* Counter container — relative + h-100% so the absolute child can
-   pin to the top of the row. Margin-left from the spacing scale. */
-.projects-hero__counter {
+.projects-hero__heading {
+  margin: 0;
+  text-wrap: balance;
+  max-width: 28ch;
+  color: var(--theme-text);
+}
+
+/* ── Wrapper (scroll container) ──────────────────────────── */
+
+.projects-hero__wrapper {
   position: relative;
-  height: 100%;
-  margin-left: var(--space-2);
+  width: 100%;
+  height: 200svh;
 }
 
-/* Spacer — invisible copy that reserves horizontal width for the
-   absolute visible one to land on top of. */
-.projects-hero__counter-spacer {
-  visibility: hidden;
+/* Mobile — collapse to an inline 16:9 frame, no sticky. */
+@media (max-width: 39.9375rem) {
+  .projects-hero__wrapper {
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
 }
 
-/* Visible counter — pinned to the top-left of the h-full container
-   so it sits at the cap-line of the title rather than the baseline.
-   white-space: nowrap stops SplitText's per-char inline-block spans
-   from breaking onto a second line inside the narrow counter slot. */
-.projects-hero__counter-visible {
+/* ── Assets (sticky frame) ───────────────────────────────── */
+
+.projects-hero__assets {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: sticky;
+  top: var(--space-1);
+  height: calc(100svh - var(--space-2));
+  /* GPU layer hint so the clip-path + scale stay smooth. */
+  clip-path: inset(1px);
+}
+
+@media (max-width: 39.9375rem) {
+  .projects-hero__assets {
+    position: absolute;
+    inset: 0;
+    height: auto;
+    top: 0;
+  }
+}
+
+/* ── Mask (holds both images) ────────────────────────────── */
+
+.projects-hero__mask {
   position: absolute;
-  top: 0;
-  left: 0;
-  overflow: hidden;
-  white-space: nowrap;
+  inset: 0;
+  will-change: transform;
 }
 
-.projects-hero__counter-spacer {
-  white-space: nowrap;
+/* ── Images ──────────────────────────────────────────────── */
+
+.projects-hero__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Overlay image sits on top — clip-path wipes it away on scroll.
+   The sketch artwork has a transparent background; a solid theme
+   bg behind it means the photograph below is fully covered until
+   the wipe begins. */
+.projects-hero__image--overlay {
+  z-index: 1;
+  background-color: var(--theme-bg);
+}
+
+/* ── Placeholders (when an image isn't supplied) ─────────── */
+
+/* Base placeholder — accent fill so the "photograph" layer reads
+   visually distinct from the overlay sketch layer above it. */
+.projects-hero__placeholder--base {
+  position: absolute;
+  inset: 0;
+  background-color: var(--theme-accent);
+}
+
+/* Overlay placeholder — theme bg with diagonal hatching mixed
+   from the theme text token so it reads as a sketch layer over
+   the base. Pure tokens, no hardcoded colours. */
+.projects-hero__placeholder--overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-color: var(--theme-bg);
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0,
+    transparent 0.5rem,
+    color-mix(in srgb, var(--theme-text) 18%, transparent) 0.5rem,
+    color-mix(in srgb, var(--theme-text) 18%, transparent) 0.5625rem
+  );
 }
