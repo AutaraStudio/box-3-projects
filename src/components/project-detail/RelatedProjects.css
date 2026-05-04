@@ -12,6 +12,13 @@
   border-top: 1px solid var(--theme-border-strong);
 }
 
+/* When the testimonials section sits directly above us, its
+   bottom divider already handles the visual separation — drop
+   our top border to avoid a doubled-up line. */
+.testimonials-section + .related-projects {
+  border-top: 0;
+}
+
 @media (min-width: 64rem) {
   .related-projects {
     padding-block: var(--space-7);
