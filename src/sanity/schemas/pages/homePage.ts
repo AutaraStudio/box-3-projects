@@ -44,6 +44,25 @@ export default defineType({
   fields: [
     /* ── 1. Hero ─────────────────────────────────────────── */
     defineField({
+      name: "heroMediaType",
+      title: "Background media",
+      description:
+        "Choose whether the hero plays a looping video or shows " +
+        "a still image. The matching field below appears once " +
+        "you pick.",
+      type: "string",
+      group: "hero",
+      initialValue: "video",
+      options: {
+        list: [
+          { title: "Video", value: "video" },
+          { title: "Image", value: "image" },
+        ],
+        layout: "radio",
+        direction: "horizontal",
+      },
+    }),
+    defineField({
       name: "heroVideoUrl",
       title: "Hero video URL",
       description:
@@ -52,8 +71,30 @@ export default defineType({
         "muted on autoplay.",
       type: "url",
       group: "hero",
+      hidden: ({ parent }) => parent?.heroMediaType !== "video",
       validation: (rule) =>
         rule.uri({ scheme: ["http", "https"], allowRelative: false }),
+    }),
+    defineField({
+      name: "heroImage",
+      title: "Hero image",
+      description:
+        "Full-bleed background image for the hero. Used when " +
+        '"Background media" above is set to "Image".',
+      type: "image",
+      options: { hotspot: true },
+      group: "hero",
+      hidden: ({ parent }) => parent?.heroMediaType !== "image",
+      fields: [
+        defineField({
+          name: "alt",
+          title: "Alt text",
+          description:
+            "What's in the photo, in plain English. Used by " +
+            "screen readers + shown if the image fails to load.",
+          type: "string",
+        }),
+      ],
     }),
     defineField({
       name: "heroStatement",

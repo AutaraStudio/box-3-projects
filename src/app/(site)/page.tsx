@@ -282,7 +282,14 @@ export default async function Home() {
   return (
     <main>
       <HomeHero
+        mediaType={home?.heroMediaType ?? "video"}
         videoSrc={firstFilled(home?.heroVideoUrl, FALLBACK.hero.videoUrl)}
+        imageSrc={
+          home?.heroImage?.asset?.url
+            ? urlFor(home.heroImage).width(2400).quality(85).url()
+            : undefined
+        }
+        imageAlt={home?.heroImage?.alt ?? ""}
         statement={firstFilled(home?.heroStatement, FALLBACK.hero.statement)}
         scrollLabel={firstFilled(
           home?.heroScrollLabel,

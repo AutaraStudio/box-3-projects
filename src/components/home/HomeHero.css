@@ -51,9 +51,10 @@
   background-color: var(--theme-bg);
 }
 
-/* ── Video ────────────────────────────────────────────────────── */
+/* ── Background media (video OR image) ──────────────────────── */
 
-.home-hero__video {
+.home-hero__video,
+.home-hero__image {
   position: absolute;
   inset: 0;
   width: 100%;

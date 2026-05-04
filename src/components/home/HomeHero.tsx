@@ -35,6 +35,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -50,8 +51,16 @@ if (typeof window !== "undefined") {
 }
 
 interface HomeHeroProps {
-  /** Looping background video URL. Defaults to the brand reel. */
+  /** Background media type. 'video' (default) plays a looping
+   *  muted background; 'image' renders a static photo. */
+  mediaType?: "video" | "image";
+  /** Looping background video URL. Used when `mediaType` is "video".
+   *  Defaults to the brand reel. */
   videoSrc?: string;
+  /** Background image src. Used when `mediaType` is "image". */
+  imageSrc?: string;
+  /** Alt text for the background image (image mode only). */
+  imageAlt?: string;
   /** Paragraph statement rendered bottom-left over the video.
    *  Body-size editorial commentary, not a display heading. */
   statement?: string;
@@ -72,7 +81,10 @@ const DEFAULT_STATEMENT =
   "Specialist commercial fit-outs in London.";
 
 export default function HomeHero({
+  mediaType = "video",
   videoSrc = DEFAULT_VIDEO,
+  imageSrc,
+  imageAlt = "",
   statement = DEFAULT_STATEMENT,
   scrollLabel = "Scroll down",
   ctaLabel = "View projects →",
@@ -89,8 +101,10 @@ export default function HomeHero({
      the user interacts (or if React hydration completes after the
      element is in the DOM), they leave the video paused. We force
      `.play()` once the element can play, and re-try on visibility
-     changes so a tab returning from background doesn't stay frozen. */
+     changes so a tab returning from background doesn't stay frozen.
+     Skipped when the hero's in image mode (no <video> mounted). */
   useEffect(() => {
+    if (mediaType !== "video") return;
     const video = videoRef.current;
     if (!video) return;
     /* Some browsers don't honour the `muted` attribute set via JSX
@@ -109,7 +123,7 @@ export default function HomeHero({
       video.removeEventListener("canplay", tryPlay);
       document.removeEventListener("visibilitychange", tryPlay);
     };
-  }, []);
+  }, [mediaType]);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -191,18 +205,30 @@ export default function HomeHero({
   return (
     <section ref={sectionRef} className="home-hero" data-theme="dark">
       <div className="home-hero__fixed">
-        <video
-          ref={videoRef}
-          className="home-hero__video"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          aria-hidden="true"
-        >
-          <source src={videoSrc} type="video/mp4" />
-        </video>
+        {mediaType === "image" && imageSrc ? (
+          <Image
+            className="home-hero__image"
+            src={imageSrc}
+            alt={imageAlt}
+            fill
+            priority
+            sizes="100vw"
+            style={{ objectFit: "cover" }}
+          />
+        ) : (
+          <video
+            ref={videoRef}
+            className="home-hero__video"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            aria-hidden="true"
+          >
+            <source src={videoSrc} type="video/mp4" />
+          </video>
+        )}
         <span className="home-hero__overlay" aria-hidden="true" />
         <span
           ref={darkenRef}

@@ -24,7 +24,9 @@ const IMAGE_PROJECTION = groq`
 
 export const HOME_PAGE_QUERY = groq`
   *[_type == "homePage"][0] {
+    heroMediaType,
     heroVideoUrl,
+    heroImage { ${IMAGE_PROJECTION} },
     heroStatement,
     heroScrollLabel,
     heroCta { ${LINK_PROJECTION} },
@@ -86,7 +88,9 @@ export interface HomeStatItem {
 }
 
 export interface HomePageData {
+  heroMediaType?: "video" | "image";
   heroVideoUrl?: string;
+  heroImage?: HomeImage;
   heroStatement?: string;
   heroScrollLabel?: string;
   heroCta?: HomeLink;
