@@ -197,7 +197,22 @@ const PROJECT_DETAIL_PROJECTION = /* groq */ `
     value
   },
   clientObjective,
-  clientFeedback
+  clientFeedback,
+  testimonialsSection {
+    sectionLabel,
+    reference,
+    "testimonials": testimonials[]-> {
+      _id,
+      quote,
+      author,
+      title,
+      partner-> {
+        _id,
+        "name": name,
+        "logoUrl": logo.asset->url
+      }
+    }
+  }
 `;
 
 export const PROJECT_BY_SLUG_QUERY = groq`
@@ -288,6 +303,21 @@ export interface ProjectDetail {
   stats?: ProjectStat[];
   clientObjective?: string;
   clientFeedback?: string;
+  testimonialsSection?: {
+    sectionLabel?: string;
+    reference?: string;
+    testimonials: Array<{
+      _id: string;
+      quote: string;
+      author: string;
+      title: string;
+      partner?: {
+        _id: string;
+        name: string;
+        logoUrl?: string;
+      };
+    }>;
+  };
 }
 
 export type RelatedProject = ProjectListItem;

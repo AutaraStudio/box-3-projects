@@ -19,6 +19,8 @@ import { notFound } from "next/navigation";
 import ProjectHero from "@/components/project-detail/ProjectHero";
 import ProjectGallery from "@/components/project-detail/ProjectGallery";
 import RelatedProjects from "@/components/project-detail/RelatedProjects";
+import TestimonialsSection from "@/components/testimonials/TestimonialsSection";
+import { resolveTestimonialsSection } from "@/lib/fetchTestimonials";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
   PROJECT_BY_SLUG_QUERY,
@@ -96,6 +98,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     ...(project.additionalImages ?? []),
   ];
 
+  /* Resolve any testimonials attached to this project — partner
+     logo URLs become inlined sanitised SVG so they pick up
+     `currentColor` from the active theme. Returns null if the
+     editor hasn't picked any testimonials for this project. */
+  const testimonials = await resolveTestimonialsSection(
+    project.testimonialsSection,
+  );
+
   return (
     <main className="project-detail-page" data-project-slug={project.slug}>
       <ProjectHero project={project} />
@@ -109,6 +119,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         projectTitle={project.title}
         galleryId={`gallery-${project.slug}`}
       />
+      {testimonials ? (
+        <TestimonialsSection
+          sectionLabel={testimonials.sectionLabel}
+          reference={testimonials.reference}
+          testimonials={testimonials.testimonials}
+          theme="cream"
+        />
+      ) : null}
       <RelatedProjects projects={related} />
     </main>
   );
