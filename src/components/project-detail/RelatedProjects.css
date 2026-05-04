@@ -30,21 +30,46 @@
   }
 }
 
-/* Compact the archive's tall rows when reused inside this section.
-   On the archive page each row reserves `max(14rem, 15vw)` of
-   vertical space (with content bottom-aligned) so the grid feels
-   editorial. Here, after a heading, that whitespace reads as a
-   gap rather than breathing room — but the row still needs to be
-   taller than the col-span-2 thumbnail's natural height (~12vw
-   wide × 194/282 aspect ≈ 8.3vw tall + the row's own block
-   padding). 12vw bottoms-out comfortably above that. */
+/* Compact the archive's tall rows for the "More projects" strip
+   at the foot of a project detail page — they read as a quiet
+   list, not a hero showcase, so we bring the row height + image
+   + title size down. */
 .related-projects .projects-list {
   padding-top: 0;
 }
 
 @media (min-width: 64rem) {
   .related-projects .projects-list__row {
-    height: max(11rem, 12vw);
+    /* Down from max(14rem, 15vw) on the archive — gives a tighter
+       single-line row that still fits the smaller thumbnail. */
+    height: max(6rem, 7.5vw);
+  }
+  .related-projects .projects-list__row-inner {
+    padding-block: var(--space-1);
+  }
+}
+
+/* Smaller title — text-h3 (3rem) on the archive feels too loud
+   in a "more projects" strip. text-h4 (2rem) reads as a list. */
+.related-projects .projects-list__title {
+  font-size: var(--font-size-h5);
+  line-height: var(--line-height-snug);
+}
+
+@media (min-width: 64rem) {
+  .related-projects .projects-list__title {
+    font-size: var(--font-size-h4);
+  }
+}
+
+/* Smaller thumbnail — single column on desktop instead of two,
+   and capped to a sensible width so it doesn't dominate the row.
+   The image keeps its 282/194 aspect so it doesn't crop oddly. */
+@media (min-width: 64rem) {
+  .related-projects .projects-list__image {
+    grid-column: span 2;
+    max-width: 9rem;
+    justify-self: end;
   }
 }
 
