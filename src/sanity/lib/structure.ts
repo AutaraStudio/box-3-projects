@@ -24,6 +24,7 @@ export const SINGLETON_TYPES = [
   "siteSettings",
   "partnersSection",
   "homePage",
+  "projectsPage",
   "careersPage",
   "sustainabilityPage",
 ] as const;
@@ -88,6 +89,15 @@ export const structure: StructureResolver = (S) =>
                     .schemaType("homePage")
                     .documentId("homePage")
                     .title("Home Page"),
+                ),
+              S.listItem()
+                .title("Projects Page")
+                .id("projectsPage")
+                .child(
+                  S.document()
+                    .schemaType("projectsPage")
+                    .documentId("projectsPage")
+                    .title("Projects Page"),
                 ),
               S.listItem()
                 .title("Careers Page")
