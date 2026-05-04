@@ -23,6 +23,7 @@ import type { StructureResolver } from "sanity/structure";
 export const SINGLETON_TYPES = [
   "siteSettings",
   "partnersSection",
+  "homePage",
   "careersPage",
   "sustainabilityPage",
 ] as const;
@@ -79,6 +80,15 @@ export const structure: StructureResolver = (S) =>
           S.list()
             .title("Pages")
             .items([
+              S.listItem()
+                .title("Home Page")
+                .id("homePage")
+                .child(
+                  S.document()
+                    .schemaType("homePage")
+                    .documentId("homePage")
+                    .title("Home Page"),
+                ),
               S.listItem()
                 .title("Careers Page")
                 .id("careersPage")
