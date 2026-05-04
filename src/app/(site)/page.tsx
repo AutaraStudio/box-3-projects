@@ -5,12 +5,18 @@ import HomeCTA from "@/components/home/HomeCTA";
 import EditorialImageBlock from "@/components/ui/EditorialImageBlock";
 import ServicesList from "@/components/services/ServicesList";
 import SustainabilityStats from "@/components/sustainability/SustainabilityStats";
+import TestimonialsSection from "@/components/testimonials/TestimonialsSection";
+import { resolveTestimonialsSection } from "@/lib/fetchTestimonials";
 import type { SustainabilityStatItem } from "@/sanity/queries/sustainabilityPage";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
   HOME_FEATURED_PROJECTS_QUERY,
   type ProjectListItem,
 } from "@/sanity/queries/projects";
+import {
+  HOME_TESTIMONIALS_QUERY,
+  type TestimonialsSectionData,
+} from "@/sanity/queries/testimonialsSection";
 
 /* Revalidate hourly so featured-flag toggles + new projects
    surface without a redeploy. */
@@ -83,10 +89,20 @@ const HOME_STATS: SustainabilityStatItem[] = [
 /* The site-wide footer (with partners marquee) renders below via
    `(site)/layout.tsx`. */
 export default async function Home() {
-  const featured = await sanityFetch<ProjectListItem[] | null>({
-    query: HOME_FEATURED_PROJECTS_QUERY,
-    revalidate: 3600,
-  });
+  const [featured, rawTestimonials] = await Promise.all([
+    sanityFetch<ProjectListItem[] | null>({
+      query: HOME_FEATURED_PROJECTS_QUERY,
+      revalidate: 3600,
+    }),
+    sanityFetch<TestimonialsSectionData | null>({
+      query: HOME_TESTIMONIALS_QUERY,
+      revalidate: 3600,
+    }),
+  ]);
+
+  /* Resolve partner logos to inlined SVG markup so they pick up
+     `currentColor` from the active theme. */
+  const testimonials = await resolveTestimonialsSection(rawTestimonials);
 
   /* Stand-in images for the editorial image blocks until the
      editor adds dedicated home imagery via Sanity. Pulls from the
@@ -133,6 +149,15 @@ export default async function Home() {
       />
 
       <HomeFeaturedProjects projects={projects} />
+
+      {testimonials ? (
+        <TestimonialsSection
+          sectionLabel={testimonials.sectionLabel}
+          reference={testimonials.reference}
+          testimonials={testimonials.testimonials}
+          theme="pink"
+        />
+      ) : null}
 
       <SustainabilityStats
         label="By the numbers"
