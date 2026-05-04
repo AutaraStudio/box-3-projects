@@ -96,31 +96,50 @@ export default function HomeHero({
   const darkenRef = useRef<HTMLSpanElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  /* Firefox + Safari are strict about autoplay even with `muted` +
-     `playsInline` set: if the playback hasn't been kicked off before
-     the user interacts (or if React hydration completes after the
-     element is in the DOM), they leave the video paused. We force
-     `.play()` once the element can play, and re-try on visibility
-     changes so a tab returning from background doesn't stay frozen.
-     Skipped when the hero's in image mode (no <video> mounted). */
+  /* Browsers' autoplay policies are inconsistent — even with
+     `muted` + `playsInline`, Firefox/Safari sometimes leave the
+     video paused, and Chrome occasionally pauses it again
+     immediately after `play()` resolves (we've observed both).
+     Strategy:
+       1. Set `muted` on the property (not just the attribute)
+          so the autoplay policy gate sees it before first play.
+       2. Try `.play()` aggressively — on every relevant readiness
+          event, on visibility change, and after every `pause`
+          event (so if the browser pauses it post-play we kick it
+          straight back).
+       3. Bail entirely when the hero's in image mode. */
   useEffect(() => {
     if (mediaType !== "video") return;
     const video = videoRef.current;
     if (!video) return;
-    /* Some browsers don't honour the `muted` attribute set via JSX
-       reliably until reflected on the property — set both. */
+
     video.muted = true;
+    /* `defaultMuted` mirrors the attribute and guarantees autoplay
+       is permitted on the FIRST playback attempt (some browsers
+       check the attribute, not the property). */
+    video.defaultMuted = true;
+
+    let cancelled = false;
     const tryPlay = () => {
+      if (cancelled || !video.paused) return;
       const p = video.play();
       if (p && typeof p.catch === "function") p.catch(() => {});
     };
     if (video.readyState >= 2) tryPlay();
+
     video.addEventListener("loadeddata", tryPlay);
     video.addEventListener("canplay", tryPlay);
+    /* If the browser pauses the video on us, hop right back into
+       play. This is the single most reliable defence against
+       Chrome's "pause-after-play" race we hit in dev. */
+    video.addEventListener("pause", tryPlay);
     document.addEventListener("visibilitychange", tryPlay);
+
     return () => {
+      cancelled = true;
       video.removeEventListener("loadeddata", tryPlay);
       video.removeEventListener("canplay", tryPlay);
+      video.removeEventListener("pause", tryPlay);
       document.removeEventListener("visibilitychange", tryPlay);
     };
   }, [mediaType]);
