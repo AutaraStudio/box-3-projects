@@ -1,0 +1,46 @@
+/**
+ * HomeComingSoon
+ * ==============
+ * Full-viewport centred holding page. Theme tokens only — same
+ * brown / pink palette as the rest of the site so the editor
+ * can flip "Coming soon" on/off without anything looking out
+ * of place.
+ */
+
+.home-coming-soon {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-coming-soon__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: center;
+  text-align: center;
+  max-width: 44rem;
+  padding-block: var(--space-7);
+}
+
+@media (min-width: 64rem) {
+  .home-coming-soon__inner {
+    gap: var(--space-3);
+    padding-block: var(--space-10);
+  }
+}
+
+.home-coming-soon__heading {
+  margin: 0;
+  text-wrap: balance;
+}
+
+.home-coming-soon__body {
+  margin: 0;
+  color: var(--theme-text-muted);
+  text-wrap: pretty;
+  max-width: 36ch;
+}

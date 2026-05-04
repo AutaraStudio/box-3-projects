@@ -24,6 +24,9 @@ const IMAGE_PROJECTION = groq`
 
 export const HOME_PAGE_QUERY = groq`
   *[_type == "homePage"][0] {
+    comingSoon,
+    comingSoonHeading,
+    comingSoonBody,
     heroMediaType,
     heroVideoUrl,
     heroImage { ${IMAGE_PROJECTION} },
@@ -88,6 +91,9 @@ export interface HomeStatItem {
 }
 
 export interface HomePageData {
+  comingSoon?: boolean;
+  comingSoonHeading?: string;
+  comingSoonBody?: string;
   heroMediaType?: "video" | "image";
   heroVideoUrl?: string;
   heroImage?: HomeImage;

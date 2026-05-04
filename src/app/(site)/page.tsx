@@ -14,6 +14,7 @@ import HomeHero from "@/components/home/HomeHero";
 import HomeStatement from "@/components/home/HomeStatement";
 import HomeFeaturedProjects from "@/components/home/HomeFeaturedProjects";
 import HomeCTA from "@/components/home/HomeCTA";
+import HomeComingSoon from "@/components/home/HomeComingSoon";
 import EditorialImageBlock from "@/components/ui/EditorialImageBlock";
 import ServicesList from "@/components/services/ServicesList";
 import SustainabilityStats from "@/components/sustainability/SustainabilityStats";
@@ -200,6 +201,20 @@ export default async function Home() {
       revalidate: 3600,
     }),
   ]);
+
+  /* Coming-soon mode — short-circuit before any other rendering
+     so the holding page is the entire <main>. The site-wide
+     header + footer still surround it via the layout. */
+  if (home?.comingSoon) {
+    return (
+      <main>
+        <HomeComingSoon
+          heading={home.comingSoonHeading || undefined}
+          body={home.comingSoonBody || undefined}
+        />
+      </main>
+    );
+  }
 
   /* Resolve testimonial partner logos to inlined SVG markup so they
      pick up `currentColor` from the active theme. */
