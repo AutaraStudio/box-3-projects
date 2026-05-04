@@ -8,12 +8,19 @@
  */
 
 .home-coming-soon {
+  /* Fixed-cover so the section sits on top of the site-wide
+     header + footer the layout still renders around us. Z-index
+     is above the header (1000) and the menu overlay (999) so
+     the holding page is what the visitor sees, full-stop. */
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
   background-color: var(--theme-bg);
   color: var(--theme-text);
-  min-height: 100svh;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: auto;
 }
 
 .home-coming-soon__inner {
