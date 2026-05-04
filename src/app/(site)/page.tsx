@@ -221,17 +221,40 @@ export default async function Home() {
       ? home.whyImage
       : projects[projects.length - 1]?.featuredImage;
 
-  /* Resolved links for each section. */
+  /* Resolved links for each section. Each FALLBACK.section keeps
+     ctaLabel / ctaHref / ctaPageName as separate keys, so we
+     project them into the `{ label, href, pageName }` shape that
+     resolveLink expects. */
   const heroCta = resolveLink(home?.heroCta, {
     label: FALLBACK.hero.ctaLabel,
     href: FALLBACK.hero.ctaHref,
     pageName: FALLBACK.hero.ctaPageName,
   });
-  const statementCta = resolveLink(home?.statementCta, FALLBACK.statement);
-  const introCta = resolveLink(home?.introducingCta, FALLBACK.introducing);
-  const servicesCta = resolveLink(home?.servicesCta, FALLBACK.services);
-  const whyCta = resolveLink(home?.whyCta, FALLBACK.why);
-  const finalCta = resolveLink(home?.finalCtaButton, FALLBACK.finalCta);
+  const statementCta = resolveLink(home?.statementCta, {
+    label: FALLBACK.statement.ctaLabel,
+    href: FALLBACK.statement.ctaHref,
+    pageName: FALLBACK.statement.ctaPageName,
+  });
+  const introCta = resolveLink(home?.introducingCta, {
+    label: FALLBACK.introducing.ctaLabel,
+    href: FALLBACK.introducing.ctaHref,
+    pageName: FALLBACK.introducing.ctaPageName,
+  });
+  const servicesCta = resolveLink(home?.servicesCta, {
+    label: FALLBACK.services.ctaLabel,
+    href: FALLBACK.services.ctaHref,
+    pageName: FALLBACK.services.ctaPageName,
+  });
+  const whyCta = resolveLink(home?.whyCta, {
+    label: FALLBACK.why.ctaLabel,
+    href: FALLBACK.why.ctaHref,
+    pageName: FALLBACK.why.ctaPageName,
+  });
+  const finalCta = resolveLink(home?.finalCtaButton, {
+    label: FALLBACK.finalCta.ctaLabel,
+    href: FALLBACK.finalCta.ctaHref,
+    pageName: FALLBACK.finalCta.ctaPageName,
+  });
 
   /* Service items — fall back to the launch list if Sanity is empty
      OR if entries are missing required fields. */
@@ -242,7 +265,8 @@ export default async function Home() {
         title: s.title ?? "",
         description: s.description ?? "",
       })) ?? [];
-  const services = cmsServices.length > 0 ? cmsServices : FALLBACK.services.items;
+  const services =
+    cmsServices.length > 0 ? cmsServices : [...FALLBACK.services.items];
 
   /* Stats — same pattern. Cap at 4 in the layout. */
   const cmsStats =
@@ -253,7 +277,7 @@ export default async function Home() {
         label: s.label ?? "",
         footnote: s.footnote,
       })) ?? [];
-  const stats = cmsStats.length > 0 ? cmsStats : FALLBACK.stats.items;
+  const stats = cmsStats.length > 0 ? cmsStats : [...FALLBACK.stats.items];
 
   return (
     <main>
