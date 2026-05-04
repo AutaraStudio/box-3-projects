@@ -29,6 +29,9 @@ import careersPage from "./pages/careersPage";
 import sustainabilityPage from "./pages/sustainabilityPage";
 import homePage from "./pages/homePage";
 import projectsPage from "./pages/projectsPage";
+import aboutPage from "./pages/aboutPage";
+import servicesPage from "./pages/servicesPage";
+import contactPage from "./pages/contactPage";
 
 import link from "./objects/link";
 import siteSettings from "./singletons/siteSettings";
@@ -40,9 +43,12 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   siteSettings,
   /* Pages (one-per-route) */
   homePage,
+  aboutPage,
+  servicesPage,
   projectsPage,
   careersPage,
   sustainabilityPage,
+  contactPage,
   /* Reusable sections */
   testimonialsSection,
   partnersSection,

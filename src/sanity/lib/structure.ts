@@ -24,9 +24,12 @@ export const SINGLETON_TYPES = [
   "siteSettings",
   "partnersSection",
   "homePage",
+  "aboutPage",
+  "servicesPage",
   "projectsPage",
   "careersPage",
   "sustainabilityPage",
+  "contactPage",
 ] as const;
 export const SINGLETON_TYPE_SET = new Set<string>(SINGLETON_TYPES);
 
@@ -91,6 +94,24 @@ export const structure: StructureResolver = (S) =>
                     .title("Home Page"),
                 ),
               S.listItem()
+                .title("About Page")
+                .id("aboutPage")
+                .child(
+                  S.document()
+                    .schemaType("aboutPage")
+                    .documentId("aboutPage")
+                    .title("About Page"),
+                ),
+              S.listItem()
+                .title("Services Page")
+                .id("servicesPage")
+                .child(
+                  S.document()
+                    .schemaType("servicesPage")
+                    .documentId("servicesPage")
+                    .title("Services Page"),
+                ),
+              S.listItem()
                 .title("Projects Page")
                 .id("projectsPage")
                 .child(
@@ -116,6 +137,15 @@ export const structure: StructureResolver = (S) =>
                     .schemaType("sustainabilityPage")
                     .documentId("sustainabilityPage")
                     .title("Sustainability Page"),
+                ),
+              S.listItem()
+                .title("Contact Page")
+                .id("contactPage")
+                .child(
+                  S.document()
+                    .schemaType("contactPage")
+                    .documentId("contactPage")
+                    .title("Contact Page"),
                 ),
             ]),
         ),
