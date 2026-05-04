@@ -175,7 +175,7 @@ export default function TestimonialsSection({
     >
       <div className="container">
         <div className="testimonials-label-row">
-          <h2 className="testimonials-label text-h4">{sectionLabel}</h2>
+          <h2 className="testimonials-label text-h3">{sectionLabel}</h2>
           {reference ? (
             <p
               className="testimonials-reference text-small text-caps"
@@ -204,7 +204,7 @@ export default function TestimonialsSection({
                 return (
                   <blockquote
                     key={t._id}
-                    className={`testimonials-quote${
+                    className={`testimonials-quote text-h3${
                       i === currentIndex ? " is-active" : ""
                     }`}
                     data-testimonial-quote
@@ -226,36 +226,42 @@ export default function TestimonialsSection({
               })}
             </div>
 
-            {hasMultiple ? (
-              <div className="testimonials-counter" aria-hidden="true">
-                <span className="testimonials-counter__current">
-                  {pad2(currentIndex + 1)}
-                </span>
-                <span>&nbsp;/&nbsp;</span>
-                <span>{pad2(total)}</span>
-              </div>
-            ) : null}
-
-            <div className="testimonials-info-stack">
-              {testimonials.map((t, i) => (
-                <div
-                  key={t._id}
-                  className={`testimonials-info${
-                    i === currentIndex ? " is-active" : ""
-                  }`}
-                  aria-hidden={i !== currentIndex}
-                >
-                  <p className="testimonials-info__author text-main">
-                    {t.author}
-                    {t.title ? `, ${t.title}` : ""}
-                  </p>
-                  {t.partner ? (
-                    <p className="testimonials-info__partner text-small text-caps">
-                      {t.partner.name}
+            {/* Bottom row — author/role on the left, counter on
+                the right end. They share a baseline so the
+                editorial caps and small-caps numerals read as a
+                single row of meta below the quote. */}
+            <div className="testimonials-bottom-row">
+              <div className="testimonials-info-stack">
+                {testimonials.map((t, i) => (
+                  <div
+                    key={t._id}
+                    className={`testimonials-info${
+                      i === currentIndex ? " is-active" : ""
+                    }`}
+                    aria-hidden={i !== currentIndex}
+                  >
+                    <p className="testimonials-info__author text-main">
+                      {t.author}
+                      {t.title ? `, ${t.title}` : ""}
                     </p>
-                  ) : null}
+                    {t.partner ? (
+                      <p className="testimonials-info__partner text-small text-caps">
+                        {t.partner.name}
+                      </p>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+
+              {hasMultiple ? (
+                <div className="testimonials-counter" aria-hidden="true">
+                  <span className="testimonials-counter__current">
+                    {pad2(currentIndex + 1)}
+                  </span>
+                  <span>&nbsp;/&nbsp;</span>
+                  <span>{pad2(total)}</span>
                 </div>
-              ))}
+              ) : null}
             </div>
           </div>
 

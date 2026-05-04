@@ -49,11 +49,11 @@
   padding-bottom: var(--space-3);
 }
 
+/* `.text-h3` utility owns size + weight; component scope just
+   resets the heading margin and pulls the colour from the
+   active theme. */
 .testimonials-label {
   margin: 0;
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-spacing-tight);
-  line-height: var(--line-height-tight);
 }
 
 .testimonials-reference {
@@ -94,15 +94,15 @@
   grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
 @media (min-width: 64rem) {
   .testimonials-quote-block {
     grid-column: 5 / -1;
     grid-row: 1;
-    padding-block: var(--space-3);
-    gap: var(--space-5);
+    padding-block: var(--space-4);
+    gap: var(--space-7);
   }
 }
 
@@ -114,21 +114,16 @@
   grid-template-areas: "stack";
 }
 
+/* Component scope — layout + reveal state only. Size + weight
+   come from the `.text-h3` utility on the JSX, which the v2 mobile
+   media queries already step down for narrower viewports. */
 .testimonials-quote {
   grid-area: stack;
   margin: 0;
-  font-size: var(--font-size-h5);
   font-weight: var(--font-weight-regular);
-  letter-spacing: var(--letter-spacing-tight);
-  line-height: var(--line-height-tight);
   text-wrap: pretty;
+  max-width: 32ch;
   pointer-events: none;
-}
-
-@media (min-width: 64rem) {
-  .testimonials-quote {
-    font-size: var(--font-size-h4);
-  }
 }
 
 .testimonials-quote.is-active {
@@ -177,7 +172,19 @@
 
 /* ── Counter + author info ──────────────────────────────── */
 
+/* Bottom row — author info on the left, counter on the right end. */
+.testimonials-bottom-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+/* Counter — meta caps. Pulls size + spacing from `.text-small` +
+   `.text-caps` utilities applied in JSX where used; here we only
+   style what's component-specific (tabular figures + colour). */
 .testimonials-counter {
+  flex-shrink: 0;
   font-size: var(--font-size-text-small);
   letter-spacing: var(--letter-spacing-caps);
   color: var(--theme-text-muted);
@@ -193,6 +200,8 @@
 .testimonials-info-stack {
   display: grid;
   grid-template-areas: "stack";
+  flex: 1;
+  min-width: 0;
 }
 
 .testimonials-info {
@@ -208,6 +217,8 @@
   opacity: 1;
 }
 
+/* `.text-main` utility owns size; component scope handles colour
+   + reset of the default <p> margin. */
 .testimonials-info__author {
   margin: 0;
   color: var(--theme-text);
@@ -256,7 +267,7 @@
   align-items: center;
   justify-content: center;
   background-color: var(--theme-bg);
-  padding-block: var(--space-2);
+  padding-block: var(--space-3);
 }
 
 @media (min-width: 64rem) {
@@ -269,8 +280,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 10rem;
-  height: 4rem;
+  width: 14rem;
+  height: 6rem;
   color: var(--theme-text);
 }
 
