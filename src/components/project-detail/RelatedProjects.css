@@ -41,11 +41,14 @@
 @media (min-width: 64rem) {
   .related-projects .projects-list__row {
     /* Down from max(14rem, 15vw) on the archive — gives a tighter
-       single-line row that still fits the smaller thumbnail. */
-    height: max(6rem, 7.5vw);
+       single-line row. Tall enough so the thumbnail clears the
+       hairline above it with breathing room. */
+    height: max(9rem, 11vw);
   }
   .related-projects .projects-list__row-inner {
-    padding-block: var(--space-1);
+    /* Generous top padding so the (bottom-aligned) thumbnail
+       doesn't crowd the previous row's bottom hairline. */
+    padding-block: var(--space-2-5) var(--space-1-5);
   }
 }
 
