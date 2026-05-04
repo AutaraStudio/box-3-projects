@@ -13,6 +13,11 @@ import {
   FEATURED_PROJECTS_QUERY,
   type FeaturedProjectItem,
 } from "@/sanity/queries/projects";
+import {
+  SITE_SETTINGS_QUERY,
+  type SiteSettingsData,
+  type SiteSettingsLink,
+} from "@/sanity/queries/siteSettings";
 import "../globals.css";
 
 /* The site uses a single typeface — Neue Montreal — across body and
@@ -31,24 +36,15 @@ const neueMontreal = localFont({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "Box 3 Projects",
-  description: "Coming soon.",
-};
+/* ─────────────────────────────────────────────────────────────────
+   Fallback content
+   ─────────────────────────────────────────────────────────────────
+   Sensible defaults used when the Site Settings document hasn't
+   been authored / published yet. Once the editor populates the
+   singleton in Sanity, the live values take over automatically. */
 
-/* Static menu content — pages, contact, social, legal stay
-   hardcoded for now; only featuredProjects flows from Sanity. */
-const STATIC_MENU = {
-  pages: [
-    { label: "Home", href: "/" },
-    { label: "About", href: "/about" },
-    { label: "Services", href: "/services" },
-    { label: "Projects", href: "/projects" },
-    { label: "Careers", href: "/careers" },
-    { label: "Sustainability", href: "/sustainability" },
-  ],
-  /* Header link split — primary column gets the editorial pages,
-     secondary column gets the supporting ones. */
+const FALLBACK = {
+  brandName: "Box 3 Projects",
   headerPrimary: [
     { label: "About", href: "/about" },
     { label: "Services", href: "/services" },
@@ -59,8 +55,6 @@ const STATIC_MENU = {
     { label: "Careers", href: "/careers" },
     { label: "Contact", href: "/contact" },
   ],
-  /* Sidebar split — three large editorial links + everything else
-     in a "More" group. */
   menuPrimary: [
     { label: "Home", href: "/" },
     { label: "About", href: "/about" },
@@ -72,42 +66,96 @@ const STATIC_MENU = {
     { label: "Sustainability", href: "/sustainability" },
     { label: "Contact", href: "/contact" },
   ],
-  contact: {
-    addressLines: ["Level 5, 55 Broadway,", "London SW1H 0BD."],
-    email: "hello@box3projects.co.uk",
-    phone: "+44 (0)20 8050 7815",
-    phoneHref: "tel:02080507815",
-  },
+  footerPages: [
+    { label: "Home", href: "/" },
+    { label: "About", href: "/about" },
+    { label: "Services", href: "/services" },
+    { label: "Projects", href: "/projects" },
+    { label: "Careers", href: "/careers" },
+    { label: "Sustainability", href: "/sustainability" },
+  ],
   social: [
     { label: "Instagram", href: "https://www.instagram.com/box3projects/" },
-    {
-      label: "LinkedIn",
-      href: "https://www.linkedin.com/company/box3-projects/",
-    },
+    { label: "LinkedIn", href: "https://www.linkedin.com/company/box3-projects/" },
   ],
   legal: [
     { label: "Privacy Policy", href: "/privacy-policy" },
     { label: "Terms & Conditions", href: "/terms-and-conditions" },
   ],
+  addressLines: ["Level 5, 55 Broadway,", "London SW1H 0BD."],
+  email: "hello@box3projects.co.uk",
+  phone: "+44 (0)20 8050 7815",
+  phoneHref: "tel:02080507815",
+} as const;
+
+export const metadata: Metadata = {
+  title: FALLBACK.brandName,
+  description: "Coming soon.",
 };
+
+/* Coerce a Sanity link array (which may be null / undefined / partial)
+   into a non-empty list of `{ label, href }`. Drops malformed entries
+   (no label or href) so a half-authored doc can't break the nav. */
+function coerceLinks(
+  fromCms: SiteSettingsLink[] | undefined,
+  fallback: ReadonlyArray<{ label: string; href: string }>,
+): Array<{ label: string; href: string }> {
+  const cleaned = (fromCms ?? [])
+    .filter((l): l is SiteSettingsLink => !!l && !!l.label && !!l.href)
+    .map(({ label, href }) => ({ label, href }));
+  return cleaned.length > 0 ? cleaned : Array.from(fallback);
+}
 
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  /* Pull the projects flagged `featured == true` from Sanity. The
-     site-wide menu and the footer's "Featured Projects" column
-     both consume this list; toggling the field on a project
-     document adds or removes it from both surfaces. */
-  const featuredFromCms = await sanityFetch<FeaturedProjectItem[]>({
-    query: FEATURED_PROJECTS_QUERY,
-  });
+  const [featuredFromCms, settings] = await Promise.all([
+    sanityFetch<FeaturedProjectItem[]>({
+      query: FEATURED_PROJECTS_QUERY,
+    }),
+    sanityFetch<SiteSettingsData | null>({
+      query: SITE_SETTINGS_QUERY,
+    }),
+  ]);
+
   const featuredProjects = featuredFromCms.map((p) => ({
     title: p.title,
     href: `/projects/${p.slug}`,
     category: p.categoryTitle,
   }));
+
+  /* Resolve every editable surface — fall back to the FALLBACK
+     defaults whenever the Sanity field is empty so the site keeps
+     rendering during initial setup. */
+  const brand = settings?.brandName?.trim() || FALLBACK.brandName;
+  const headerPrimary = coerceLinks(
+    settings?.headerPrimaryLinks,
+    FALLBACK.headerPrimary,
+  );
+  const headerSecondary = coerceLinks(
+    settings?.headerSecondaryLinks,
+    FALLBACK.headerSecondary,
+  );
+  const menuPrimary = coerceLinks(
+    settings?.menuPrimaryLinks,
+    FALLBACK.menuPrimary,
+  );
+  const menuMore = coerceLinks(settings?.menuMoreLinks, FALLBACK.menuMore);
+  const footerPages = coerceLinks(settings?.footerPages, FALLBACK.footerPages);
+  const footerSocial = coerceLinks(settings?.footerSocial, FALLBACK.social);
+  const footerLegal = coerceLinks(settings?.footerLegal, FALLBACK.legal);
+
+  const contact = {
+    addressLines:
+      settings?.addressLines && settings.addressLines.length > 0
+        ? settings.addressLines
+        : Array.from(FALLBACK.addressLines),
+    email: settings?.email || FALLBACK.email,
+    phone: settings?.phone || FALLBACK.phone,
+    phoneHref: settings?.phoneHref || FALLBACK.phoneHref,
+  };
 
   return (
     <html
@@ -116,9 +164,7 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       {/* Google Analytics (GA4) — loaded with `afterInteractive`
-          so it doesn't block first paint. Mounted on the (site)
-          group layout, not the (studio) one, so the CMS admin
-          isn't tracked. */}
+          so it doesn't block first paint. */}
       <Script
         src="https://www.googletagmanager.com/gtag/js?id=G-5VFLZ1919K"
         strategy="afterInteractive"
@@ -136,22 +182,23 @@ export default async function RootLayout({
           <PageTransitionProvider>
             <MenuProvider>
               <Header
-                brand="Box 3 Projects"
-                primaryLinks={STATIC_MENU.headerPrimary}
-                secondaryLinks={STATIC_MENU.headerSecondary}
+                brand={brand}
+                primaryLinks={headerPrimary}
+                secondaryLinks={headerSecondary}
               />
               {children}
               <Footer
-                pages={STATIC_MENU.pages}
+                pages={footerPages}
                 featuredProjects={featuredProjects}
-                contact={STATIC_MENU.contact}
-                social={STATIC_MENU.social}
-                legal={STATIC_MENU.legal}
+                contact={contact}
+                social={footerSocial}
+                legal={footerLegal}
+                brand={brand}
               />
               <MenuOverlay
-                primaryLinks={STATIC_MENU.menuPrimary}
-                moreLinks={STATIC_MENU.menuMore}
-                contact={STATIC_MENU.contact}
+                primaryLinks={menuPrimary}
+                moreLinks={menuMore}
+                contact={contact}
               />
               <PageTransitionOverlay />
             </MenuProvider>

@@ -21,6 +21,7 @@ import type { StructureResolver } from "sanity/structure";
 
 /** Document types that should appear as singletons (one-per-site). */
 export const SINGLETON_TYPES = [
+  "siteSettings",
   "partnersSection",
   "careersPage",
   "sustainabilityPage",
@@ -51,6 +52,24 @@ export const structure: StructureResolver = (S) =>
   S.list()
     .title("Content")
     .items([
+      /* ── Site Settings ────────────────────────────────────────
+         Global content (header / footer / contact info / brand)
+         used everywhere on the site. Pinned to the top so it's
+         the first thing the editor sees — most maintenance
+         touches (a phone number change, a new social link) start
+         here. */
+      S.listItem()
+        .title("Site Settings")
+        .id("siteSettings")
+        .child(
+          S.document()
+            .schemaType("siteSettings")
+            .documentId("siteSettings")
+            .title("Site Settings"),
+        ),
+
+      S.divider(),
+
       /* ── Pages ────────────────────────────────────────────────
          Singleton documents that drive a top-level page. Each
          opens straight into its document — no list view. */

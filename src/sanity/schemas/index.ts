@@ -28,7 +28,21 @@ import partnersSection from "./sections/partnersSection";
 import careersPage from "./pages/careersPage";
 import sustainabilityPage from "./pages/sustainabilityPage";
 
+import link from "./objects/link";
+import siteSettings from "./singletons/siteSettings";
+
 export const schemaTypes: SchemaTypeDefinition[] = [
+  /* Reusable objects */
+  link,
+  /* Singletons (one-per-site) */
+  siteSettings,
+  /* Pages (one-per-route) */
+  careersPage,
+  sustainabilityPage,
+  /* Reusable sections */
+  testimonialsSection,
+  partnersSection,
+  /* Collections */
   project,
   projectCategory,
   teamMember,
@@ -36,8 +50,4 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   testimonial,
   partner,
   vacancy,
-  testimonialsSection,
-  partnersSection,
-  careersPage,
-  sustainabilityPage,
 ];
