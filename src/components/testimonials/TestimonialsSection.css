@@ -88,6 +88,38 @@
   }
 }
 
+/* Single-variant layout — centred editorial single testimonial.
+   Logo top-centre, big quote, author/role centred below. No
+   sidebar, no controls. Used on project detail pages. */
+.testimonials-section[data-variant="single"] .testimonials-grid {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  text-align: center;
+  row-gap: var(--space-3);
+}
+
+@media (min-width: 64rem) {
+  .testimonials-section[data-variant="single"] .testimonials-grid {
+    grid-template-columns: 1fr;
+    row-gap: var(--space-4);
+    padding-block: var(--space-9);
+  }
+}
+
+.testimonials-single-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: var(--space-2);
+}
+
+@media (min-width: 64rem) {
+  .testimonials-single-logo {
+    margin-bottom: var(--space-3);
+  }
+}
+
 /* ── Quote block ────────────────────────────────────────── */
 
 .testimonials-quote-block {
@@ -104,6 +136,40 @@
     padding-block: var(--space-4);
     gap: var(--space-7);
   }
+}
+
+/* Single variant — quote takes the full width, sits centred,
+   capped to a comfortable measure. */
+.testimonials-section[data-variant="single"] .testimonials-quote-block {
+  grid-column: 1;
+  grid-row: auto;
+  align-items: center;
+  text-align: center;
+  max-width: 50rem;
+  width: 100%;
+  padding-block: 0;
+  gap: var(--space-4);
+}
+
+/* Single-variant author row — centred, no counter alongside it. */
+.testimonials-section[data-variant="single"] .testimonials-bottom-row {
+  justify-content: center;
+}
+
+.testimonials-section[data-variant="single"] .testimonials-info-stack {
+  flex: initial;
+  text-align: center;
+}
+
+.testimonials-section[data-variant="single"] .testimonials-info {
+  align-items: center;
+}
+
+/* Single variant doesn't cycle, so the counter has nothing
+   meaningful to show — hide it even if the editor has assigned
+   more than one testimonial to a single-variant section. */
+.testimonials-section[data-variant="single"] .testimonials-counter {
+  display: none;
 }
 
 /* Stack — quotes layered absolutely; only the active one is

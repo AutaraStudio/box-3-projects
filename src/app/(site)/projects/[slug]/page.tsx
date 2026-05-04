@@ -125,6 +125,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           reference={testimonials.reference}
           testimonials={testimonials.testimonials}
           theme="cream"
+          variant="single"
         />
       ) : null}
       <RelatedProjects projects={related} />

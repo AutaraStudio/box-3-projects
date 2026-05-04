@@ -41,6 +41,18 @@ interface TestimonialsSectionProps {
   testimonials: ResolvedTestimonial[];
   /** Theme applied to the section. Defaults to "pink". */
   theme?: string;
+  /** Layout variant.
+   *
+   *   "slider" (default) — sidebar with logo + prev/next controls
+   *                        on the left, quote stack on the right.
+   *                        Used on the home page where multiple
+   *                        testimonials cycle.
+   *
+   *   "single"           — centred editorial single-testimonial
+   *                        layout. No sidebar, no controls. Used
+   *                        on project detail pages where each
+   *                        project has at most one testimonial. */
+  variant?: "slider" | "single";
 }
 
 function pad2(n: number): string {
@@ -69,6 +81,7 @@ export default function TestimonialsSection({
   reference,
   testimonials,
   theme = "pink",
+  variant = "slider",
 }: TestimonialsSectionProps) {
   const stackRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -171,6 +184,7 @@ export default function TestimonialsSection({
     <section
       className="testimonials-section"
       data-theme={theme}
+      data-variant={variant}
       aria-label={sectionLabel}
     >
       <div className="container">
@@ -191,6 +205,22 @@ export default function TestimonialsSection({
 
       <div className="container">
         <div className="testimonials-grid">
+          {/* Single-variant: partner logo above the quote (no
+              sidebar). Renders only the active testimonial's
+              partner logo since this layout never cycles. */}
+          {variant === "single" && current?.partner?.svgContent ? (
+            <div className="testimonials-single-logo">
+              <span
+                className="testimonials-logo"
+                aria-label={current.partner.name}
+                role="img"
+                dangerouslySetInnerHTML={{
+                  __html: current.partner.svgContent,
+                }}
+              />
+            </div>
+          ) : null}
+
           {/* Quote block */}
           <div className="testimonials-quote-block">
             <div ref={stackRef} className="testimonials-stack">
@@ -265,7 +295,11 @@ export default function TestimonialsSection({
             </div>
           </div>
 
-          {/* Sidebar — logo + controls. */}
+          {/* Sidebar — logo + controls. Slider variant only;
+              the single-variant layout above renders the logo
+              inline above the quote and hides the sidebar
+              entirely (no controls needed for one testimonial). */}
+          {variant === "slider" ? (
           <div className="testimonials-sidebar">
             <div className="testimonials-logo-wrap">
               {current?.partner?.svgContent ? (
@@ -317,6 +351,7 @@ export default function TestimonialsSection({
               </div>
             ) : null}
           </div>
+          ) : null}
         </div>
       </div>
 
