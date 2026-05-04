@@ -205,22 +205,6 @@ export default function TestimonialsSection({
 
       <div className="container">
         <div className="testimonials-grid">
-          {/* Single-variant: partner logo above the quote (no
-              sidebar). Renders only the active testimonial's
-              partner logo since this layout never cycles. */}
-          {variant === "single" && current?.partner?.svgContent ? (
-            <div className="testimonials-single-logo">
-              <span
-                className="testimonials-logo"
-                aria-label={current.partner.name}
-                role="img"
-                dangerouslySetInnerHTML={{
-                  __html: current.partner.svgContent,
-                }}
-              />
-            </div>
-          ) : null}
-
           {/* Quote block */}
           <div className="testimonials-quote-block">
             <div ref={stackRef} className="testimonials-stack">
@@ -295,11 +279,10 @@ export default function TestimonialsSection({
             </div>
           </div>
 
-          {/* Sidebar — logo + controls. Slider variant only;
-              the single-variant layout above renders the logo
-              inline above the quote and hides the sidebar
-              entirely (no controls needed for one testimonial). */}
-          {variant === "slider" ? (
+          {/* Sidebar — logo + controls. Same layout in both
+              variants; the single variant just hides the controls
+              + counter via CSS so a project page sees a quiet
+              logo column with no nav. */}
           <div className="testimonials-sidebar">
             <div className="testimonials-logo-wrap">
               {current?.partner?.svgContent ? (
@@ -351,7 +334,6 @@ export default function TestimonialsSection({
               </div>
             ) : null}
           </div>
-          ) : null}
         </div>
       </div>
 
