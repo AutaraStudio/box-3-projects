@@ -4,29 +4,30 @@
  * TestimonialsSection
  * ===================
  * Editorial testimonials block. Section label + reference code
- * across the top, then a two-column grid: quote + counter +
- * author/role on the left; partner logo + prev/next controls on
- * the right (sidebar).
+ * across the top, then a two-column grid: sidebar (logo + prev/next
+ * controls) on the left straddling a vertical rule; quote + counter
+ * + author/role on the right.
  *
- * Quote reveal: each quote is a separate block stacked absolutely
- * on top of each other; only the active one is visible (opacity 1).
- * The active quote uses `<SplitText asWords>` so its words animate
- * up out of overflow:hidden masks on a per-quote crossfade.
+ * Quote reveal: each quote sits in the same grid cell. After the
+ * browser has laid them out (and the editorial font has loaded),
+ * we group each quote's word spans by their rendered `offsetTop`
+ * and wrap each group in a mask + line span. CSS transitions then
+ * slide each line up from translateY(100%) to 0 (with a per-line
+ * stagger via `--line-index`) when the quote becomes active —
+ * giving a true line-by-line reveal rather than a uniform fade.
  *
- * Prev/next: each button has a circular bg that scales 0 → 1 on
- * hover and a duplicate arrow that slides in from the matching
- * edge — direction flips for prev vs. next, axis flips at the
- * desktop breakpoint (vertical desktop, horizontal mobile).
+ * Prev/next: each button has a circular bg that scales 0 → 1 from
+ * the matching edge on hover and a duplicate arrow that slides in
+ * from the same edge. Direction flips for prev vs. next; axis
+ * flips at the desktop breakpoint (vertical on desktop, horizontal
+ * on mobile).
  *
  * SVG partner logos are inlined as sanitised markup server-side
- * (see fetchTestimonials) so they inherit `currentColor` from the
- * active theme.
+ * (see fetchTestimonials) so they inherit `currentColor`.
  */
 
 import { useEffect, useRef, useState } from "react";
-import { gsap } from "gsap";
 
-import SplitText from "@/components/split-text/SplitText";
 import type { ResolvedTestimonial } from "@/sanity/queries/testimonialsSection";
 
 import "./TestimonialsSection.css";
@@ -63,88 +64,13 @@ function ArrowIcon() {
   );
 }
 
-/* Wires the prev/next button hover — bg scales 0→1, a duplicate
-   arrow slides in from the edge that matches the prev/next side. */
-function wireArrowHover(btn: HTMLButtonElement): () => void {
-  const bg = btn.querySelector<HTMLElement>(".testimonials-btn__bg");
-  const arrowHover = btn.querySelector<HTMLElement>(
-    ".testimonials-btn__arrow-hover",
-  );
-  if (!bg || !arrowHover) return () => {};
-
-  const isPrev = btn.classList.contains("is-prev");
-  const isLg = () => window.innerWidth >= 1024;
-
-  const initOffset = () =>
-    isLg()
-      ? { yPercent: isPrev ? 100 : -100, xPercent: 0 }
-      : { xPercent: isPrev ? 100 : -100, yPercent: 0 };
-  const leaveOffset = () =>
-    isLg()
-      ? { yPercent: isPrev ? -100 : 100 }
-      : { xPercent: isPrev ? -100 : 100 };
-  const origins = () => {
-    const lg = isLg();
-    return {
-      enter: lg
-        ? isPrev
-          ? "bottom center"
-          : "top center"
-        : isPrev
-          ? "right center"
-          : "left center",
-      leave: lg
-        ? isPrev
-          ? "top center"
-          : "bottom center"
-        : isPrev
-          ? "left center"
-          : "right center",
-    };
-  };
-
-  gsap.set(bg, { scale: 0 });
-  gsap.set(arrowHover, initOffset());
-
-  let enterTl: gsap.core.Timeline | null = null;
-  let leaveTl: gsap.core.Timeline | null = null;
-
-  const onEnter = () => {
-    leaveTl?.kill();
-    const o = origins();
-    gsap.set([bg, arrowHover], { transformOrigin: o.enter });
-    gsap.set(arrowHover, initOffset());
-    enterTl = gsap
-      .timeline({ defaults: { ease: "expo.out", duration: 0.45 } })
-      .to(bg, { scale: 1 })
-      .to(arrowHover, { xPercent: 0, yPercent: 0 }, 0.05);
-  };
-  const onLeave = () => {
-    enterTl?.kill();
-    const o = origins();
-    gsap.set([bg, arrowHover], { transformOrigin: o.leave });
-    leaveTl = gsap
-      .timeline({ defaults: { ease: "expo.out", duration: 0.45 } })
-      .to(bg, { scale: 0 })
-      .to(arrowHover, leaveOffset(), 0);
-  };
-
-  btn.addEventListener("mouseenter", onEnter);
-  btn.addEventListener("mouseleave", onLeave);
-  return () => {
-    btn.removeEventListener("mouseenter", onEnter);
-    btn.removeEventListener("mouseleave", onLeave);
-  };
-}
-
 export default function TestimonialsSection({
   sectionLabel = "Testimonials",
   reference,
   testimonials,
   theme = "pink",
 }: TestimonialsSectionProps) {
-  const prevBtnRef = useRef<HTMLButtonElement>(null);
-  const nextBtnRef = useRef<HTMLButtonElement>(null);
+  const stackRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const total = testimonials.length;
@@ -155,13 +81,89 @@ export default function TestimonialsSection({
     setCurrentIndex((i) => (i - 1 + total) % total);
   const goNext = () => setCurrentIndex((i) => (i + 1) % total);
 
-  /* Wire arrow hover on mount. */
+  /* After mount: group each quote's word spans by their rendered
+     offsetTop and wrap each line in a mask + inner pair so CSS
+     can slide each line independently. Re-runs on resize so wrap
+     points stay accurate when the viewport changes. Defers until
+     `document.fonts.ready` so a late-loading font reflow doesn't
+     leave the line groups computed against the fallback metrics. */
   useEffect(() => {
-    const cleanups: Array<() => void> = [];
-    if (prevBtnRef.current) cleanups.push(wireArrowHover(prevBtnRef.current));
-    if (nextBtnRef.current) cleanups.push(wireArrowHover(nextBtnRef.current));
-    return () => cleanups.forEach((c) => c());
-  }, [hasMultiple]);
+    const stack = stackRef.current;
+    if (!stack) return;
+
+    let cancelled = false;
+    let timer: number | null = null;
+
+    const buildLines = () => {
+      if (cancelled) return;
+      const quotes = stack.querySelectorAll<HTMLElement>(
+        "[data-testimonial-quote]",
+      );
+      quotes.forEach((quote) => {
+        /* If we've already wrapped, restore the original word-span
+           tree so re-layout starts clean. */
+        const original = quote.getAttribute("data-original-html");
+        if (original !== null) quote.innerHTML = original;
+        else quote.setAttribute("data-original-html", quote.innerHTML);
+
+        const words = Array.from(
+          quote.querySelectorAll<HTMLElement>("[data-word]"),
+        );
+        if (words.length === 0) return;
+
+        /* Group spans by their rendered offsetTop. Within ~3px is
+           still considered the same line — guards against sub-pixel
+           drift on font swaps. */
+        const groups: HTMLElement[][] = [];
+        let lastTop: number | null = null;
+        words.forEach((w) => {
+          const top = w.offsetTop;
+          if (lastTop === null || Math.abs(top - lastTop) > 3) {
+            groups.push([w]);
+            lastTop = top;
+          } else {
+            groups[groups.length - 1].push(w);
+          }
+        });
+
+        /* Replace the quote's children with line-mask wrappers. */
+        const frag = document.createDocumentFragment();
+        groups.forEach((group, lineIndex) => {
+          const mask = document.createElement("span");
+          mask.className = "testimonials-line-mask";
+          const split = document.createElement("span");
+          split.className = "testimonials-line-split";
+          split.style.setProperty("--line-index", String(lineIndex));
+          group.forEach((w) => split.appendChild(w));
+          mask.appendChild(split);
+          frag.appendChild(mask);
+        });
+        quote.innerHTML = "";
+        quote.appendChild(frag);
+      });
+    };
+
+    const run = () => {
+      if (typeof document.fonts?.ready?.then === "function") {
+        document.fonts.ready.then(buildLines);
+      } else {
+        buildLines();
+      }
+    };
+
+    run();
+    const onResize = () => {
+      if (timer) window.clearTimeout(timer);
+      timer = window.setTimeout(run, 200);
+    };
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      cancelled = true;
+      if (timer) window.clearTimeout(timer);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [testimonials]);
 
   if (testimonials.length === 0) return null;
 
@@ -191,27 +193,37 @@ export default function TestimonialsSection({
         <div className="testimonials-grid">
           {/* Quote block */}
           <div className="testimonials-quote-block">
-            <div className="testimonials-stack">
-              {testimonials.map((t, i) => (
-                <blockquote
-                  key={t._id}
-                  className={`testimonials-quote${
-                    i === currentIndex ? " is-active" : ""
-                  }`}
-                  aria-label={t.quote}
-                  aria-hidden={i !== currentIndex}
-                >
-                  {/* SplitText with revealOnScroll on the first
-                      paint; subsequent crossfades use the fade we
-                      apply via .is-active. Each quote keeps its own
-                      SplitText instance, keyed by id, so on quote
-                      change React unmounts the old and mounts the
-                      new. */}
-                  <SplitText asWords revealOnScroll>
-                    {t.quote}
-                  </SplitText>
-                </blockquote>
-              ))}
+            <div ref={stackRef} className="testimonials-stack">
+              {testimonials.map((t, i) => {
+                /* Split into words and bake the trailing space INTO
+                   each span so when the line-grouping pass moves
+                   the spans into a new parent the whitespace
+                   travels with them — preserves the visible spacing
+                   between words on the rendered line. */
+                const words = t.quote.trim().split(/\s+/);
+                return (
+                  <blockquote
+                    key={t._id}
+                    className={`testimonials-quote${
+                      i === currentIndex ? " is-active" : ""
+                    }`}
+                    data-testimonial-quote
+                    aria-label={t.quote}
+                    aria-hidden={i !== currentIndex}
+                  >
+                    {words.map((word, wi) => (
+                      <span
+                        key={wi}
+                        className="testimonials-word"
+                        data-word
+                      >
+                        {word}
+                        {wi < words.length - 1 ? " " : ""}
+                      </span>
+                    ))}
+                  </blockquote>
+                );
+              })}
             </div>
 
             {hasMultiple ? (
@@ -267,7 +279,6 @@ export default function TestimonialsSection({
             {hasMultiple ? (
               <div className="testimonials-controls">
                 <button
-                  ref={prevBtnRef}
                   className="testimonials-btn is-prev"
                   type="button"
                   aria-label="Previous testimonial"
@@ -283,7 +294,6 @@ export default function TestimonialsSection({
                   </span>
                 </button>
                 <button
-                  ref={nextBtnRef}
                   className="testimonials-btn"
                   type="button"
                   aria-label="Next testimonial"

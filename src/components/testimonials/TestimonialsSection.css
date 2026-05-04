@@ -1,30 +1,41 @@
 /**
  * TestimonialsSection
  * ===================
- * Editorial label row + full-bleed divider + two-column grid:
+ * Editorial slider with a sidebar that straddles a vertical rule:
  *
- *   ┌───────────────────────────────────────────────────────────┐
- *   │  Testimonials                                  [BOX3.1]   │
- *   ├───────────────────────────────────────────────────────────┤
- *   │  "The big quote runs across the left of the grid…"        │
- *   │  01/04                                                    │
- *   │  Author, Title                                            │
- *   │  Partner Name                          ┌───────┐          │
- *   │                                        │ Logo  │          │
- *   │                                        └───────┘          │
- *   │                                          ←   →            │
- *   ├───────────────────────────────────────────────────────────┤
+ *   Desktop (≥64rem):
+ *     ┌─ Testimonials ────────────────────── [BOX3.1] ──┐
+ *     │                                                  │
+ *     │       │  ┌─────┐                                 │
+ *     │       │  │Logo │   "The big quote runs across     │
+ *     │       │  └─────┘    the right of the grid…"       │
+ *     │       │                                            │
+ *     │       │   ↑                                        │
+ *     │       │   ↓        01/04                          │
+ *     │       │            Author, Title                  │
+ *     │       │            Partner Name                   │
+ *     │       │                                           │
+ *     └────────────────────────────────────────────────────┘
+ *
+ *   The vertical rule on the left of the sidebar runs the full
+ *   height of the grid; the logo and the prev/next controls each
+ *   carry a section-bg fill so they read as floating ON the line
+ *   rather than next to it.
+ *
+ *   Mobile: sidebar drops below the quote as a horizontal row.
  */
 
 .testimonials-section {
   background-color: var(--theme-bg);
   color: var(--theme-text);
-  padding-block: var(--space-7);
+  padding-top: var(--space-7);
+  padding-bottom: var(--space-7);
 }
 
 @media (min-width: 64rem) {
   .testimonials-section {
-    padding-block: var(--space-10);
+    padding-top: var(--space-10);
+    padding-bottom: var(--space-10);
   }
 }
 
@@ -32,8 +43,8 @@
 
 .testimonials-label-row {
   display: flex;
-  align-items: baseline;
   justify-content: space-between;
+  align-items: baseline;
   gap: var(--space-2);
   padding-bottom: var(--space-3);
 }
@@ -54,85 +65,119 @@
 
 .testimonials-section__divider {
   border: 0;
-  border-top: 1px solid var(--theme-border-strong);
+  border-top: 1px solid var(--theme-text);
+  opacity: 0.3;
   margin: 0;
 }
 
-/* ── Grid ───────────────────────────────────────────────── */
+/* ── Main grid ──────────────────────────────────────────── */
 
 .testimonials-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-3);
-  padding-block: var(--space-4);
+  column-gap: var(--space-3);
+  row-gap: var(--space-4);
+  padding-block: var(--space-5);
 }
 
 @media (min-width: 64rem) {
   .testimonials-grid {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: var(--space-6);
-    padding-block: var(--space-6);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--space-4);
+    padding-block: var(--space-7);
   }
 }
 
 /* ── Quote block ────────────────────────────────────────── */
 
 .testimonials-quote-block {
+  grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  min-height: 18rem;
 }
 
 @media (min-width: 64rem) {
   .testimonials-quote-block {
-    gap: var(--space-4);
-    min-height: 22rem;
+    grid-column: 5 / -1;
+    grid-row: 1;
+    padding-block: var(--space-3);
+    gap: var(--space-5);
   }
 }
 
-/* Stack — quotes layered absolutely over each other; only the
-   active one is opacity 1. */
+/* Stack — quotes layered absolutely; only the active one is
+   opacity 1. Wraps `display: grid` so the parent reserves the
+   tallest quote's height (no layout jump on swap). */
 .testimonials-stack {
-  position: relative;
+  display: grid;
+  grid-template-areas: "stack";
 }
 
 .testimonials-quote {
+  grid-area: stack;
   margin: 0;
-  font-size: var(--font-size-h4);
+  font-size: var(--font-size-h5);
   font-weight: var(--font-weight-regular);
   letter-spacing: var(--letter-spacing-tight);
-  line-height: var(--line-height-snug);
+  line-height: var(--line-height-tight);
   text-wrap: pretty;
-  max-width: 32ch;
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity 500ms cubic-bezier(0.65, 0, 0.35, 1);
   pointer-events: none;
 }
 
 @media (min-width: 64rem) {
   .testimonials-quote {
-    font-size: var(--font-size-h3);
+    font-size: var(--font-size-h4);
   }
 }
 
-/* First quote takes layout flow (absolute siblings stack on top)
-   so the parent reserves height. */
-.testimonials-quote:first-child {
-  position: relative;
+.testimonials-quote.is-active {
+  pointer-events: auto;
 }
 
-.testimonials-quote.is-active {
+/* ── Per-line reveal ────────────────────────────────────── */
+
+/* Each line wrapped in a mask after layout. The mask clips, the
+   inner span translates. Generous vertical padding/negative-margin
+   so descenders + ascenders don't get clipped at the large display
+   size. */
+.testimonials-line-mask {
+  display: block;
+  overflow: clip;
+  position: relative;
+  margin-bottom: -0.15em;
+  padding-bottom: 0.15em;
+}
+
+.testimonials-line-split {
+  display: block;
+  position: relative;
+  /* Stagger via --line-index set inline by the line-grouping pass.
+     Each subsequent line waits an extra 70ms before starting. */
+  transition:
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 500ms cubic-bezier(0.16, 1, 0.3, 1);
+  /* Inactive default — line sits below its mask, opacity 0. */
+  transform: translateY(100%);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* Active quote — each line slides up to translateY(0) with a
+   per-line stagger driven by --line-index. */
+.testimonials-quote.is-active .testimonials-line-split {
+  transform: translateY(0);
   opacity: 1;
-  pointer-events: auto;
+  transition-delay: calc(var(--line-index, 0) * 70ms);
+}
+
+.testimonials-word {
+  display: inline;
 }
 
 /* ── Counter + author info ──────────────────────────────── */
 
 .testimonials-counter {
-  font-family: inherit;
   font-size: var(--font-size-text-small);
   letter-spacing: var(--letter-spacing-caps);
   color: var(--theme-text-muted);
@@ -146,22 +191,17 @@
 }
 
 .testimonials-info-stack {
-  position: relative;
-  min-height: 3rem;
+  display: grid;
+  grid-template-areas: "stack";
 }
 
 .testimonials-info {
-  position: absolute;
-  inset: 0;
+  grid-area: stack;
   display: flex;
   flex-direction: column;
   gap: var(--space-0-25);
   opacity: 0;
   transition: opacity 500ms cubic-bezier(0.65, 0, 0.35, 1);
-}
-
-.testimonials-info:first-child {
-  position: relative;
 }
 
 .testimonials-info.is-active {
@@ -180,120 +220,226 @@
 
 /* ── Sidebar (logo + controls) ──────────────────────────── */
 
+/* Mobile — sidebar sits beneath the quote as a horizontal row. */
 .testimonials-sidebar {
+  grid-column: 1 / -1;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-3);
+  justify-content: space-between;
+  align-items: center;
   border-top: 1px solid var(--theme-border);
   padding-top: var(--space-3);
 }
 
 @media (min-width: 64rem) {
+  /* Desktop — sidebar moves into cols 3-4 with a vertical rule on
+     its left edge. Inner children are translated -50% so the logo
+     and controls sit centred on the rule. */
   .testimonials-sidebar {
-    align-items: center;
+    grid-column: 3 / span 2;
+    grid-row: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-block: var(--space-3);
     padding-top: 0;
-    padding-left: var(--space-4);
     border-top: 0;
-    border-left: 1px solid var(--theme-border-strong);
-    width: 14rem;
+    border-left: 1px solid var(--theme-text);
+    justify-content: space-between;
   }
 }
 
+/* Logo wrap — section-bg fill so the vertical rule reads as
+   interrupted behind the logo on desktop. Vertical padding widens
+   that interruption so the logo floats on the rule. */
 .testimonials-logo-wrap {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 6rem;
+  background-color: var(--theme-bg);
+  padding-block: var(--space-2);
+}
+
+@media (min-width: 64rem) {
+  .testimonials-logo-wrap {
+    transform: translateX(-50%);
+  }
 }
 
 .testimonials-logo {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
+  width: 10rem;
+  height: 4rem;
   color: var(--theme-text);
-  width: 100%;
-  height: 100%;
-  /* Inlined SVG inherits currentColor. Cap the inner size. */
 }
 
 .testimonials-logo svg {
-  display: block;
-  max-width: 8rem;
-  max-height: 4rem;
-  width: auto;
+  width: 100%;
   height: auto;
+  max-height: 100%;
+  display: block;
   fill: currentColor;
 }
 
-/* ── Controls (prev / next) ─────────────────────────────── */
-
+/* Controls — same section-bg backing trick on desktop so the
+   vertical rule is hidden behind the buttons. */
 .testimonials-controls {
   display: flex;
   gap: var(--space-1);
+  position: relative;
+  background-color: var(--theme-bg);
+  padding-block: var(--space-2);
 }
 
 @media (min-width: 64rem) {
   .testimonials-controls {
     flex-direction: column;
-    gap: var(--space-0-75);
+    gap: var(--space-1-25);
+    transform: translateX(-50%);
   }
 }
+
+/* ── Arrow buttons ──────────────────────────────────────── */
 
 .testimonials-btn {
   position: relative;
   overflow: hidden;
-  width: 3rem;
-  height: 3rem;
+  width: 3.5rem;
+  height: 3.5rem;
   border-radius: 50%;
-  border: 1px solid var(--theme-border-strong);
+  border: 1px solid var(--theme-text);
   background-color: transparent;
   color: var(--theme-text);
   cursor: pointer;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
   isolation: isolate;
+  font: inherit;
+  padding: 0;
 }
 
-.testimonials-btn.is-prev {
+/* On mobile the previous arrow flips to point left; on desktop
+   both arrows are rotated 90° so they read as up / down. */
+.testimonials-btn.is-prev .testimonials-btn__arrow {
   transform: scaleX(-1);
+}
+
+@media (min-width: 64rem) {
+  .testimonials-btn__arrow {
+    transform: rotate(90deg);
+  }
+  .testimonials-btn.is-prev .testimonials-btn__arrow {
+    transform: rotate(90deg) scaleX(-1);
+  }
 }
 
 .testimonials-btn__arrow {
   position: relative;
-  z-index: 1;
+  z-index: 0;
   width: 1.25rem;
   height: 0.5625rem;
+  display: block;
+  color: inherit;
 }
 
-/* Hover bg — circle scales 0 → 1 from a flipping origin. */
+/* Hover bg — circle scales 0 → 1 from the matching edge so the
+   wash reads as growing FROM the same side the arrow slides in
+   from. CSS transitions for reliability (GSAP timelines were
+   intermittently stalling on these elements). */
 .testimonials-btn__bg {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
   background-color: var(--theme-text);
   border-radius: 50%;
-  z-index: 0;
   transform: scale(0);
+  z-index: 0;
+  transition: transform 450ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Mobile — bg grows from the matching edge: prev from right, next
+   from left. */
+.testimonials-btn:not(.is-prev) .testimonials-btn__bg {
+  transform-origin: left center;
+}
+.testimonials-btn.is-prev .testimonials-btn__bg {
+  transform-origin: right center;
+}
+
+/* Desktop — vertical layout: prev grows from bottom, next from
+   top so the wash matches the arrow direction. */
+@media (min-width: 64rem) {
+  .testimonials-btn:not(.is-prev) .testimonials-btn__bg {
+    transform-origin: top center;
+  }
+  .testimonials-btn.is-prev .testimonials-btn__bg {
+    transform-origin: bottom center;
+  }
+}
+
+.testimonials-btn:hover .testimonials-btn__bg {
+  transform: scale(1);
 }
 
 /* Duplicate arrow that slides in from the matching edge while the
-   bg scales in. Uses theme-bg so the icon reads against the filled
-   circle. */
+   bg scales in. theme-bg colour so it reads against the filled
+   circle. Off-position by default, slides to 0 on hover via CSS. */
 .testimonials-btn__arrow-hover {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2;
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
   color: var(--theme-bg);
   pointer-events: none;
+  transition: transform 450ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.testimonials-btn__arrow-hover svg {
-  width: 1.25rem;
-  height: 0.5625rem;
+/* Mobile default off-positions — prev sits offscreen-right, next
+   offscreen-left, so each slides in from its own edge. */
+.testimonials-btn:not(.is-prev) .testimonials-btn__arrow-hover {
+  transform: translateX(-100%);
+}
+.testimonials-btn.is-prev .testimonials-btn__arrow-hover {
+  transform: translateX(100%);
+}
+
+/* Desktop default off-positions — vertical layout: prev sits below,
+   next sits above, so each slides in along its arrow's axis. */
+@media (min-width: 64rem) {
+  .testimonials-btn:not(.is-prev) .testimonials-btn__arrow-hover {
+    transform: translateY(-100%);
+  }
+  .testimonials-btn.is-prev .testimonials-btn__arrow-hover {
+    transform: translateY(100%);
+  }
+}
+
+.testimonials-btn:hover .testimonials-btn__arrow-hover {
+  transform: translate(0, 0);
+}
+
+/* Inner arrow icon orientation flips for prev / next + rotates 90°
+   on desktop to match the vertical sidebar. Wrapped in
+   :where() so the specificity stays low — GSAP can still
+   override via inline styles if needed. */
+.testimonials-btn.is-prev .testimonials-btn__arrow-hover .testimonials-btn__arrow {
+  transform: scaleX(-1);
+}
+
+@media (min-width: 64rem) {
+  .testimonials-btn.is-prev .testimonials-btn__arrow-hover .testimonials-btn__arrow {
+    transform: rotate(90deg) scaleX(-1);
+  }
+  .testimonials-btn:not(.is-prev) .testimonials-btn__arrow-hover .testimonials-btn__arrow {
+    transform: rotate(90deg);
+  }
 }
