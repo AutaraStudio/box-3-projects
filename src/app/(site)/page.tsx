@@ -15,6 +15,7 @@ import HomeStatement from "@/components/home/HomeStatement";
 import HomeFeaturedProjects from "@/components/home/HomeFeaturedProjects";
 import HomeCTA from "@/components/home/HomeCTA";
 import HomeComingSoon from "@/components/home/HomeComingSoon";
+import HomeLoader from "@/components/home/HomeLoader";
 import EditorialImageBlock from "@/components/ui/EditorialImageBlock";
 import ServicesList from "@/components/services/ServicesList";
 import SustainabilityStats from "@/components/sustainability/SustainabilityStats";
@@ -294,8 +295,18 @@ export default async function Home() {
       })) ?? [];
   const stats = cmsStats.length > 0 ? cmsStats : [...FALLBACK.stats.items];
 
+  /* One-shot pink intro loader. Plays once per browser-tab
+     session — sessionStorage gates re-plays so internal route
+     changes back to home don't re-trigger it. Editor can disable
+     via the Sanity Home Page → Intro loader toggle. */
+  const loaderEnabled = home?.loaderEnabled !== false;
+  const loaderText =
+    home?.loaderText?.trim() ||
+    "Your project is our priority, and we're committed to excellence from start to finish.";
+
   return (
     <main>
+      {loaderEnabled ? <HomeLoader message={loaderText} /> : null}
       <HomeHero
         mediaType={home?.heroMediaType ?? "video"}
         videoSrc={firstFilled(home?.heroVideoUrl, FALLBACK.hero.videoUrl)}

@@ -27,6 +27,8 @@ export const HOME_PAGE_QUERY = groq`
     comingSoon,
     comingSoonHeading,
     comingSoonBody,
+    loaderEnabled,
+    loaderText,
     heroMediaType,
     heroVideoUrl,
     heroImage { ${IMAGE_PROJECTION} },
@@ -94,6 +96,8 @@ export interface HomePageData {
   comingSoon?: boolean;
   comingSoonHeading?: string;
   comingSoonBody?: string;
+  loaderEnabled?: boolean;
+  loaderText?: string;
   heroMediaType?: "video" | "image";
   heroVideoUrl?: string;
   heroImage?: HomeImage;

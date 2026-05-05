@@ -1,0 +1,101 @@
+/**
+ * HomeLoader
+ * ==========
+ * Pure-CSS one-shot intro overlay. Pink theme cover, words wipe
+ * up from below with a per-word stagger driven by --i, brief hold,
+ * then the whole cover sweeps up off the top of the viewport. We
+ * use CSS keyframes (not GSAP) because GSAP timelines have been
+ * dropping their ticks intermittently on this stack — keyframes
+ * always tick.
+ *
+ * Total duration: ~3.4s
+ *   0.0s   words start sliding up (0.7s each, 0.05s stagger per word)
+ *   ~1.4s  reveal complete (assuming ~14 words)
+ *   +0.7s  hold
+ *   +0.8s  cover slides up
+ *   ~3.4s  done — JS unmounts the loader
+ */
+
+@keyframes home-loader-word-in {
+  from { transform: translateY(110%); }
+  to   { transform: translateY(0); }
+}
+
+@keyframes home-loader-cover-out {
+  /* Held in place for the first portion of the keyframe so the
+     timing inside CSS lines up with the per-word stagger.
+     Sweep up across the back half. */
+  0%, 60% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+.home-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--space-2);
+  overflow: hidden;
+  /* Cover-exit animation runs after the words finish, holds,
+     then sweeps up. data-state="exit" triggers it. */
+  will-change: transform;
+}
+
+.home-loader[data-state="exit"] {
+  animation: home-loader-cover-out 1.5s cubic-bezier(0.85, 0, 0.15, 1)
+    forwards;
+}
+
+.home-loader__text {
+  margin: 0;
+  text-align: center;
+  text-wrap: balance;
+  max-width: 38ch;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: var(--line-height-tight);
+}
+
+/* Per-word mask — overflow:hidden, the inner span animates up
+   out of it. */
+.home-loader__word {
+  display: inline-flex;
+  overflow: hidden;
+  vertical-align: top;
+  /* Tiny extra room so descenders aren't clipped by the mask. */
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
+}
+
+/* The actual moving element. Initial state translateY(110%)
+   parks the word below the mask. Animation slides it back to 0
+   with a per-word delay set inline via --i. */
+.home-loader__word-inner {
+  display: inline-block;
+  transform: translateY(110%);
+  animation: home-loader-word-in 0.7s cubic-bezier(0.16, 1, 0.3, 1)
+    calc(var(--i, 0) * 0.045s) forwards;
+  will-change: transform;
+}
+
+/* Reduced motion — no animation, just show the text + skip the
+   cover-exit sweep. The loader still fades out via JS unmounting
+   it but no motion happens. */
+@media (prefers-reduced-motion: reduce) {
+  .home-loader__word-inner {
+    transform: translateY(0);
+    animation: none;
+  }
+  .home-loader[data-state="exit"] {
+    animation: none;
+    transform: translateY(-100%);
+  }
+}

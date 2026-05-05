@@ -32,6 +32,7 @@ export default defineType({
   type: "document",
   groups: [
     { name: "comingSoon", title: "Coming soon", default: true },
+    { name: "loader", title: "Intro loader" },
     { name: "hero", title: "Hero" },
     { name: "statement", title: "About statement" },
     { name: "introducing", title: "Introducing" },
@@ -73,6 +74,31 @@ export default defineType({
       type: "text",
       rows: 3,
       group: "comingSoon",
+    }),
+
+    /* ── Intro loader ────────────────────────────────────── */
+    defineField({
+      name: "loaderEnabled",
+      title: "Show intro loader",
+      description:
+        "Plays a one-shot pink editorial intro the first time a " +
+        "visitor lands on the home page in their session. Words " +
+        "reveal, hold briefly, then the cover slides up to reveal " +
+        "the page.",
+      type: "boolean",
+      group: "loader",
+      initialValue: true,
+    }),
+    defineField({
+      name: "loaderText",
+      title: "Loader message",
+      description:
+        "The brand statement shown during the intro. Defaults " +
+        'to "Your project is our priority, and we\'re committed to ' +
+        'excellence from start to finish." if left empty.',
+      type: "text",
+      rows: 3,
+      group: "loader",
     }),
 
     /* ── 1. Hero ─────────────────────────────────────────── */
