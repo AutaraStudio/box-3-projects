@@ -3,27 +3,32 @@
 /**
  * HomePreloader
  * =============
- * One-shot pink overlay that fills the viewport on the very first
- * page load of a browser session, then morphs (top / left / width
- * / height) down to the exact bounds of the header logo box.
+ * Editorial one-shot intro that plays the very first time a
+ * visitor lands on the site in their browser session.
  *
- * No-flash strategy:
+ *   1. Pink full-viewport cover paints from the first frame
+ *      (an inline script in the layout sets <html data-preloader>
+ *      synchronously so there's no flash before this React tree
+ *      hydrates).
  *
- *   1. An inline <script> in the layout runs *synchronously* before
- *      any paint and sets `<html data-preloader="active">` (or
- *      "skip" if sessionStorage already says we've played). The
- *      preloader element is rendered in SSR as a full-viewport
- *      pink box; CSS only shows it while the attribute reads
- *      "active". Result: visitors with a clean session see pink
- *      from the very first frame; visitors who've already played
- *      see no flash at all.
+ *   2. Brand statement reveals word-by-word as each word's inner
+ *      span slides up out of an overflow:hidden mask. Per-word
+ *      stagger via the `--i` custom property.
  *
- *   2. This component reads the attribute on mount and runs the
- *      hold + morph + finish timeline if it's "active".
+ *   3. Brief hold so the visitor can read the line.
  *
- * sessionStorage key "box3:preloader-played" — once set, the
- * preloader is skipped for the rest of the session (refreshes,
- * internal nav, etc.).
+ *   4. Words exit upward (same per-word stagger, slightly
+ *      tighter), then the cover morphs (top/left/width/height)
+ *      down to the exact bounds of the header logo box.
+ *
+ *   5. Cover lowers below the header so the BOX 3 letters in
+ *      the logo SVG can stagger in over it (B → O → X → 3).
+ *
+ *   6. Cover unmounts; the SVG's pink rect underneath is
+ *      identical so the hand-off is invisible.
+ *
+ * sessionStorage gates the whole thing — once played, the rest
+ * of the session sees no preloader at all.
  */
 
 import { useEffect, useState } from "react";
@@ -31,15 +36,15 @@ import { useEffect, useState } from "react";
 import "./HomePreloader.css";
 
 const SESSION_KEY = "box3:preloader-played";
+const STATEMENT =
+  "Your project is our priority, and we're committed to excellence from start to finish.";
 
-/* Timing — keep in sync with HomePreloader.css transition duration. */
-const HOLD_MS = 2000;
-const MORPH_DURATION_MS = 1200;
-/* Once the cover is sitting at the logo's bounds, the four BOX 3
-   letters stagger in (per-letter `transition-delay` in
-   Header.css). Total stagger ≈ 300ms + 400ms transition for the
-   last letter = 700ms; REVEAL_MS rounds up so every letter has
-   landed before we unmount the cover. */
+/* Timing — keep in sync with the per-phase rules in
+   HomePreloader.css. */
+const WORDS_IN_MS = 1400;
+const WORDS_HOLD_MS = 700;
+const WORDS_OUT_MS = 950;
+const MORPH_MS = 1200;
 const REVEAL_MS = 800;
 const SAFETY_BUFFER_MS = 100;
 
@@ -50,33 +55,30 @@ interface TargetRect {
   height: number;
 }
 
+type Phase =
+  | "full"
+  | "words-in"
+  | "words-hold"
+  | "words-out"
+  | "morph"
+  | "reveal"
+  | "done";
+
 export default function HomePreloader() {
-  /* phase walk-through:
-       full   — pink overlay fills the viewport (initial paint)
-       morph  — overlay transitions down to the logo's bounds
-       reveal — overlay sits at the logo bounds while the BOX 3
-                SVG fades in over it (same pink, so no gap)
-       done   — SVG is fully in; cover removed; React unmounts */
-  const [phase, setPhase] = useState<"full" | "morph" | "reveal" | "done">(
-    "full",
-  );
+  const [phase, setPhase] = useState<Phase>("full");
   const [target, setTarget] = useState<TargetRect | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    /* The inline script may have already marked us "skip". Trust
-       it as the source of truth so React doesn't fight the DOM. */
-    const attr = document.documentElement.getAttribute("data-preloader");
-    if (attr === "skip") {
-      /* Already played this session — element should already be
-         hidden by CSS; just take it out of the React tree too. */
+    /* Inline script may have already marked us "skip" — trust it. */
+    if (document.documentElement.getAttribute("data-preloader") === "skip") {
       setPhase("done");
       return;
     }
 
-    /* Belt-and-braces — if the inline script didn't run for any
-       reason, double-check sessionStorage and bail. */
+    /* Belt-and-braces — sessionStorage check in case the inline
+       script didn't run for some reason. */
     try {
       if (sessionStorage.getItem(SESSION_KEY) === "1") {
         document.documentElement.setAttribute("data-preloader", "skip");
@@ -84,10 +86,9 @@ export default function HomePreloader() {
         return;
       }
     } catch {
-      /* private mode — fall through to playing. */
+      /* private mode — fall through. */
     }
 
-    /* Make sure the attribute is set so CSS shows the cover. */
     document.documentElement.setAttribute("data-preloader", "active");
 
     const reduceMotion = window.matchMedia(
@@ -109,51 +110,82 @@ export default function HomePreloader() {
       return;
     }
 
-    /* Step 1 — hold for HOLD_MS. */
-    const morphTimer = window.setTimeout(() => {
-      const logo = document.querySelector<HTMLElement>(".header__home");
-      if (!logo) {
-        finish();
-        return;
-      }
-      const r = logo.getBoundingClientRect();
-      setTarget({
-        top: r.top,
-        left: r.left,
-        width: r.width,
-        height: r.height,
-      });
-      setPhase("morph");
-    }, HOLD_MS);
+    const timers: number[] = [];
 
-    /* Step 2 — once morph completes, switch to reveal. The cover
-       stays at the logo bounds; CSS releases the SVG's hidden
-       state so its letters fade in over the pink. */
-    const revealTimer = window.setTimeout(() => {
-      document.documentElement.setAttribute("data-preloader", "reveal");
-      setPhase("reveal");
-    }, HOLD_MS + MORPH_DURATION_MS);
+    /* Step 1 — words slide in. requestAnimationFrame so the
+       initial-state styles paint before the transition fires. */
+    timers.push(
+      window.setTimeout(() => {
+        requestAnimationFrame(() => setPhase("words-in"));
+      }, 60),
+    );
 
-    /* Step 3 — after the SVG is fully in, remove the cover. Both
-       layers are the same pink + the SVG's letters are now drawn
-       on top, so unmounting the cover is visually invisible. */
-    const finishTimer = window.setTimeout(
-      finish,
-      HOLD_MS + MORPH_DURATION_MS + REVEAL_MS + SAFETY_BUFFER_MS,
+    /* Step 2 — words at rest. */
+    timers.push(
+      window.setTimeout(() => setPhase("words-hold"), WORDS_IN_MS),
+    );
+
+    /* Step 3 — words slide out (upwards). */
+    timers.push(
+      window.setTimeout(
+        () => setPhase("words-out"),
+        WORDS_IN_MS + WORDS_HOLD_MS,
+      ),
+    );
+
+    /* Step 4 — measure the logo + start the morph. */
+    timers.push(
+      window.setTimeout(() => {
+        const logo = document.querySelector<HTMLElement>(".header__home");
+        if (!logo) {
+          finish();
+          return;
+        }
+        const r = logo.getBoundingClientRect();
+        setTarget({
+          top: r.top,
+          left: r.left,
+          width: r.width,
+          height: r.height,
+        });
+        setPhase("morph");
+      }, WORDS_IN_MS + WORDS_HOLD_MS + WORDS_OUT_MS),
+    );
+
+    /* Step 5 — cover sits at the logo bounds, BOX 3 letters
+       stagger in. */
+    timers.push(
+      window.setTimeout(
+        () => {
+          document.documentElement.setAttribute("data-preloader", "reveal");
+          setPhase("reveal");
+        },
+        WORDS_IN_MS + WORDS_HOLD_MS + WORDS_OUT_MS + MORPH_MS,
+      ),
+    );
+
+    /* Step 6 — finish + unmount. */
+    timers.push(
+      window.setTimeout(
+        finish,
+        WORDS_IN_MS +
+          WORDS_HOLD_MS +
+          WORDS_OUT_MS +
+          MORPH_MS +
+          REVEAL_MS +
+          SAFETY_BUFFER_MS,
+      ),
     );
 
     return () => {
-      window.clearTimeout(morphTimer);
-      window.clearTimeout(revealTimer);
-      window.clearTimeout(finishTimer);
+      for (const id of timers) window.clearTimeout(id);
     };
   }, []);
 
   if (phase === "done") return null;
 
   /* Inline style holds the cover at the logo's bounds during
-     both `morph` (the transition target) and `reveal` (where it
-     sits still while the SVG fades in over it). */
+     `morph` + `reveal`. */
   const style: React.CSSProperties =
     (phase === "morph" || phase === "reveal") && target
       ? {
@@ -162,7 +194,12 @@ export default function HomePreloader() {
           width: `${target.width}px`,
           height: `${target.height}px`,
         }
-      : undefined as unknown as React.CSSProperties;
+      : (undefined as unknown as React.CSSProperties);
+
+  /* Split the brand statement into words with trailing whitespace
+     baked into each span so the words travel with their gaps when
+     wrapped into masks. */
+  const words = STATEMENT.trim().split(/\s+/);
 
   return (
     <div
@@ -170,6 +207,20 @@ export default function HomePreloader() {
       data-phase={phase}
       style={style}
       aria-hidden="true"
-    />
+    >
+      <p className="home-preloader__text">
+        {words.map((word, i) => (
+          <span key={i} className="home-preloader__word">
+            <span
+              className="home-preloader__word-inner"
+              style={{ ["--i" as string]: i } as React.CSSProperties}
+            >
+              {word}
+              {i < words.length - 1 ? " " : ""}
+            </span>
+          </span>
+        ))}
+      </p>
+    </div>
   );
 }
