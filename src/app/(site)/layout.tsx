@@ -8,6 +8,7 @@ import { MenuProvider } from "@/components/menu/MenuProvider";
 import Header from "@/components/menu/Header";
 import MenuOverlay from "@/components/menu/MenuOverlay";
 import Footer from "@/components/footer/Footer";
+import HomePreloader from "@/components/preloader/HomePreloader";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
   FEATURED_PROJECTS_QUERY,
@@ -181,6 +182,11 @@ export default async function RootLayout({
         <SmoothScroll>
           <PageTransitionProvider>
             <MenuProvider>
+              {/* Plays once per session: pink overlay fills the
+                  viewport, then morphs to the header logo's
+                  bounds. Header logo SVG is hidden via CSS while
+                  data-preloader=active is set on <html>. */}
+              <HomePreloader />
               <Header
                 brand={brand}
                 primaryLinks={headerPrimary}

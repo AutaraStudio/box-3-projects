@@ -84,6 +84,18 @@
   display: block;
   width: 100%;
   height: 100%;
+  /* Fade in once the home preloader's morph completes —
+     `data-preloader` is removed from <html> at the end of the
+     overlay's transit, releasing the rule below. */
+  transition: opacity 400ms ease;
+}
+
+/* While the preloader is morphing into the logo box, the SVG
+   itself stays hidden so we only see the pink rectangle move.
+   The moment the attribute is removed (transition complete),
+   the SVG fades into view inside the now-positioned pink box. */
+html[data-preloader="active"] .header__home-logo {
+  opacity: 0;
 }
 
 /* Logo always uses pink + brown — the two strongest brand

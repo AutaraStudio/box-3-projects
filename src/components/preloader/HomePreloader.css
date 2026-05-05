@@ -1,0 +1,27 @@
+/**
+ * HomePreloader
+ * =============
+ * Pure CSS-transition driven morph from full-viewport pink overlay
+ * down to the header logo box. Sits above the header (z-index 1000)
+ * and the menu overlay (999) so nothing peeks through. The four
+ * positional properties (top / left / width / height) animate in
+ * unison — same easing, same duration — so the rectangle reads as
+ * a single graceful transit rather than corners moving independently.
+ */
+
+.home-preloader {
+  position: fixed;
+  z-index: 1300;
+  background-color: var(--color-pink);
+  pointer-events: none;
+  /* Smooth in-out cubic — slow start, slow end, with the bulk of
+     the travel happening in the middle. Reads as deliberate. */
+  transition:
+    top 1.2s cubic-bezier(0.85, 0, 0.15, 1),
+    left 1.2s cubic-bezier(0.85, 0, 0.15, 1),
+    width 1.2s cubic-bezier(0.85, 0, 0.15, 1),
+    height 1.2s cubic-bezier(0.85, 0, 0.15, 1);
+  /* will-change keeps the GPU ready for the four-property morph
+     so the transition doesn't drop frames at the start. */
+  will-change: top, left, width, height;
+}
