@@ -111,55 +111,54 @@ html[data-preloader="reveal"] .home-preloader {
   display: none;
 }
 
-/* Each word is its own overflow:hidden mask. inline-flex keeps it
-   sitting on the baseline of the line; bottom padding accommodates
-   descenders ("p", "j") so the mask doesn't clip them. */
+/* Each word is an inline-block with no mask — the reveal is a
+   blur + opacity fade rather than a vertical slide, so we don't
+   need overflow:hidden any more. Whitespace stays attached to
+   each word so the line wraps naturally if the viewport is narrow. */
 .home-preloader__word {
-  display: inline-flex;
-  overflow: hidden;
-  vertical-align: top;
-  /* Tiny vertical breathing room so descenders + the translate
-     distance don't get clipped at the seams. */
-  padding-bottom: 0.15em;
-  margin-bottom: -0.15em;
+  display: inline-block;
+  vertical-align: baseline;
 }
 
-/* The inner element does the actual translateY. Starting state
-   sits below the mask; per-word stagger via `--i` custom property
-   set in the component. */
+/* The inner element does the per-word fade + blur. Default is
+   fully blurred + transparent; the in/out rules transition to/from
+   sharp + opaque. Per-word stagger via `--i` custom property set
+   in the component. */
 .home-preloader__word-inner {
   display: inline-block;
-  transform: translateY(120%);
   opacity: 0;
+  filter: blur(0.5rem);
   transition:
-    transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1);
-  transition-delay: calc(var(--i, 0) * 55ms);
+    opacity 500ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--i, 0) * 30ms);
   white-space: pre;
+  /* Promote so the blur composites on its own layer instead of
+     re-rasterising the whole line on every frame. */
+  will-change: opacity, filter;
 }
 
-/* Words slide in + sit at rest — same end state for both rounds.
-   The "between" phase intentionally has no rule so the freshly
-   mounted round-two spans inherit the default off-screen-below
-   state and are ready to slide up when m2-in fires. */
+/* In + hold — sharp, fully opaque. The "between" phase deliberately
+   has no rule so the freshly mounted round-two spans inherit the
+   default blurred-and-transparent state, ready to fade in when
+   m2-in fires. */
 .home-preloader[data-phase="m1-in"] .home-preloader__word-inner,
 .home-preloader[data-phase="m1-hold"] .home-preloader__word-inner,
 .home-preloader[data-phase="m2-in"] .home-preloader__word-inner,
 .home-preloader[data-phase="m2-hold"] .home-preloader__word-inner {
-  transform: translateY(0);
   opacity: 1;
+  filter: blur(0);
 }
 
-/* Words exit upward — same exit for both rounds. Both transform
-   AND opacity transition so the line lifts away gracefully instead
-   of snapping invisible. Stagger is a touch tighter than the
-   entrance for a deliberate exit feel. */
+/* Out — fade back to blurred-and-transparent. Slightly tighter
+   stagger + shorter duration than the entrance for a deliberate
+   exit feel. */
 .home-preloader[data-phase="m1-out"] .home-preloader__word-inner,
 .home-preloader[data-phase="m2-out"] .home-preloader__word-inner {
-  transform: translateY(-110%);
   opacity: 0;
+  filter: blur(0.5rem);
   transition:
-    transform 750ms cubic-bezier(0.65, 0, 0.35, 1),
-    opacity 600ms cubic-bezier(0.65, 0, 0.35, 1);
-  transition-delay: calc(var(--i, 0) * 40ms);
+    opacity 400ms cubic-bezier(0.65, 0, 0.35, 1),
+    filter 400ms cubic-bezier(0.65, 0, 0.35, 1);
+  transition-delay: calc(var(--i, 0) * 22ms);
 }
