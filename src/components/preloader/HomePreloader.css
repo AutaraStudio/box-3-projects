@@ -3,10 +3,18 @@
  * =============
  * Pure CSS-transition driven morph from full-viewport pink overlay
  * down to the header logo box. Sits above the header (z-index 1000)
- * and the menu overlay (999) so nothing peeks through. The four
- * positional properties (top / left / width / height) animate in
- * unison — same easing, same duration — so the rectangle reads as
- * a single graceful transit rather than corners moving independently.
+ * and the menu overlay (999) so nothing peeks through.
+ *
+ * Visibility is gated by `<html data-preloader>`:
+ *   - "active" — element is shown, full-viewport (or the morph
+ *                target via inline style)
+ *   - "skip"   — element is hidden (already played this session)
+ *   - missing  — also hidden, so SSR'd HTML doesn't flash before
+ *                the inline script runs
+ *
+ * The four positional properties (top / left / width / height)
+ * animate together — same easing, same duration — so the
+ * rectangle reads as a single graceful transit.
  */
 
 .home-preloader {
@@ -14,14 +22,25 @@
   z-index: 1300;
   background-color: var(--color-pink);
   pointer-events: none;
-  /* Smooth in-out cubic — slow start, slow end, with the bulk of
-     the travel happening in the middle. Reads as deliberate. */
+  /* Default rendered geometry — full viewport. The inline-style
+     written by React at "morph" phase overrides these to the
+     logo's bounds and the transition handles the rest. */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  /* svh handles iOS Safari's collapsing URL bar; falls back to
+     vh on older browsers. */
+  height: 100svh;
   transition:
     top 1.2s cubic-bezier(0.85, 0, 0.15, 1),
     left 1.2s cubic-bezier(0.85, 0, 0.15, 1),
     width 1.2s cubic-bezier(0.85, 0, 0.15, 1),
     height 1.2s cubic-bezier(0.85, 0, 0.15, 1);
-  /* will-change keeps the GPU ready for the four-property morph
-     so the transition doesn't drop frames at the start. */
   will-change: top, left, width, height;
+}
+
+/* Hidden whenever the inline script hasn't set data-preloader, or
+   has set it to "skip". Only "active" reveals the cover. */
+html:not([data-preloader="active"]) .home-preloader {
+  display: none;
 }

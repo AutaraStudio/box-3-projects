@@ -179,6 +179,18 @@ export default async function RootLayout({
         `}
       </Script>
       <body data-theme="cream">
+        {/* Synchronous flag for the home preloader — must run
+            before any paint so the pink cover (rendered in SSR
+            below) is either visible from the very first frame OR
+            never paints at all. Sets <html data-preloader> based
+            on sessionStorage; the CSS gate in HomePreloader.css
+            uses that attribute to decide whether to show the
+            cover. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var k="box3:preloader-played";var played=sessionStorage.getItem(k)==="1";document.documentElement.setAttribute("data-preloader",played?"skip":"active");}catch(e){document.documentElement.setAttribute("data-preloader","active");}})();`,
+          }}
+        />
         <SmoothScroll>
           <PageTransitionProvider>
             <MenuProvider>

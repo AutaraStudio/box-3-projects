@@ -4,18 +4,26 @@
  * HomePreloader
  * =============
  * One-shot pink overlay that fills the viewport on the very first
- * page load of a browser session, then morphs (top / left / width /
- * height) down to the exact bounds of the header logo box. While
- * it's playing, the actual logo SVG is hidden via CSS scoped to
- * `html[data-preloader="active"]`; once the morph completes, the
- * attribute is removed and the SVG fades in over the pink box —
- * seamless because the logo's own background is the same pink.
+ * page load of a browser session, then morphs (top / left / width
+ * / height) down to the exact bounds of the header logo box.
  *
- * sessionStorage gates re-plays so navigating around the site
- * (or refreshing a page) doesn't replay it.
+ * No-flash strategy:
  *
- * All motion is via CSS transitions on `top / left / width /
- * height` — no GSAP. CSS transitions tick reliably on this stack.
+ *   1. An inline <script> in the layout runs *synchronously* before
+ *      any paint and sets `<html data-preloader="active">` (or
+ *      "skip" if sessionStorage already says we've played). The
+ *      preloader element is rendered in SSR as a full-viewport
+ *      pink box; CSS only shows it while the attribute reads
+ *      "active". Result: visitors with a clean session see pink
+ *      from the very first frame; visitors who've already played
+ *      see no flash at all.
+ *
+ *   2. This component reads the attribute on mount and runs the
+ *      hold + morph + finish timeline if it's "active".
+ *
+ * sessionStorage key "box3:preloader-played" — once set, the
+ * preloader is skipped for the rest of the session (refreshes,
+ * internal nav, etc.).
  */
 
 import { useEffect, useState } from "react";
@@ -23,9 +31,9 @@ import { useEffect, useState } from "react";
 import "./HomePreloader.css";
 
 const SESSION_KEY = "box3:preloader-played";
-/* Slightly longer than the morph duration in CSS — gives the
-   transition a few frames of safety before we unmount. */
-const MEASURE_DELAY_MS = 350;
+
+/* Timing — keep in sync with HomePreloader.css transition duration. */
+const HOLD_MS = 2000;
 const MORPH_DURATION_MS = 1200;
 const SAFETY_BUFFER_MS = 200;
 
@@ -37,31 +45,41 @@ interface TargetRect {
 }
 
 export default function HomePreloader() {
-  /* phase:
-       hidden — render nothing (already played this session)
-       full   — overlay fills the viewport
-       morph  — overlay transitioning to the logo's bounds
-       done   — animation finished, unmount */
-  const [phase, setPhase] = useState<"hidden" | "full" | "morph" | "done">(
-    "hidden",
-  );
+  /* Start in "full" so SSR renders the cover. The first useEffect
+     immediately downgrades to "done" for sessions that have
+     already played. The inline script in the layout has the SAME
+     effect at the CSS layer (so the cover never paints in those
+     sessions) — this React state is just keeping the React tree
+     in sync with the DOM. */
+  const [phase, setPhase] = useState<"full" | "morph" | "done">("full");
   const [target, setTarget] = useState<TargetRect | null>(null);
 
-  /* Decide-and-play. Runs ONCE on mount. */
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    /* The inline script may have already marked us "skip". Trust
+       it as the source of truth so React doesn't fight the DOM. */
+    const attr = document.documentElement.getAttribute("data-preloader");
+    if (attr === "skip") {
+      /* Already played this session — element should already be
+         hidden by CSS; just take it out of the React tree too. */
+      setPhase("done");
+      return;
+    }
+
+    /* Belt-and-braces — if the inline script didn't run for any
+       reason, double-check sessionStorage and bail. */
     try {
       if (sessionStorage.getItem(SESSION_KEY) === "1") {
-        /* Already played this session — stay hidden. */
+        document.documentElement.setAttribute("data-preloader", "skip");
+        setPhase("done");
         return;
       }
     } catch {
-      /* private mode — fall through to playing the preloader. */
+      /* private mode — fall through to playing. */
     }
 
-    /* Begin: cover the viewport. */
-    setPhase("full");
+    /* Make sure the attribute is set so CSS shows the cover. */
     document.documentElement.setAttribute("data-preloader", "active");
 
     const reduceMotion = window.matchMedia(
@@ -72,9 +90,9 @@ export default function HomePreloader() {
       try {
         sessionStorage.setItem(SESSION_KEY, "1");
       } catch {
-        /* private mode — leave the flag unset. */
+        /* fine */
       }
-      document.documentElement.removeAttribute("data-preloader");
+      document.documentElement.setAttribute("data-preloader", "skip");
       setPhase("done");
     };
 
@@ -83,38 +101,38 @@ export default function HomePreloader() {
       return;
     }
 
-    /* Wait for the header to lay out, then measure the logo box
-       and switch the overlay into its morph state. The CSS
-       transition takes over from there. */
-    const measureTimer = window.setTimeout(() => {
+    /* Hold for HOLD_MS, then measure the logo + switch into
+       morph state. CSS transitions on top/left/width/height
+       handle the actual movement. */
+    const morphTimer = window.setTimeout(() => {
       const logo = document.querySelector<HTMLElement>(".header__home");
       if (!logo) {
         finish();
         return;
       }
       const r = logo.getBoundingClientRect();
-      setTarget({ top: r.top, left: r.left, width: r.width, height: r.height });
+      setTarget({
+        top: r.top,
+        left: r.left,
+        width: r.width,
+        height: r.height,
+      });
       setPhase("morph");
-    }, MEASURE_DELAY_MS);
+    }, HOLD_MS);
 
-    /* End the run after the morph has had time to complete. */
     const finishTimer = window.setTimeout(
       finish,
-      MEASURE_DELAY_MS + MORPH_DURATION_MS + SAFETY_BUFFER_MS,
+      HOLD_MS + MORPH_DURATION_MS + SAFETY_BUFFER_MS,
     );
 
     return () => {
-      window.clearTimeout(measureTimer);
+      window.clearTimeout(morphTimer);
       window.clearTimeout(finishTimer);
-      document.documentElement.removeAttribute("data-preloader");
     };
   }, []);
 
-  if (phase === "hidden" || phase === "done") return null;
+  if (phase === "done") return null;
 
-  /* Inline style swaps between full-viewport and the logo box's
-     exact pixel bounds. CSS transitions on top / left / width /
-     height drive the morph. */
   const style: React.CSSProperties =
     phase === "morph" && target
       ? {
@@ -123,14 +141,7 @@ export default function HomePreloader() {
           width: `${target.width}px`,
           height: `${target.height}px`,
         }
-      : {
-          top: 0,
-          left: 0,
-          width: "100vw",
-          /* svh handles iOS Safari's collapsing URL bar; falls
-             back to vh for older browsers. */
-          height: "100svh",
-        };
+      : undefined as unknown as React.CSSProperties;
 
   return (
     <div
