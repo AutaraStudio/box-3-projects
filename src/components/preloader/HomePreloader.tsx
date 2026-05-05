@@ -35,7 +35,12 @@ const SESSION_KEY = "box3:preloader-played";
 /* Timing — keep in sync with HomePreloader.css transition duration. */
 const HOLD_MS = 2000;
 const MORPH_DURATION_MS = 1200;
-const SAFETY_BUFFER_MS = 200;
+/* Once the cover is sitting at the logo's bounds, the BOX 3 SVG
+   fades in OVER it. The cover stays in place for the duration of
+   the fade so we never see a transparent gap — both layers carry
+   the same pink, then the letters appear in front. */
+const REVEAL_MS = 500;
+const SAFETY_BUFFER_MS = 100;
 
 interface TargetRect {
   top: number;
@@ -45,13 +50,15 @@ interface TargetRect {
 }
 
 export default function HomePreloader() {
-  /* Start in "full" so SSR renders the cover. The first useEffect
-     immediately downgrades to "done" for sessions that have
-     already played. The inline script in the layout has the SAME
-     effect at the CSS layer (so the cover never paints in those
-     sessions) — this React state is just keeping the React tree
-     in sync with the DOM. */
-  const [phase, setPhase] = useState<"full" | "morph" | "done">("full");
+  /* phase walk-through:
+       full   — pink overlay fills the viewport (initial paint)
+       morph  — overlay transitions down to the logo's bounds
+       reveal — overlay sits at the logo bounds while the BOX 3
+                SVG fades in over it (same pink, so no gap)
+       done   — SVG is fully in; cover removed; React unmounts */
+  const [phase, setPhase] = useState<"full" | "morph" | "reveal" | "done">(
+    "full",
+  );
   const [target, setTarget] = useState<TargetRect | null>(null);
 
   useEffect(() => {
@@ -101,9 +108,7 @@ export default function HomePreloader() {
       return;
     }
 
-    /* Hold for HOLD_MS, then measure the logo + switch into
-       morph state. CSS transitions on top/left/width/height
-       handle the actual movement. */
+    /* Step 1 — hold for HOLD_MS. */
     const morphTimer = window.setTimeout(() => {
       const logo = document.querySelector<HTMLElement>(".header__home");
       if (!logo) {
@@ -120,21 +125,36 @@ export default function HomePreloader() {
       setPhase("morph");
     }, HOLD_MS);
 
+    /* Step 2 — once morph completes, switch to reveal. The cover
+       stays at the logo bounds; CSS releases the SVG's hidden
+       state so its letters fade in over the pink. */
+    const revealTimer = window.setTimeout(() => {
+      document.documentElement.setAttribute("data-preloader", "reveal");
+      setPhase("reveal");
+    }, HOLD_MS + MORPH_DURATION_MS);
+
+    /* Step 3 — after the SVG is fully in, remove the cover. Both
+       layers are the same pink + the SVG's letters are now drawn
+       on top, so unmounting the cover is visually invisible. */
     const finishTimer = window.setTimeout(
       finish,
-      HOLD_MS + MORPH_DURATION_MS + SAFETY_BUFFER_MS,
+      HOLD_MS + MORPH_DURATION_MS + REVEAL_MS + SAFETY_BUFFER_MS,
     );
 
     return () => {
       window.clearTimeout(morphTimer);
+      window.clearTimeout(revealTimer);
       window.clearTimeout(finishTimer);
     };
   }, []);
 
   if (phase === "done") return null;
 
+  /* Inline style holds the cover at the logo's bounds during
+     both `morph` (the transition target) and `reveal` (where it
+     sits still while the SVG fades in over it). */
   const style: React.CSSProperties =
-    phase === "morph" && target
+    (phase === "morph" || phase === "reveal") && target
       ? {
           top: `${target.top}px`,
           left: `${target.left}px`,

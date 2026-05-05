@@ -39,8 +39,12 @@
   will-change: top, left, width, height;
 }
 
-/* Hidden whenever the inline script hasn't set data-preloader, or
-   has set it to "skip". Only "active" reveals the cover. */
-html:not([data-preloader="active"]) .home-preloader {
+/* Hide the cover unless the preloader is mid-flight. "active" is
+   the cover-visible state during the hold + morph; "reveal" is
+   the brief moment the cover sits at the logo bounds while the
+   BOX 3 SVG fades in over it (same pink, no visual gap). Any
+   other value (or missing attribute) keeps the cover hidden. */
+html:not([data-preloader="active"]):not([data-preloader="reveal"])
+  .home-preloader {
   display: none;
 }
