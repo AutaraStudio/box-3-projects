@@ -121,22 +121,39 @@
 
 /* Opt-in via the `revealOnScroll` prop on <SplitText>, which adds
    `data-observe` to the wrapper. Inners start parked below their
-   own mask line and slide up to position once the
-   IntersectionObserver flips `is-inview`. Per-token --index spreads
-   the stagger via transition-delay. */
+   own mask line + transparent, and slide up + fade in once the
+   IntersectionObserver flips `is-inview`. Per-token --index
+   spreads the stagger via transition-delay.
+
+   Travel + duration intentionally restrained:
+     - 50% travel (rather than the previous 105% mask-clearing
+       slide) reads as a subtle lift rather than a long whoosh.
+     - opacity 0 → 1 hides the partial glyph that would otherwise
+       peek out the bottom of its mask while the inner is parked.
+     - 0.65s lands inside a single comfortable beat so a heading
+       isn't still settling when the next section is already in
+       view. */
 .split[data-observe] .char__inner,
 .split[data-observe] .word__inner {
-  transform: translate3d(0, 105%, 0);
-  transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1)
-    calc(var(--index, 0) * 15ms);
+  transform: translate3d(0, 50%, 0);
+  opacity: 0;
+  transition:
+    transform 0.65s cubic-bezier(0.19, 1, 0.22, 1) calc(var(--index, 0) * 10ms),
+    opacity 0.65s cubic-bezier(0.19, 1, 0.22, 1) calc(var(--index, 0) * 10ms);
 }
 .split[data-observe].is-inview .char__inner,
 .split[data-observe].is-inview .word__inner {
   transform: translateZ(0);
+  opacity: 1;
 }
 /* Words tend to read better with a slightly heavier stagger. */
 .split[data-observe] .word__inner {
-  transition-delay: calc(var(--index, 0) * 45ms);
+  transition-delay: calc(var(--index, 0) * 28ms);
+}
+.split[data-observe].is-inview .word__inner {
+  /* Match — keep the same stagger on the in-view state so words
+     compose the same delay sequence on entrance. */
+  transition-delay: calc(var(--index, 0) * 28ms);
 }
 
 /* ── Hover roll-over ─────────────────────────────────────────── */
@@ -150,8 +167,8 @@
 @media (hover: hover) and (pointer: fine) {
   .link .split__text .char__inner,
   .link .split__text .word__inner {
-    transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1)
-                calc(var(--index, 0) * 2.4ms);
+    transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1)
+                calc(var(--index, 0) * 2ms);
   }
   .link .split__text--clone .char__inner,
   .link .split__text--clone .word__inner {
