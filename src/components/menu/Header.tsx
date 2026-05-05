@@ -34,6 +34,7 @@ import { usePathname } from "next/navigation";
 import { gsap } from "gsap";
 import TransitionLink from "@/components/transition/TransitionLink";
 import SplitText from "@/components/split-text/SplitText";
+import { awaitTransitionEnd } from "@/components/transition/transitionState";
 import { useMenu } from "./MenuProvider";
 import "./Header.css";
 
@@ -71,6 +72,11 @@ export default function Header({
      off-screen while the wipe panel covers the page, then animate
      back in once the new route is committed. */
   const [transitioningOut, setTransitioningOut] = useState(false);
+  /* Gates the regular scroll-state effect so it doesn't re-paint
+     the bar in its "natural" position before the intro entrance
+     has played. Flipped true once the on-mount intro timeline
+     completes (or immediately on prefers-reduced-motion). */
+  const [introReady, setIntroReady] = useState(false);
   /* Held imperatively so other effects (transition-end, route
      change) can re-trigger a probe without causing a re-build of
      the listener wiring. */
@@ -233,9 +239,15 @@ export default function Header({
      elements in this stack, so we use GSAP for guaranteed control.
      Also handles the page-transition lift: when `transitioningOut`
      is true every piece sweeps off-screen up; when it flips back
-     false the regular scroll-state values play in. */
+     false the regular scroll-state values play in.
+
+     Gated on `introReady` — until the on-mount intro timeline
+     completes, the bar's positions are owned by the intro effect
+     below; we mustn't compete by snapping to scroll-state values
+     mid-flight. */
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (!introReady) return;
     const root = headerRef.current;
     if (!root) return;
     const home = root.querySelector<HTMLElement>(".header__home");
@@ -276,17 +288,80 @@ export default function Header({
         ease,
       });
     }
-  }, [collapsed, transitioningOut]);
+  }, [collapsed, transitioningOut, introReady]);
 
-  /* Set initial GSAP state on mount so the first paint matches
-     (avoids a flash of "everything visible" before the effect
-     runs). */
+  /* On-mount intro entrance.
+     Sets the bar's pieces to a hidden start state synchronously,
+     then waits for the home preloader (and any in-flight page
+     transition) to clear before staggering them in. After the
+     timeline completes, `introReady` flips and the regular
+     scroll-state effect above takes over.
+     The hidden initial-state is applied immediately so there's
+     no flash of "everything visible" while the preloader is
+     still painting on top. */
   useEffect(() => {
     if (typeof window === "undefined") return;
     const root = headerRef.current;
     if (!root) return;
+    const lines = root.querySelectorAll<HTMLElement>(".header__line");
+    const links = root.querySelectorAll<HTMLElement>(".header__link");
     const btn = root.querySelector<HTMLElement>(".header__menu-btn");
+    const contact = root.querySelector<HTMLElement>(".header__contact-btn");
+
+    /* Hidden start state. Lines collapse from the top edge
+       (transform-origin: 50% 0%); links + contact ride up out of
+       view; menu button parks off-screen-right per the always-
+       hidden-at-top rule. */
+    if (lines.length) gsap.set(lines, { scaleY: 0 });
+    if (links.length) gsap.set(links, { yPercent: -110 });
     if (btn) gsap.set(btn, { xPercent: 101 });
+    if (contact) gsap.set(contact, { yPercent: -120, opacity: 0 });
+
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    let cancelled = false;
+    awaitTransitionEnd().then(() => {
+      if (cancelled) return;
+
+      if (reduceMotion) {
+        if (lines.length) gsap.set(lines, { scaleY: 1 });
+        if (links.length) gsap.set(links, { yPercent: 0 });
+        if (contact) gsap.set(contact, { yPercent: 0, opacity: 1 });
+        setIntroReady(true);
+        return;
+      }
+
+      const dur = 0.75;
+      const ease = "expo.out";
+
+      const tl = gsap.timeline({
+        onComplete: () => setIntroReady(true),
+      });
+
+      if (lines.length) {
+        tl.to(lines, { scaleY: 1, duration: dur, ease }, 0);
+      }
+      if (links.length) {
+        tl.to(
+          links,
+          { yPercent: 0, duration: dur, ease, stagger: 0.05 },
+          0.12,
+        );
+      }
+      if (contact) {
+        tl.to(
+          contact,
+          { yPercent: 0, opacity: 1, duration: dur, ease },
+          0.28,
+        );
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
