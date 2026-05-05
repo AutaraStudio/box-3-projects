@@ -67,6 +67,21 @@ body {
   margin: 0;
 }
 
+/* ==========================================================================
+   BOX SIZING RESET
+   ==========================================================================
+   Universal border-box so width: 100% (etc.) actually means 100% of the
+   parent INCLUDING padding and border. Without this, the .container class
+   (padding-inline: var(--space-1)) was rendering ~30px wider than its
+   intended viewport at mobile sizes — every container-padded section was
+   poking out past the right edge. Applied with the * selector + ::before
+   /::after for completeness. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 
 /* ==========================================================================
    THEME SYSTEM
