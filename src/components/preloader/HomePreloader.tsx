@@ -12,16 +12,15 @@
  *      hydrates).
  *
  *   2. Two messages reveal in sequence, each animated word-by-word
- *      via a per-word blur + opacity fade (per-word stagger via
- *      `--i`):
+ *      out of overflow:hidden masks (per-word stagger via `--i`):
  *
  *        a. The brand line — "Box 3 Projects".
  *        b. The longer statement — "Your project is our priority…"
  *
  *      Each round runs the same in → hold → out beat. Between
  *      rounds the spans are unmounted (key swap) and remounted at
- *      the default blurred-and-transparent state so round two
- *      fades in cleanly without inheriting round one's exit state.
+ *      the off-screen default state so round two slides up from
+ *      below the mask, not down from above.
  *
  *   3. After the second message exits, the pink cover morphs
  *      (top/left/width/height) down to the exact bounds of the
@@ -53,20 +52,19 @@ const MESSAGES = [
 ];
 
 /* Timing — keep in sync with the per-phase rules in
-   HomePreloader.css. Reveal is now a per-word blur + opacity fade
-   (no slide), so each round can run noticeably tighter than the
-   previous mask-and-translate version. Each round's "in" duration
-   must comfortably cover (word-count × stagger) + the per-word
-   transition: 30ms × N + 500ms in, 22ms × N + 400ms out. */
-const INITIAL_HOLD_MS = 350;     // pink cover, no text yet
-const M1_IN_MS = 700;            // "Box 3 Projects" — 3 words (3×30+500=590)
-const M1_HOLD_MS = 550;          // round 1 fully visible
-const M1_OUT_MS = 550;           // round 1 fades away (3×22+400=466)
-const BETWEEN_MS = 200;          // bare cover between rounds
-const M2_IN_MS = 1000;           // long statement — 13 words (13×30+500=890)
-const M2_HOLD_MS = 1100;         // round 2 fully visible
-const M2_OUT_MS = 800;           // round 2 fades away (13×22+400=686)
-const POST_WORDS_HOLD_MS = 400;  // cover, no text — settle before morph
+   HomePreloader.css. The pre/post pauses are deliberate so the
+   intro reads as a series of considered beats rather than one
+   continuous rush. Each round's "in" duration must comfortably
+   cover (word-count × stagger) + the per-word transition. */
+const INITIAL_HOLD_MS = 400;     // pink cover, no text yet
+const M1_IN_MS = 900;            // "Box 3 Projects" — 3 words
+const M1_HOLD_MS = 700;          // round 1 fully visible
+const M1_OUT_MS = 900;           // round 1 lifts away
+const BETWEEN_MS = 250;          // bare cover between rounds
+const M2_IN_MS = 1500;           // long statement — 13 words
+const M2_HOLD_MS = 1300;         // round 2 fully visible
+const M2_OUT_MS = 1300;          // round 2 lifts away
+const POST_WORDS_HOLD_MS = 500;  // cover, no text — settle before morph
 const MORPH_MS = 1200;           // cover collapses to logo bounds
 const REVEAL_MS = 800;           // BOX 3 letters stagger in over cover
 const SAFETY_BUFFER_MS = 100;
@@ -160,8 +158,8 @@ export default function HomePreloader() {
     let t = 0;
 
     /* Step 1 — initial pause on bare cover. rAF inside the first
-       tick so the SSR-painted blurred-and-transparent state commits
-       before the round-one transition fires. */
+       tick so the SSR-painted off-screen state commits before the
+       round-one transition fires. */
     t += INITIAL_HOLD_MS;
     timers.push(
       window.setTimeout(() => {
@@ -173,21 +171,21 @@ export default function HomePreloader() {
     t += M1_IN_MS;
     timers.push(window.setTimeout(() => setPhase("m1-hold"), t));
 
-    /* Step 3 — round 1 fades out. */
+    /* Step 3 — round 1 exits upward. */
     t += M1_HOLD_MS;
     timers.push(window.setTimeout(() => setPhase("m1-out"), t));
 
     /* Step 4 — swap to round 2. Phase becomes "between" which has
        no per-phase rule, so the freshly mounted round-two spans
-       sit at the default blurred-and-transparent state ready to
-       fade in. The <p key={messageIndex}> swap forces a clean
-       unmount/mount cycle so the new spans start without inheriting
-       any in-flight transition from round one. */
+       sit at the default off-screen-below state ready to slide up.
+       The <p key={messageIndex}> swap forces a clean unmount/mount
+       cycle so the new spans start without inheriting any in-flight
+       transition from round one. */
     t += M1_OUT_MS;
     timers.push(window.setTimeout(() => setPhase("between"), t));
 
     /* Step 5 — fire round 2's words-in. rAF for the same reason as
-       step 1: let the default state paint before transitioning. */
+       step 1: let the off-screen default paint before transitioning. */
     t += BETWEEN_MS;
     timers.push(
       window.setTimeout(() => {
@@ -199,7 +197,7 @@ export default function HomePreloader() {
     t += M2_IN_MS;
     timers.push(window.setTimeout(() => setPhase("m2-hold"), t));
 
-    /* Step 7 — round 2 fades out. */
+    /* Step 7 — round 2 exits upward. */
     t += M2_HOLD_MS;
     timers.push(window.setTimeout(() => setPhase("m2-out"), t));
 
