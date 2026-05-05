@@ -17,7 +17,17 @@
  *   - missing   → cover hidden (SSR before inline script runs)
  *
  * Phase progression is driven by `data-phase` written by React:
- *   full → words-in → words-hold → words-out → morph → reveal → done
+ *   full
+ *     → m1-in → m1-hold → m1-out         // round 1: "Box 3 Projects"
+ *     → between                           // bare cover, span swap
+ *     → m2-in → m2-hold → m2-out         // round 2: editorial statement
+ *     → morph → reveal → done
+ *
+ * Both rounds reuse the same in/hold/out CSS rules — the only thing
+ * that changes between rounds is which message is rendered (selected
+ * in the React component). The word spans are key-swapped between
+ * rounds so the new round's spans mount fresh at the off-screen
+ * default state.
  */
 
 /* --- Cover ---------------------------------------------------------- */
@@ -128,20 +138,24 @@ html[data-preloader="reveal"] .home-preloader {
   white-space: pre;
 }
 
-/* Words slide in + sit at rest — same end state, different
-   transition (a tighter exit gets defined below). */
-.home-preloader[data-phase="words-in"] .home-preloader__word-inner,
-.home-preloader[data-phase="words-hold"] .home-preloader__word-inner {
+/* Words slide in + sit at rest — same end state for both rounds.
+   The "between" phase intentionally has no rule so the freshly
+   mounted round-two spans inherit the default off-screen-below
+   state and are ready to slide up when m2-in fires. */
+.home-preloader[data-phase="m1-in"] .home-preloader__word-inner,
+.home-preloader[data-phase="m1-hold"] .home-preloader__word-inner,
+.home-preloader[data-phase="m2-in"] .home-preloader__word-inner,
+.home-preloader[data-phase="m2-hold"] .home-preloader__word-inner {
   transform: translateY(0);
   opacity: 1;
 }
 
-/* Words exit upward. Both transform AND opacity transition so the
-   line lifts away gracefully instead of snapping invisible — the
-   previous version omitted opacity from the transition list, which
-   read as the text just disappearing. Stagger is a touch tighter
-   than the entrance for a deliberate exit feel. */
-.home-preloader[data-phase="words-out"] .home-preloader__word-inner {
+/* Words exit upward — same exit for both rounds. Both transform
+   AND opacity transition so the line lifts away gracefully instead
+   of snapping invisible. Stagger is a touch tighter than the
+   entrance for a deliberate exit feel. */
+.home-preloader[data-phase="m1-out"] .home-preloader__word-inner,
+.home-preloader[data-phase="m2-out"] .home-preloader__word-inner {
   transform: translateY(-110%);
   opacity: 0;
   transition:

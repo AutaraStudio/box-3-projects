@@ -11,21 +11,26 @@
  *      synchronously so there's no flash before this React tree
  *      hydrates).
  *
- *   2. Brand statement reveals word-by-word as each word's inner
- *      span slides up out of an overflow:hidden mask. Per-word
- *      stagger via the `--i` custom property.
+ *   2. Two messages reveal in sequence, each animated word-by-word
+ *      out of overflow:hidden masks (per-word stagger via `--i`):
  *
- *   3. Brief hold so the visitor can read the line.
+ *        a. The brand line — "Box 3 Projects".
+ *        b. The longer statement — "Your project is our priority…"
  *
- *   4. Words exit upward (same per-word stagger, slightly
- *      tighter), then the cover morphs (top/left/width/height)
- *      down to the exact bounds of the header logo box.
+ *      Each round runs the same in → hold → out beat. Between
+ *      rounds the spans are unmounted (key swap) and remounted at
+ *      the off-screen default state so round two slides up from
+ *      below the mask, not down from above.
  *
- *   5. Cover lowers below the header so the BOX 3 letters in
- *      the logo SVG can stagger in over it (B → O → X → 3).
+ *   3. After the second message exits, the pink cover morphs
+ *      (top/left/width/height) down to the exact bounds of the
+ *      header logo box.
  *
- *   6. Cover unmounts; the SVG's pink rect underneath is
- *      identical so the hand-off is invisible.
+ *   4. Cover lowers below the header so the BOX 3 letters in the
+ *      logo SVG can stagger in over it (B → O → X → 3).
+ *
+ *   5. Cover unmounts; the SVG's pink rect underneath is identical
+ *      so the hand-off is invisible.
  *
  * sessionStorage gates the whole thing — once played, the rest
  * of the session sees no preloader at all.
@@ -36,18 +41,28 @@ import { useEffect, useState } from "react";
 import "./HomePreloader.css";
 
 const SESSION_KEY = "box3:preloader-played";
-const STATEMENT =
-  "Your project is our priority, and we're committed to excellence from start to finish.";
+
+/* The two messages in order. Round one is the punchy brand line;
+   round two is the editorial statement. */
+const MESSAGES = [
+  "Box 3 Projects",
+  "Your project is our priority, and we're committed to excellence from start to finish.",
+];
 
 /* Timing — keep in sync with the per-phase rules in
    HomePreloader.css. The pre/post pauses are deliberate so the
    intro reads as a series of considered beats rather than one
-   continuous rush. */
-const INITIAL_HOLD_MS = 500;     // pink cover, no text yet
-const WORDS_IN_MS = 1400;        // words slide in (per-word stagger)
-const WORDS_HOLD_MS = 1500;      // words at rest, fully readable
-const WORDS_OUT_MS = 1300;       // words slide upward + out (stagger × 13 + ease)
-const POST_WORDS_HOLD_MS = 600;  // cover, no text — settle before morph
+   continuous rush. Each round's "in" duration must comfortably
+   cover (word-count × stagger) + the per-word transition. */
+const INITIAL_HOLD_MS = 400;     // pink cover, no text yet
+const M1_IN_MS = 900;            // "Box 3 Projects" — 3 words
+const M1_HOLD_MS = 700;          // round 1 fully visible
+const M1_OUT_MS = 900;           // round 1 lifts away
+const BETWEEN_MS = 250;          // bare cover between rounds
+const M2_IN_MS = 1500;           // long statement — 13 words
+const M2_HOLD_MS = 1300;         // round 2 fully visible
+const M2_OUT_MS = 1300;          // round 2 lifts away
+const POST_WORDS_HOLD_MS = 500;  // cover, no text — settle before morph
 const MORPH_MS = 1200;           // cover collapses to logo bounds
 const REVEAL_MS = 800;           // BOX 3 letters stagger in over cover
 const SAFETY_BUFFER_MS = 100;
@@ -61,12 +76,29 @@ interface TargetRect {
 
 type Phase =
   | "full"
-  | "words-in"
-  | "words-hold"
-  | "words-out"
+  | "m1-in"
+  | "m1-hold"
+  | "m1-out"
+  | "between"
+  | "m2-in"
+  | "m2-hold"
+  | "m2-out"
   | "morph"
   | "reveal"
   | "done";
+
+/* Phase → which message the text element should render. */
+function activeMessageIndex(phase: Phase): 0 | 1 {
+  if (
+    phase === "between" ||
+    phase === "m2-in" ||
+    phase === "m2-hold" ||
+    phase === "m2-out"
+  ) {
+    return 1;
+  }
+  return 0;
+}
 
 export default function HomePreloader() {
   const [phase, setPhase] = useState<Phase>("full");
@@ -120,36 +152,53 @@ export default function HomePreloader() {
        fires at the running total, then advances the cursor. */
     let t = 0;
 
-    /* Step 1 — initial pause on the bare pink cover. rAF inside the
-       first tick so the SSR initial-state paints before the words
-       transition fires. */
+    /* Step 1 — initial pause on bare cover. rAF inside the first
+       tick so the SSR-painted off-screen state commits before the
+       round-one transition fires. */
     t += INITIAL_HOLD_MS;
     timers.push(
       window.setTimeout(() => {
-        requestAnimationFrame(() => setPhase("words-in"));
+        requestAnimationFrame(() => setPhase("m1-in"));
       }, t),
     );
 
-    /* Step 2 — words at rest (long enough to actually read). */
-    t += WORDS_IN_MS;
-    timers.push(window.setTimeout(() => setPhase("words-hold"), t));
+    /* Step 2 — round 1 hold. */
+    t += M1_IN_MS;
+    timers.push(window.setTimeout(() => setPhase("m1-hold"), t));
 
-    /* Step 3 — words slide out (upwards). */
-    t += WORDS_HOLD_MS;
-    timers.push(window.setTimeout(() => setPhase("words-out"), t));
+    /* Step 3 — round 1 exits upward. */
+    t += M1_HOLD_MS;
+    timers.push(window.setTimeout(() => setPhase("m1-out"), t));
 
-    /* Step 4 — words gone, brief settle on bare cover before the
-       morph begins. */
-    t += WORDS_OUT_MS;
+    /* Step 4 — swap to round 2. Phase becomes "between" which has
+       no per-phase rule, so the freshly mounted round-two spans
+       sit at the default off-screen-below state ready to slide up.
+       The <p key={messageIndex}> swap forces a clean unmount/mount
+       cycle so the new spans start without inheriting any in-flight
+       transition from round one. */
+    t += M1_OUT_MS;
+    timers.push(window.setTimeout(() => setPhase("between"), t));
+
+    /* Step 5 — fire round 2's words-in. rAF for the same reason as
+       step 1: let the off-screen default paint before transitioning. */
+    t += BETWEEN_MS;
     timers.push(
       window.setTimeout(() => {
-        /* Phase still words-out; we're just holding the cover empty.
-           No phase change needed — text is already off-screen. */
+        requestAnimationFrame(() => setPhase("m2-in"));
       }, t),
     );
 
-    /* Step 5 — measure the logo + start the morph. */
-    t += POST_WORDS_HOLD_MS;
+    /* Step 6 — round 2 hold. */
+    t += M2_IN_MS;
+    timers.push(window.setTimeout(() => setPhase("m2-hold"), t));
+
+    /* Step 7 — round 2 exits upward. */
+    t += M2_HOLD_MS;
+    timers.push(window.setTimeout(() => setPhase("m2-out"), t));
+
+    /* Step 8 — measure the logo + start the morph (after a brief
+       settle on the bare cover). */
+    t += M2_OUT_MS + POST_WORDS_HOLD_MS;
     timers.push(
       window.setTimeout(() => {
         const logo = document.querySelector<HTMLElement>(".header__home");
@@ -168,8 +217,7 @@ export default function HomePreloader() {
       }, t),
     );
 
-    /* Step 6 — cover sits at the logo bounds, BOX 3 letters
-       stagger in. */
+    /* Step 9 — reveal: BOX 3 letters stagger in over the cover. */
     t += MORPH_MS;
     timers.push(
       window.setTimeout(() => {
@@ -178,7 +226,7 @@ export default function HomePreloader() {
       }, t),
     );
 
-    /* Step 7 — finish + unmount. */
+    /* Step 10 — finish + unmount. */
     t += REVEAL_MS + SAFETY_BUFFER_MS;
     timers.push(window.setTimeout(finish, t));
 
@@ -201,10 +249,8 @@ export default function HomePreloader() {
         }
       : (undefined as unknown as React.CSSProperties);
 
-  /* Split the brand statement into words with trailing whitespace
-     baked into each span so the words travel with their gaps when
-     wrapped into masks. */
-  const words = STATEMENT.trim().split(/\s+/);
+  const messageIndex = activeMessageIndex(phase);
+  const words = MESSAGES[messageIndex].trim().split(/\s+/);
 
   return (
     <div
@@ -213,7 +259,10 @@ export default function HomePreloader() {
       style={style}
       aria-hidden="true"
     >
-      <p className="home-preloader__text">
+      {/* The key swap on messageIndex change forces React to unmount
+          round one's spans and mount round two's afresh, so they
+          start at the off-screen-below default ready to slide up. */}
+      <p className="home-preloader__text" key={messageIndex}>
         {words.map((word, i) => (
           <span key={i} className="home-preloader__word">
             <span
