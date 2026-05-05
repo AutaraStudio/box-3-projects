@@ -257,11 +257,9 @@ body {
    Bare `<h1>`, `<p>`, `<body>` etc. render correctly out of the box.
    Override in component CSS only when the design genuinely deviates. */
 
-/* Lock the underlying page scroll while the site menu is open or
-   the home page intro loader is playing. Both attributes live on
-   <html> — MenuProvider for the menu, HomeLoader for the loader. */
-html[data-menu-open="true"] body,
-html[data-loader="true"] body {
+/* Lock the underlying page scroll while the site menu is open.
+   `data-menu-open` is set on <html> by MenuProvider. */
+html[data-menu-open="true"] body {
   overflow: hidden;
 }
 
