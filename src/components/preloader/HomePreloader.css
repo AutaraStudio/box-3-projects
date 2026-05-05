@@ -44,6 +44,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* border-box so the centering padding below counts INSIDE the
+     cover's width — otherwise when the cover shrinks to the logo's
+     4.5rem the padding pushes it ~4rem wider, producing a pink
+     rectangle hanging off to the right of the logo box. The site
+     has no global box-sizing reset, so the default would be
+     content-box. */
+  box-sizing: border-box;
   padding-inline: var(--space-2);
 }
 
