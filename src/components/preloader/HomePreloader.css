@@ -36,11 +36,10 @@
   /* svh handles iOS Safari's collapsing URL bar; falls back to
      vh on older browsers. */
   height: 100svh;
-  transition:
-    top 1.2s cubic-bezier(0.85, 0, 0.15, 1),
-    left 1.2s cubic-bezier(0.85, 0, 0.15, 1),
-    width 1.2s cubic-bezier(0.85, 0, 0.15, 1),
-    height 1.2s cubic-bezier(0.85, 0, 0.15, 1);
+  /* No positional transitions until the morph phase — otherwise
+     a viewport unit re-resolution (iOS URL bar settling, etc.)
+     can interpolate visibly on first paint, looking like the
+     cover is "sliding into" full coverage. */
   will-change: top, left, width, height;
   display: flex;
   align-items: center;
@@ -52,6 +51,17 @@
 html:not([data-preloader="active"]):not([data-preloader="reveal"])
   .home-preloader {
   display: none;
+}
+
+/* Positional transitions only switch on once we've measured the
+   logo and entered the morph phase. */
+.home-preloader[data-phase="morph"],
+.home-preloader[data-phase="reveal"] {
+  transition:
+    top 1.2s cubic-bezier(0.85, 0, 0.15, 1),
+    left 1.2s cubic-bezier(0.85, 0, 0.15, 1),
+    width 1.2s cubic-bezier(0.85, 0, 0.15, 1),
+    height 1.2s cubic-bezier(0.85, 0, 0.15, 1);
 }
 
 /* During reveal the cover drops BELOW the header (z-index 1000)

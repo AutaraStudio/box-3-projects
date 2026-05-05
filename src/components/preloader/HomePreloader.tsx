@@ -40,12 +40,16 @@ const STATEMENT =
   "Your project is our priority, and we're committed to excellence from start to finish.";
 
 /* Timing — keep in sync with the per-phase rules in
-   HomePreloader.css. */
-const WORDS_IN_MS = 1400;
-const WORDS_HOLD_MS = 700;
-const WORDS_OUT_MS = 950;
-const MORPH_MS = 1200;
-const REVEAL_MS = 800;
+   HomePreloader.css. The pre/post pauses are deliberate so the
+   intro reads as a series of considered beats rather than one
+   continuous rush. */
+const INITIAL_HOLD_MS = 500;     // pink cover, no text yet
+const WORDS_IN_MS = 1400;        // words slide in (per-word stagger)
+const WORDS_HOLD_MS = 1500;      // words at rest, fully readable
+const WORDS_OUT_MS = 900;        // words slide upward + out
+const POST_WORDS_HOLD_MS = 600;  // cover, no text — settle before morph
+const MORPH_MS = 1200;           // cover collapses to logo bounds
+const REVEAL_MS = 800;           // BOX 3 letters stagger in over cover
 const SAFETY_BUFFER_MS = 100;
 
 interface TargetRect {
@@ -112,28 +116,40 @@ export default function HomePreloader() {
 
     const timers: number[] = [];
 
-    /* Step 1 — words slide in. requestAnimationFrame so the
-       initial-state styles paint before the transition fires. */
+    /* Cumulative timeline — readable + easy to retune. Each step
+       fires at the running total, then advances the cursor. */
+    let t = 0;
+
+    /* Step 1 — initial pause on the bare pink cover. rAF inside the
+       first tick so the SSR initial-state paints before the words
+       transition fires. */
+    t += INITIAL_HOLD_MS;
     timers.push(
       window.setTimeout(() => {
         requestAnimationFrame(() => setPhase("words-in"));
-      }, 60),
+      }, t),
     );
 
-    /* Step 2 — words at rest. */
-    timers.push(
-      window.setTimeout(() => setPhase("words-hold"), WORDS_IN_MS),
-    );
+    /* Step 2 — words at rest (long enough to actually read). */
+    t += WORDS_IN_MS;
+    timers.push(window.setTimeout(() => setPhase("words-hold"), t));
 
     /* Step 3 — words slide out (upwards). */
+    t += WORDS_HOLD_MS;
+    timers.push(window.setTimeout(() => setPhase("words-out"), t));
+
+    /* Step 4 — words gone, brief settle on bare cover before the
+       morph begins. */
+    t += WORDS_OUT_MS;
     timers.push(
-      window.setTimeout(
-        () => setPhase("words-out"),
-        WORDS_IN_MS + WORDS_HOLD_MS,
-      ),
+      window.setTimeout(() => {
+        /* Phase still words-out; we're just holding the cover empty.
+           No phase change needed — text is already off-screen. */
+      }, t),
     );
 
-    /* Step 4 — measure the logo + start the morph. */
+    /* Step 5 — measure the logo + start the morph. */
+    t += POST_WORDS_HOLD_MS;
     timers.push(
       window.setTimeout(() => {
         const logo = document.querySelector<HTMLElement>(".header__home");
@@ -149,33 +165,22 @@ export default function HomePreloader() {
           height: r.height,
         });
         setPhase("morph");
-      }, WORDS_IN_MS + WORDS_HOLD_MS + WORDS_OUT_MS),
+      }, t),
     );
 
-    /* Step 5 — cover sits at the logo bounds, BOX 3 letters
+    /* Step 6 — cover sits at the logo bounds, BOX 3 letters
        stagger in. */
+    t += MORPH_MS;
     timers.push(
-      window.setTimeout(
-        () => {
-          document.documentElement.setAttribute("data-preloader", "reveal");
-          setPhase("reveal");
-        },
-        WORDS_IN_MS + WORDS_HOLD_MS + WORDS_OUT_MS + MORPH_MS,
-      ),
+      window.setTimeout(() => {
+        document.documentElement.setAttribute("data-preloader", "reveal");
+        setPhase("reveal");
+      }, t),
     );
 
-    /* Step 6 — finish + unmount. */
-    timers.push(
-      window.setTimeout(
-        finish,
-        WORDS_IN_MS +
-          WORDS_HOLD_MS +
-          WORDS_OUT_MS +
-          MORPH_MS +
-          REVEAL_MS +
-          SAFETY_BUFFER_MS,
-      ),
-    );
+    /* Step 7 — finish + unmount. */
+    t += REVEAL_MS + SAFETY_BUFFER_MS;
+    timers.push(window.setTimeout(finish, t));
 
     return () => {
       for (const id of timers) window.clearTimeout(id);
