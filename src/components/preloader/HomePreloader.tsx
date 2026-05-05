@@ -39,6 +39,8 @@
 
 import { useEffect, useState } from "react";
 
+import { endPreloader } from "./preloaderState";
+
 import "./HomePreloader.css";
 
 const SESSION_KEY = "box3:preloader-played";
@@ -140,6 +142,9 @@ export default function HomePreloader() {
         /* fine */
       }
       document.documentElement.setAttribute("data-preloader", "skip");
+      /* Broadcast — every reveal observer that's been parked
+         waiting for the cover to clear can now fire. */
+      endPreloader();
       setPhase("done");
     };
 
