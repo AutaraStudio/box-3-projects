@@ -3,27 +3,20 @@
 /**
  * HomeLoader
  * ==========
- * One-shot intro overlay that plays the first time the visitor
- * lands on the home page in a session. Pink full-viewport cover
- * with the brand statement revealing word-by-word, a brief held
- * beat, then a smooth slide-up to reveal the page beneath.
+ * One-shot editorial intro overlay. Plays the first time a
+ * visitor lands on the home page in their browser-tab session.
  *
- * All motion lives in CSS keyframes (HomeLoader.css) — keyframes
- * tick reliably on this stack where GSAP timelines have been
- * dropping their ticks. The component just gates visibility,
- * locks scroll, and switches the cover into its exit state at
- * the right moment.
+ * Pink full-viewport cover, brand statement fades up smoothly,
+ * a brief held beat, then the cover sweeps up off the top of the
+ * viewport to reveal the page beneath.
  *
- * Sequencing (rough):
- *   0.0s   words slide up out of overflow:hidden masks (per-word
- *          stagger via --i)
- *   ~1.3s  reveal complete
- *   +0.6s  hold
- *   +0.8s  cover sweeps up
- *   ~2.7s  total — overlay unmounts, scroll resumes
+ * All motion is in CSS keyframes (HomeLoader.css). This component
+ * just gates visibility, locks page scroll, switches the cover
+ * into its exit state at the right moment, and unmounts when
+ * the animation completes.
  *
- * sessionStorage gates the loader so it plays once per browser-
- * tab session (refreshing the home mid-session doesn't replay).
+ * sessionStorage key "box3:home-loader-played" — once set, the
+ * loader is skipped for the rest of the session.
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -36,21 +29,21 @@ interface HomeLoaderProps {
 
 const SESSION_KEY = "box3:home-loader-played";
 
-/* Per-word stagger × words + cover-exit + small buffer = total
-   time the loader is on screen. Tuned to keep words on screen
-   long enough to read but not feel slow. */
-const REVEAL_DURATION_MS = 1300;
-const HOLD_MS = 600;
-const COVER_EXIT_MS = 800;
+/* Timing — keep in sync with HomeLoader.css. */
+const TEXT_IN_DELAY_MS = 150;
+const TEXT_IN_MS = 1000;
+const HOLD_MS = 500;
+const COVER_OUT_MS = 950;
+
+const ENTER_DURATION_MS = TEXT_IN_DELAY_MS + TEXT_IN_MS + HOLD_MS;
+const TOTAL_MS = ENTER_DURATION_MS + COVER_OUT_MS;
 
 export default function HomeLoader({ message }: HomeLoaderProps) {
   const [visible, setVisible] = useState(true);
   const [exiting, setExiting] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
 
-  /* Decide whether to play. Runs ONCE on mount. If the loader has
-     already played in this tab session we skip — the home page
-     renders straight to its hero. */
+  /* Skip the loader when sessionStorage already records a play. */
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
@@ -58,52 +51,51 @@ export default function HomeLoader({ message }: HomeLoaderProps) {
         setVisible(false);
       }
     } catch {
-      /* sessionStorage can throw in private mode — fall through
-         to playing the loader. */
+      /* private mode — fall through to playing the loader. */
     }
   }, []);
 
-  /* Run the timeline. CSS handles the visual motion; this effect
-     only orchestrates the timing + scroll lock + final unmount. */
   useEffect(() => {
     if (!visible) return;
 
-    /* Lock page scroll while the loader is up via a body-level
-       data-attribute (CSS handles `overflow: hidden` in
-       globals.css). We avoid `lenis.stop()` because pausing Lenis
-       has been observed to halt the GSAP ticker driving its raf
-       on this stack. */
+    /* Lock scroll while the loader is up. CSS in globals.css
+       reads `data-loader` on <html> and applies overflow:hidden
+       to <body>. We avoid `lenis.stop()` because it has been
+       observed to halt the GSAP ticker on this stack. */
     document.documentElement.setAttribute("data-loader", "true");
 
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
-    const totalMs = reduceMotion
-      ? 0
-      : REVEAL_DURATION_MS + HOLD_MS + COVER_EXIT_MS;
+    if (reduceMotion) {
+      try {
+        sessionStorage.setItem(SESSION_KEY, "1");
+      } catch {
+        /* fine */
+      }
+      document.documentElement.removeAttribute("data-loader");
+      setVisible(false);
+      return;
+    }
 
-    const startExitAt = REVEAL_DURATION_MS + HOLD_MS;
-
-    /* Mid-timeline: switch the cover into its exit state. CSS
-       keyframes scoped to [data-state="exit"] sweep it up. */
+    /* Switch the cover into its exit state once the enter
+       sequence has settled. CSS keyframes scoped to
+       [data-state="exit"] then sweep the cover off-screen and
+       fade the text out alongside it. */
     const exitTimer = window.setTimeout(() => {
       setExiting(true);
-    }, startExitAt);
+    }, ENTER_DURATION_MS);
 
-    /* End: persist the session flag, unmount, restore scroll. */
-    const finishTimer = window.setTimeout(
-      () => {
-        try {
-          sessionStorage.setItem(SESSION_KEY, "1");
-        } catch {
-          /* private mode — fine. */
-        }
-        document.documentElement.removeAttribute("data-loader");
-        setVisible(false);
-      },
-      totalMs,
-    );
+    const finishTimer = window.setTimeout(() => {
+      try {
+        sessionStorage.setItem(SESSION_KEY, "1");
+      } catch {
+        /* fine */
+      }
+      document.documentElement.removeAttribute("data-loader");
+      setVisible(false);
+    }, TOTAL_MS);
 
     return () => {
       window.clearTimeout(exitTimer);
@@ -114,10 +106,6 @@ export default function HomeLoader({ message }: HomeLoaderProps) {
 
   if (!visible) return null;
 
-  /* Split the message into word spans + per-word masks. The CSS
-     keyframe + per-word stagger via --i drive the wipe. */
-  const words = message.trim().split(/\s+/);
-
   return (
     <div
       ref={rootRef}
@@ -126,19 +114,7 @@ export default function HomeLoader({ message }: HomeLoaderProps) {
       data-state={exiting ? "exit" : "in"}
       aria-hidden="true"
     >
-      <p className="home-loader__text text-h2">
-        {words.map((word, i) => (
-          <span key={i} className="home-loader__word">
-            <span
-              className="home-loader__word-inner"
-              style={{ ["--i" as string]: i }}
-            >
-              {word}
-              {i < words.length - 1 ? " " : ""}
-            </span>
-          </span>
-        ))}
-      </p>
+      <p className="home-loader__text text-h2">{message}</p>
     </div>
   );
 }

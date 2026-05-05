@@ -1,34 +1,56 @@
 /**
  * HomeLoader
  * ==========
- * Pure-CSS one-shot intro overlay. Pink theme cover, words wipe
- * up from below with a per-word stagger driven by --i, brief hold,
- * then the whole cover sweeps up off the top of the viewport. We
- * use CSS keyframes (not GSAP) because GSAP timelines have been
- * dropping their ticks intermittently on this stack — keyframes
- * always tick.
+ * Editorial intro overlay. Pink theme cover fills the viewport,
+ * the brand statement fades up smoothly, brief hold, then the
+ * whole cover sweeps up off the top to reveal the page beneath.
  *
- * Total duration: ~3.4s
- *   0.0s   words start sliding up (0.7s each, 0.05s stagger per word)
- *   ~1.4s  reveal complete (assuming ~14 words)
- *   +0.7s  hold
- *   +0.8s  cover slides up
- *   ~3.4s  done — JS unmounts the loader
+ * All motion via CSS keyframes — same easing tokens as the rest
+ * of the site so it reads as continuous with the other reveals.
+ *
+ * Sequencing:
+ *   0.0s    cover sits, text invisible
+ *   0.15s   text fades + slides up over 1.0s
+ *   ~1.15s  text settled
+ *   +0.5s   hold
+ *   +0.95s  cover sweeps up; text fades out as it goes
+ *   ~2.6s   done — JS unmounts the overlay
  */
 
-@keyframes home-loader-word-in {
-  from { transform: translateY(110%); }
-  to   { transform: translateY(0); }
-}
-
-@keyframes home-loader-cover-out {
-  /* Held in place for the first portion of the keyframe so the
-     timing inside CSS lines up with the per-word stagger.
-     Sweep up across the back half. */
-  0%, 60% {
+/* The text animates up + in. Long expo-out so the settle reads as
+   considered, not snappy. */
+@keyframes home-loader-text-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
     transform: translateY(0);
   }
-  100% {
+}
+
+/* Text on exit fades + drifts a hair upward — so it's gone by the
+   time the cover finishes its sweep. */
+@keyframes home-loader-text-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+}
+
+/* Cover sweep — translate from 0 to fully off the top. The smooth
+   in-out cubic keeps the start and end of the slide deliberate
+   rather than punchy. */
+@keyframes home-loader-cover-out {
+  from {
+    transform: translateY(0);
+  }
+  to {
     transform: translateY(-100%);
   }
 }
@@ -44,13 +66,11 @@
   justify-content: center;
   padding-inline: var(--space-2);
   overflow: hidden;
-  /* Cover-exit animation runs after the words finish, holds,
-     then sweeps up. data-state="exit" triggers it. */
   will-change: transform;
 }
 
 .home-loader[data-state="exit"] {
-  animation: home-loader-cover-out 1.5s cubic-bezier(0.85, 0, 0.15, 1)
+  animation: home-loader-cover-out 0.95s cubic-bezier(0.83, 0, 0.17, 1)
     forwards;
 }
 
@@ -58,44 +78,38 @@
   margin: 0;
   text-align: center;
   text-wrap: balance;
-  max-width: 38ch;
+  max-width: 36ch;
   font-weight: var(--font-weight-medium);
   letter-spacing: var(--letter-spacing-tight);
   line-height: var(--line-height-tight);
+
+  /* Initial state — invisible, sitting slightly below its
+     resting position. The keyframe drives it back up. */
+  opacity: 0;
+  transform: translateY(1.25rem);
+  animation: home-loader-text-in 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s
+    forwards;
+  will-change: transform, opacity;
 }
 
-/* Per-word mask — overflow:hidden, the inner span animates up
-   out of it. */
-.home-loader__word {
-  display: inline-flex;
-  overflow: hidden;
-  vertical-align: top;
-  /* Tiny extra room so descenders aren't clipped by the mask. */
-  padding-bottom: 0.1em;
-  margin-bottom: -0.1em;
+.home-loader[data-state="exit"] .home-loader__text {
+  /* Exit-state animation runs ALONGSIDE the cover sweep so the
+     text has gone before the cover finishes leaving. */
+  animation: home-loader-text-out 0.45s cubic-bezier(0.4, 0, 0.6, 1)
+    forwards;
 }
 
-/* The actual moving element. Initial state translateY(110%)
-   parks the word below the mask. Animation slides it back to 0
-   with a per-word delay set inline via --i. */
-.home-loader__word-inner {
-  display: inline-block;
-  transform: translateY(110%);
-  animation: home-loader-word-in 0.7s cubic-bezier(0.16, 1, 0.3, 1)
-    calc(var(--i, 0) * 0.045s) forwards;
-  will-change: transform;
-}
-
-/* Reduced motion — no animation, just show the text + skip the
-   cover-exit sweep. The loader still fades out via JS unmounting
-   it but no motion happens. */
 @media (prefers-reduced-motion: reduce) {
-  .home-loader__word-inner {
-    transform: translateY(0);
+  .home-loader__text {
+    opacity: 1;
+    transform: none;
     animation: none;
   }
   .home-loader[data-state="exit"] {
     animation: none;
     transform: translateY(-100%);
+  }
+  .home-loader[data-state="exit"] .home-loader__text {
+    animation: none;
   }
 }
