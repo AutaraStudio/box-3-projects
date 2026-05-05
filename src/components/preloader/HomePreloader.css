@@ -42,9 +42,18 @@
 /* Hide the cover unless the preloader is mid-flight. "active" is
    the cover-visible state during the hold + morph; "reveal" is
    the brief moment the cover sits at the logo bounds while the
-   BOX 3 SVG fades in over it (same pink, no visual gap). Any
-   other value (or missing attribute) keeps the cover hidden. */
+   BOX 3 letters stagger in. Any other value (or missing
+   attribute) keeps the cover hidden. */
 html:not([data-preloader="active"]):not([data-preloader="reveal"])
   .home-preloader {
   display: none;
+}
+
+/* During reveal the cover drops BELOW the header (z-index 1000)
+   so the BOX 3 letters being painted in the SVG above it are
+   visible. The cover's own pink rectangle still sits behind the
+   logo's identical pink rect — both pink, same position, so no
+   visual gap as we hand off. */
+html[data-preloader="reveal"] .home-preloader {
+  z-index: 999;
 }

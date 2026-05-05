@@ -35,11 +35,12 @@ const SESSION_KEY = "box3:preloader-played";
 /* Timing — keep in sync with HomePreloader.css transition duration. */
 const HOLD_MS = 2000;
 const MORPH_DURATION_MS = 1200;
-/* Once the cover is sitting at the logo's bounds, the BOX 3 SVG
-   fades in OVER it. The cover stays in place for the duration of
-   the fade so we never see a transparent gap — both layers carry
-   the same pink, then the letters appear in front. */
-const REVEAL_MS = 500;
+/* Once the cover is sitting at the logo's bounds, the four BOX 3
+   letters stagger in (per-letter `transition-delay` in
+   Header.css). Total stagger ≈ 300ms + 400ms transition for the
+   last letter = 700ms; REVEAL_MS rounds up so every letter has
+   landed before we unmount the cover. */
+const REVEAL_MS = 800;
 const SAFETY_BUFFER_MS = 100;
 
 interface TargetRect {
