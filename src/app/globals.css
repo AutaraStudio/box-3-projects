@@ -31,19 +31,27 @@
   --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
 }
 
-/* Tablet — 768px to 991px */
+/* Tablet — 768px to 991px.
+   Ideal sits near the top of the range so 1rem ≈ 16px on big
+   tablets / iPad portrait and shrinks slightly on the smaller
+   end. Was 850 (1rem ≈ 18.65px at 991, slightly too large). */
 @media (max-width: 991px) {
   :root {
-    --size-container-ideal: 850;
+    --size-container-ideal: 950;
     --size-container-min: 768px;
     --size-container-max: 991px;
   }
 }
 
-/* Mobile Landscape — 480px to 767px */
+/* Mobile Landscape — 480px to 767px.
+   `--size-container-ideal: 640` puts the design-size point in the
+   middle of the range so 1rem stays in the 12–20px band across
+   the whole breakpoint (was 390, which left the upper bound
+   producing ~31px and made everything massive on iPad mini /
+   smaller tablets / DevTools "tablet"). */
 @media (max-width: 767px) {
   :root {
-    --size-container-ideal: 390;
+    --size-container-ideal: 640;
     --size-container-min: 480px;
     --size-container-max: 767px;
   }
