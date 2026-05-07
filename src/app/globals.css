@@ -263,6 +263,33 @@ body {
   --space-14:    14rem;
   --space-15:    15rem;
   --space-16:    16rem;
+
+  /* ── Header sizing ─────────────────────────────────────────
+     Single source of truth for the fixed header's vertical
+     footprint. Components that need to clear the header
+     (page-top hero padding, menu overlay panel, anchor
+     scroll-margin, etc.) reference these so a header resize
+     never goes out of sync.
+
+     `--header-offset` mirrors `.header { top: var(--space-1) }`.
+     `--header-bottom` is what most components actually need —
+     the y-coordinate at which content should start. */
+  --header-offset: var(--space-1);
+  --header-height: 4.5rem;
+  --header-bottom: calc(var(--header-offset) + var(--header-height));
+
+  /* Convenience offset = nav clearance + comfortable breathing
+     room. Use anywhere a section's first child should clear the
+     header without touching it. */
+  --nav-clearance: calc(var(--header-bottom) + var(--space-3));
+}
+
+@media (max-width: 991px) {
+  :root {
+    /* Mobile header is shorter — all three pills (logo, menu,
+       contact) collapse to a single 4rem height. */
+    --header-height: 4rem;
+  }
 }
 
 

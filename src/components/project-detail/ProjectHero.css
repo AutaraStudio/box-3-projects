@@ -74,19 +74,18 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  /* Mobile: tight padding so the tag → title → stats column reads
-     as one compact block beneath the header rather than spread out
-     with editorial whitespace. The justify-end behaviour only
-     matters once the column becomes a 100vh sticky frame on
-     desktop, where the larger padding kicks in. */
-  padding-top: var(--space-3);
+  /* Top padding clears the fixed header (--header-bottom = top
+     offset + height) and adds editorial breathing room. Single
+     calc shared with the menu sidebar + any other hero-style
+     section so the clearance never drifts out of sync. */
+  padding-top: calc(var(--header-bottom) + var(--space-3));
   padding-bottom: var(--space-3);
   gap: var(--space-3);
 }
 
 @media (min-width: 64rem) {
   .project-hero__content {
-    padding-top: var(--space-7);
+    padding-top: calc(var(--header-bottom) + var(--space-5));
     padding-bottom: var(--space-5);
     gap: var(--space-6);
     height: 100%;
@@ -179,15 +178,16 @@
 /* ----- Right column gallery ----- */
 
 .project-hero__gallery {
-  /* First image enters just above the viewport midline so it
-     clears the nav at the top of the section but stays visible
-     above the fold. */
-  padding-top: 45svh;
+  /* First image clears the fixed header with comfortable
+     editorial spacing — small enough that the image is clearly
+     visible above the fold on page load instead of hiding
+     half-way down the viewport. */
+  padding-top: calc(var(--header-bottom) + var(--space-3));
 }
 
 @media (max-width: 63.99rem) {
   .project-hero__gallery {
-    padding-top: var(--space-7);
+    padding-top: calc(var(--header-bottom) + var(--space-3));
   }
 }
 

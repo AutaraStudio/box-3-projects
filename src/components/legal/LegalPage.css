@@ -14,13 +14,13 @@
   /* Top padding clears the fixed header (`.header` is 4.5rem tall
      at top: var(--space-1)). Bottom matches the editorial section
      pacing used elsewhere on v2. */
-  padding-top: calc(var(--space-1) + 4.5rem + var(--space-3));
+  padding-top: var(--nav-clearance);
   padding-bottom: var(--space-5);
 }
 
 @media (min-width: 64rem) {
   .legal-page {
-    padding-top: calc(var(--space-1) + 4.5rem + var(--space-5));
+    padding-top: calc(var(--header-bottom) + var(--space-5));
     padding-bottom: var(--space-7);
   }
 }
@@ -103,7 +103,7 @@
   .legal-page__toc {
     position: sticky;
     /* Sit beneath the fixed header with a comfortable gap. */
-    top: calc(var(--space-1) + 4.5rem + var(--space-2));
+    top: calc(var(--header-bottom) + var(--space-2));
     align-self: start;
   }
 }
@@ -178,7 +178,7 @@
   flex-direction: column;
   gap: var(--space-1-5);
   /* Allow anchor links to scroll past the fixed header. */
-  scroll-margin-top: calc(var(--space-1) + 4.5rem + var(--space-2));
+  scroll-margin-top: calc(var(--header-bottom) + var(--space-2));
 }
 
 .legal-page__section + .legal-page__section {

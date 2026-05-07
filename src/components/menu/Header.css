@@ -64,12 +64,14 @@
 }
 
 /* Brand is a square logo block — same height as the menu/contact
-   buttons for a clean top alignment. */
+   buttons for a clean top alignment. Height is driven by the
+   global --header-height token so mobile (4rem) and desktop
+   (4.5rem) stay in lock-step with --header-bottom / --nav-clearance. */
 .header__home {
   position: relative;
   display: inline-block;
-  width: 4.5rem;
-  height: 4.5rem;
+  width: var(--header-height);
+  height: var(--header-height);
   text-decoration: none;
   border-radius: 0;
   overflow: hidden;
@@ -218,13 +220,21 @@ html[data-preloader="active"] .header__home-logo-mark {
 }
 
 /* The slot keeps a fixed footprint so the Menu button can slide in
-   without shifting the Contact button next to it. */
+   without shifting the Contact button next to it. Height matches
+   the logo + contact button so all three pills sit on one
+   horizontal axis. */
 .header__menu-slot {
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
   width: 6rem;
-  height: 3.5rem;
+  height: var(--header-height);
+}
+
+@media (max-width: 991px) {
+  .header__menu-slot {
+    width: 5.5rem;
+  }
 }
 
 .header__menu-btn {
@@ -262,13 +272,15 @@ html[data-preloader="active"] .header__home-logo-mark {
   position: relative;
 }
 
-/* --- Contact button (always visible, pen icon) --------------------- */
+/* --- Contact button (always visible, pen icon) ---------------------
+   Square pill matching --header-height so it sits flush with the
+   logo and the menu slot. */
 .header__contact-btn {
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
-  width: 3.5rem;
-  height: 3.5rem;
+  width: var(--header-height);
+  height: var(--header-height);
   border: 1px solid var(--theme-text);
   background-color: var(--theme-text);
   color: var(--theme-bg);
@@ -290,4 +302,14 @@ html[data-preloader="active"] .header__home-logo-mark {
   position: relative;
   width: 1.0625rem;
   height: 1.5625rem;
+}
+
+/* Slightly larger pen on mobile so the icon reads at the same
+   weight as the logo's wordmark and the Menu button label
+   alongside it. */
+@media (max-width: 991px) {
+  .header__contact-btn-icon {
+    width: 1.25rem;
+    height: 1.75rem;
+  }
 }

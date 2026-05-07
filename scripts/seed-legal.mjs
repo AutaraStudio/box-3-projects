@@ -481,7 +481,7 @@ const docs = [
   [
     "Privacy Policy",
     buildLegalDoc({
-      id: "legalPage.privacyPolicy",
+      id: "legalPage-privacy-policy",
       slug: "privacy-policy",
       title: "Privacy Policy",
       intro:
@@ -494,7 +494,7 @@ const docs = [
   [
     "Terms & Conditions",
     buildLegalDoc({
-      id: "legalPage.termsAndConditions",
+      id: "legalPage-terms-and-conditions",
       slug: "terms-and-conditions",
       title: "Terms & Conditions",
       intro:
