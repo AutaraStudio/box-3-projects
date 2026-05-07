@@ -45,6 +45,14 @@
   padding-top: 0;
 }
 
+/* Mobile: the row image is `order: -1`, so it sits at the top of
+   the row with nothing between it and the row's top hairline.
+   Add padding-block so the thumbnail breathes off both dividers
+   instead of touching them. */
+.related-projects .projects-list__row-inner {
+  padding-block: var(--space-1-5);
+}
+
 @media (min-width: 64rem) {
   .related-projects .projects-list__row {
     /* Down from max(14rem, 15vw) on the archive — gives a tighter

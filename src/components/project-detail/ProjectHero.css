@@ -178,16 +178,17 @@
 /* ----- Right column gallery ----- */
 
 .project-hero__gallery {
-  /* First image clears the fixed header with comfortable
-     editorial spacing — small enough that the image is clearly
-     visible above the fold on page load instead of hiding
-     half-way down the viewport. */
-  padding-top: calc(var(--header-bottom) + var(--space-3));
+  /* Mobile: small editorial gap beneath the title block (which
+     already supplies the header clearance via its own
+     padding-top). Desktop: the right column starts at the top of
+     the section so we add header clearance here so the first
+     image is clearly above the fold on page load. */
+  padding-top: var(--space-3);
 }
 
-@media (max-width: 63.99rem) {
+@media (min-width: 64rem) {
   .project-hero__gallery {
-    padding-top: calc(var(--header-bottom) + var(--space-3));
+    padding-top: calc(var(--header-bottom) + var(--space-2));
   }
 }
 
