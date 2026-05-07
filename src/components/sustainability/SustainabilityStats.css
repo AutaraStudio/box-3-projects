@@ -72,16 +72,12 @@
   padding-bottom: var(--space-3);
 }
 
-/* Mobile: drop the sticky head so the cards' opaque rows visibly
-   wipe over and replace it as the user scrolls — matches the
-   editorial intent on a single scrolling column where keeping
-   the head pinned forever would compete with the stat values. */
-@media (max-width: 63.99rem) {
-  .sustainability-stats__head {
-    position: relative;
-    top: auto;
-    z-index: 1;
-  }
+/* Head fade-out — applied by JS via inline transform/opacity for
+   the scrubbed scroll effect. The will-change keeps the
+   compositor warmed up so the fade reads smoothly. */
+.sustainability-stats__head {
+  will-change: opacity, transform;
+  transform-origin: left top;
 }
 
 .sustainability-stats__head-label {
@@ -206,31 +202,15 @@
   .sustainability-stats__grid--mobile {
     display: flex;
     flex-direction: column;
-    /* Negative gap pulls each row up so its full-bleed background
-       overlaps the previous row's bottom by a few pixels — gives
-       the visual impression of a continuous opaque band that
-       sequentially wipes over anything beneath as the user
-       scrolls (intro heading, eyebrow, etc.). */
-    gap: 0;
+    gap: var(--space-3);
   }
 
-  /* Each row is full-bleed with a solid theme-bg so it visually
-     occludes the heading + eyebrow once it scrolls into their
-     vertical band. The row is the "row background" the cards
-     sit on; the card itself controls width + alignment within. */
+  /* Mobile row uses flex with end-align driven by data-position so
+     each card hugs its side of the column. Keeps the staggered
+     rhythm without the half-width grid that made the cards feel
+     pinched. */
   .sustainability-stats__mobile-row {
     display: flex;
-    align-items: center;
-    /* Negative side margins + matching padding pull the
-       background out to the viewport edges, beyond the
-       container gutter, so nothing peeks through. Padding
-       restores the in-content space the card needs to align. */
-    margin-inline: calc(var(--space-1) * -1);
-    padding-inline: var(--space-1);
-    padding-block: var(--space-2);
-    background-color: var(--theme-bg);
-    position: relative;
-    z-index: 2;
   }
 
   .sustainability-stats__mobile-row[data-position="left"] {
@@ -240,11 +220,11 @@
     justify-content: flex-end;
   }
 
-  /* Card on mobile: ~62% of the row so it's clearly wider than
-     the half-width grid it used to sit in, but still leaves
-     visible negative space on the opposite side for the
-     staggered editorial rhythm. Aspect ratio 0.85:1 keeps the
-     card a touch taller than wide for the value to dominate. */
+  /* Card width chosen to feel meaningfully larger than the
+     previous half-width while still leaving a visible negative-
+     space ledge on the opposite side for the staggered rhythm.
+     0.85:1 keeps the card a touch taller than wide so the
+     value dominates. */
   .sustainability-stats__mobile-row .sustainability-stats__card {
     position: relative;
     top: auto;

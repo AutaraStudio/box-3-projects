@@ -32,12 +32,20 @@
  * sliced. Renders nothing if no items are passed.
  */
 
-import { type CSSProperties } from "react";
+"use client";
+
+import { useEffect, useRef, type CSSProperties } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import Heading from "@/components/ui/Heading";
 import type { SustainabilityStatItem } from "@/sanity/queries/sustainabilityPage";
 
 import "./SustainabilityStats.css";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 const MAX_CARDS = 4;
 
@@ -59,13 +67,58 @@ export default function SustainabilityStats({
   const cards = items.slice(0, MAX_CARDS);
   const cols = cards.length;
 
+  const headRef = useRef<HTMLElement | null>(null);
+  const staircaseRef = useRef<HTMLDivElement | null>(null);
+
+  /* Scrubbed fade + scale on the head. Plays as the staircase
+     scrolls into the viewport — by the time the first card
+     reaches the head's vertical band, the head has fully faded
+     and shrunk just enough to read as "stepping back" rather
+     than disappearing abruptly. Sticky positioning on the head
+     stays intact so the effect ties together the original
+     pinned-heading behaviour with a natural exit. */
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const head = headRef.current;
+    const staircase = staircaseRef.current;
+    if (!head || !staircase) return;
+
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (reduced) return;
+
+    gsap.set(head, { opacity: 1, scale: 1 });
+
+    const tween = gsap.to(head, {
+      opacity: 0,
+      scale: 0.92,
+      ease: "none",
+      scrollTrigger: {
+        trigger: staircase,
+        /* Start fading the moment the staircase enters from the
+           bottom; finish well before the user has scrolled past
+           the head's pinned position so the heading is gone by
+           the time the first card overlaps it. */
+        start: "top 85%",
+        end: "top 25%",
+        scrub: true,
+      },
+    });
+
+    return () => {
+      tween.scrollTrigger?.kill();
+      tween.kill();
+    };
+  }, []);
+
   if (cards.length === 0) return null;
 
   return (
     <section className="sustainability-stats" data-theme={theme}>
       <div className="container sustainability-stats__inner">
         {(label || heading) && (
-          <header className="sustainability-stats__head">
+          <header ref={headRef} className="sustainability-stats__head">
             {label && (
               <p className="sustainability-stats__head-label text-small text-caps">
                 {label}
@@ -83,6 +136,7 @@ export default function SustainabilityStats({
         )}
 
         <div
+          ref={staircaseRef}
           className="sustainability-stats__staircase"
           style={{ "--cols": cols } as CSSProperties}
         >
