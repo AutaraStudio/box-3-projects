@@ -34,6 +34,24 @@ interface ApplyModalProps {
   /** Role title — displayed in the modal header so the candidate
    *  can confirm what they're applying for. */
   roleTitle: string;
+  eyebrowLabel?: string;
+  closeLabel?: string;
+  closeAriaLabel?: string;
+  firstNameLabel?: string;
+  lastNameLabel?: string;
+  emailLabel?: string;
+  phoneLabel?: string;
+  linkLabel?: string;
+  experienceLabel?: string;
+  cvLabel?: string;
+  filePickerLabel?: string;
+  fileClearLabel?: string;
+  submitLabel?: string;
+  submittingLabel?: string;
+  legalCopy?: string;
+  sentHeading?: string;
+  sentBody?: string;
+  sentCloseLabel?: string;
 }
 
 type Status = "idle" | "submitting" | "sent";
@@ -42,6 +60,24 @@ export default function ApplyModal({
   open,
   onClose,
   roleTitle,
+  eyebrowLabel,
+  closeLabel,
+  closeAriaLabel,
+  firstNameLabel,
+  lastNameLabel,
+  emailLabel,
+  phoneLabel,
+  linkLabel,
+  experienceLabel,
+  cvLabel,
+  filePickerLabel,
+  fileClearLabel,
+  submitLabel,
+  submittingLabel,
+  legalCopy,
+  sentHeading,
+  sentBody,
+  sentCloseLabel,
 }: ApplyModalProps) {
   const [status, setStatus] = useState<Status>("idle");
   const [fileName, setFileName] = useState<string | null>(null);
@@ -91,7 +127,7 @@ export default function ApplyModal({
       <button
         type="button"
         className="apply-modal__backdrop"
-        aria-label="Close application form"
+        aria-label={closeAriaLabel ?? "Close application form"}
         tabIndex={open ? 0 : -1}
         onClick={onClose}
       />
@@ -117,7 +153,7 @@ export default function ApplyModal({
         <header className="apply-modal__head">
           <div className="apply-modal__head-text">
             <p className="apply-modal__eyebrow text-small text-caps">
-              Apply for
+              {eyebrowLabel ?? "Apply for"}
             </p>
             <h2
               id="apply-modal-title"
@@ -129,7 +165,7 @@ export default function ApplyModal({
           <button
             type="button"
             className="apply-modal__close"
-            aria-label="Close"
+            aria-label={closeAriaLabel ?? "Close"}
             onClick={onClose}
           >
             <CloseIcon />
@@ -138,13 +174,14 @@ export default function ApplyModal({
 
         {status === "sent" ? (
           <div className="apply-modal__sent">
-            <h3 className="text-h4">Thanks — application received.</h3>
+            <h3 className="text-h4">
+              {sentHeading ?? "Thanks — application received."}
+            </h3>
             <p className="text-large">
-              We've got your details for {roleTitle}. Someone from the
-              studio will be in touch from
-              hello@box3projects.co.uk within five working days.
+              {sentBody ??
+                `We've got your details for ${roleTitle}. Someone from the studio will be in touch from hello@box3projects.co.uk within five working days.`}
             </p>
-            <Button onClick={onClose}>Close</Button>
+            <Button onClick={onClose}>{sentCloseLabel ?? "Close"}</Button>
           </div>
         ) : (
           <form className="apply-modal__form" onSubmit={handleSubmit} noValidate>
@@ -152,13 +189,13 @@ export default function ApplyModal({
               <Field
                 ref={firstFieldRef}
                 name="firstName"
-                label="First name"
+                label={firstNameLabel ?? "First name"}
                 autoComplete="given-name"
                 required
               />
               <Field
                 name="lastName"
-                label="Last name"
+                label={lastNameLabel ?? "Last name"}
                 autoComplete="family-name"
                 required
               />
@@ -166,7 +203,7 @@ export default function ApplyModal({
 
             <Field
               name="email"
-              label="Email"
+              label={emailLabel ?? "Email"}
               type="email"
               autoComplete="email"
               required
@@ -175,13 +212,13 @@ export default function ApplyModal({
             <div className="apply-modal__row apply-modal__row--split">
               <Field
                 name="phone"
-                label="Phone"
+                label={phoneLabel ?? "Phone"}
                 type="tel"
                 autoComplete="tel"
               />
               <Field
                 name="linkedin"
-                label="LinkedIn / portfolio URL"
+                label={linkLabel ?? "LinkedIn / portfolio URL"}
                 type="url"
                 autoComplete="url"
               />
@@ -189,17 +226,19 @@ export default function ApplyModal({
 
             <Textarea
               name="experience"
-              label="Work experience + why this role"
+              label={experienceLabel ?? "Work experience + why this role"}
               rows={6}
               required
             />
 
             <FileField
               name="cv"
-              label="Upload CV"
+              label={cvLabel ?? "Upload CV"}
               accept=".pdf,.doc,.docx,application/pdf"
               fileName={fileName}
               onFileChange={setFileName}
+              filePickerLabel={filePickerLabel}
+              fileClearLabel={fileClearLabel}
               required
             />
 
@@ -210,13 +249,12 @@ export default function ApplyModal({
                 disabled={status === "submitting"}
               >
                 {status === "submitting"
-                  ? "Submitting…"
-                  : "Submit application →"}
+                  ? (submittingLabel ?? "Submitting…")
+                  : (submitLabel ?? "Submit application →")}
               </Button>
               <p className="apply-modal__legal text-small">
-                By submitting, you agree to Box 3 Projects retaining
-                your details for the purpose of evaluating this
-                application.
+                {legalCopy ??
+                  "By submitting, you agree to Box 3 Projects retaining your details for the purpose of evaluating this application."}
               </p>
             </div>
           </form>
@@ -306,6 +344,8 @@ interface FileFieldProps {
   required?: boolean;
   fileName: string | null;
   onFileChange: (name: string | null) => void;
+  filePickerLabel?: string;
+  fileClearLabel?: string;
 }
 
 function FileField({
@@ -315,6 +355,8 @@ function FileField({
   required,
   fileName,
   onFileChange,
+  filePickerLabel,
+  fileClearLabel,
 }: FileFieldProps) {
   const id = `apply-${name}`;
   return (
@@ -332,7 +374,7 @@ function FileField({
           <UploadIcon />
         </span>
         <span className="apply-modal__file-text text-main">
-          {fileName ?? "Choose a file (PDF or Word)"}
+          {fileName ?? filePickerLabel ?? "Choose a file (PDF or Word)"}
         </span>
         {fileName ? (
           <button
@@ -345,7 +387,7 @@ function FileField({
               if (input) input.value = "";
             }}
           >
-            Clear
+            {fileClearLabel ?? "Clear"}
           </button>
         ) : null}
         <input

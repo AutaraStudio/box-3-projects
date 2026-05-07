@@ -41,6 +41,7 @@ export default defineType({
     { name: "why", title: "Why Box 3" },
     { name: "testimonials", title: "Testimonials" },
     { name: "finalCta", title: "Final CTA" },
+    { name: "seo", title: "SEO" },
   ],
   fields: [
     /* ── 0. Coming Soon (holding page toggle) ───────────── */
@@ -462,6 +463,19 @@ export default defineType({
       title: "Button",
       type: "link",
       group: "finalCta",
+    }),
+    defineField({
+      name: "seoTitle",
+      title: "Browser tab title",
+      type: "string",
+      group: "seo",
+    }),
+    defineField({
+      name: "seoDescription",
+      title: "Meta description",
+      type: "text",
+      rows: 3,
+      group: "seo",
     }),
   ],
   preview: {

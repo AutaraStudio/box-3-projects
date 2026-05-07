@@ -13,6 +13,10 @@
  * reads under the stats grid before the brief / feedback split.
  */
 
+"use client";
+
+import { useSiteSettings } from "@/components/settings/SiteSettingsProvider";
+
 import "./ProjectInfo.css";
 
 interface ProjectInfoProps {
@@ -26,6 +30,7 @@ export default function ProjectInfo({
   clientObjective,
   clientFeedback,
 }: ProjectInfoProps) {
+  const labels = useSiteSettings()?.projectDetailLabels;
   const hasIntro = Boolean(shortDescription);
   const hasObjective = Boolean(clientObjective);
   const hasFeedback = Boolean(clientFeedback);
@@ -43,7 +48,7 @@ export default function ProjectInfo({
             {hasObjective ? (
               <article className="project-info__block">
                 <p className="project-info__label text-small text-caps">
-                  Client objective
+                  {labels?.objectiveLabel ?? "Client objective"}
                 </p>
                 <p className="project-info__body text-large">
                   {clientObjective}
@@ -53,7 +58,7 @@ export default function ProjectInfo({
             {hasFeedback ? (
               <article className="project-info__block">
                 <p className="project-info__label text-small text-caps">
-                  Client feedback
+                  {labels?.feedbackLabel ?? "Client feedback"}
                 </p>
                 <blockquote className="project-info__quote text-large">
                   {clientFeedback}

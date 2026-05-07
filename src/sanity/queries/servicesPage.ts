@@ -34,7 +34,9 @@ export const SERVICES_PAGE_QUERY = groq`
     trackItems[] { value, label, footnote },
     processLabel,
     processHeading,
-    processSteps[] { title, body }
+    processSteps[] { title, body },
+    seoTitle,
+    seoDescription
   }
 `;
 
@@ -69,4 +71,6 @@ export interface ServicesPageData {
   processLabel?: string;
   processHeading?: string;
   processSteps?: Array<{ title?: string; body?: string }>;
+  seoTitle?: string;
+  seoDescription?: string;
 }

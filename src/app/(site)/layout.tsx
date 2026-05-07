@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import Script from "next/script";
 import SmoothScroll from "@/components/scroll/SmoothScroll";
 import ScrollResetOnRoute from "@/components/scroll/ScrollResetOnRoute";
+import { SiteSettingsProvider } from "@/components/settings/SiteSettingsProvider";
 import { PageTransitionProvider } from "@/components/transition/PageTransitionProvider";
 import PageTransitionOverlay from "@/components/transition/PageTransitionOverlay";
 import { MenuProvider } from "@/components/menu/MenuProvider";
@@ -90,10 +91,19 @@ const FALLBACK = {
   phoneHref: "tel:02080507815",
 } as const;
 
-export const metadata: Metadata = {
-  title: FALLBACK.brandName,
-  description: "Coming soon.",
-};
+/* generateMetadata so the root <title> + <meta description> can
+   pull from siteSettings.seoTitle / seoDescription instead of
+   being hardcoded. Per-page generateMetadata still overrides
+   these where it's defined. */
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await sanityFetch<SiteSettingsData | null>({
+    query: SITE_SETTINGS_QUERY,
+  });
+  return {
+    title: settings?.seoTitle?.trim() || FALLBACK.brandName,
+    description: settings?.seoDescription?.trim() || "Coming soon.",
+  };
+}
 
 /* Coerce a Sanity link array (which may be null / undefined / partial)
    into a non-empty list of `{ label, href }`. Drops malformed entries
@@ -194,6 +204,7 @@ export default async function RootLayout({
         />
         <SmoothScroll>
           <ScrollResetOnRoute />
+          <SiteSettingsProvider value={settings}>
           <PageTransitionProvider>
             <MenuProvider>
               {/* Plays once per session: pink overlay fills the
@@ -214,6 +225,7 @@ export default async function RootLayout({
                 social={footerSocial}
                 legal={footerLegal}
                 brand={brand}
+                columnLabels={settings?.footerLabels}
               />
               <MenuOverlay
                 primaryLinks={menuPrimary}
@@ -223,6 +235,7 @@ export default async function RootLayout({
               <PageTransitionOverlay />
             </MenuProvider>
           </PageTransitionProvider>
+          </SiteSettingsProvider>
         </SmoothScroll>
       </body>
     </html>

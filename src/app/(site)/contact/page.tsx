@@ -35,11 +35,20 @@ import {
 
 import "./contact.css";
 
-export const metadata: Metadata = {
-  title: "Contact — Box 3 Projects",
-  description:
-    "Tell us about the brief. We read every enquiry and reply within two working days.",
-};
+const FALLBACK_SEO_TITLE = "Contact — Box 3 Projects";
+const FALLBACK_SEO_DESCRIPTION =
+  "Tell us about the brief. We read every enquiry and reply within two working days.";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await sanityFetch<ContactPageData | null>({
+    query: CONTACT_PAGE_QUERY,
+    revalidate: 3600,
+  });
+  return {
+    title: page?.seoTitle ?? FALLBACK_SEO_TITLE,
+    description: page?.seoDescription ?? FALLBACK_SEO_DESCRIPTION,
+  };
+}
 
 export const revalidate = 3600;
 
@@ -83,7 +92,21 @@ export default async function ContactPage() {
           </div>
 
           <div className="contact-page__form-wrap">
-            <ContactForm />
+            <ContactForm
+              firstNameField={page?.firstNameField}
+              lastNameField={page?.lastNameField}
+              emailField={page?.emailField}
+              organisationField={page?.organisationField}
+              projectTypeField={page?.projectTypeField}
+              subjectField={page?.subjectField}
+              messageField={page?.messageField}
+              projectTypes={page?.projectTypes}
+              subjects={page?.subjects}
+              submitLabel={page?.submitLabel}
+              submittingLabel={page?.submittingLabel}
+              sentHeading={page?.sentHeading}
+              sentBody={page?.sentBody}
+            />
           </div>
         </div>
       </section>

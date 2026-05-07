@@ -35,8 +35,17 @@ import { gsap } from "gsap";
 import TransitionLink from "@/components/transition/TransitionLink";
 import SplitText from "@/components/split-text/SplitText";
 import { awaitTransitionEnd } from "@/components/transition/transitionState";
+import { useSiteSettings } from "@/components/settings/SiteSettingsProvider";
 import { useMenu } from "./MenuProvider";
 import "./Header.css";
+
+const FALLBACK_LABELS = {
+  menuOpenLabel: "Menu",
+  menuCloseLabel: "Close",
+  menuOpenAriaLabel: "Open menu",
+  menuCloseAriaLabel: "Close menu",
+  contactAriaLabel: "Go to contact page",
+} as const;
 
 interface HeaderLink {
   label: string;
@@ -61,6 +70,22 @@ export default function Header({
   brand,
 }: HeaderProps) {
   const { isOpen, toggle } = useMenu();
+  const settings = useSiteSettings();
+  const labels = {
+    menuOpenLabel:
+      settings?.headerLabels?.menuOpenLabel ?? FALLBACK_LABELS.menuOpenLabel,
+    menuCloseLabel:
+      settings?.headerLabels?.menuCloseLabel ?? FALLBACK_LABELS.menuCloseLabel,
+    menuOpenAriaLabel:
+      settings?.headerLabels?.menuOpenAriaLabel ??
+      FALLBACK_LABELS.menuOpenAriaLabel,
+    menuCloseAriaLabel:
+      settings?.headerLabels?.menuCloseAriaLabel ??
+      FALLBACK_LABELS.menuCloseAriaLabel,
+    contactAriaLabel:
+      settings?.headerLabels?.contactAriaLabel ??
+      FALLBACK_LABELS.contactAriaLabel,
+  };
   const headerRef = useRef<HTMLElement | null>(null);
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
@@ -457,12 +482,12 @@ export default function Header({
               className="header__menu-btn"
               aria-expanded={isOpen}
               aria-controls="site-menu"
-              aria-label={isOpen ? "Close menu" : "Open menu"}
+              aria-label={isOpen ? labels.menuCloseAriaLabel : labels.menuOpenAriaLabel}
               onClick={toggle}
               tabIndex={collapsed ? 0 : -1}
             >
               <span className="header__menu-btn-label">
-                {isOpen ? "Close" : "Menu"}
+                {isOpen ? labels.menuCloseLabel : labels.menuOpenLabel}
               </span>
             </button>
           </div>
@@ -470,7 +495,7 @@ export default function Header({
             href="/contact"
             pageName="Contact"
             className="header__contact-btn"
-            aria-label="Go to contact page"
+            aria-label={labels.contactAriaLabel}
           >
             <svg
               className="header__contact-btn-icon"

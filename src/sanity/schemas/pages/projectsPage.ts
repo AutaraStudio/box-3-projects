@@ -17,6 +17,7 @@ export default defineType({
   type: "document",
   groups: [
     { name: "hero", title: "Hero", default: true },
+    { name: "seo", title: "SEO" },
   ],
   fields: [
     defineField({
@@ -73,6 +74,19 @@ export default defineType({
           type: "string",
         }),
       ],
+    }),
+    defineField({
+      name: "seoTitle",
+      title: "Browser tab title",
+      type: "string",
+      group: "seo",
+    }),
+    defineField({
+      name: "seoDescription",
+      title: "Meta description",
+      type: "text",
+      rows: 3,
+      group: "seo",
     }),
   ],
   preview: {

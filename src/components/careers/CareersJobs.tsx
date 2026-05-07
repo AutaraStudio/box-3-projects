@@ -27,12 +27,53 @@ import "./CareersJobs.css";
 
 interface CareersJobsProps {
   heading?: string;
+  emptyMessage?: string;
+  applyButtonLabel?: string;
   vacancies: VacancyItem[];
+  /* Apply modal copy — passed straight through. */
+  applyEyebrowLabel?: string;
+  applyCloseLabel?: string;
+  applyCloseAriaLabel?: string;
+  applyFirstNameLabel?: string;
+  applyLastNameLabel?: string;
+  applyEmailLabel?: string;
+  applyPhoneLabel?: string;
+  applyLinkLabel?: string;
+  applyExperienceLabel?: string;
+  applyCvLabel?: string;
+  applyFilePickerLabel?: string;
+  applyFileClearLabel?: string;
+  applySubmitLabel?: string;
+  applySubmittingLabel?: string;
+  applyLegalCopy?: string;
+  applySentHeading?: string;
+  applySentBody?: string;
+  applySentCloseLabel?: string;
 }
 
 export default function CareersJobs({
-  heading = "Open positions",
+  heading,
+  emptyMessage,
+  applyButtonLabel,
   vacancies,
+  applyEyebrowLabel,
+  applyCloseLabel,
+  applyCloseAriaLabel,
+  applyFirstNameLabel,
+  applyLastNameLabel,
+  applyEmailLabel,
+  applyPhoneLabel,
+  applyLinkLabel,
+  applyExperienceLabel,
+  applyCvLabel,
+  applyFilePickerLabel,
+  applyFileClearLabel,
+  applySubmitLabel,
+  applySubmittingLabel,
+  applyLegalCopy,
+  applySentHeading,
+  applySentBody,
+  applySentCloseLabel,
 }: CareersJobsProps) {
   /* Single shared modal for the whole list — `applyingTo` holds
      the role being applied for (or null when the modal is
@@ -48,7 +89,7 @@ export default function CareersJobs({
               as="h2"
               className="careers-jobs__heading text-h3"
             >
-              {heading}
+              {heading ?? "Open positions"}
             </Heading>
             <p className="careers-jobs__count text-small text-caps">
               ({String(vacancies.length).padStart(2, "0")})
@@ -57,9 +98,8 @@ export default function CareersJobs({
 
           {vacancies.length === 0 ? (
             <p className="careers-jobs__empty text-large">
-              No open roles right now — check back soon, or drop us
-              a note via the contact page if you'd like to introduce
-              yourself anyway.
+              {emptyMessage ??
+                "No open roles right now — check back soon, or drop us a note via the contact page if you'd like to introduce yourself anyway."}
             </p>
           ) : (
             <RevealStack
@@ -71,6 +111,7 @@ export default function CareersJobs({
                 <VacancyRow
                   key={v._id}
                   vacancy={v}
+                  applyButtonLabel={applyButtonLabel}
                   onApply={() => setApplyingTo(v)}
                 />
               ))}
@@ -83,6 +124,24 @@ export default function CareersJobs({
         open={applyingTo !== null}
         onClose={() => setApplyingTo(null)}
         roleTitle={applyingTo?.title ?? ""}
+        eyebrowLabel={applyEyebrowLabel}
+        closeLabel={applyCloseLabel}
+        closeAriaLabel={applyCloseAriaLabel}
+        firstNameLabel={applyFirstNameLabel}
+        lastNameLabel={applyLastNameLabel}
+        emailLabel={applyEmailLabel}
+        phoneLabel={applyPhoneLabel}
+        linkLabel={applyLinkLabel}
+        experienceLabel={applyExperienceLabel}
+        cvLabel={applyCvLabel}
+        filePickerLabel={applyFilePickerLabel}
+        fileClearLabel={applyFileClearLabel}
+        submitLabel={applySubmitLabel}
+        submittingLabel={applySubmittingLabel}
+        legalCopy={applyLegalCopy}
+        sentHeading={applySentHeading}
+        sentBody={applySentBody}
+        sentCloseLabel={applySentCloseLabel}
       />
     </>
   );
@@ -94,9 +153,11 @@ export default function CareersJobs({
 
 function VacancyRow({
   vacancy,
+  applyButtonLabel,
   onApply,
 }: {
   vacancy: VacancyItem;
+  applyButtonLabel?: string;
   onApply: () => void;
 }) {
   const meta = [
@@ -122,7 +183,7 @@ function VacancyRow({
 
       <div className="careers-jobs__row-cta">
         <Button onClick={onApply} size="sm">
-          Apply now →
+          {applyButtonLabel ?? "Apply now →"}
         </Button>
       </div>
     </li>

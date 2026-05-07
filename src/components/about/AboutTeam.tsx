@@ -92,6 +92,12 @@ interface AboutTeamProps {
   ctaLabel?: string;
   ctaHref?: string;
   ctaPageName?: string;
+  /** Optional Sanity-supplied category groupings. When provided
+   *  these override the built-in GROUP_ORDER list — slug must
+   *  match the value set on each teamMember document. */
+  categories?: Array<{ slug: string; title: string }>;
+  /** Heading for the trailing "uncategorised" bucket. */
+  uncategorisedTitle?: string;
 }
 
 /* Group definition — display order on the page goes top-to-bottom
@@ -122,7 +128,18 @@ export default function AboutTeam({
   ctaLabel,
   ctaHref,
   ctaPageName,
+  categories,
+  uncategorisedTitle,
 }: AboutTeamProps) {
+  /* Resolve grouping order — Sanity-supplied categories take
+     precedence; falls back to the built-in GROUP_ORDER when none
+     are passed (preserves current behaviour for call-sites that
+     haven't migrated yet). */
+  const groupOrder =
+    categories && categories.length > 0
+      ? categories.map((c) => ({ value: c.slug, title: c.title }))
+      : GROUP_ORDER;
+  const uncatTitle = uncategorisedTitle ?? UNCATEGORISED_TITLE;
   const sectionRef = useRef<HTMLElement>(null);
 
   /* Parallax for each `.about-team__media` element. Tablet+
@@ -186,7 +203,7 @@ export default function AboutTeam({
      whose category isn't in GROUP_ORDER land in `__uncat`. */
   const buckets = new Map<string, AboutTeamMember[]>();
   for (const m of members) {
-    const key = GROUP_ORDER.some((g) => g.value === m.category)
+    const key = groupOrder.some((g) => g.value === m.category)
       ? (m.category as string)
       : "__uncat";
     const arr = buckets.get(key) ?? [];
@@ -197,13 +214,13 @@ export default function AboutTeam({
   /* Build the render-list of groups in the defined order, then
      append the uncategorised bucket if it has anything. */
   const groups: { title: string; members: AboutTeamMember[] }[] = [];
-  for (const { value, title } of GROUP_ORDER) {
+  for (const { value, title } of groupOrder) {
     const ms = buckets.get(value);
     if (ms && ms.length > 0) groups.push({ title, members: ms });
   }
   const uncat = buckets.get("__uncat");
   if (uncat && uncat.length > 0) {
-    groups.push({ title: UNCATEGORISED_TITLE, members: uncat });
+    groups.push({ title: uncatTitle, members: uncat });
   }
 
   return (

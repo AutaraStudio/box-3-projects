@@ -10,9 +10,12 @@
  * components mapped to v2's design tokens.
  */
 
+"use client";
+
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
 
 import Heading from "@/components/ui/Heading";
+import { useSiteSettings } from "@/components/settings/SiteSettingsProvider";
 import type { LegalPageSection } from "@/sanity/queries/legalPage";
 
 import "./LegalPage.css";
@@ -91,6 +94,7 @@ export default function LegalPage({
   tocHeading = "Contents",
   sections,
 }: LegalPageProps) {
+  const labels = useSiteSettings()?.legalPageLabels;
   return (
     <section className="legal-page">
       <div className="container legal-page__inner">
@@ -104,7 +108,9 @@ export default function LegalPage({
             {title}
           </Heading>
           <p className="legal-page__meta text-small text-caps">
-            <span className="legal-page__meta-label">Last updated</span>
+            <span className="legal-page__meta-label">
+              {labels?.lastUpdatedLabel ?? "Last updated"}
+            </span>
             <time dateTime={lastUpdated} className="legal-page__meta-value">
               {formatDate(lastUpdated)}
             </time>
@@ -115,7 +121,10 @@ export default function LegalPage({
         </header>
 
         <div className="legal-page__body">
-          <aside className="legal-page__toc" aria-label="Table of contents">
+          <aside
+            className="legal-page__toc"
+            aria-label={labels?.tocAriaLabel ?? "Table of contents"}
+          >
             <div className="legal-page__toc-inner">
               <h2 className="legal-page__toc-heading text-small text-caps">
                 {tocHeading}

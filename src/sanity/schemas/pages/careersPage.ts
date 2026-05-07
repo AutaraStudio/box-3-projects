@@ -32,6 +32,10 @@ export default defineType({
     { name: "intro", title: "Intro" },
     { name: "whyWorkWithUs", title: "Why work with us" },
     { name: "culture", title: "Culture" },
+    { name: "vacancies", title: "Vacancies list" },
+    { name: "speculative", title: "Speculative block" },
+    { name: "applyModal", title: "Apply modal" },
+    { name: "seo", title: "SEO" },
   ],
   fields: [
     /* ── Hero ─────────────────────────────────────────────── */
@@ -150,6 +154,27 @@ export default defineType({
       components: { input: TaggedMediaPicker },
       fields: HERO_IMAGE_FIELDS,
     }),
+    defineField({
+      name: "cultureCtaLabel",
+      title: "CTA label",
+      description: 'Button label beneath the body — e.g. "Meet the team →".',
+      type: "string",
+      group: "culture",
+    }),
+    defineField({
+      name: "cultureCtaHref",
+      title: "CTA link",
+      description: "Where the CTA points (relative path or full URL).",
+      type: "string",
+      group: "culture",
+    }),
+    defineField({
+      name: "cultureCtaPageName",
+      title: "CTA destination label",
+      description: "Used by the page-transition overlay — the page name shown briefly while navigating.",
+      type: "string",
+      group: "culture",
+    }),
 
     /* ── Why work with us — 4 items, heading + body each ──── */
     defineField({
@@ -190,6 +215,231 @@ export default defineType({
           },
         },
       ],
+    }),
+    defineField({
+      name: "whyWorkCtaLabel",
+      title: "Why-work-with-us CTA label",
+      description: 'e.g. "See open roles →".',
+      type: "string",
+      group: "whyWorkWithUs",
+    }),
+    defineField({
+      name: "whyWorkCtaHref",
+      title: "Why-work-with-us CTA link",
+      type: "string",
+      group: "whyWorkWithUs",
+    }),
+
+    /* ── Vacancies list ─────────────────────────────────── */
+    defineField({
+      name: "vacanciesHeading",
+      title: "Vacancies list heading",
+      description: 'Heading above the list of jobs, e.g. "Open positions".',
+      type: "string",
+      group: "vacancies",
+    }),
+    defineField({
+      name: "vacanciesEmptyMessage",
+      title: "Empty-state message",
+      description:
+        "Shown when there are no vacancies in the dataset — set the tone for someone who clicked through and found nothing.",
+      type: "text",
+      rows: 3,
+      group: "vacancies",
+    }),
+    defineField({
+      name: "vacanciesApplyButtonLabel",
+      title: "Apply button label",
+      description: 'Label on each vacancy row\'s call-to-action button, e.g. "Apply now →".',
+      type: "string",
+      group: "vacancies",
+    }),
+
+    /* ── Speculative block ──────────────────────────────── */
+    defineField({
+      name: "speculativeLabel",
+      title: 'Section label',
+      description: 'Small caps label, e.g. "Speculative".',
+      type: "string",
+      group: "speculative",
+    }),
+    defineField({
+      name: "speculativeHeading",
+      title: "Heading",
+      description:
+        "Display heading for the speculative-application section at the foot of the careers page.",
+      type: "string",
+      group: "speculative",
+    }),
+    defineField({
+      name: "speculativeBody",
+      title: "Body",
+      description:
+        "Multi-paragraph copy beneath the heading. Use blank lines to break paragraphs.",
+      type: "text",
+      rows: 6,
+      group: "speculative",
+    }),
+    defineField({
+      name: "speculativeImage",
+      title: "Image",
+      description: "Editorial photograph beside / below the speculative block.",
+      type: "image",
+      group: "speculative",
+      options: { hotspot: true },
+      components: { input: TaggedMediaPicker },
+      fields: HERO_IMAGE_FIELDS,
+    }),
+    defineField({
+      name: "speculativeCtaLabel",
+      title: "CTA label",
+      description: 'e.g. "Get in touch →".',
+      type: "string",
+      group: "speculative",
+    }),
+    defineField({
+      name: "speculativeCtaHref",
+      title: "CTA link",
+      type: "string",
+      group: "speculative",
+    }),
+    defineField({
+      name: "speculativeCtaPageName",
+      title: "CTA destination label",
+      description: "Page-transition label, e.g. \"Contact\".",
+      type: "string",
+      group: "speculative",
+    }),
+
+    /* ── Apply modal copy ───────────────────────────────── */
+    defineField({
+      name: "applyEyebrowLabel",
+      title: 'Eyebrow label',
+      description: 'Caption above the role title in the modal, e.g. "Apply for".',
+      type: "string",
+      group: "applyModal",
+    }),
+    defineField({
+      name: "applyCloseLabel",
+      title: "Close button label",
+      type: "string",
+      group: "applyModal",
+    }),
+    defineField({
+      name: "applyCloseAriaLabel",
+      title: "Close button — accessible description",
+      type: "string",
+      group: "applyModal",
+    }),
+    defineField({
+      name: "applyFirstNameLabel",
+      title: "First name field label",
+      type: "string",
+      group: "applyModal",
+    }),
+    defineField({
+      name: "applyLastNameLabel",
+      title: "Last name field label",
+      type: "string",
+      group: "applyModal",
+    }),
+    defineField({
+      name: "applyEmailLabel",
+      title: "Email field label",
+      type: "string",
+      group: "applyModal",
+    }),
+    defineField({
+      name: "applyPhoneLabel",
+      title: "Phone field label",
+      type: "string",
+      group: "applyModal",
+    }),
+    defineField({
+      name: "applyLinkLabel",
+      title: "LinkedIn / portfolio field label",
+      type: "string",
+      group: "applyModal",
+    }),
+    defineField({
+      name: "applyExperienceLabel",
+      title: "Experience field label",
+      type: "string",
+      group: "applyModal",
+    }),
+    defineField({
+      name: "applyCvLabel",
+      title: "CV upload field label",
+      type: "string",
+      group: "applyModal",
+    }),
+    defineField({
+      name: "applyFilePickerLabel",
+      title: "File picker placeholder",
+      description: 'Shown before a file is chosen, e.g. "Choose a file (PDF or Word)".',
+      type: "string",
+      group: "applyModal",
+    }),
+    defineField({
+      name: "applyFileClearLabel",
+      title: "File clear button label",
+      type: "string",
+      group: "applyModal",
+    }),
+    defineField({
+      name: "applySubmitLabel",
+      title: "Submit button label",
+      type: "string",
+      group: "applyModal",
+    }),
+    defineField({
+      name: "applySubmittingLabel",
+      title: "Submitting button label",
+      description: 'Shown while sending, e.g. "Submitting…".',
+      type: "string",
+      group: "applyModal",
+    }),
+    defineField({
+      name: "applyLegalCopy",
+      title: "Legal microcopy",
+      description: "Small print under the submit button, e.g. consent / data-use note.",
+      type: "text",
+      rows: 3,
+      group: "applyModal",
+    }),
+    defineField({
+      name: "applySentHeading",
+      title: "Sent heading",
+      type: "string",
+      group: "applyModal",
+    }),
+    defineField({
+      name: "applySentBody",
+      title: "Sent body",
+      type: "text",
+      rows: 3,
+      group: "applyModal",
+    }),
+    defineField({
+      name: "applySentCloseLabel",
+      title: "Close button (sent state)",
+      type: "string",
+      group: "applyModal",
+    }),
+
+    /* ── SEO ────────────────────────────────────────────── */
+    defineField({
+      name: "seoTitle",
+      title: "Browser tab title",
+      type: "string",
+      group: "seo",
+    }),
+    defineField({
+      name: "seoDescription",
+      title: "Meta description",
+      type: "text",
+      rows: 3,
+      group: "seo",
     }),
   ],
   preview: {

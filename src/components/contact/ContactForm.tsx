@@ -23,10 +23,11 @@ import { useState, type FormEvent } from "react";
 
 import Button from "@/components/ui/Button";
 import DropdownSelect from "./DropdownSelect";
+import type { ContactFormFieldCopy } from "@/sanity/queries/contactPage";
 
 import "./ContactForm.css";
 
-const PROJECT_TYPES = [
+const FALLBACK_PROJECT_TYPES = [
   "Workplace",
   "Hospitality",
   "Residential",
@@ -34,7 +35,7 @@ const PROJECT_TYPES = [
   "Other",
 ] as const;
 
-const SUBJECTS = [
+const FALLBACK_SUBJECTS = [
   "Business development",
   "Careers",
   "Media",
@@ -43,8 +44,47 @@ const SUBJECTS = [
 
 type Status = "idle" | "submitting" | "sent";
 
-export default function ContactForm() {
+interface ContactFormProps {
+  firstNameField?: ContactFormFieldCopy;
+  lastNameField?: ContactFormFieldCopy;
+  emailField?: ContactFormFieldCopy;
+  organisationField?: ContactFormFieldCopy;
+  projectTypeField?: ContactFormFieldCopy;
+  subjectField?: ContactFormFieldCopy;
+  messageField?: ContactFormFieldCopy;
+  projectTypes?: string[];
+  subjects?: string[];
+  submitLabel?: string;
+  submittingLabel?: string;
+  sentHeading?: string;
+  sentBody?: string;
+}
+
+export default function ContactForm({
+  firstNameField,
+  lastNameField,
+  emailField,
+  organisationField,
+  projectTypeField,
+  subjectField,
+  messageField,
+  projectTypes,
+  subjects,
+  submitLabel,
+  submittingLabel,
+  sentHeading,
+  sentBody,
+}: ContactFormProps) {
   const [status, setStatus] = useState<Status>("idle");
+
+  const projectTypeOptions =
+    projectTypes && projectTypes.length > 0
+      ? projectTypes
+      : (FALLBACK_PROJECT_TYPES as readonly string[]);
+  const subjectOptions =
+    subjects && subjects.length > 0
+      ? subjects
+      : (FALLBACK_SUBJECTS as readonly string[]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -60,10 +100,10 @@ export default function ContactForm() {
   if (status === "sent") {
     return (
       <div className="contact-form contact-form--sent" role="status">
-        <p className="text-h4">Thanks — we'll be in touch.</p>
+        <p className="text-h4">{sentHeading ?? "Thanks — we'll be in touch."}</p>
         <p className="text-large">
-          We've received your note and will respond from
-          hello@box3projects.co.uk within two working days.
+          {sentBody ??
+            "We've received your note and will respond from hello@box3projects.co.uk within two working days."}
         </p>
       </div>
     );
@@ -75,13 +115,13 @@ export default function ContactForm() {
       <div className="contact-form__row contact-form__row--split">
         <Field
           name="firstName"
-          label="First name"
+          label={firstNameField?.label ?? "First name"}
           autoComplete="given-name"
           required
         />
         <Field
           name="lastName"
-          label="Last name"
+          label={lastNameField?.label ?? "Last name"}
           autoComplete="family-name"
           required
         />
@@ -90,7 +130,7 @@ export default function ContactForm() {
       {/* Row 2: Email */}
       <Field
         name="email"
-        label="Email"
+        label={emailField?.label ?? "Email"}
         type="email"
         autoComplete="email"
         required
@@ -99,30 +139,35 @@ export default function ContactForm() {
       {/* Row 3: Organisation (optional) */}
       <Field
         name="organisation"
-        label="Organisation"
+        label={organisationField?.label ?? "Organisation"}
         autoComplete="organization"
       />
 
       {/* Row 4: Project type — replaces Region. */}
       <DropdownField
         name="projectType"
-        label="Project type"
-        options={PROJECT_TYPES}
-        placeholder="Select a project type"
+        label={projectTypeField?.label ?? "Project type"}
+        options={projectTypeOptions}
+        placeholder={projectTypeField?.placeholder ?? "Select a project type"}
         required
       />
 
       {/* Row 5: Subject */}
       <DropdownField
         name="subject"
-        label="Subject"
-        options={SUBJECTS}
-        placeholder="Select a subject"
+        label={subjectField?.label ?? "Subject"}
+        options={subjectOptions}
+        placeholder={subjectField?.placeholder ?? "Select a subject"}
         required
       />
 
       {/* Row 6: Message */}
-      <Textarea name="message" label="Message" rows={6} required />
+      <Textarea
+        name="message"
+        label={messageField?.label ?? "Message"}
+        rows={6}
+        required
+      />
 
       <div className="contact-form__actions">
         <Button
@@ -130,7 +175,9 @@ export default function ContactForm() {
           size="md"
           disabled={status === "submitting"}
         >
-          {status === "submitting" ? "Sending…" : "Send message →"}
+          {status === "submitting"
+            ? (submittingLabel ?? "Sending…")
+            : (submitLabel ?? "Send message →")}
         </Button>
       </div>
     </form>

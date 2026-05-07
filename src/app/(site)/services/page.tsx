@@ -26,11 +26,20 @@ import {
 } from "@/sanity/queries/servicesPage";
 import type { SustainabilityStatItem } from "@/sanity/queries/sustainabilityPage";
 
-export const metadata: Metadata = {
-  title: "Services — Box 3 Projects",
-  description:
-    "Commercial fit-out services across London — workplace, retail, hospitality, education. Design and build under one roof, end-to-end.",
-};
+const FALLBACK_SEO_TITLE = "Services — Box 3 Projects";
+const FALLBACK_SEO_DESCRIPTION =
+  "Commercial fit-out services across London — workplace, retail, hospitality, education. Design and build under one roof, end-to-end.";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await sanityFetch<ServicesPageData | null>({
+    query: SERVICES_PAGE_QUERY,
+    revalidate: 3600,
+  });
+  return {
+    title: page?.seoTitle ?? FALLBACK_SEO_TITLE,
+    description: page?.seoDescription ?? FALLBACK_SEO_DESCRIPTION,
+  };
+}
 
 export const revalidate = 3600;
 

@@ -11,6 +11,8 @@
  * fallback so the page never renders empty placeholders.
  */
 
+import type { Metadata } from "next";
+
 import ProjectsHero from "@/components/projects/ProjectsHero";
 import ProjectsGrid from "@/components/projects/ProjectsGrid";
 import { sanityFetch } from "@/sanity/lib/fetch";
@@ -25,6 +27,21 @@ import {
 } from "@/sanity/queries/projectsPage";
 
 export const revalidate = 60;
+
+const FALLBACK_SEO_TITLE = "Projects — Box 3 Projects";
+const FALLBACK_SEO_DESCRIPTION =
+  "Selected projects from Box 3 — London-based design and build across workplace, hospitality, residential and retail.";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const hero = await sanityFetch<ProjectsPageData | null>({
+    query: PROJECTS_PAGE_QUERY,
+    revalidate: 60,
+  });
+  return {
+    title: hero?.seoTitle ?? FALLBACK_SEO_TITLE,
+    description: hero?.seoDescription ?? FALLBACK_SEO_DESCRIPTION,
+  };
+}
 
 const FALLBACK = {
   label: "Selected projects",

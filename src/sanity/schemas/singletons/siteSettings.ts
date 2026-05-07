@@ -22,6 +22,7 @@ export default defineType({
     { name: "header", title: "Header" },
     { name: "footer", title: "Footer" },
     { name: "contact", title: "Contact info" },
+    { name: "uiLabels", title: "UI labels" },
     { name: "seo", title: "SEO defaults" },
   ],
   fields: [
@@ -157,6 +158,254 @@ export default defineType({
             value.startsWith("tel:") || 'Phone link must start with "tel:".'
           );
         }),
+    }),
+
+    /* ── UI labels ─────────────────────────────────────────
+       Editable surface for every static label that lives in the
+       chrome of the site (header buttons, footer column titles,
+       side-menu sections, project-detail labels, etc.). Each
+       group is its own object field so the studio renders a
+       collapsible block per area. */
+    defineField({
+      name: "headerLabels",
+      title: "Header — labels",
+      description:
+        "Text shown on the header's Menu button and the contact icon's accessible name.",
+      type: "object",
+      group: "uiLabels",
+      options: { collapsible: true, collapsed: true },
+      fields: [
+        defineField({
+          name: "menuOpenLabel",
+          title: "Menu button (closed state)",
+          description: 'Label when the side menu is closed, e.g. "Menu".',
+          type: "string",
+        }),
+        defineField({
+          name: "menuCloseLabel",
+          title: "Menu button (open state)",
+          description: 'Label when the side menu is open, e.g. "Close".',
+          type: "string",
+        }),
+        defineField({
+          name: "menuOpenAriaLabel",
+          title: "Menu button — open description",
+          description: "Accessible description used by screen readers when the menu is closed.",
+          type: "string",
+        }),
+        defineField({
+          name: "menuCloseAriaLabel",
+          title: "Menu button — close description",
+          description: "Accessible description used when the menu is open.",
+          type: "string",
+        }),
+        defineField({
+          name: "contactAriaLabel",
+          title: "Contact icon — description",
+          description: "Accessible label for the icon-only contact button next to the menu.",
+          type: "string",
+        }),
+      ],
+    }),
+
+    defineField({
+      name: "menuLabels",
+      title: "Side menu — labels",
+      description:
+        'Section titles + the inline contact form copy in the slide-in menu.',
+      type: "object",
+      group: "uiLabels",
+      options: { collapsible: true, collapsed: true },
+      fields: [
+        defineField({
+          name: "moreSectionTitle",
+          title: 'Secondary links section title',
+          description: 'Heading above the smaller link list, e.g. "More".',
+          type: "string",
+        }),
+        defineField({
+          name: "stayInTouchTitle",
+          title: "Contact section title",
+          description: 'Heading above the contact line block, e.g. "Stay in touch".',
+          type: "string",
+        }),
+        defineField({
+          name: "namePlaceholder",
+          title: "Form — Name field label",
+          type: "string",
+        }),
+        defineField({
+          name: "emailPlaceholder",
+          title: "Form — Email field label",
+          type: "string",
+        }),
+        defineField({
+          name: "messagePlaceholder",
+          title: "Form — Message field label",
+          type: "string",
+        }),
+        defineField({
+          name: "submitLabel",
+          title: "Form — Submit button label",
+          type: "string",
+        }),
+        defineField({
+          name: "submittedLabel",
+          title: "Form — sent confirmation",
+          description: 'Replaces the submit button after sending, e.g. "Thanks — we\'ll be in touch".',
+          type: "string",
+        }),
+        defineField({
+          name: "siteMenuAriaLabel",
+          title: "Menu wrapper description",
+          description: "Accessible name for the slide-in menu dialog.",
+          type: "string",
+        }),
+        defineField({
+          name: "scrimAriaLabel",
+          title: "Click-out scrim description",
+          description: "Accessible label on the dim overlay used to close the menu.",
+          type: "string",
+        }),
+      ],
+    }),
+
+    defineField({
+      name: "footerLabels",
+      title: "Footer — column titles",
+      description:
+        "Headings above each column of links in the footer.",
+      type: "object",
+      group: "uiLabels",
+      options: { collapsible: true, collapsed: true },
+      fields: [
+        defineField({ name: "pages", title: 'Pages column heading', type: "string" }),
+        defineField({
+          name: "featuredProjects",
+          title: "Featured projects column heading",
+          type: "string",
+        }),
+        defineField({ name: "contact", title: "Contact column heading", type: "string" }),
+        defineField({ name: "social", title: "Social column heading", type: "string" }),
+        defineField({ name: "legal", title: "Legal column heading", type: "string" }),
+      ],
+    }),
+
+    defineField({
+      name: "projectDetailLabels",
+      title: "Project detail — labels",
+      description:
+        "Static labels used across every project page (stat row labels, section headings, gallery copy, related strip).",
+      type: "object",
+      group: "uiLabels",
+      options: { collapsible: true, collapsed: true },
+      fields: [
+        defineField({ name: "locationLabel", title: 'Location stat label', type: "string" }),
+        defineField({ name: "yearLabel", title: 'Year stat label', type: "string" }),
+        defineField({ name: "expertiseHeading", title: "Expertise list heading", type: "string" }),
+        defineField({ name: "teamHeading", title: "Team grid heading", type: "string" }),
+        defineField({ name: "briefHeading", title: "Brief block heading", type: "string" }),
+        defineField({
+          name: "objectiveLabel",
+          title: 'Objective block label',
+          description: 'e.g. "Client objective".',
+          type: "string",
+        }),
+        defineField({
+          name: "feedbackLabel",
+          title: 'Client feedback label',
+          description: 'e.g. "Client feedback".',
+          type: "string",
+        }),
+        defineField({
+          name: "objectiveAccordionLabel",
+          title: "Objective accordion label",
+          description: 'Shorter version used in the right-column accordion, e.g. "Objective".',
+          type: "string",
+        }),
+        defineField({
+          name: "feedbackAccordionLabel",
+          title: "Client feedback accordion label",
+          type: "string",
+        }),
+        defineField({
+          name: "exploreTitle",
+          title: 'Explore section heading',
+          description: 'The big heading above the lightbox CTA, e.g. "Explore the project in pictures".',
+          type: "string",
+        }),
+        defineField({
+          name: "viewGalleryLabel",
+          title: 'View gallery button label',
+          type: "string",
+        }),
+        defineField({
+          name: "exploreOpenLabel",
+          title: "Lightbox open description",
+          description: "Accessible label used by the full-cover transparent button on the hero media.",
+          type: "string",
+        }),
+        defineField({
+          name: "moreProjectsHeading",
+          title: 'Related projects heading',
+          description: 'e.g. "More projects".',
+          type: "string",
+        }),
+        defineField({
+          name: "lightboxPreviousLabel",
+          title: "Lightbox — previous arrow description",
+          type: "string",
+        }),
+        defineField({
+          name: "lightboxNextLabel",
+          title: "Lightbox — next arrow description",
+          type: "string",
+        }),
+        defineField({
+          name: "lightboxCloseLabel",
+          title: 'Lightbox close button label',
+          type: "string",
+        }),
+        defineField({
+          name: "lightboxCloseAriaLabel",
+          title: "Lightbox close — description",
+          type: "string",
+        }),
+      ],
+    }),
+
+    defineField({
+      name: "legalPageLabels",
+      title: "Legal pages — labels",
+      description: "Shared labels used on every legal page.",
+      type: "object",
+      group: "uiLabels",
+      options: { collapsible: true, collapsed: true },
+      fields: [
+        defineField({
+          name: "lastUpdatedLabel",
+          title: '"Last updated" label',
+          type: "string",
+        }),
+        defineField({
+          name: "tocAriaLabel",
+          title: "Table of contents description",
+          type: "string",
+        }),
+      ],
+    }),
+
+    defineField({
+      name: "testimonialsLabels",
+      title: "Testimonials — accessibility labels",
+      description: "Screen-reader text for the prev / next testimonial buttons.",
+      type: "object",
+      group: "uiLabels",
+      options: { collapsible: true, collapsed: true },
+      fields: [
+        defineField({ name: "previousLabel", title: "Previous testimonial label", type: "string" }),
+        defineField({ name: "nextLabel", title: "Next testimonial label", type: "string" }),
+      ],
     }),
 
     /* ── SEO defaults ──────────────────────────────────── */

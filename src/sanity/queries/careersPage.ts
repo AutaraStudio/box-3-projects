@@ -31,11 +31,46 @@ export const CAREERS_PAGE_QUERY = groq`
     cultureHeading,
     cultureBody,
     cultureImage { ${HERO_IMAGE_PROJECTION} },
+    cultureCtaLabel,
+    cultureCtaHref,
+    cultureCtaPageName,
     whyWorkHeading,
     whyWorkItems[] {
       title,
       body
-    }
+    },
+    whyWorkCtaLabel,
+    whyWorkCtaHref,
+    vacanciesHeading,
+    vacanciesEmptyMessage,
+    vacanciesApplyButtonLabel,
+    speculativeLabel,
+    speculativeHeading,
+    speculativeBody,
+    speculativeImage { ${HERO_IMAGE_PROJECTION} },
+    speculativeCtaLabel,
+    speculativeCtaHref,
+    speculativeCtaPageName,
+    applyEyebrowLabel,
+    applyCloseLabel,
+    applyCloseAriaLabel,
+    applyFirstNameLabel,
+    applyLastNameLabel,
+    applyEmailLabel,
+    applyPhoneLabel,
+    applyLinkLabel,
+    applyExperienceLabel,
+    applyCvLabel,
+    applyFilePickerLabel,
+    applyFileClearLabel,
+    applySubmitLabel,
+    applySubmittingLabel,
+    applyLegalCopy,
+    applySentHeading,
+    applySentBody,
+    applySentCloseLabel,
+    seoTitle,
+    seoDescription
   }
 `;
 
@@ -72,6 +107,41 @@ export interface CareersPageData {
   cultureHeading?: string;
   cultureBody?: string;
   cultureImage?: CareersHeroImage;
+  cultureCtaLabel?: string;
+  cultureCtaHref?: string;
+  cultureCtaPageName?: string;
   whyWorkHeading?: string;
   whyWorkItems?: CareersWhyWorkItem[];
+  whyWorkCtaLabel?: string;
+  whyWorkCtaHref?: string;
+  vacanciesHeading?: string;
+  vacanciesEmptyMessage?: string;
+  vacanciesApplyButtonLabel?: string;
+  speculativeLabel?: string;
+  speculativeHeading?: string;
+  speculativeBody?: string;
+  speculativeImage?: CareersHeroImage;
+  speculativeCtaLabel?: string;
+  speculativeCtaHref?: string;
+  speculativeCtaPageName?: string;
+  applyEyebrowLabel?: string;
+  applyCloseLabel?: string;
+  applyCloseAriaLabel?: string;
+  applyFirstNameLabel?: string;
+  applyLastNameLabel?: string;
+  applyEmailLabel?: string;
+  applyPhoneLabel?: string;
+  applyLinkLabel?: string;
+  applyExperienceLabel?: string;
+  applyCvLabel?: string;
+  applyFilePickerLabel?: string;
+  applyFileClearLabel?: string;
+  applySubmitLabel?: string;
+  applySubmittingLabel?: string;
+  applyLegalCopy?: string;
+  applySentHeading?: string;
+  applySentBody?: string;
+  applySentCloseLabel?: string;
+  seoTitle?: string;
+  seoDescription?: string;
 }

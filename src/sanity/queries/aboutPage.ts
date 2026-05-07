@@ -29,7 +29,11 @@ export const ABOUT_PAGE_QUERY = groq`
     closingHeading,
     closingBody,
     closingImage { ${IMAGE_PROJECTION} },
-    closingCta { ${LINK_PROJECTION} }
+    closingCta { ${LINK_PROJECTION} },
+    teamCategories[] { slug, title },
+    teamUncategorisedTitle,
+    seoTitle,
+    seoDescription
   }
 `;
 
@@ -59,4 +63,8 @@ export interface AboutPageData {
   closingBody?: string;
   closingImage?: AboutPageImage;
   closingCta?: AboutPageLink;
+  teamCategories?: Array<{ slug: string; title: string }>;
+  teamUncategorisedTitle?: string;
+  seoTitle?: string;
+  seoDescription?: string;
 }

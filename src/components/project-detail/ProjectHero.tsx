@@ -22,9 +22,12 @@
  * ProjectInfo section below, which is the v2 placement.
  */
 
+"use client";
+
 import Image from "next/image";
 
 import Accordion, { type AccordionItem } from "@/components/ui/Accordion";
+import { useSiteSettings } from "@/components/settings/SiteSettingsProvider";
 import Heading from "@/components/ui/Heading";
 import RevealImage from "@/components/ui/RevealImage";
 import RevealStack from "@/components/ui/RevealStack";
@@ -42,14 +45,25 @@ interface ProjectHeroProps {
 }
 
 export default function ProjectHero({ project }: ProjectHeroProps) {
+  const settings = useSiteSettings();
+  const labels = settings?.projectDetailLabels;
+
   const galleryImages = [
     ...(project.featuredImage ? [project.featuredImage] : []),
     ...(project.additionalImages ?? []),
   ].slice(0, 5);
 
   const heroStats: ProjectStat[] = [
-    { _key: "location", label: "Location", value: project.location },
-    { _key: "year", label: "Year", value: String(project.year) },
+    {
+      _key: "location",
+      label: labels?.locationLabel ?? "Location",
+      value: project.location,
+    },
+    {
+      _key: "year",
+      label: labels?.yearLabel ?? "Year",
+      value: String(project.year),
+    },
     ...(project.stats ?? []),
   ];
 
@@ -64,14 +78,14 @@ export default function ProjectHero({ project }: ProjectHeroProps) {
   if (project.clientObjective) {
     accordionItems.push({
       key: "objective",
-      label: "Objective",
+      label: labels?.objectiveAccordionLabel ?? "Objective",
       content: project.clientObjective,
     });
   }
   if (project.clientFeedback) {
     accordionItems.push({
       key: "feedback",
-      label: "Client feedback",
+      label: labels?.feedbackAccordionLabel ?? "Client feedback",
       content: project.clientFeedback,
     });
   }
@@ -168,7 +182,7 @@ export default function ProjectHero({ project }: ProjectHeroProps) {
                 as="h2"
                 className="project-hero__expertise-title text-h5"
               >
-                Expertise
+                {labels?.expertiseHeading ?? "Expertise"}
               </Heading>
               {/* Indexed registry with the directional hover-tile
                   affordance — same primitive used by the
@@ -204,7 +218,7 @@ export default function ProjectHero({ project }: ProjectHeroProps) {
                 as="h2"
                 className="project-hero__team-title text-h5"
               >
-                Project team
+                {labels?.teamHeading ?? "Project team"}
               </Heading>
               <RevealStack as="ul" className="project-hero__team-list">
                 {team.map((member) => {
@@ -279,7 +293,7 @@ export default function ProjectHero({ project }: ProjectHeroProps) {
                 as="h2"
                 className="project-hero__accordion-title text-h5"
               >
-                Brief
+                {labels?.briefHeading ?? "Brief"}
               </Heading>
               <Accordion
                 idPrefix="project-client"

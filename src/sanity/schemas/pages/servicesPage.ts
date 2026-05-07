@@ -20,6 +20,7 @@ export default defineType({
     { name: "editorial", title: "Editorial block" },
     { name: "track", title: "Track record" },
     { name: "process", title: "Process timeline" },
+    { name: "seo", title: "SEO" },
   ],
   fields: [
     /* Hero */
@@ -213,6 +214,19 @@ export default defineType({
           preview: { select: { title: "title", subtitle: "body" } },
         },
       ],
+    }),
+    defineField({
+      name: "seoTitle",
+      title: "Browser tab title",
+      type: "string",
+      group: "seo",
+    }),
+    defineField({
+      name: "seoDescription",
+      title: "Meta description",
+      type: "text",
+      rows: 3,
+      group: "seo",
     }),
   ],
   preview: { prepare: () => ({ title: "Services Page" }) },

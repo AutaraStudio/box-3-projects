@@ -44,6 +44,14 @@ interface FeaturedProject {
   href: string;
 }
 
+interface FooterColumnLabels {
+  pages?: string;
+  featuredProjects?: string;
+  contact?: string;
+  social?: string;
+  legal?: string;
+}
+
 interface FooterProps {
   pages: PageLink[];
   /** Optional — when provided, rendered as a "Featured Projects"
@@ -60,7 +68,17 @@ interface FooterProps {
   legal: PageLink[];
   /** Brand label rendered in the copyright line. */
   brand?: string;
+  /** Editable column titles + a11y labels — fall back to sensible defaults. */
+  columnLabels?: FooterColumnLabels;
 }
+
+const FOOTER_LABEL_FALLBACK = {
+  pages: "Pages",
+  featuredProjects: "Featured Projects",
+  contact: "Contact",
+  social: "Social",
+  legal: "Legal",
+} as const;
 
 export default async function Footer({
   pages,
@@ -69,7 +87,16 @@ export default async function Footer({
   social,
   legal,
   brand = "Box 3 Projects",
+  columnLabels,
 }: FooterProps) {
+  const labels = {
+    pages: columnLabels?.pages ?? FOOTER_LABEL_FALLBACK.pages,
+    featuredProjects:
+      columnLabels?.featuredProjects ?? FOOTER_LABEL_FALLBACK.featuredProjects,
+    contact: columnLabels?.contact ?? FOOTER_LABEL_FALLBACK.contact,
+    social: columnLabels?.social ?? FOOTER_LABEL_FALLBACK.social,
+    legal: columnLabels?.legal ?? FOOTER_LABEL_FALLBACK.legal,
+  };
   const year = new Date().getFullYear();
   /* Pull the partners + their SVGs server-side. If the dataset has
      no partnersSection singleton, loadPartners returns sensible
@@ -91,8 +118,8 @@ export default async function Footer({
       <div className="container footer__inner">
         <div className="footer__columns">
           {/* ── Pages ───────────────────────────────────────────── */}
-          <section className="footer__column" aria-label="Pages">
-            <p className="footer__label text-small text-caps">Pages</p>
+          <section className="footer__column" aria-label={labels.pages}>
+            <p className="footer__label text-small text-caps">{labels.pages}</p>
             <RevealStack as="ul" className="footer__list">
               {pages.map((page) => (
                 <li key={page.href}>
@@ -112,10 +139,10 @@ export default async function Footer({
           {featuredProjects && featuredProjects.length > 0 ? (
             <section
               className="footer__column"
-              aria-label="Featured projects"
+              aria-label={labels.featuredProjects}
             >
               <p className="footer__label text-small text-caps">
-                Featured Projects
+                {labels.featuredProjects}
               </p>
               <RevealStack as="ul" className="footer__list">
                 {featuredProjects.map((project) => (
@@ -134,8 +161,8 @@ export default async function Footer({
           ) : null}
 
           {/* ── Contact ─────────────────────────────────────────── */}
-          <section className="footer__column" aria-label="Contact">
-            <p className="footer__label text-small text-caps">Contact</p>
+          <section className="footer__column" aria-label={labels.contact}>
+            <p className="footer__label text-small text-caps">{labels.contact}</p>
             <address className="footer__address text-main">
               {contact.addressLines.map((line) => (
                 <span key={line}>{line}</span>
@@ -162,8 +189,8 @@ export default async function Footer({
           </section>
 
           {/* ── Social ──────────────────────────────────────────── */}
-          <section className="footer__column" aria-label="Social">
-            <p className="footer__label text-small text-caps">Social</p>
+          <section className="footer__column" aria-label={labels.social}>
+            <p className="footer__label text-small text-caps">{labels.social}</p>
             <RevealStack as="ul" className="footer__list">
               {social.map((item) => (
                 <li key={item.href}>
@@ -181,8 +208,8 @@ export default async function Footer({
           </section>
 
           {/* ── Legal ───────────────────────────────────────────── */}
-          <section className="footer__column" aria-label="Legal">
-            <p className="footer__label text-small text-caps">Legal</p>
+          <section className="footer__column" aria-label={labels.legal}>
+            <p className="footer__label text-small text-caps">{labels.legal}</p>
             <RevealStack as="ul" className="footer__list">
               {legal.map((item) => (
                 <li key={item.href}>

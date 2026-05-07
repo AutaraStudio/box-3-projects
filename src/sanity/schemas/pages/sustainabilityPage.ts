@@ -31,6 +31,7 @@ export default defineType({
     { name: "commitment", title: "Commitment" },
     { name: "principles", title: "Principles" },
     { name: "certifications", title: "Certifications" },
+    { name: "seo", title: "SEO" },
   ],
   fields: [
     /* ── Hero ─────────────────────────────────────────────── */
@@ -188,6 +189,27 @@ export default defineType({
       options: { hotspot: true },
       components: { input: TaggedMediaPicker },
       fields: HERO_IMAGE_FIELDS,
+    }),
+    defineField({
+      name: "featureCtaLabel",
+      title: "CTA label",
+      description: 'Button label beneath the feature body, e.g. "How we work →".',
+      type: "string",
+      group: "feature",
+    }),
+    defineField({
+      name: "featureCtaHref",
+      title: "CTA link",
+      description: "Where the CTA points (relative path or full URL).",
+      type: "string",
+      group: "feature",
+    }),
+    defineField({
+      name: "featureCtaPageName",
+      title: "CTA destination label",
+      description: "Page-transition label, e.g. \"Services\".",
+      type: "string",
+      group: "feature",
     }),
 
     /* ── Legacy — three example projects ──────────────────── */
@@ -360,6 +382,19 @@ export default defineType({
       group: "certifications",
       of: [{ type: "string" }],
       options: { layout: "tags" },
+    }),
+    defineField({
+      name: "seoTitle",
+      title: "Browser tab title",
+      type: "string",
+      group: "seo",
+    }),
+    defineField({
+      name: "seoDescription",
+      title: "Meta description",
+      type: "text",
+      rows: 3,
+      group: "seo",
     }),
   ],
   preview: {

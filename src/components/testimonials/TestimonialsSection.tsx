@@ -28,6 +28,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { useSiteSettings } from "@/components/settings/SiteSettingsProvider";
 import type { ResolvedTestimonial } from "@/sanity/queries/testimonialsSection";
 
 import "./TestimonialsSection.css";
@@ -83,6 +84,10 @@ export default function TestimonialsSection({
   theme = "pink",
   variant = "slider",
 }: TestimonialsSectionProps) {
+  const testimonialsLabels = useSiteSettings()?.testimonialsLabels;
+  const previousAriaLabel =
+    testimonialsLabels?.previousLabel ?? "Previous testimonial";
+  const nextAriaLabel = testimonialsLabels?.nextLabel ?? "Next testimonial";
   const stackRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -304,7 +309,7 @@ export default function TestimonialsSection({
                 <button
                   className="testimonials-btn is-prev"
                   type="button"
-                  aria-label="Previous testimonial"
+                  aria-label={previousAriaLabel}
                   onClick={goPrev}
                 >
                   <ArrowIcon />
@@ -319,7 +324,7 @@ export default function TestimonialsSection({
                 <button
                   className="testimonials-btn"
                   type="button"
-                  aria-label="Next testimonial"
+                  aria-label={nextAriaLabel}
                   onClick={goNext}
                 >
                   <ArrowIcon />

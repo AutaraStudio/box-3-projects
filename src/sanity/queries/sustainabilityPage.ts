@@ -67,7 +67,12 @@ export const SUSTAINABILITY_PAGE_QUERY = groq`
       body
     },
     certificationsLabel,
-    certificationsItems
+    certificationsItems,
+    featureCtaLabel,
+    featureCtaHref,
+    featureCtaPageName,
+    seoTitle,
+    seoDescription
   }
 `;
 
@@ -133,4 +138,9 @@ export interface SustainabilityPageData {
   principlesItems?: SustainabilityPillarItem[];
   certificationsLabel?: string;
   certificationsItems?: string[];
+  featureCtaLabel?: string;
+  featureCtaHref?: string;
+  featureCtaPageName?: string;
+  seoTitle?: string;
+  seoDescription?: string;
 }

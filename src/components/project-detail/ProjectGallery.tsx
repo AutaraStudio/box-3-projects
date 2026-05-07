@@ -43,6 +43,7 @@ import { Navigation, Pagination } from "swiper/modules";
 
 import Button from "@/components/ui/Button";
 import Heading from "@/components/ui/Heading";
+import { useSiteSettings } from "@/components/settings/SiteSettingsProvider";
 import { urlFor } from "@/sanity/lib/image";
 import type { ProjectImage } from "@/sanity/queries/projects";
 
@@ -163,11 +164,20 @@ function makeBezierEase(
 export default function ProjectGallery({
   images,
   heroImage,
-  title = DEFAULT_TITLE,
-  openLabel = DEFAULT_OPEN_LABEL,
+  title,
+  openLabel,
   projectTitle = "",
   galleryId,
 }: ProjectGalleryProps) {
+  const labels = useSiteSettings()?.projectDetailLabels;
+  const resolvedTitle = title ?? labels?.exploreTitle ?? DEFAULT_TITLE;
+  const resolvedOpenLabel =
+    openLabel ?? labels?.exploreOpenLabel ?? DEFAULT_OPEN_LABEL;
+  const viewGalleryLabel = labels?.viewGalleryLabel ?? "View gallery";
+  const previousLabel = labels?.lightboxPreviousLabel ?? "Previous image";
+  const nextLabel = labels?.lightboxNextLabel ?? "Next image";
+  const closeLabel = labels?.lightboxCloseLabel ?? "Close";
+  const closeAriaLabel = labels?.lightboxCloseAriaLabel ?? "Close gallery";
   const hero = heroImage ?? images?.[0];
   const heroDims = useMemo(() => parseImageDimensions(hero), [hero]);
 
@@ -447,15 +457,15 @@ export default function ProjectGallery({
                     as="h2"
                     className="project-gallery__title text-h1"
                   >
-                    {title}
+                    {resolvedTitle}
                   </Heading>
                   <Button
                     size="md"
                     onClick={openGallery}
-                    ariaLabel={openLabel}
+                    ariaLabel={resolvedOpenLabel}
                     className="project-gallery__view-btn"
                   >
-                    View gallery
+                    {viewGalleryLabel}
                   </Button>
                 </div>
 
@@ -479,13 +489,13 @@ export default function ProjectGallery({
                       aria-hidden="true"
                     >
                       <p className="project-gallery__title project-gallery__title--duplicate text-h1">
-                        {title}
+                        {resolvedTitle}
                       </p>
                       <span
                         className="project-gallery__view-btn-shim"
                         aria-hidden="true"
                       >
-                        <Button size="md">View gallery</Button>
+                        <Button size="md">{viewGalleryLabel}</Button>
                       </span>
                     </div>
                   </div>
@@ -520,7 +530,7 @@ export default function ProjectGallery({
                       type="button"
                       className="project-gallery__media-btn"
                       onClick={openGallery}
-                      aria-label={openLabel}
+                      aria-label={resolvedOpenLabel}
                     />
                   </div>
                 </div>
@@ -544,7 +554,7 @@ export default function ProjectGallery({
         aria-hidden={!isOpen}
         role="dialog"
         aria-modal="true"
-        aria-label={projectTitle || title}
+        aria-label={projectTitle || resolvedTitle}
         style={lightboxStyle}
       >
         <div className="project-gallery__lightbox-inner">
@@ -615,11 +625,11 @@ export default function ProjectGallery({
             <Button
               size="sm"
               onClick={closeGallery}
-              ariaLabel="Close gallery"
+              ariaLabel={closeAriaLabel}
               icon={<CloseIcon />}
               className="project-gallery__close"
             >
-              Close
+              {closeLabel}
             </Button>
 
             {/* Counter + arrows. On mobile this falls to row 2
@@ -635,7 +645,7 @@ export default function ProjectGallery({
                   ref={prevRef}
                   type="button"
                   className="project-gallery__nav-btn"
-                  aria-label="Previous image"
+                  aria-label={previousLabel}
                 >
                   <ArrowIcon direction="left" />
                 </button>
@@ -643,7 +653,7 @@ export default function ProjectGallery({
                   ref={nextRef}
                   type="button"
                   className="project-gallery__nav-btn"
-                  aria-label="Next image"
+                  aria-label={nextLabel}
                 >
                   <ArrowIcon direction="right" />
                 </button>

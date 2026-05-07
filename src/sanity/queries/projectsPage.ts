@@ -24,7 +24,9 @@ export const PROJECTS_PAGE_QUERY = groq`
       alt,
       hotspot,
       crop
-    }
+    },
+    seoTitle,
+    seoDescription
   }
 `;
 
@@ -44,4 +46,6 @@ export interface ProjectsPageData {
   heading?: string;
   baseImage?: ProjectsPageImage;
   overlayImage?: ProjectsPageImage;
+  seoTitle?: string;
+  seoDescription?: string;
 }

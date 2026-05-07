@@ -25,11 +25,19 @@ import {
   type VacancyItem,
 } from "@/sanity/queries/vacancies";
 
-export const metadata: Metadata = {
-  title: "Careers — Box 3 Projects",
-  description:
-    "Open roles + team culture at Box 3 Projects, a London-based design and build company.",
-};
+const FALLBACK_SEO_TITLE = "Careers — Box 3 Projects";
+const FALLBACK_SEO_DESCRIPTION =
+  "Open roles + team culture at Box 3 Projects, a London-based design and build company.";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const data = await sanityFetch<CareersPageData | null>({
+    query: CAREERS_PAGE_QUERY,
+  });
+  return {
+    title: data?.seoTitle ?? FALLBACK_SEO_TITLE,
+    description: data?.seoDescription ?? FALLBACK_SEO_DESCRIPTION,
+  };
+}
 
 /* Box 3-flavoured defaults so the page reads in full before an
    editor has populated the careersPage singleton. Once the
@@ -108,32 +116,73 @@ export default async function CareersPage() {
         body={cultureBody}
         image={data?.cultureImage}
         fallbackAlt="Box 3 team"
-        ctaLabel="Meet the team →"
-        ctaHref="/about"
-        ctaPageName="About"
+        ctaLabel={data?.cultureCtaLabel ?? "Meet the team →"}
+        ctaHref={data?.cultureCtaHref ?? "/about"}
+        ctaPageName={data?.cultureCtaPageName ?? "About"}
       />
       <CareersWhyWork
         heading={whyWorkHeading}
         items={whyWorkItems}
-        ctaLabel="See open roles →"
-        ctaHref="#jobs"
+        ctaLabel={data?.whyWorkCtaLabel ?? "See open roles →"}
+        ctaHref={data?.whyWorkCtaHref ?? "#jobs"}
       />
-      <CareersJobs vacancies={vacancies} />
+      <CareersJobs
+        vacancies={vacancies}
+        heading={data?.vacanciesHeading}
+        emptyMessage={data?.vacanciesEmptyMessage}
+        applyButtonLabel={data?.vacanciesApplyButtonLabel}
+        applyEyebrowLabel={data?.applyEyebrowLabel}
+        applyCloseLabel={data?.applyCloseLabel}
+        applyCloseAriaLabel={data?.applyCloseAriaLabel}
+        applyFirstNameLabel={data?.applyFirstNameLabel}
+        applyLastNameLabel={data?.applyLastNameLabel}
+        applyEmailLabel={data?.applyEmailLabel}
+        applyPhoneLabel={data?.applyPhoneLabel}
+        applyLinkLabel={data?.applyLinkLabel}
+        applyExperienceLabel={data?.applyExperienceLabel}
+        applyCvLabel={data?.applyCvLabel}
+        applyFilePickerLabel={data?.applyFilePickerLabel}
+        applyFileClearLabel={data?.applyFileClearLabel}
+        applySubmitLabel={data?.applySubmitLabel}
+        applySubmittingLabel={data?.applySubmittingLabel}
+        applyLegalCopy={data?.applyLegalCopy}
+        applySentHeading={data?.applySentHeading}
+        applySentBody={data?.applySentBody}
+        applySentCloseLabel={data?.applySentCloseLabel}
+      />
 
       {/* Closing image block — invites speculative applications
-          for roles we don't always post for. Same component +
-          fallback placeholder pattern used elsewhere on the site. */}
-      <EditorialImageBlock
-        label="Speculative"
-        heading="Send us a CV anyway."
-        body={`If your role isn't on the list above but you've got commercial fit-out experience and want to be at Box 3, we'd still like to hear from you.
+          for roles we don't always post for. Only renders if the
+          editor populated the speculative section. */}
+      {data?.speculativeHeading ? (
+        <EditorialImageBlock
+          label={data.speculativeLabel ?? "Speculative"}
+          heading={data.speculativeHeading}
+          body={
+            data.speculativeBody ??
+            `If your role isn't on the list above but you've got commercial fit-out experience and want to be at Box 3, we'd still like to hear from you.
+
+Send a CV and a paragraph about why. One of us will read it.`
+          }
+          image={data.speculativeImage}
+          fallbackAlt="Box 3 team scene"
+          ctaLabel={data.speculativeCtaLabel ?? "Get in touch →"}
+          ctaHref={data.speculativeCtaHref ?? "/contact"}
+          ctaPageName={data.speculativeCtaPageName ?? "Contact"}
+        />
+      ) : (
+        <EditorialImageBlock
+          label="Speculative"
+          heading="Send us a CV anyway."
+          body={`If your role isn't on the list above but you've got commercial fit-out experience and want to be at Box 3, we'd still like to hear from you.
 
 Send a CV and a paragraph about why. One of us will read it.`}
-        fallbackAlt="Box 3 team scene"
-        ctaLabel="Get in touch →"
-        ctaHref="/contact"
-        ctaPageName="Contact"
-      />
+          fallbackAlt="Box 3 team scene"
+          ctaLabel="Get in touch →"
+          ctaHref="/contact"
+          ctaPageName="Contact"
+        />
+      )}
     </main>
   );
 }

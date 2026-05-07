@@ -17,7 +17,9 @@ export default defineType({
     { name: "hero", title: "Hero", default: true },
     { name: "intro", title: "Intro" },
     { name: "team", title: "Team section" },
+    { name: "teamCategories", title: "Team categories" },
     { name: "closing", title: "Closing block" },
+    { name: "seo", title: "SEO" },
   ],
   fields: [
     /* Hero */
@@ -78,6 +80,52 @@ export default defineType({
       group: "team",
     }),
 
+    /* ── Team categories ──────────────────────────────────
+       Team members are grouped by category on the page. Each
+       category here maps a category slug used on a teamMember
+       document to the heading shown above its group. Re-order
+       this array to re-order the groups; items not listed here
+       fall back to a "Team" catch-all bucket. */
+    defineField({
+      name: "teamCategories",
+      title: "Category groups",
+      description:
+        "Order + display title for each team category. The slug must match the category set on each Team Member document.",
+      type: "array",
+      group: "teamCategories",
+      of: [
+        {
+          type: "object",
+          fields: [
+            defineField({
+              name: "slug",
+              title: "Category slug",
+              description:
+                'Lowercase + hyphenated identifier — must match the category set on team-member documents (e.g. "leadership", "site-team").',
+              type: "string",
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: "title",
+              title: "Display title",
+              description: 'Heading shown above the group, e.g. "Leadership".',
+              type: "string",
+              validation: (rule) => rule.required(),
+            }),
+          ],
+          preview: { select: { title: "title", subtitle: "slug" } },
+        },
+      ],
+    }),
+    defineField({
+      name: "teamUncategorisedTitle",
+      title: "Uncategorised group title",
+      description:
+        'Fallback heading for team members whose category isn\'t listed above (e.g. "Team").',
+      type: "string",
+      group: "teamCategories",
+    }),
+
     /* Closing block */
     defineField({
       name: "closingLabel",
@@ -113,6 +161,19 @@ export default defineType({
       title: "CTA button",
       type: "link",
       group: "closing",
+    }),
+    defineField({
+      name: "seoTitle",
+      title: "Browser tab title",
+      type: "string",
+      group: "seo",
+    }),
+    defineField({
+      name: "seoDescription",
+      title: "Meta description",
+      type: "text",
+      rows: 3,
+      group: "seo",
     }),
   ],
   preview: { prepare: () => ({ title: "About Page" }) },

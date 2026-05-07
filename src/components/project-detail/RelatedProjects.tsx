@@ -11,8 +11,11 @@
  * archive's list view exactly. No bespoke layout / styling required.
  */
 
+"use client";
+
 import ProjectsList from "@/components/projects/ProjectsList";
 import Heading from "@/components/ui/Heading";
+import { useSiteSettings } from "@/components/settings/SiteSettingsProvider";
 import type { RelatedProject } from "@/sanity/queries/projects";
 
 import "./RelatedProjects.css";
@@ -22,6 +25,7 @@ interface RelatedProjectsProps {
 }
 
 export default function RelatedProjects({ projects }: RelatedProjectsProps) {
+  const labels = useSiteSettings()?.projectDetailLabels;
   if (projects.length === 0) return null;
 
   return (
@@ -29,7 +33,7 @@ export default function RelatedProjects({ projects }: RelatedProjectsProps) {
       <div className="container related-projects__inner">
         <header className="related-projects__head">
           <Heading as="h2" className="related-projects__title text-h4">
-            More projects
+            {labels?.moreProjectsHeading ?? "More projects"}
           </Heading>
         </header>
 

@@ -32,11 +32,19 @@ import {
   type SustainabilityStatItem,
 } from "@/sanity/queries/sustainabilityPage";
 
-export const metadata: Metadata = {
-  title: "Sustainability — Box 3 Projects",
-  description:
-    "How Box 3 thinks about materials, carbon, and the long life of every fit-out we deliver.",
-};
+const FALLBACK_SEO_TITLE = "Sustainability — Box 3 Projects";
+const FALLBACK_SEO_DESCRIPTION =
+  "How Box 3 thinks about materials, carbon, and the long life of every fit-out we deliver.";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const data = await sanityFetch<SustainabilityPageData | null>({
+    query: SUSTAINABILITY_PAGE_QUERY,
+  });
+  return {
+    title: data?.seoTitle ?? FALLBACK_SEO_TITLE,
+    description: data?.seoDescription ?? FALLBACK_SEO_DESCRIPTION,
+  };
+}
 
 /* ── Box 3 defaults ─────────────────────────────────────────── */
 
@@ -217,10 +225,13 @@ export default async function SustainabilityPage() {
         heading={featureHeading}
         body={featureBody}
         image={data?.featureImage}
-        fallbackAlt="Box 3 site visit — sustainability in practice"
-        ctaLabel="How we work →"
-        ctaHref="/services"
-        ctaPageName="Services"
+        fallbackAlt={
+          data?.featureImage?.alt ??
+          "Box 3 site visit — sustainability in practice"
+        }
+        ctaLabel={data?.featureCtaLabel ?? "How we work →"}
+        ctaHref={data?.featureCtaHref ?? "/services"}
+        ctaPageName={data?.featureCtaPageName ?? "Services"}
       />
       <SustainabilityLegacy label={legacyLabel} items={legacyItems} />
       <SustainabilityCommitment

@@ -38,11 +38,20 @@ import {
   type AboutPageData,
 } from "@/sanity/queries/aboutPage";
 
-export const metadata: Metadata = {
-  title: "About — Box 3 Projects",
-  description:
-    "Senior leads on every project, end-to-end accountability. Box 3 is a London-based design and build company.",
-};
+const FALLBACK_SEO_TITLE = "About — Box 3 Projects";
+const FALLBACK_SEO_DESCRIPTION =
+  "Senior leads on every project, end-to-end accountability. Box 3 is a London-based design and build company.";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await sanityFetch<AboutPageData | null>({
+    query: ABOUT_PAGE_QUERY,
+    revalidate: 3600,
+  });
+  return {
+    title: page?.seoTitle ?? FALLBACK_SEO_TITLE,
+    description: page?.seoDescription ?? FALLBACK_SEO_DESCRIPTION,
+  };
+}
 
 /* Revalidate hourly so new team members + reorders show up
    without a redeploy. Same cadence as /projects. */
@@ -137,6 +146,8 @@ export default async function AboutPage() {
         heading={firstFilled(page?.teamHeading, FALLBACK.teamHeading)}
         intro={firstFilled(page?.teamIntro, FALLBACK.teamIntro)}
         members={team}
+        categories={page?.teamCategories}
+        uncategorisedTitle={page?.teamUncategorisedTitle}
       />
 
       <EditorialImageBlock

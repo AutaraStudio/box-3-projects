@@ -33,8 +33,21 @@ import { gsap } from "gsap";
 import TransitionLink from "@/components/transition/TransitionLink";
 import SplitText from "@/components/split-text/SplitText";
 import Button from "@/components/ui/Button";
+import { useSiteSettings } from "@/components/settings/SiteSettingsProvider";
 import { useMenu } from "./MenuProvider";
 import "./MenuOverlay.css";
+
+const FALLBACK_MENU_LABELS = {
+  moreSectionTitle: "More",
+  stayInTouchTitle: "Stay in touch",
+  namePlaceholder: "Name",
+  emailPlaceholder: "Email",
+  messagePlaceholder: "Message",
+  submitLabel: "Submit",
+  submittedLabel: "Thanks — we'll be in touch",
+  siteMenuAriaLabel: "Site menu",
+  scrimAriaLabel: "Close menu",
+} as const;
 
 interface MenuLink {
   label: string;
@@ -58,6 +71,35 @@ export default function MenuOverlay({
   contact,
 }: MenuOverlayProps) {
   const { isOpen, close } = useMenu();
+  const settings = useSiteSettings();
+  const labels = {
+    moreSectionTitle:
+      settings?.menuLabels?.moreSectionTitle ??
+      FALLBACK_MENU_LABELS.moreSectionTitle,
+    stayInTouchTitle:
+      settings?.menuLabels?.stayInTouchTitle ??
+      FALLBACK_MENU_LABELS.stayInTouchTitle,
+    namePlaceholder:
+      settings?.menuLabels?.namePlaceholder ??
+      FALLBACK_MENU_LABELS.namePlaceholder,
+    emailPlaceholder:
+      settings?.menuLabels?.emailPlaceholder ??
+      FALLBACK_MENU_LABELS.emailPlaceholder,
+    messagePlaceholder:
+      settings?.menuLabels?.messagePlaceholder ??
+      FALLBACK_MENU_LABELS.messagePlaceholder,
+    submitLabel:
+      settings?.menuLabels?.submitLabel ?? FALLBACK_MENU_LABELS.submitLabel,
+    submittedLabel:
+      settings?.menuLabels?.submittedLabel ??
+      FALLBACK_MENU_LABELS.submittedLabel,
+    siteMenuAriaLabel:
+      settings?.menuLabels?.siteMenuAriaLabel ??
+      FALLBACK_MENU_LABELS.siteMenuAriaLabel,
+    scrimAriaLabel:
+      settings?.menuLabels?.scrimAriaLabel ??
+      FALLBACK_MENU_LABELS.scrimAriaLabel,
+  };
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
@@ -202,7 +244,7 @@ export default function MenuOverlay({
       id="site-menu"
       role="dialog"
       aria-modal="true"
-      aria-label="Site menu"
+      aria-label={labels.siteMenuAriaLabel}
       aria-hidden={!isOpen}
     >
       {/* Scrim — semi-transparent dim over the page beneath the
@@ -211,7 +253,7 @@ export default function MenuOverlay({
       <button
         type="button"
         className="menu-overlay__scrim"
-        aria-label="Close menu"
+        aria-label={labels.scrimAriaLabel}
         tabIndex={isOpen ? 0 : -1}
         onClick={close}
       />
@@ -246,7 +288,7 @@ export default function MenuOverlay({
         {/* More links — Services, Careers, Sustainability, Contact. */}
         <section className="menu-overlay__section">
           <h2 className="menu-overlay__section-title text-small text-caps">
-            More
+            {labels.moreSectionTitle}
           </h2>
           <ul className="menu-overlay__more" role="menu">
             {moreLinks.map((l) => (
@@ -270,7 +312,7 @@ export default function MenuOverlay({
         {/* Stay in touch. */}
         <section className="menu-overlay__section menu-overlay__section--contact">
           <h2 className="menu-overlay__section-title text-small text-caps">
-            Stay in touch
+            {labels.stayInTouchTitle}
           </h2>
           <div className="menu-overlay__contact">
             <div className="menu-overlay__contact-line">
@@ -308,7 +350,7 @@ export default function MenuOverlay({
         <form className="menu-overlay__form" onSubmit={onSubmit} noValidate>
           <label className="menu-overlay__field">
             <span className="menu-overlay__field-label text-small text-caps">
-              Name
+              {labels.namePlaceholder}
             </span>
             <input
               type="text"
@@ -320,7 +362,7 @@ export default function MenuOverlay({
           </label>
           <label className="menu-overlay__field">
             <span className="menu-overlay__field-label text-small text-caps">
-              Email
+              {labels.emailPlaceholder}
             </span>
             <input
               type="email"
@@ -332,7 +374,7 @@ export default function MenuOverlay({
           </label>
           <label className="menu-overlay__field">
             <span className="menu-overlay__field-label text-small text-caps">
-              Message
+              {labels.messagePlaceholder}
             </span>
             <textarea
               required
@@ -346,7 +388,7 @@ export default function MenuOverlay({
           </label>
           <div className="menu-overlay__submit-row">
             <Button type="submit" size="md">
-              {sent ? "Thanks — we'll be in touch" : "Submit"}
+              {sent ? labels.submittedLabel : labels.submitLabel}
             </Button>
           </div>
         </form>
