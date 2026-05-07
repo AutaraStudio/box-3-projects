@@ -206,7 +206,17 @@ export default function ProjectGallery({
     const child = translateChildRef.current;
     if (!inner || !refEl || !media || !parent || !child) return;
 
-    const mediaAspect = heroDims.height / heroDims.width;
+    /* Aspect is the rendered media's height/width — used to compute
+       the cover-scale ratio + the clip math. On desktop we use the
+       hero's natural aspect; on mobile we force a portrait 4:3 (h:w)
+       frame so the scaling card reads as a portrait plate the user
+       can swipe past. Re-evaluated on each compute so a viewport
+       resize across the breakpoint switches modes cleanly. */
+    const PORTRAIT_ASPECT = 4 / 3;
+    const naturalAspect = heroDims.height / heroDims.width;
+    const isMobileViewport = () =>
+      window.matchMedia("(max-width: 63.99rem)").matches;
+    let mediaAspect = isMobileViewport() ? PORTRAIT_ASPECT : naturalAspect;
     const easeFn = makeBezierEase(0.65, 1, 0.9, 1);
 
     let idleRatio = 0.375;
@@ -216,6 +226,7 @@ export default function ProjectGallery({
       const innerWidth = inner.offsetWidth || 1;
       const refWidth = refEl.offsetWidth;
       idleRatio = refWidth > 0 ? refWidth / innerWidth : 0.375;
+      mediaAspect = isMobileViewport() ? PORTRAIT_ASPECT : naturalAspect;
       const viewportCover =
         window.innerHeight / (innerWidth * mediaAspect);
       coverScaleRatio = Math.max(viewportCover, 1);

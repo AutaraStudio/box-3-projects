@@ -221,6 +221,19 @@
   background-color: var(--theme-bg);
 }
 
+/* Mobile: force a portrait frame so the scaling plate reads as a
+   tall card swipe-past rather than stretching the natural
+   landscape aspect across the screen. Inline aspect-ratio is set
+   from the hero's natural dimensions, so we use !important to
+   override it. The companion JS uses the same 3:4 ratio for its
+   cover-scale + clip-path math, so the scaled rectangle and the
+   clip mask line up. */
+@media (max-width: 63.99rem) {
+  .project-gallery__media {
+    aspect-ratio: 3 / 4 !important;
+  }
+}
+
 .project-gallery__media-image {
   object-fit: cover;
 }
