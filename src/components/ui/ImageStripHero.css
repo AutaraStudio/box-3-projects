@@ -1,13 +1,15 @@
 /**
  * ImageStripHero
  * ==============
- * Centred title + CTA, then a single portrait image with the
- * standard mask reveal beneath. Used by About / Services /
- * Sustainability / Careers — one image per page, no scrub.
+ * Hybrid hero — single portrait image with reveal on mobile, 3-image
+ * scroll-driven strip on desktop. Both layouts render in the JSX;
+ * media queries hide whichever doesn't apply at the current
+ * breakpoint.
  */
 
 .image-strip-hero {
   --hero-grid-margin: var(--space-2);
+  --hero-grid-gutter: var(--space-1-25);
   position: relative;
   background-color: var(--theme-bg);
   color: var(--theme-text);
@@ -38,20 +40,22 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-3);
-  /* Top: clear the fixed header. Bottom: small editorial gap
-     before the image — was an entire viewport (min-height +
-     space-7 padding) which left the image stranded below the
-     fold. */
+  /* Mobile: clears the fixed header + small gap before the
+     portrait image. */
   padding-top: var(--nav-clearance);
   padding-bottom: var(--space-3);
   text-align: center;
 }
 
 @media (min-width: 64rem) {
+  /* Desktop: title block takes ~one viewport so it reads as a
+     standalone editorial band before the strip enters. */
+  .image-strip-hero__inner {
+    min-height: calc(100svh - var(--space-6));
+  }
   .image-strip-hero__content {
     gap: var(--space-4);
-    padding-top: calc(var(--header-bottom) + var(--space-5));
-    padding-bottom: var(--space-4);
+    padding-block: var(--space-9);
   }
 }
 
@@ -63,7 +67,7 @@
   max-width: 14ch;
 }
 
-/* ── Portrait image ───────────────────────────────────────────── */
+/* ── Mobile portrait (single image with reveal) ───────────────── */
 
 .image-strip-hero__media {
   position: relative;
@@ -74,26 +78,16 @@
 }
 
 @media (min-width: 64rem) {
+  /* Hidden on desktop — the strip below takes over. */
   .image-strip-hero__media {
-    padding-bottom: var(--space-7);
+    display: none;
   }
 }
 
-/* RevealImage's wrapper. Mobile: fills the available width.
-   Desktop: capped width so the portrait reads as a single
-   editorial plate rather than a full-bleed banner. 3:4 portrait
-   aspect locks the reveal mask so the image height never jumps
-   while the asset is decoding. */
 .image-strip-hero__reveal {
   width: 100%;
   max-width: 32rem;
   aspect-ratio: 3 / 4;
-}
-
-@media (min-width: 64rem) {
-  .image-strip-hero__reveal {
-    max-width: 36rem;
-  }
 }
 
 /* Image inside RevealImage — fills the wrapper. */
@@ -105,5 +99,128 @@
 .image-strip-hero__image-placeholder {
   position: absolute;
   inset: 0;
+  background-color: color-mix(in srgb, var(--theme-text) 6%, transparent);
+}
+
+/* ── Desktop strip wrapper ────────────────────────────────────── */
+
+.image-strip-hero__progress {
+  position: relative;
+  /* Hidden on mobile — the portrait image above takes over. */
+  display: none;
+  pointer-events: none;
+}
+
+@media (min-width: 64rem) {
+  .image-strip-hero__progress {
+    display: block;
+    /* 200vh of scroll distance gives the sticky inner room to
+       stay pinned while the user scrolls past it — that's what
+       drives the progress 0 → 1 in the JS scrub. */
+    min-height: 200vh;
+    /* Pull the strip up so the centre image sits under the
+       heading on first paint — same calc as the reference
+       so the visual overlap reads as designed. */
+    margin-top: calc(
+      (
+          100vw * 9 / 16 - (
+              0.5 * (100vw - 2 * var(--hero-grid-margin)) -
+                0.5 * var(--hero-grid-gutter)
+            ) * 9 / 16
+        ) * -0.5
+    );
+  }
+}
+
+/* The sticky band holds the 3 images while the user scrolls
+   through the 200vh trigger area. */
+.image-strip-hero__progress-inner {
+  position: sticky;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+/* Forces the sticky band to be 16:9 — gives it a known height
+   so the layout doesn't collapse before the images load. */
+.image-strip-hero__progress-inner::before {
+  content: "";
+  display: block;
+  aspect-ratio: 16 / 9;
+}
+
+/* Trigger area whose intersection with the viewport drives the
+   0 → 1 progress value the JS reads. */
+.image-strip-hero__progress-area {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Reference element used to measure the centre image's start
+   width (50% of the container minus half a gutter). */
+.image-strip-hero__progress-ref {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(
+    0.5 * (100vw - 2 * var(--hero-grid-margin)) -
+      0.5 * var(--hero-grid-gutter)
+  );
+}
+
+/* ── Image strip — three items in a row ───────────────────────── */
+
+.image-strip-hero__listing {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--hero-grid-gutter);
+  transform: translate3d(-50%, -50%, 0);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.image-strip-hero__listing li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-strip-hero__item {
+  position: relative;
+  width: calc(
+    0.3333 * (100vw - 2 * var(--hero-grid-margin)) -
+      0.6667 * var(--hero-grid-gutter)
+  );
+  aspect-ratio: 16 / 9;
+}
+
+/* Centre image: starts at 50% wide, grows to viewport width as
+   --item-width is lerped by the JS scroll handler. */
+.image-strip-hero__item--fluid {
+  width: max(
+    calc(
+      0.5 * (100vw - 2 * var(--hero-grid-margin)) -
+        0.5 * var(--hero-grid-gutter)
+    ),
+    var(--item-width, 0px)
+  );
+}
+
+/* ── Image inside an item ─────────────────────────────────────── */
+
+.image-strip-hero__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 4px;
   background-color: color-mix(in srgb, var(--theme-text) 6%, transparent);
 }

@@ -8,7 +8,7 @@
  */
 
 .related-projects {
-  padding-block: var(--space-5);
+  padding-block: var(--space-3);
   border-top: 1px solid var(--theme-border-strong);
 }
 
@@ -21,7 +21,7 @@
 
 @media (min-width: 64rem) {
   .related-projects {
-    padding-block: var(--space-7);
+    padding-block: var(--space-5);
   }
 }
 
@@ -55,15 +55,17 @@
 
 @media (min-width: 64rem) {
   .related-projects .projects-list__row {
-    /* Down from max(14rem, 15vw) on the archive — gives a tighter
-       single-line row. Tall enough so the thumbnail clears the
-       hairline above it with breathing room. */
-    height: max(9rem, 11vw);
+    /* Tall enough to seat a properly-sized thumbnail without
+       overpowering the row, but compact enough to read as a
+       quiet list at the foot of a project page. */
+    height: max(11rem, 13vw);
   }
   .related-projects .projects-list__row-inner {
-    /* Generous top padding so the (bottom-aligned) thumbnail
-       doesn't crowd the previous row's bottom hairline. */
-    padding-block: var(--space-2-5) var(--space-1-5);
+    /* Tight top + bottom — was --space-2-5 / --space-1-5 (40px /
+       24px), which left the thumbnail floating well below the
+       top hairline. Half a rem on each side so the image hugs
+       both dividers as a deliberate editorial cell. */
+    padding-block: var(--space-0-5);
   }
 }
 
@@ -80,13 +82,13 @@
   }
 }
 
-/* Smaller thumbnail — single column on desktop instead of two,
-   and capped to a sensible width so it doesn't dominate the row.
-   The image keeps its 282/194 aspect so it doesn't crop oddly. */
+/* Bigger thumbnail than the previous 9rem stamp — large enough to
+   read as a proper editorial cell, capped so it doesn't dominate
+   the row. Keeps the 282/194 aspect so Sanity uploads crop evenly. */
 @media (min-width: 64rem) {
   .related-projects .projects-list__image {
     grid-column: span 2;
-    max-width: 9rem;
+    max-width: 14rem;
     justify-self: end;
   }
 }

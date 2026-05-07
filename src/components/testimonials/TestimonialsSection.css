@@ -39,6 +39,14 @@
   }
 }
 
+/* When the testimonials are followed directly by the related
+   projects strip the two pads compound into a huge dead band —
+   collapse the bottom pad to zero so the related-projects'
+   own padding-top is the only gap between them. */
+.testimonials-section:has(+ .related-projects) {
+  padding-bottom: 0;
+}
+
 /* ── Label row ──────────────────────────────────────────── */
 
 .testimonials-label-row {

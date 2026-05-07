@@ -189,7 +189,10 @@
 
 @media (min-width: 64rem) {
   .project-hero__gallery {
-    padding-top: calc(var(--header-bottom) + var(--space-2));
+    /* Drop the first image just above the viewport midline so it
+       clears the nav and reads as an editorial entry below the
+       sticky title column. */
+    padding-top: 45svh;
   }
 }
 

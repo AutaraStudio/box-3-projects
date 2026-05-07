@@ -70,46 +70,46 @@ export default function SustainabilityStats({
   const headRef = useRef<HTMLElement | null>(null);
   const staircaseRef = useRef<HTMLDivElement | null>(null);
 
-  /* Scrubbed fade + scale on the head. Plays as the staircase
-     scrolls into the viewport — by the time the first card
-     reaches the head's vertical band, the head has fully faded
-     and shrunk just enough to read as "stepping back" rather
-     than disappearing abruptly. Sticky positioning on the head
-     stays intact so the effect ties together the original
-     pinned-heading behaviour with a natural exit. */
+  /* Mobile-only scrubbed fade + scale on the head. As the
+     staircase scrolls into the viewport on a single column the
+     head shrinks slightly and fades out, so the cards take its
+     place rather than competing for attention. Desktop keeps the
+     head sticky and fully visible — the original pinned-heading
+     behaviour the editorial reference was designed around. The
+     ScrollTrigger is scoped via gsap.matchMedia so it auto-kills
+     when the viewport crosses the breakpoint. */
   useEffect(() => {
     if (typeof window === "undefined") return;
     const head = headRef.current;
     const staircase = staircaseRef.current;
     if (!head || !staircase) return;
 
-    const reduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (reduced) return;
+    const mm = gsap.matchMedia();
 
-    gsap.set(head, { opacity: 1, scale: 1 });
-
-    const tween = gsap.to(head, {
-      opacity: 0,
-      scale: 0.92,
-      ease: "none",
-      scrollTrigger: {
-        trigger: staircase,
-        /* Start fading the moment the staircase enters from the
-           bottom; finish well before the user has scrolled past
-           the head's pinned position so the heading is gone by
-           the time the first card overlaps it. */
-        start: "top 85%",
-        end: "top 25%",
-        scrub: true,
+    mm.add(
+      "(max-width: 63.99rem) and (prefers-reduced-motion: no-preference)",
+      () => {
+        gsap.set(head, { opacity: 1, scale: 1 });
+        const tween = gsap.to(head, {
+          opacity: 0,
+          scale: 0.92,
+          ease: "none",
+          scrollTrigger: {
+            trigger: staircase,
+            start: "top 85%",
+            end: "top 25%",
+            scrub: true,
+          },
+        });
+        return () => {
+          tween.scrollTrigger?.kill();
+          tween.kill();
+          gsap.set(head, { clearProps: "opacity,scale,transform" });
+        };
       },
-    });
+    );
 
-    return () => {
-      tween.scrollTrigger?.kill();
-      tween.kill();
-    };
+    return () => mm.revert();
   }, []);
 
   if (cards.length === 0) return null;
