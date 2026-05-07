@@ -141,15 +141,12 @@ export default function LegalPage({
           </aside>
 
           <div className="legal-page__content">
-            {sections.map((section, index) => (
+            {sections.map((section) => (
               <section
                 key={section._key}
                 id={section.anchorId}
                 className="legal-page__section"
               >
-                <p className="legal-page__section-label text-small text-caps">
-                  § {String(index + 1).padStart(2, "0")}
-                </p>
                 <h2 className="legal-page__section-heading text-h3">
                   {section.heading}
                 </h2>

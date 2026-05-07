@@ -186,11 +186,6 @@
   border-top: 1px solid var(--theme-border);
 }
 
-.legal-page__section-label {
-  margin: 0;
-  color: var(--theme-text-muted);
-}
-
 .legal-page__section-heading {
   margin: 0;
   color: var(--theme-text);
