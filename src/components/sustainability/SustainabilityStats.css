@@ -220,15 +220,15 @@
     justify-content: flex-end;
   }
 
-  /* Card width chosen to feel meaningfully larger than the
-     previous half-width while still leaving a visible negative-
-     space ledge on the opposite side for the staggered rhythm.
-     0.85:1 keeps the card a touch taller than wide so the
-     value dominates. */
+  /* Card width: 75% of the row. The previous 62% was cramping
+     the supporting label + footnote onto too many lines; 75%
+     gives the body copy enough measure to breathe while still
+     leaving a visible negative-space ledge on the opposite
+     side for the staggered rhythm. */
   .sustainability-stats__mobile-row .sustainability-stats__card {
     position: relative;
     top: auto;
-    width: 62%;
+    width: 75%;
     aspect-ratio: 0.85 / 1;
   }
 }
