@@ -51,6 +51,8 @@ const COLLECTIONS = [
 const HIDDEN_FROM_GENERIC = new Set<string>([
   ...SINGLETON_TYPES,
   ...COLLECTIONS,
+  /* Surfaced under Pages → Legal Pages — don't double up here. */
+  "legalPage",
 ]);
 
 export const structure: StructureResolver = (S) =>
@@ -146,6 +148,19 @@ export const structure: StructureResolver = (S) =>
                     .schemaType("contactPage")
                     .documentId("contactPage")
                     .title("Contact Page"),
+                ),
+              S.listItem()
+                .title("Legal Pages")
+                .id("legalPages")
+                .child(
+                  S.documentTypeList("legalPage")
+                    .title("Legal Pages")
+                    .child((id) =>
+                      S.document()
+                        .schemaType("legalPage")
+                        .documentId(id)
+                        .title("Legal Page"),
+                    ),
                 ),
             ]),
         ),

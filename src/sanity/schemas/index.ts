@@ -32,6 +32,7 @@ import projectsPage from "./pages/projectsPage";
 import aboutPage from "./pages/aboutPage";
 import servicesPage from "./pages/servicesPage";
 import contactPage from "./pages/contactPage";
+import legalPage from "./pages/legalPage";
 
 import link from "./objects/link";
 import siteSettings from "./singletons/siteSettings";
@@ -49,6 +50,8 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   careersPage,
   sustainabilityPage,
   contactPage,
+  /* Multi-doc pages (one document per page, slug-driven URL) */
+  legalPage,
   /* Reusable sections */
   testimonialsSection,
   partnersSection,

@@ -113,13 +113,13 @@ const siteSettings = {
       _key: "fl1",
       _type: "link",
       label: "Privacy Policy",
-      href: "/privacy-policy",
+      href: "/legal/privacy-policy",
     },
     {
       _key: "fl2",
       _type: "link",
       label: "Terms & Conditions",
-      href: "/terms-and-conditions",
+      href: "/legal/terms-and-conditions",
     },
   ],
 

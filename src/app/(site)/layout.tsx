@@ -81,8 +81,8 @@ const FALLBACK = {
     { label: "LinkedIn", href: "https://www.linkedin.com/company/box3-projects/" },
   ],
   legal: [
-    { label: "Privacy Policy", href: "/privacy-policy" },
-    { label: "Terms & Conditions", href: "/terms-and-conditions" },
+    { label: "Privacy Policy", href: "/legal/privacy-policy" },
+    { label: "Terms & Conditions", href: "/legal/terms-and-conditions" },
   ],
   addressLines: ["Level 5, 55 Broadway,", "London SW1H 0BD."],
   email: "hello@box3projects.co.uk",

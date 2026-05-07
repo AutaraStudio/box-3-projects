@@ -1,0 +1,285 @@
+/* ==========================================================================
+   LegalPage
+   ==========================================================================
+   Editorial layout: large display title → meta + intro → two-column
+   body with a sticky numbered TOC on the left and rich-text sections
+   on the right. Stacks to a single column under 64rem.
+
+   All values reference v2 design tokens — no hardcoded sizes /
+   colours / spacing. */
+
+.legal-page {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  /* Top padding clears the fixed header (`.header` is 4.5rem tall
+     at top: var(--space-1)). Bottom matches the editorial section
+     pacing used elsewhere on v2. */
+  padding-top: calc(var(--space-1) + 4.5rem + var(--space-3));
+  padding-bottom: var(--space-5);
+}
+
+@media (min-width: 64rem) {
+  .legal-page {
+    padding-top: calc(var(--space-1) + 4.5rem + var(--space-5));
+    padding-bottom: var(--space-7);
+  }
+}
+
+.legal-page__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@media (min-width: 64rem) {
+  .legal-page__inner {
+    gap: var(--space-6);
+  }
+}
+
+/* ── Header ─────────────────────────────────────────────────────── */
+
+.legal-page__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1-5);
+  border-bottom: 1px solid var(--theme-border);
+  padding-bottom: var(--space-3);
+}
+
+.legal-page__eyebrow {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+.legal-page__title {
+  margin: 0;
+  text-wrap: balance;
+}
+
+.legal-page__meta {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
+  color: var(--theme-text-muted);
+  margin: 0;
+}
+
+.legal-page__meta-value {
+  color: var(--theme-text);
+  font-feature-settings: "tnum" 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.legal-page__intro {
+  margin: 0;
+  color: var(--theme-text);
+  max-width: 50rem;
+}
+
+/* ── Body grid ──────────────────────────────────────────────────── */
+
+.legal-page__body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 64rem) {
+  .legal-page__body {
+    grid-template-columns: 18rem 1fr;
+    gap: var(--space-5);
+    align-items: start;
+  }
+}
+
+/* ── Table of contents ──────────────────────────────────────────── */
+
+.legal-page__toc {
+  position: relative;
+}
+
+@media (min-width: 64rem) {
+  .legal-page__toc {
+    position: sticky;
+    /* Sit beneath the fixed header with a comfortable gap. */
+    top: calc(var(--space-1) + 4.5rem + var(--space-2));
+    align-self: start;
+  }
+}
+
+.legal-page__toc-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: 1px solid var(--theme-border);
+  border-radius: 0.5rem;
+  background-color: var(--theme-surface);
+}
+
+.legal-page__toc-heading {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+.legal-page__toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.legal-page__toc-item {
+  margin: 0;
+}
+
+.legal-page__toc-link {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1-25);
+  padding-block: var(--space-0-5);
+  color: var(--theme-text);
+  text-decoration: none;
+  font-size: var(--font-size-text-small);
+  line-height: var(--line-height-snug);
+  transition: color 250ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.legal-page__toc-link:hover {
+  color: var(--theme-accent);
+}
+
+.legal-page__toc-index {
+  font-size: var(--font-size-text-small);
+  color: var(--theme-text-muted);
+  letter-spacing: var(--letter-spacing-caps);
+  flex-shrink: 0;
+  min-width: 1.75rem;
+  font-feature-settings: "tnum" 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.legal-page__toc-text {
+  flex: 1;
+}
+
+/* ── Sections ───────────────────────────────────────────────────── */
+
+.legal-page__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.legal-page__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1-5);
+  /* Allow anchor links to scroll past the fixed header. */
+  scroll-margin-top: calc(var(--space-1) + 4.5rem + var(--space-2));
+}
+
+.legal-page__section + .legal-page__section {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--theme-border);
+}
+
+.legal-page__section-label {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+.legal-page__section-heading {
+  margin: 0;
+  color: var(--theme-text);
+}
+
+.legal-page__section-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1-5);
+  max-width: 50rem;
+}
+
+/* ── Rich text primitives ───────────────────────────────────────── */
+
+.legal-page__p {
+  font-size: var(--font-size-text-main);
+  line-height: var(--line-height-relaxed);
+  color: var(--theme-text);
+  margin: 0;
+}
+
+.legal-page__h3 {
+  margin: var(--space-1) 0 0;
+  color: var(--theme-text);
+}
+
+.legal-page__h4 {
+  margin: var(--space-1) 0 0;
+  color: var(--theme-text);
+}
+
+.legal-page__quote {
+  margin: 0;
+  padding-left: var(--space-2);
+  border-left: 1px solid var(--theme-border-strong);
+  font-style: italic;
+  font-size: var(--font-size-text-large);
+  line-height: var(--line-height-relaxed);
+  color: var(--theme-text);
+}
+
+.legal-page__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+  padding-left: var(--space-2);
+  margin: 0;
+  font-size: var(--font-size-text-main);
+  line-height: var(--line-height-relaxed);
+  color: var(--theme-text);
+}
+
+.legal-page__list--bullet {
+  list-style-type: disc;
+}
+
+.legal-page__list--number {
+  list-style-type: decimal;
+}
+
+.legal-page__li {
+  padding-left: var(--space-0-5);
+}
+
+.legal-page__li::marker {
+  color: var(--theme-text-muted);
+}
+
+.legal-page__link {
+  color: var(--theme-text);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: color 250ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.legal-page__link:hover {
+  color: var(--theme-accent);
+}
+
+.legal-page__strong {
+  font-weight: var(--font-weight-medium);
+}
+
+.legal-page__em {
+  font-style: italic;
+}
+
+.legal-page__underline {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
