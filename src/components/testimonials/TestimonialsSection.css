@@ -283,7 +283,10 @@
 
 /* Logo wrap — section-bg fill so the vertical rule reads as
    interrupted behind the logo on desktop. Vertical padding widens
-   that interruption so the logo floats on the rule. */
+   that interruption so the logo floats on the rule. Hidden on
+   mobile — the partner name is already shown in the author info
+   block, so the standalone logo competes for space without adding
+   information at narrow widths. */
 .testimonials-logo-wrap {
   position: relative;
   display: flex;
@@ -291,6 +294,12 @@
   justify-content: center;
   background-color: var(--theme-bg);
   padding-block: var(--space-3);
+}
+
+@media (max-width: 63.99rem) {
+  .testimonials-logo-wrap {
+    display: none;
+  }
 }
 
 @media (min-width: 64rem) {
