@@ -85,10 +85,23 @@
 
 .home-cta__heading {
   margin: 0;
+  text-wrap: balance;
 }
 
 .home-cta__heading-line {
   display: block;
+}
+
+/* Mobile override — `.text-display` (60px @ ideal mobile) is too
+   large for the long CTA copy on a 375px viewport; the heading
+   breaks into 5 single-word lines and reads as broken. Step down
+   to the h2 scale so 'Have a question?' sits on one line and the
+   second sentence wraps cleanly into 2 lines. */
+@media (max-width: 63.99rem) {
+  .home-cta__heading {
+    font-size: var(--font-size-h2);
+    line-height: var(--line-height-tight);
+  }
 }
 
 /* ── Button ───────────────────────────────────────────────────
