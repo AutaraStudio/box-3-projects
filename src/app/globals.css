@@ -65,6 +65,16 @@ body {
      (dark hero, footer, etc.) reach the viewport edges instead of
      leaving a cream-coloured frame around the page. */
   margin: 0;
+  /* Clip any horizontal overflow at the document root. Several
+     hero / gallery sections rely on transforms (scale, translate)
+     that paint past the viewport edge while their parent's
+     overflow:hidden contains them visually — but on mobile, sub-
+     pixel rounding + Lenis's smooth scroll occasionally let those
+     parents leak a few pixels of horizontal scroll, which shows
+     up as the page sliding sideways under a thumb swipe. `clip`
+     (not `hidden`) suppresses that scroll without creating a new
+     scroll container, so position:sticky everywhere still works. */
+  overflow-x: clip;
 }
 
 /* ==========================================================================
