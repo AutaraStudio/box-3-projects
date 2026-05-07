@@ -193,16 +193,17 @@ html.is-touch-device .image-strip-hero__progress {
   );
 }
 
-/* Touch devices: hide the side images + let the centre take
-   the full screen, since the side images won't be shown
-   alongside a fluid centre on small viewports. */
+/* Touch devices: hide the side images so the centre carries the
+   scroll-driven scale on its own. The fluid centre's `max(...)`
+   width still lerps via --item-width — what was previously
+   missing was that we forced .image-strip-hero__item to 100vw,
+   which trumped the lerp and left the image static. Without that
+   override the centre image grows from the ref width up to the
+   full viewport, same scrub as desktop with the strip simplified
+   to a single image. */
 html.is-touch-device .image-strip-hero__listing li:nth-child(1) .image-strip-hero__item,
 html.is-touch-device .image-strip-hero__listing li:nth-child(3) .image-strip-hero__item {
   display: none;
-}
-
-html.is-touch-device .image-strip-hero__item {
-  width: 100vw;
 }
 
 /* ── Image inside an item ─────────────────────────────────────── */
