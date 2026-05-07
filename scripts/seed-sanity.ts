@@ -20,6 +20,8 @@ import { createClient } from "@sanity/client";
 import { config as loadEnv } from "dotenv";
 import path from "node:path";
 
+import { legalDocuments } from "./seed-legal-content";
+
 /* Load .env.local from project root */
 loadEnv({ path: path.resolve(process.cwd(), ".env.local") });
 
@@ -119,12 +121,12 @@ const documents: SeedDoc[] = [
       {
         _key: "f-privacy",
         label: "Privacy Policy",
-        href: "/privacy-policy",
+        href: "/legal/privacy-policy",
       },
       {
         _key: "f-terms",
         label: "Terms & Conditions",
-        href: "/terms-and-conditions",
+        href: "/legal/terms-and-conditions",
       },
     ],
     phone: "+44 20 0000 0000",
@@ -230,6 +232,34 @@ const documents: SeedDoc[] = [
       "We do not have any open roles right now, but we are always interested in hearing from talented people. Send your CV and a brief introduction to careers@box3projects.co.uk and we will be in touch if something comes up.",
   },
 ];
+
+/* Legal pages are seeded separately because the singleton loop's
+   "legacy cleanup" step assumes one-doc-per-type — Privacy Policy
+   and Terms & Conditions share the legalPage type. Content lives
+   in scripts/seed-legal-content.ts. */
+async function seedLegalPages(): Promise<number> {
+  let succeeded = 0;
+  for (const doc of legalDocuments) {
+    try {
+      const existing = await client.fetch<{ _id: string } | null>(
+        `*[_id == $id][0]{_id}`,
+        { id: doc._id },
+      );
+      if (existing) {
+        console.log(`↷ legalPage (${doc._id}) already exists — skipping`);
+        succeeded += 1;
+        continue;
+      }
+      const created = await client.create(doc);
+      console.log(`✔ created legalPage (${created._id})`);
+      succeeded += 1;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`✘ failed to seed legalPage (${doc._id}): ${message}`);
+    }
+  }
+  return succeeded;
+}
 
 /* --------------------------------------------------------------------------
    Main
@@ -1804,6 +1834,39 @@ async function seed() {
   await attachTestimonialsToHomePage(testimonialMap);
   await attachTestimonialsToContactPage(testimonialMap);
   await attachTestimonialsToProjects(testimonialMap);
+
+  /* Legal pages — Privacy Policy + Terms & Conditions. */
+  await seedLegalPages();
+
+  /* Repoint footer legal links to the new /legal/* paths if they
+     still reference the legacy top-level URLs from earlier seeds. */
+  try {
+    const footer = await client.fetch<
+      { legalLinks?: Array<{ _key?: string; href?: string }> } | null
+    >('*[_id == "siteFooter"][0]{legalLinks}');
+    const links = footer?.legalLinks ?? [];
+    const updates: Record<string, string> = {
+      "/privacy-policy": "/legal/privacy-policy",
+      "/terms-and-conditions": "/legal/terms-and-conditions",
+    };
+    const patches: Array<{ idx: number; href: string }> = [];
+    links.forEach((link, idx) => {
+      if (link?.href && updates[link.href]) {
+        patches.push({ idx, href: updates[link.href] });
+      }
+    });
+    if (patches.length > 0) {
+      const patch = client.patch("siteFooter");
+      patches.forEach(({ idx, href }) => {
+        patch.set({ [`legalLinks[${idx}].href`]: href });
+      });
+      await patch.commit();
+      console.log(`✔ patched ${patches.length} footer legal link(s) → /legal/*`);
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`✘ failed to patch footer legal links: ${message}`);
+  }
 
   console.log(`\nSeeded ${succeeded}/${total} singletons + category set`);
 }

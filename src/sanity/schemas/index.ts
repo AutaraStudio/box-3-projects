@@ -19,6 +19,7 @@ import type { SchemaTypeDefinition } from "sanity";
 import homePage from "./pages/homePage";
 import careersPage from "./pages/careersPage";
 import contactPage from "./pages/contactPage";
+import legalPage from "./pages/legalPage";
 
 /* Sections */
 import partnersSection from "./sections/partnersSection";
@@ -42,6 +43,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   homePage,
   careersPage,
   contactPage,
+  legalPage,
   siteNav,
   siteFooter,
   partnersSection,

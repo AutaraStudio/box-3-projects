@@ -40,7 +40,11 @@ const COLLECTIONS = [
 /** Document types hidden from the generic "everything else" list —
  *  singletons are already surfaced under Site Settings / Pages, and
  *  collections have their own grouped list. */
-const HIDDEN_FROM_GENERIC = new Set<string>([...SINGLETONS, ...COLLECTIONS]);
+const HIDDEN_FROM_GENERIC = new Set<string>([
+  ...SINGLETONS,
+  ...COLLECTIONS,
+  "legalPage",
+]);
 
 export const structure: StructureResolver = (S) =>
   S.list()
@@ -79,6 +83,19 @@ export const structure: StructureResolver = (S) =>
                     .schemaType("contactPage")
                     .documentId("contactPage")
                     .title("Contact Page"),
+                ),
+              S.listItem()
+                .title("Legal Pages")
+                .id("legalPages")
+                .child(
+                  S.documentTypeList("legalPage")
+                    .title("Legal Pages")
+                    .child((id) =>
+                      S.document()
+                        .schemaType("legalPage")
+                        .documentId(id)
+                        .title("Legal Page"),
+                    ),
                 ),
             ]),
         ),
