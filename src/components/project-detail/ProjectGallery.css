@@ -97,6 +97,29 @@
   z-index: 1;
 }
 
+/* Heading + CTA stack — vertically centred inside the sticky
+   frame. The button sits beneath the title so the Explore
+   section reads as "heading + call-to-action" rather than just
+   a clickable image. */
+.project-gallery__heading-stack {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+@media (min-width: 64rem) {
+  .project-gallery__heading-stack {
+    gap: var(--space-3);
+  }
+}
+
+.project-gallery__view-btn {
+  pointer-events: auto;
+}
+
 /* ==========================================================================
    Title
    ========================================================================== */
@@ -356,21 +379,68 @@ html.has-gallery-open {
    `flex-wrap: wrap` so everything stays readable on narrow widths.
    ========================================================================== */
 
+/* Mobile layout: 2-column grid.
+     Row 1: title | close
+     Row 2: counter + arrows (right-aligned, spans both columns)
+   Close button used to live inside the cluster bottom-right and
+   was getting cropped on narrow viewports — pulling it inline
+   with the title up top + dropping the cluster to its own row
+   keeps every control reachable above the fold. */
 .project-gallery__lightbox-bottom {
   position: relative;
   z-index: 6;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  column-gap: var(--space-4);
-  row-gap: var(--space-2);
+  column-gap: var(--space-2);
+  row-gap: var(--space-1-5);
   padding: var(--space-2) var(--space-2) var(--space-3);
 }
 
+.project-gallery__lightbox-bottom > .project-gallery__lightbox-title {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.project-gallery__lightbox-bottom > .project-gallery__close {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+}
+
+.project-gallery__lightbox-bottom > .project-gallery__cluster {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  justify-self: end;
+}
+
 @media (min-width: 64rem) {
+  /* Desktop: revert to the original "title left, controls right"
+     single-row flex bar so the layout reads identically to before. */
   .project-gallery__lightbox-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    column-gap: var(--space-4);
+    row-gap: var(--space-2);
     padding: var(--space-3);
+  }
+
+  .project-gallery__lightbox-bottom > .project-gallery__close {
+    /* Slot the close button after the cluster on desktop so it
+       still reads as the last control (counter → arrows → close). */
+    order: 3;
+    justify-self: auto;
+  }
+
+  .project-gallery__lightbox-bottom > .project-gallery__cluster {
+    order: 2;
+    justify-self: auto;
+  }
+
+  .project-gallery__lightbox-bottom > .project-gallery__lightbox-title {
+    order: 1;
   }
 }
 

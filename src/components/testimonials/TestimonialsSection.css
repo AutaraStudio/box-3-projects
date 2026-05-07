@@ -41,10 +41,22 @@
 
 /* When the testimonials are followed directly by the related
    projects strip the two pads compound into a huge dead band —
-   collapse the bottom pad to zero so the related-projects'
-   own padding-top is the only gap between them. */
+   collapse every bottom-edge contribution so the related-
+   projects' own padding-top is the only gap between them.
+   That covers: the section's own padding-bottom, the inner
+   grid's padding-bottom (which the section padding sits on
+   top of), and the trailing horizontal divider rule. */
 .testimonials-section:has(+ .related-projects) {
   padding-bottom: 0;
+}
+
+.testimonials-section:has(+ .related-projects) .testimonials-grid {
+  padding-bottom: 0;
+}
+
+.testimonials-section:has(+ .related-projects)
+  > .testimonials-section__divider:last-child {
+  display: none;
 }
 
 /* ── Label row ──────────────────────────────────────────── */

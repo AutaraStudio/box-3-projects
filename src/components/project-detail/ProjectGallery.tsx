@@ -431,12 +431,22 @@ export default function ProjectGallery({
           <div ref={innerRef} className="project-gallery__inner">
             <div className="project-gallery__sticky-wrapper">
               <div className="project-gallery__sticky">
-                <Heading
-                  as="h2"
-                  className="project-gallery__title text-h1"
-                >
-                  {title}
-                </Heading>
+                <div className="project-gallery__heading-stack">
+                  <Heading
+                    as="h2"
+                    className="project-gallery__title text-h1"
+                  >
+                    {title}
+                  </Heading>
+                  <Button
+                    size="md"
+                    onClick={openGallery}
+                    ariaLabel={openLabel}
+                    className="project-gallery__view-btn"
+                  >
+                    View gallery
+                  </Button>
+                </div>
 
                 <div
                   ref={translateParentRef}
@@ -567,13 +577,28 @@ export default function ProjectGallery({
           </div>
 
           <div ref={bottomRef} className="project-gallery__lightbox-bottom">
-            {/* Left: project title — anchors the bar. */}
+            {/* Title — anchors the bar. On mobile it shares row 1
+                with the close button (close pulled out of the
+                cluster so it sits inline with the title); on
+                desktop the original "title left, controls right"
+                layout is preserved via media query. */}
             <p className="project-gallery__lightbox-title text-h5">
               {projectTitle}
             </p>
 
-            {/* Right: one tidy control cluster. Counter → nav arrows
-                → close, all baseline-aligned, consistent sizing. */}
+            <Button
+              size="sm"
+              onClick={closeGallery}
+              ariaLabel="Close gallery"
+              icon={<CloseIcon />}
+              className="project-gallery__close"
+            >
+              Close
+            </Button>
+
+            {/* Counter + arrows. On mobile this falls to row 2
+                aligned right; on desktop it sits inline with the
+                close to the right of the title. */}
             <div className="project-gallery__cluster">
               <p
                 ref={paginationRef}
@@ -597,15 +622,6 @@ export default function ProjectGallery({
                   <ArrowIcon direction="right" />
                 </button>
               </div>
-              <Button
-                size="sm"
-                onClick={closeGallery}
-                ariaLabel="Close gallery"
-                icon={<CloseIcon />}
-                className="project-gallery__close"
-              >
-                Close
-              </Button>
             </div>
           </div>
         </div>
