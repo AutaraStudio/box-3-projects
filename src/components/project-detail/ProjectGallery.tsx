@@ -456,12 +456,27 @@ export default function ProjectGallery({
                     ref={translateChildRef}
                     className="project-gallery__translate-child"
                   >
-                    <p
+                    {/* Mirror the static stack's heading + button
+                        layout so the duplicate heading sits at the
+                        same y-position as the visible one. The
+                        Button shim is rendered identically but
+                        aria-hidden + visibility:hidden + tabIndex
+                        -1 so it never reaches a11y, paint or hit-
+                        testing — pure layout placeholder. */}
+                    <div
+                      className="project-gallery__heading-stack project-gallery__heading-stack--duplicate"
                       aria-hidden="true"
-                      className="project-gallery__title project-gallery__title--duplicate text-h1"
                     >
-                      {title}
-                    </p>
+                      <p className="project-gallery__title project-gallery__title--duplicate text-h1">
+                        {title}
+                      </p>
+                      <span
+                        className="project-gallery__view-btn-shim"
+                        aria-hidden="true"
+                      >
+                        <Button size="md">View gallery</Button>
+                      </span>
+                    </div>
                   </div>
 
                   <div

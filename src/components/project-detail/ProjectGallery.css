@@ -120,6 +120,17 @@
   pointer-events: auto;
 }
 
+/* Layout shim that mirrors the real "View gallery" button inside
+   the clip-path duplicate stack. Renders the same Button so the
+   duplicate heading lands at the same y-position as the visible
+   heading on the static stack; visibility:hidden keeps it in the
+   layout while removing it from paint, hit-testing and tab order. */
+.project-gallery__view-btn-shim {
+  display: inline-flex;
+  visibility: hidden;
+  pointer-events: none;
+}
+
 /* ==========================================================================
    Title
    ========================================================================== */
