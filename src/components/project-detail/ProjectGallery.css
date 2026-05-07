@@ -411,7 +411,23 @@ html.has-gallery-open {
 .project-gallery__lightbox-bottom > .project-gallery__cluster {
   grid-column: 1 / -1;
   grid-row: 2;
-  justify-self: end;
+  /* Stretch the cluster across the full row so the counter
+     anchors left and the arrow nav anchors right via the inner
+     space-between (overridden in the .project-gallery__cluster
+     rule below for mobile). */
+  justify-self: stretch;
+}
+
+/* Mobile cluster — counter on the left, nav arrows on the right.
+   Desktop keeps its inline-flex layout (counter → arrows → close)
+   via the rule on .project-gallery__cluster below. */
+@media (max-width: 63.99rem) {
+  .project-gallery__lightbox-bottom > .project-gallery__cluster {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
 }
 
 @media (min-width: 64rem) {
