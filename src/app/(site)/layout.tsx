@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Script from "next/script";
 import SmoothScroll from "@/components/scroll/SmoothScroll";
+import ScrollResetOnRoute from "@/components/scroll/ScrollResetOnRoute";
 import { PageTransitionProvider } from "@/components/transition/PageTransitionProvider";
 import PageTransitionOverlay from "@/components/transition/PageTransitionOverlay";
 import { MenuProvider } from "@/components/menu/MenuProvider";
@@ -192,6 +193,7 @@ export default async function RootLayout({
           }}
         />
         <SmoothScroll>
+          <ScrollResetOnRoute />
           <PageTransitionProvider>
             <MenuProvider>
               {/* Plays once per session: pink overlay fills the

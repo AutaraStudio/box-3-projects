@@ -184,12 +184,23 @@
 
 /* ── Counter + author info ──────────────────────────────── */
 
-/* Bottom row — author info on the left, counter on the right end. */
+/* Bottom row — author info on the left, counter on the right end.
+   Mobile stacks the two so the reading order becomes
+   quote → author + company → counter, with the sidebar (logo +
+   arrows) sitting below all three. */
 .testimonials-bottom-row {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--space-1);
+}
+
+@media (min-width: 64rem) {
+  .testimonials-bottom-row {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
 }
 
 /* Counter — meta caps. Pulls size + spacing from `.text-small` +

@@ -57,7 +57,10 @@
 @media (max-width: 991px) {
   .menu-overlay__panel {
     width: 100vw;
-    padding: var(--space-4) var(--space-1-5) var(--space-1-5);
+    /* Top padding clears the fixed header (`.header` is 4.5rem tall
+       at `top: var(--space-1)`) so the first primary link doesn't
+       sit beneath the home link / close button / contact square. */
+    padding: var(--space-7) var(--space-1-5) var(--space-1-5);
   }
 }
 
