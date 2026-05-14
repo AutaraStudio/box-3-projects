@@ -504,6 +504,201 @@ const contactPage = {
 };
 
 /* ─────────────────────────────────────────────────────────────────
+   Careers Page
+   ───────────────────────────────────────────────────────────────────
+   Body content only. The SEO, vacancies-list labels, apply-modal
+   copy, culture/why-work CTAs and the speculative block are seeded
+   separately by seed-ui-labels.mjs (run that after this). Hero +
+   culture images can't be seeded — upload them in the studio.
+   ───────────────────────────────────────────────────────────────── */
+
+const careersPage = {
+  _type: "careersPage",
+  _id: "careersPage",
+
+  /* Hero */
+  heroTitle: "It's all about people",
+  heroCtaLabel: "See opportunities",
+  heroCtaHref: "#jobs",
+
+  /* Intro */
+  introHeading: "We hire slowly. Most people stay.",
+  introBody:
+    "Box 3 is a London-based design and build company. We work end-to-end across hospitality, workplace, residential and retail — and we couldn't do it without the team behind every project.\n\nWe're shaped by the people who choose to work here. If our voice changes over time, it's because the people in the room change with it.",
+
+  /* Culture */
+  cultureLabel: "Culture",
+  cultureHeading: "We work side by side, start to finish.",
+  cultureBody:
+    "Box 3 is one team under one roof — design, build, and project leads in the same room every day. Decisions get made in conversation, not in inboxes. The person who promised something is usually the person who builds it. Trades get treated as design partners.\n\nPeople who thrive here care as much about how a thing gets made as the finished image.",
+
+  /* Why work with us */
+  whyWorkHeading: "Why work with us",
+  whyWorkItems: [
+    {
+      _key: "ww1",
+      _type: "object",
+      title: "Team culture",
+      body: "Designers, builders, and project leads in the same room — caring about how the work gets made, not just the finished images.",
+    },
+    {
+      _key: "ww2",
+      _type: "object",
+      title: "End-to-end ownership",
+      body: "From the first sketch to the final hand-over, every project is led by the same team. No silos, no hand-offs to a sub-contractor halfway through. The person who promises something is usually the person who builds it.",
+    },
+    {
+      _key: "ww3",
+      _type: "object",
+      title: "Health + wellbeing",
+      body: "Flexible hours, four-day Fridays from June to August, and a wellbeing budget that covers gym, therapy, or whatever helps you do your best work.",
+    },
+    {
+      _key: "ww4",
+      _type: "object",
+      title: "Growth",
+      body: "Roles that scale with the company. We invest in formal training (RIBA, IIRSM, project-management certs), and pair every junior with a senior mentor for the first year. Annual reviews are honest and forward-looking.",
+    },
+  ],
+};
+
+/* ─────────────────────────────────────────────────────────────────
+   Sustainability Page
+   ───────────────────────────────────────────────────────────────────
+   Body content only. SEO + the feature-block CTA are seeded by
+   seed-ui-labels.mjs. `legacyItems` (project references) and all
+   image fields can't be seeded — author them in the studio.
+   ───────────────────────────────────────────────────────────────── */
+
+const sustainabilityPage = {
+  _type: "sustainabilityPage",
+  _id: "sustainabilityPage",
+
+  /* Hero */
+  heroTitle: "Designed to last, built to be re-used.",
+  heroCtaLabel: "Our principles",
+  heroCtaHref: "#principles",
+
+  /* Intro */
+  introHeading: "Sustainability is in the spec, not the brochure.",
+  introBody:
+    "Commercial fit-out is one of the highest-carbon construction activities pound-for-pound — short cycles, long supply chains, and a habit of stripping out and starting over every five years. We don't think that has to be the answer.\n\nBox 3 is a design and build company working across hospitality, workplace, residential and retail. We've spent the last decade pushing for fit-outs that hold their value: better materials, less waste, and design choices that survive the next tenant.",
+
+  /* Stats */
+  statsLabel: "Impact",
+  statsHeading: "What we measure.",
+  statsItems: [
+    {
+      _key: "ss1",
+      _type: "object",
+      value: "78%",
+      label: "average embodied carbon reduction",
+      footnote: "vs RIBA 2030 baseline",
+    },
+    {
+      _key: "ss2",
+      _type: "object",
+      value: "12 t",
+      label: "of furniture diverted from landfill",
+      footnote: "across 2025 projects",
+    },
+    {
+      _key: "ss3",
+      _type: "object",
+      value: "45%",
+      label: "of fit-outs reusing existing partitions or joinery",
+      footnote: "calendar year 2025",
+    },
+    {
+      _key: "ss4",
+      _type: "object",
+      value: "£1.2m",
+      label: "of asset value restored, not replaced",
+      footnote: "tracked since 2023",
+    },
+  ],
+
+  /* Feature */
+  featureLabel: "On site",
+  featureHeading: "Most of the work happens before anything ships in.",
+  featureBody:
+    "Every project starts with a survey of what's already there. We catalogue partitions, joinery, lighting, flooring, and furniture — what condition it's in, what's worth keeping, what could be re-used elsewhere.\n\nThe image of a \"fresh start\" sells well, but it's also where most of the embodied carbon gets locked in. Our job is to push the brief in the opposite direction: spec less new, refurbish more, and design around what already works.",
+
+  /* Legacy projects — label only; the project references are
+     authored in the studio (they need real project docs). */
+  legacyLabel: "Recent work",
+
+  /* Commitment */
+  commitmentLabel: "Our commitment",
+  commitmentHeading: "We measure, source, and design for the next decade.",
+  commitmentItems: [
+    {
+      _key: "sc1",
+      _type: "object",
+      title: "Material provenance",
+      body: "FSC and PEFC-certified timber as standard. Low-VOC paints and adhesives across every spec. Recycled-content panels, fabrics, and acoustic products where the performance brief allows it.",
+    },
+    {
+      _key: "sc2",
+      _type: "object",
+      title: "Embodied carbon",
+      body: "Whole-life carbon captured for every project against the RICS framework. Reductions are tracked against a baseline so claims can be evidenced, not estimated.",
+    },
+    {
+      _key: "sc3",
+      _type: "object",
+      title: "Designed to disassemble",
+      body: "Mechanical fixings over adhesives. Modular partition systems. Standardised dimensions so the next fit-out inherits ours rather than skipping it. The most sustainable fit-out is the one that's still in use.",
+    },
+  ],
+
+  /* Principles */
+  principlesLabel: "Principles",
+  principlesHeading: "How we work, in practice.",
+  principlesIntro:
+    "Three commitments we hold ourselves to on every project — design, build, and post-handover.",
+  principlesItems: [
+    {
+      _key: "sp1",
+      _type: "object",
+      title: "Reuse before refit",
+      body: "Every project starts with a survey of what's already on site that's worth keeping. The most sustainable spec is the one that doesn't ship in a new product. We've kept everything from joinery to lighting circuits to entire ceilings — the rule is condition, not novelty.",
+    },
+    {
+      _key: "sp2",
+      _type: "object",
+      title: "Repair before replace",
+      body: "Our build team is trained to refinish, recover, and re-skin existing assets. Furniture, joinery, and lighting are all candidates for restoration rather than replacement. We work with a vetted network of UK-based restorers + reupholsterers to keep that work in-house when we can.",
+    },
+    {
+      _key: "sp3",
+      _type: "object",
+      title: "Honest about trade-offs",
+      body: "When a low-impact spec doesn't perform — acoustic, durability, fire — we say so, and design around it. Every claim we make on a project is one we can evidence on a spreadsheet.",
+    },
+    {
+      _key: "sp4",
+      _type: "object",
+      title: "End-of-life is part of the brief",
+      body: "We tell clients what happens to their fit-out at the end of its life on day one — what can be lifted and re-used, what can be recycled, what can't. Stripping out gracefully is part of the work, not someone else's problem.",
+    },
+  ],
+
+  /* Certifications */
+  certificationsLabel: "Frameworks we follow",
+  certificationsItems: [
+    "BREEAM",
+    "NABERS UK",
+    "RICS Whole Life Carbon",
+    "FSC",
+    "PEFC",
+    "WELL",
+    "LEED",
+    "ISO 14001",
+  ],
+};
+
+/* ─────────────────────────────────────────────────────────────────
    Run
    ───────────────────────────────────────────────────────────────── */
 
@@ -514,6 +709,8 @@ const docs = [
   ["Services Page", servicesPage],
   ["Projects Page", projectsPage],
   ["Contact Page", contactPage],
+  ["Careers Page", careersPage],
+  ["Sustainability Page", sustainabilityPage],
 ];
 
 let created = 0;

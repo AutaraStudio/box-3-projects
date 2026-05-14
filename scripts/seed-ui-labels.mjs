@@ -121,7 +121,7 @@ const pagePatches = {
       },
       { _key: "tc3", _type: "object", slug: "commercial", title: "Commercial" },
       { _key: "tc4", _type: "object", slug: "technical", title: "Technical" },
-      { _key: "tc5", _type: "object", slug: "site-team", title: "Site Team" },
+      { _key: "tc5", _type: "object", slug: "site", title: "Site Team" },
       { _key: "tc6", _type: "object", slug: "design", title: "Design" },
       {
         _key: "tc7",
