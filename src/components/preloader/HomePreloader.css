@@ -163,6 +163,20 @@ html:not([data-preloader="active"]):not([data-preloader="reveal"])
   letter-spacing: var(--letter-spacing-tight);
 }
 
+/* The statement steps down a size at each breakpoint — h2 is a
+   desktop display size, so on a phone the 14-word line would wrap
+   to ~10 lines and overflow. h3 on tablet, h4 on mobile. */
+@media (max-width: 991px) {
+  .home-preloader__statement-text {
+    font-size: var(--font-size-h3);
+  }
+}
+@media (max-width: 767px) {
+  .home-preloader__statement-text {
+    font-size: var(--font-size-h4);
+  }
+}
+
 /* Each word is its own clip-mask: `overflow: clip` windows the
    inner so it's hidden while parked below the line (step 6 in) and
    clipped again as it lifts away above the line (step 6 out).
