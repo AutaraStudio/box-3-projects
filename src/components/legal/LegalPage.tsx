@@ -96,7 +96,7 @@ export default function LegalPage({
 }: LegalPageProps) {
   const labels = useSiteSettings()?.legalPageLabels;
   return (
-    <section className="legal-page">
+    <main className="legal-page">
       <div className="container legal-page__inner">
         <header className="legal-page__header">
           {eyebrow ? (
@@ -170,6 +170,6 @@ export default function LegalPage({
           </div>
         </div>
       </div>
-    </section>
+    </main>
   );
 }
