@@ -1,18 +1,22 @@
 /**
  * Seed singletons
  * ===============
- * Seeds the new page + Site Settings singletons in the Box 3
- * Sanity dataset with the launch fallback copy that the page files
- * already use. Uses `createIfNotExists`, so:
+ * Seeds the page + Site Settings singletons in the Box 3 Sanity
+ * dataset with the launch copy the page files already use as
+ * fallbacks.
  *
- *   - first run        → creates each doc with the seed data
- *   - any later run    → does nothing (your edits are never
- *                        overwritten)
+ * For each doc it creates a bare stub if one doesn't exist yet,
+ * then `.set()`s the body fields — so it works whether the doc is
+ * brand new, an empty stub, or holding stray placeholder text. The
+ * fields it writes are disjoint from the SEO / UI-label fields that
+ * seed-ui-labels.mjs patches in, so the two scripts never clash.
  *
- * If the editor publishes any singleton then re-runs this script
- * to "reset" their changes, they need to delete the doc in the
- * studio first (or run this with `createOrReplace` swapped in,
- * but that's destructive — don't do it without checking).
+ *   - first run  → fills every doc with the seed content
+ *   - re-run     → re-applies it (OVERWRITES the body fields — so
+ *                  seed first, then author in the Studio; don't
+ *                  re-run on top of editor changes)
+ *
+ * Run this BEFORE seed-ui-labels.mjs.
  *
  * Usage (PowerShell):
  *   $env:SANITY_WRITE_TOKEN="<token with editor permissions>"
@@ -713,28 +717,23 @@ const docs = [
   ["Sustainability Page", sustainabilityPage],
 ];
 
-let created = 0;
-let skipped = 0;
+/* For each doc: create a bare stub if it doesn't exist yet, then
+   `.set()` the body fields. `.set()` (not setIfMissing) is
+   deliberate — a doc may already exist as an empty stub or hold
+   stray placeholder text, and the point is to write the real
+   content authoritatively. The fields here are disjoint from the
+   SEO / UI-label fields seed-ui-labels.mjs patches in, so the two
+   scripts never clash.
 
+   Caveat: re-running overwrites the seeded body fields. Seed first,
+   then author content in the Studio — don't re-run on top of edits. */
 for (const [label, doc] of docs) {
-  /* createIfNotExists is the safe choice — leaves any editor-
-     authored doc untouched. To wipe + re-seed a singleton you'd
-     need to delete it in the studio first. */
-  const result = await client.createIfNotExists(doc);
-  /* createIfNotExists returns the existing doc if it was already
-     there. We compare _rev to detect whether we wrote it. */
-  if (result._rev) {
-    /* Read again — if doc had multiple revs already, we didn't
-       just create it. Cheap heuristic: docs we just created have
-       no _updatedAt drift from the seed. Print "already exists"
-       optimistically; check the studio to confirm. */
-  }
-  console.log(`  ✓ ${label} (id: ${doc._id})`);
+  const { _id, _type, ...fields } = doc;
+  await client.createIfNotExists({ _id, _type });
+  await client.patch(_id).set(fields).commit();
+  console.log(`  ✓ ${label} (id: ${_id})`);
 }
 
 console.log(
-  `\nDone. Open the studio at /studio to verify and start editing.\n` +
-    `Re-running this script is safe — existing docs are never overwritten.`,
+  `\nDone. Open the studio at /studio to verify and start editing.`,
 );
-void created;
-void skipped;
