@@ -313,10 +313,13 @@ export default function HomePreloader() {
          glyphs stagger up into place. Skipped only if the header
          logo isn't in the DOM. */
       if (headerRect) {
-        /* Park the glyphs below + hidden now — they've been
-           invisible since step 5, so resetting here is safe and
-           keeps the step-7 reveal timing independent. */
-        tl.set(glyphs, { autoAlpha: 0, yPercent: 8 });
+        /* Reset the glyphs to their rest position + hidden. They
+           fade straight in here with NO slide: at the small header
+           scale a yPercent lift is only ~1–2px, which reads as a
+           glitchy snap rather than an intentional slide — and it
+           must land pixel-exact on the header logo's glyphs for a
+           clean hand-off, so they just fade into their final spot. */
+        tl.set(glyphs, { autoAlpha: 0, yPercent: 0 });
 
         /* Cover: resizes + repositions onto the header logo's exact
            bounds, rounding its corners to 11.5% as it goes so it
@@ -368,13 +371,13 @@ export default function HomePreloader() {
           "<+=0.5",
         );
 
-        /* A beat after the recolour, the b·o·x·3 glyphs stagger up
-           into the pink square — the same calm reveal as step 4. */
+        /* A beat after the recolour, the b·o·x·3 glyphs fade in,
+           staggered, exactly where the header logo's glyphs sit —
+           no slide, so the hand-off has nothing to snap. */
         tl.to(
           glyphs,
           {
             autoAlpha: 1,
-            yPercent: 0,
             duration: 0.6,
             ease: "expo.out",
             stagger: 0.06,

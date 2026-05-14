@@ -8,8 +8,9 @@
      [data-scrolled="true"]  — scrolled: text links + lines wipe away,
                                Menu button slides in.
 
-   All colours via theme tokens. The element carries data-theme="dark"
-   so the bar always reads brown/pink regardless of the page beneath. */
+   All colours via theme tokens. The element carries data-theme set
+   to the section currently behind it (updated on scroll), so the
+   bar — and the logo square — re-theme to match the page beneath. */
 
 .header {
   position: fixed;
@@ -63,31 +64,35 @@
   }
 }
 
-/* Brand is a pink square carrying the b·o·x·3 mark — same height
-   as the menu/contact buttons for a clean top alignment. Height is
-   driven by the global --header-height token so mobile (4rem) and
-   desktop (4.5rem) stay in lock-step with --header-bottom /
-   --nav-clearance. border-radius 11.5% matches the preloader box —
-   the preloader cover (also --color-pink) morphs onto these exact
-   bounds AND rounds to this same radius, so the hand-off is
-   seamless. overflow:hidden keeps the mark clipped to the square. */
+/* Brand square carrying the b·o·x·3 mark — same height as the
+   menu/contact buttons for a clean top alignment, sized by the
+   global --header-height token. border-radius 11.5% matches the
+   preloader box, which morphs onto these exact bounds + radius for
+   a seamless hand-off. overflow:hidden clips the mark to the square.
+
+   Background is --theme-text so it re-themes with the section
+   behind the header: pink over dark sections, brown over pink/cream
+   — always a contrasting square for the (always-white) glyphs. The
+   hero is dark, so at the top it's pink, matching the preloader. */
 .header__home {
   position: relative;
   display: inline-block;
   width: var(--header-height);
   height: var(--header-height);
-  background-color: var(--color-pink);
+  background-color: var(--theme-text);
   text-decoration: none;
   border-radius: 11.5%;
   overflow: hidden;
+  /* Crossfade the re-theme on scroll rather than a hard snap. */
+  transition: background-color 300ms ease;
 }
 
 /* The b·o·x·3 mark — identical geometry to the preloader's glyphs
-   (shared logoPaths source, same viewBox) so the preloader's pink
-   box can morph onto these bounds and hand off without a visible
-   seam. White glyphs; the "o"'s counter is a true transparent
-   cut-out (evenOdd path), so the mark reads on the pink square or
-   on a dark background equally. */
+   (shared logoPaths source, same viewBox) so the preloader's box
+   can morph onto these bounds and hand off without a visible seam.
+   Always-white glyphs; the "o"'s counter is a true transparent
+   cut-out (evenOdd path), so the mark reads on whichever colour the
+   square re-themes to. */
 .header__home-mark {
   position: absolute;
   inset: 0;

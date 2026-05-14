@@ -12,12 +12,13 @@
  * so the white mark reads correctly on pink and on dark alike.
  */
 
-/* The original artboard is "0 0 2617 2605". This viewBox is that
-   same artboard scaled ~12% in around the b·o·x·3 wordmark's own
-   centre (1310.5, 2002.5) — it enlarges the mark while preserving
-   its original placement within the square exactly (no re-framing).
-   Used identically by the preloader and the header mark. */
-export const LOGO_VIEWBOX = "140 215 2337 2326";
+/* viewBox framing the b·o·x·3 wordmark for its square container.
+   The wordmark's own bounds span x 269–2352; this box is wider
+   than that (centred on the mark) so it sits with a comfortable
+   margin off the left/right edges rather than crowding them. Used
+   identically by the preloader and the header mark, so the two
+   always render the same geometry. */
+export const LOGO_VIEWBOX = "60 215 2500 2326";
 
 export interface LogoGlyphPath {
   d: string;
