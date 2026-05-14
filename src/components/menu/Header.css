@@ -63,75 +63,40 @@
   }
 }
 
-/* Brand is a square logo block — same height as the menu/contact
-   buttons for a clean top alignment. Height is driven by the
-   global --header-height token so mobile (4rem) and desktop
-   (4.5rem) stay in lock-step with --header-bottom / --nav-clearance. */
+/* Brand is a pink square carrying the b·o·x·3 mark — same height
+   as the menu/contact buttons for a clean top alignment. Height is
+   driven by the global --header-height token so mobile (4rem) and
+   desktop (4.5rem) stay in lock-step with --header-bottom /
+   --nav-clearance. border-radius 11.5% matches the preloader box —
+   the preloader cover (also --color-pink) morphs onto these exact
+   bounds AND rounds to this same radius, so the hand-off is
+   seamless. overflow:hidden keeps the mark clipped to the square. */
 .header__home {
   position: relative;
   display: inline-block;
   width: var(--header-height);
   height: var(--header-height);
+  background-color: var(--color-pink);
   text-decoration: none;
-  border-radius: 0;
+  border-radius: 11.5%;
   overflow: hidden;
-  transition: border-radius 500ms cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-.header__home:hover {
-  border-radius: 0.75rem;
-}
-
-.header__home-logo {
-  display: block;
+/* The b·o·x·3 mark — identical geometry to the preloader's glyphs
+   (shared logoPaths source, same viewBox) so the preloader's pink
+   box can morph onto these bounds and hand off without a visible
+   seam. White glyphs; the "o"'s counter is a true transparent
+   cut-out (evenOdd path), so the mark reads on the pink square or
+   on a dark background equally. */
+.header__home-mark {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
 }
 
-/* Pink rect stays at opacity 1 throughout the preloader — the
-   cover overlaps it identically (same pink) during the hold +
-   morph, so dropping the SVG entirely would only give us a
-   double-fade. Instead the rect is always there and we only
-   animate the LETTERS in. */
-
-/* Each letter path fades in independently with a per-letter
-   stagger driven by :nth-of-type. Total stagger ~300ms across
-   the four paths (B, O, X, 3). */
-.header__home-logo-mark {
-  transition: opacity 400ms ease;
-}
-.header__home-logo-mark:nth-of-type(1) { transition-delay: 0ms;   }
-.header__home-logo-mark:nth-of-type(2) { transition-delay: 100ms; }
-.header__home-logo-mark:nth-of-type(3) { transition-delay: 200ms; }
-.header__home-logo-mark:nth-of-type(4) { transition-delay: 300ms; }
-
-/* Letters hidden while the preloader is mid-flight. They become
-   opacity 1 (default) the moment the attribute clears or
-   transitions to "reveal", staggered in via the rules above. */
-html[data-preloader="active"] .header__home-logo-mark {
-  opacity: 0;
-  /* No transition into the hidden state — the cover is on top
-     anyway, the letters are off-screen visually. */
-  transition: none;
-}
-
-/* Logo always uses pink + brown — the two strongest brand
-   primitives — and inverts based on the active section theme so
-   the mark stays high-contrast against the surrounding bar:
-     - dark sections   → pink square, brown lettering
-     - light sections  → brown square, pink lettering */
-.header__home-logo-bg {
-  fill: var(--color-brown);
-}
-.header__home-logo-mark {
-  fill: var(--color-pink);
-}
-
-.header[data-theme="dark"] .header__home-logo-bg {
-  fill: var(--color-pink);
-}
-.header[data-theme="dark"] .header__home-logo-mark {
-  fill: var(--color-brown);
+.header__home-glyph {
+  fill: var(--color-white);
 }
 
 

@@ -25,8 +25,10 @@
  * the scrolled state so the Menu button stays available regardless
  * of scroll position when the panel is on screen.
  *
- * Wordmark sits as static text — the reference's GSAP-Flip morph
- * into a logo-only square is intentionally skipped.
+ * The home link is a pink square carrying the b·o·x·3 mark. The
+ * home preloader's cover morphs onto these exact bounds and hands
+ * off to this logo, so the two render identical geometry from the
+ * shared logoPaths source.
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -34,6 +36,7 @@ import { usePathname } from "next/navigation";
 import { gsap } from "gsap";
 import TransitionLink from "@/components/transition/TransitionLink";
 import SplitText from "@/components/split-text/SplitText";
+import { LOGO_VIEWBOX, LOGO_GLYPHS } from "@/components/brand/logoPaths";
 import { awaitTransitionEnd } from "@/components/transition/transitionState";
 import { useSiteSettings } from "@/components/settings/SiteSettingsProvider";
 import { useMenu } from "./MenuProvider";
@@ -398,7 +401,11 @@ export default function Header({
       data-menu-open={isOpen ? "true" : "false"}
     >
       <nav className="header__nav" aria-label="Main">
-        {/* Logo — square brand mark, no wordmark. */}
+        {/* Home — a pink square carrying the b·o·x·3 mark. The
+            preloader's pink cover morphs onto these exact bounds and
+            hands off to this (identical) logo, so the geometry here
+            mirrors the preloader: shared logoPaths, same viewBox,
+            brown glyphs with the "o" counter punched in pink. */}
         <div className="header__brand">
           <TransitionLink
             href="/"
@@ -407,29 +414,24 @@ export default function Header({
             aria-label={`${brand} home page`}
           >
             <svg
-              className="header__home-logo"
-              viewBox="0 0 110 110"
+              className="header__home-mark"
+              viewBox={LOGO_VIEWBOX}
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
               aria-hidden="true"
             >
-              <rect width="110" height="110" className="header__home-logo-bg" />
-              <path
-                className="header__home-logo-mark"
-                d="M27.815 87.365C30.615 88.31 31.84 90.06 31.84 92.755C31.84 97.935 28.305 100 19.45 100H17.56V94.54H19.45C23.79 94.54 25.12 94.015 25.12 92.335C25.12 90.655 23.79 90.13 19.45 90.13H17.56V84.67H19.45C23.475 84.67 24.7 84.145 24.7 82.465C24.7 80.785 23.475 80.26 19.45 80.26H17.56V74.8H19.45C27.99 74.8 31.42 76.865 31.42 82.045C31.42 84.635 30.3 86.35 27.815 87.365ZM10 100V74.8H16.72V100H10Z"
-              />
-              <path
-                className="header__home-logo-mark"
-                d="M47.7808 100C45.3308 100 43.1095 99.461 41.1168 98.383C39.1568 97.305 37.5888 95.8023 36.4128 93.875C35.2695 91.9477 34.6978 89.7427 34.6978 87.26C34.6978 84.7447 35.2695 82.5397 36.4128 80.645C37.5888 78.7177 39.1731 77.215 41.1658 76.137C43.1585 75.059 45.3635 74.52 47.7808 74.52C50.2308 74.52 52.4358 75.059 54.3958 76.137C56.3885 77.215 57.9565 78.7177 59.0998 80.645C60.2758 82.5397 60.8638 84.7447 60.8638 87.26C60.8638 89.7427 60.2758 91.9477 59.0998 93.875C57.9565 95.8023 56.3885 97.305 54.3958 98.383C52.4358 99.461 50.2308 100 47.7808 100ZM47.7808 94.071C48.8915 94.071 49.9041 93.826 50.8188 93.336C51.7335 92.8133 52.4521 92.0457 52.9748 91.033C53.5301 90.0203 53.8078 88.7627 53.8078 87.26C53.8078 85.7573 53.5301 84.4997 52.9748 83.487C52.4195 82.4744 51.6845 81.723 50.7698 81.233C49.8878 80.7104 48.9078 80.449 47.8298 80.449C46.7191 80.449 45.7065 80.7104 44.7918 81.233C43.8771 81.723 43.1421 82.4744 42.5868 83.487C42.0315 84.467 41.7538 85.7247 41.7538 87.26C41.7538 88.7627 42.0151 90.0203 42.5378 91.033C43.0931 92.0457 43.8281 92.8133 44.7428 93.336C45.6575 93.826 46.6701 94.071 47.7808 94.071Z"
-              />
-              <path
-                className="header__home-logo-mark"
-                d="M60.8638 98.824L69.8308 86.672L60.8638 74.52H68.2628L74.2408 82.752L80.1698 74.52H87.5198L78.5528 86.672L87.5198 98.824H80.1698L74.2408 90.592L68.2628 98.824H60.8638Z"
-              />
-              <path
-                className="header__home-logo-mark"
-                d="M95.0778 88.48C93.1178 88.48 91.5511 87.84 90.3778 86.56L92.0778 84.76C92.4378 85.1333 92.8444 85.4467 93.2978 85.7C93.7644 85.9533 94.3111 86.08 94.9378 86.08C95.4178 86.08 95.8311 86 96.1778 85.84C96.5378 85.6667 96.8111 85.4267 96.9978 85.12C97.1978 84.8 97.2978 84.4334 97.2978 84.02C97.2978 83.3267 97.0511 82.8 96.5578 82.44C96.0644 82.0667 95.3644 81.88 94.4578 81.88H93.2578V80.16L97.4978 75.8L97.6778 77.14H91.0978V74.8H99.6578V76.82L95.4178 81.18L95.0378 79.7C96.6644 79.7134 97.8978 80.0934 98.7378 80.84C99.5911 81.5734 100.018 82.6334 100.018 84.02C100.018 84.9133 99.8111 85.6933 99.3978 86.36C98.9844 87.0267 98.4044 87.5467 97.6578 87.92C96.9244 88.2933 96.0644 88.48 95.0778 88.48Z"
-              />
+              {LOGO_GLYPHS.map((glyph) => (
+                <g key={glyph.id}>
+                  {glyph.paths.map((p, i) => (
+                    <path
+                      key={i}
+                      className="header__home-glyph"
+                      fillRule={p.evenOdd ? "evenodd" : undefined}
+                      d={p.d}
+                    />
+                  ))}
+                </g>
+              ))}
             </svg>
           </TransitionLink>
         </div>

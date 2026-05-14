@@ -191,7 +191,7 @@ export default async function RootLayout({
       </Script>
       <body data-theme="cream">
         {/* Synchronous flag for the home preloader — must run
-            before any paint so the pink cover (rendered in SSR
+            before any paint so the dark cover (rendered in SSR
             below) is either visible from the very first frame OR
             never paints at all. Sets <html data-preloader> based
             on sessionStorage; the CSS gate in HomePreloader.css
@@ -207,9 +207,9 @@ export default async function RootLayout({
           <SiteSettingsProvider value={settings}>
           <PageTransitionProvider>
             <MenuProvider>
-              {/* Plays once per session: pink overlay fills the
-                  viewport, then morphs to the header logo's
-                  bounds. Header logo SVG is hidden via CSS while
+              {/* Plays once per session: a dark cover holds a
+                  beat, then morphs to the header logo's bounds.
+                  Header logo glyphs are hidden via CSS while
                   data-preloader=active is set on <html>. */}
               <HomePreloader />
               <Header

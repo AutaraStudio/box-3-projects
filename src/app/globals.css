@@ -128,6 +128,9 @@ body {
   --color-brown: #2c2524;
   --color-cream: #efe6d9;
   --color-pink:  #fdcdcd;
+  /* Pure white — used by the brand mark, which must read the same
+     (white glyphs, transparent counter) on pink and on dark. */
+  --color-white: #fff;
 }
 
 /* Each named theme sets only --theme-bg / --theme-text / --theme-accent.

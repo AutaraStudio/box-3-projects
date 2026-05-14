@@ -1,67 +1,23 @@
 /**
  * HomePreloader
  * =============
- * Editorial one-shot intro. The cover starts as a full-viewport
- * pink panel; the brand statement reveals word-by-word from
- * inside overflow:hidden masks, holds briefly, exits upward, then
- * the cover morphs (top/left/width/height) down to the header
- * logo bounds. After the morph the BOX 3 letters in the SVG
- * stagger in over the cover (same pink, no visual gap), and the
- * cover finally unmounts.
+ * Editorial one-shot intro. Motion is driven by the GSAP timeline
+ * in HomePreloader.tsx — this file holds the structural layout and
+ * the pre-JS (SSR) start state, so the first painted frame is the
+ * intended dark screen with no flash.
  *
  * Visibility is gated by `<html data-preloader>`:
- *   - "active"  → cover visible (full or morphing)
- *   - "reveal"  → cover lowered behind header so SVG letters
- *                 stagger in over it
+ *   - "active"  → cover visible
+ *   - "reveal"  → cover lowered behind the header (later beats)
  *   - "skip"    → cover hidden
- *   - missing   → cover hidden (SSR before inline script runs)
- *
- * Phase progression is driven by `data-phase` written by React:
- *   full
- *     → m1-in → m1-hold → m1-out         // round 1: "Box 3 Projects"
- *     → between                           // bare cover, span swap
- *     → m2-in → m2-hold → m2-out         // round 2: editorial statement
- *     → morph → reveal → done
- *
- * Both rounds reuse the same in/hold/out CSS rules — the only thing
- * that changes between rounds is which message is rendered (selected
- * in the React component). The word spans are key-swapped between
- * rounds so the new round's spans mount fresh at the off-screen
- * default state.
+ *   - missing   → cover hidden (SSR before the inline script runs)
  */
-
-/* --- Cover ---------------------------------------------------------- */
 
 .home-preloader {
   position: fixed;
+  inset: 0;
   z-index: 1300;
-  background-color: var(--color-pink);
   pointer-events: none;
-  /* Default rendered geometry — full viewport. The inline-style
-     written by React at "morph" / "reveal" overrides these to the
-     logo's bounds and the transition handles the rest. */
-  top: 0;
-  left: 0;
-  width: 100vw;
-  /* svh handles iOS Safari's collapsing URL bar; falls back to
-     vh on older browsers. */
-  height: 100svh;
-  /* No positional transitions until the morph phase — otherwise
-     a viewport unit re-resolution (iOS URL bar settling, etc.)
-     can interpolate visibly on first paint, looking like the
-     cover is "sliding into" full coverage. */
-  will-change: top, left, width, height;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* border-box so the centering padding below counts INSIDE the
-     cover's width — otherwise when the cover shrinks to the logo's
-     4.5rem the padding pushes it ~4rem wider, producing a pink
-     rectangle hanging off to the right of the logo box. The site
-     has no global box-sizing reset, so the default would be
-     content-box. */
-  box-sizing: border-box;
-  padding-inline: var(--space-2);
 }
 
 /* Hide the cover unless the preloader is mid-flight. */
@@ -70,96 +26,159 @@ html:not([data-preloader="active"]):not([data-preloader="reveal"])
   display: none;
 }
 
-/* Positional transitions only switch on once we've measured the
-   logo and entered the morph phase. */
-.home-preloader[data-phase="morph"],
-.home-preloader[data-phase="reveal"] {
-  transition:
-    top 1.2s cubic-bezier(0.85, 0, 0.15, 1),
-    left 1.2s cubic-bezier(0.85, 0, 0.15, 1),
-    width 1.2s cubic-bezier(0.85, 0, 0.15, 1),
-    height 1.2s cubic-bezier(0.85, 0, 0.15, 1);
+/* --- Dark cover --------------------------------------------------- */
+
+/* The visible dark backdrop — and the element that morphs in step 7.
+   In step 7 it resizes + repositions onto the header logo's exact
+   bounds and rounds its corners to 11.5%, then recolours brown →
+   pink. A layout animation (not a transform) so the border-radius
+   rounds cleanly without non-uniform-scale distortion; the cover
+   has no children, so the layout cost is trivial. A sibling of the
+   box, never its ancestor, so the morph can't distort the mark. */
+.home-preloader__cover {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-brown);
+  border-radius: 0;
 }
 
-/* During reveal the cover drops BELOW the header (z-index 1000)
-   so the BOX 3 letters being painted in the SVG above it are
-   visible. Both layers are pink so the hand-off is invisible. */
-html[data-preloader="reveal"] .home-preloader {
-  z-index: 999;
-}
+/* --- Logo box ----------------------------------------------------- */
 
-/* --- Statement ------------------------------------------------------ */
-
-.home-preloader__text {
-  margin: 0;
-  max-width: 60rem;
-  text-align: center;
-  color: var(--color-brown);
-  font-size: var(--font-size-h3);
-  line-height: var(--line-height-tight);
-  letter-spacing: var(--letter-spacing-tight);
-  font-weight: var(--font-weight-medium);
-  /* Don't let the words receive transitions on the cover's
-     positional change — they're transformed independently. */
+/* A centred rounded square — the stage for the border, glyphs and
+   fill through steps 2–4. In step 7 it morphs (uniform scale +
+   translate) onto the header logo's bounds in parallel with the
+   cover, carrying the glyphs un-distorted. overflow:hidden +
+   border-radius clip the pink fill to the rounded shape. */
+.home-preloader__box {
+  position: fixed;
+  width: var(--space-14);
+  height: var(--space-14);
+  top: calc(50% - var(--space-14) / 2);
+  left: calc(50% - var(--space-14) / 2);
+  border-radius: 11.5%;
+  overflow: hidden;
+  /* GSAP transforms this box in the step-7 morph — hint the
+     compositor so it stays smooth. */
   will-change: transform;
 }
 
-/* During morph + reveal the words have already exited; keep the
-   text element out of the layout so it doesn't fight the morph. */
-.home-preloader[data-phase="morph"] .home-preloader__text,
-.home-preloader[data-phase="reveal"] .home-preloader__text {
-  display: none;
+/* --- Border (step 2) ----------------------------------------------- */
+
+.home-preloader__border {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
-/* Each word is its own overflow:hidden mask. inline-flex keeps it
-   sitting on the baseline of the line; bottom padding accommodates
-   descenders ("p", "j") so the mask doesn't clip them. */
-.home-preloader__word {
-  display: inline-flex;
-  overflow: hidden;
-  vertical-align: top;
-  /* Tiny vertical breathing room so descenders + the translate
-     distance don't get clipped at the seams. */
-  padding-bottom: 0.15em;
-  margin-bottom: -0.15em;
+/* Two half-perimeter strokes. Pre-JS they're invisible (opacity 0);
+   GSAP measures each stroke's real length with getTotalLength(),
+   sets the dash so it starts fully un-drawn, brings opacity up,
+   then runs the draw-on (step 2) and the undraw (step 5). Pink so
+   the stroke reads against the dark cover and merges into the pink
+   fill while it's in. */
+.home-preloader__border-path {
+  fill: none;
+  stroke: var(--color-pink);
+  /* User units in the 0 0 100 100 viewBox — a hairline against
+     the box. Scales proportionally with the box. */
+  stroke-width: 0.6;
+  opacity: 0;
 }
 
-/* The inner element does the actual translateY. Starting state
-   sits below the mask; per-word stagger via `--i` custom property
-   set in the component. */
-.home-preloader__word-inner {
+/* --- Fill (step 3) ------------------------------------------------- */
+
+/* Pink panel that slides up from below to fill the bordered box.
+   Pre-JS invisible (opacity 0) with NO transform — GSAP must own
+   the transform outright, or it mis-parses a CSS translateY(%) into
+   a stray pixel `y` the slide can't undo. GSAP sets yPercent +
+   opacity together, slides it up (step 3), then fades it out in
+   step 5. Sits behind the border. */
+.home-preloader__fill {
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-pink);
+  opacity: 0;
+  will-change: transform;
+}
+
+/* --- Glyphs (steps 4, 5, 7) --------------------------------------- */
+
+/* The b·o·x·3 wordmark, on top of the fill. */
+.home-preloader__marks {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Each glyph is its own <g> so the timeline can stagger them in +
+   out. `transform-box: fill-box` makes GSAP's yPercent resolve
+   against each glyph's own bounding box (the small per-glyph lift),
+   not the whole SVG viewBox. Pre-JS hidden via opacity. */
+.home-preloader__glyph {
+  transform-box: fill-box;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* White glyphs — filled solid; the glyph groups stagger in/out via
+   the timeline (no stroke draw-on). The "o"'s counter is a true
+   transparent cut-out (evenOdd path in logoPaths), so the mark
+   reads correctly on the dark cover or on the pink background. */
+.home-preloader__mark {
+  fill: var(--color-white);
+}
+
+/* --- Statement (step 6) ------------------------------------------- */
+
+/* Centred over the dark cover. Fixed + flex-centred; sits after the
+   box in the DOM so it stacks above it. Pointer-events off — purely
+   a visual beat. */
+.home-preloader__statement {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--space-2);
+  pointer-events: none;
+}
+
+/* Pink on the dark cover — the statement reads over the brown
+   screen, not a pink panel. max-width is a measure constraint (not
+   a spacing token) — wide enough that the statement wraps to a few
+   generous lines rather than a narrow column. */
+.home-preloader__statement-text {
+  margin: 0;
+  max-width: 56rem;
+  text-align: center;
+  color: var(--color-pink);
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+/* Each word is its own clip-mask: `overflow: clip` windows the
+   inner so it's hidden while parked below the line (step 6 in) and
+   clipped again as it lifts away above the line (step 6 out).
+   `overflow-clip-margin` gives glyph anti-alias + descenders a
+   sub-pixel of breathing room without revealing the parked inner. */
+.home-preloader__statement-word {
   display: inline-block;
-  transform: translateY(120%);
-  opacity: 0;
-  transition:
-    transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1);
-  transition-delay: calc(var(--i, 0) * 55ms);
-  white-space: pre;
+  vertical-align: top;
+  overflow: clip;
+  overflow-clip-margin: 0.08em;
 }
 
-/* Words slide in + sit at rest — same end state for both rounds.
-   The "between" phase intentionally has no rule so the freshly
-   mounted round-two spans inherit the default off-screen-below
-   state and are ready to slide up when m2-in fires. */
-.home-preloader[data-phase="m1-in"] .home-preloader__word-inner,
-.home-preloader[data-phase="m1-hold"] .home-preloader__word-inner,
-.home-preloader[data-phase="m2-in"] .home-preloader__word-inner,
-.home-preloader[data-phase="m2-hold"] .home-preloader__word-inner {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-/* Words exit upward — same exit for both rounds. Both transform
-   AND opacity transition so the line lifts away gracefully instead
-   of snapping invisible. Stagger is a touch tighter than the
-   entrance for a deliberate exit feel. */
-.home-preloader[data-phase="m1-out"] .home-preloader__word-inner,
-.home-preloader[data-phase="m2-out"] .home-preloader__word-inner {
-  transform: translateY(-110%);
+/* The inner is what GSAP translates. Pre-JS hidden via opacity;
+   GSAP takes over with autoAlpha (opacity + visibility) on set. */
+.home-preloader__statement-inner {
+  display: inline-block;
   opacity: 0;
-  transition:
-    transform 750ms cubic-bezier(0.65, 0, 0.35, 1),
-    opacity 600ms cubic-bezier(0.65, 0, 0.35, 1);
-  transition-delay: calc(var(--i, 0) * 40ms);
+  will-change: transform, opacity;
 }
