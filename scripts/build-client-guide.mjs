@@ -26,11 +26,35 @@ import {
   BorderStyle,
 } from "docx";
 
+/* ── Video walkthrough URLs ──────────────────────────────────
+   Paste the URL of each screen recording here and re-run the
+   generator — the matching callout in the doc picks it up. Leave
+   blank ("") and the callout renders with "Link coming soon" so the
+   page still reads cleanly while you're still recording. */
+
+const VIDEOS = {
+  /* Step 3 of Getting started — short first-login + studio tour. */
+  firstLogin: "",
+  /* Editing & publishing — the click-edit-publish flow end to end. */
+  publishFlow: "",
+  /* Media library — bulk upload, tag, then pick from library on a
+     document. The single most-asked-about workflow. */
+  mediaWorkflow: "",
+  /* Projects collection — drag rows to set the order on the site. */
+  projectOrder: "",
+  /* Tips & gotchas — setting an image hotspot so crops look right. */
+  hotspotCropping: "",
+  /* Tips & gotchas — rolling back to a previous published version. */
+  versionRollback: "",
+};
+
 /* ── Style helpers ──────────────────────────────────────────── */
 
 const BLUE = "2E75B6";
+const GREEN = "2F7D49";
 const GREY = "555555";
 const LIGHT = "F4F1EE";
+const VIDEO_BG = "EAF4ED";
 
 const h = (text, level) =>
   new Paragraph({
@@ -135,6 +159,70 @@ const callout = (label, body) => {
                 children: [new TextRun({ text: body, font: "Arial" })],
               }),
             ],
+          }),
+        ],
+      }),
+    ],
+  });
+};
+
+/* Video-walkthrough callout — a slim green-edged block that points
+   the reader at a short screen recording. If the URL is empty, we
+   render a "Link coming soon" hint so the doc still reads cleanly
+   while videos are still being recorded. */
+const videoCallout = (label, body, url) => {
+  const border = { style: BorderStyle.SINGLE, size: 6, color: GREEN };
+  const heading = new Paragraph({
+    spacing: { after: 80 },
+    children: [
+      new TextRun({
+        text: `▶  ${label}`,
+        font: "Arial",
+        bold: true,
+        color: GREEN,
+        size: 22,
+      }),
+    ],
+  });
+  const bodyChildren = [new TextRun({ text: body, font: "Arial" })];
+  if (url) {
+    bodyChildren.push(new TextRun({ text: "  ", font: "Arial" }));
+    bodyChildren.push(
+      new ExternalHyperlink({
+        link: url,
+        children: [
+          new TextRun({
+            text: "Watch →",
+            font: "Arial",
+            bold: true,
+            color: BLUE,
+            underline: {},
+          }),
+        ],
+      }),
+    );
+  } else {
+    bodyChildren.push(
+      new TextRun({
+        text: "  (Video link coming soon — your studio team will send it.)",
+        font: "Arial",
+        italics: true,
+        color: GREY,
+      }),
+    );
+  }
+  return new Table({
+    width: { size: 9360, type: WidthType.DXA },
+    columnWidths: [9360],
+    rows: [
+      new TableRow({
+        children: [
+          new TableCell({
+            borders: { top: border, bottom: border, left: border, right: border },
+            shading: { fill: VIDEO_BG, type: ShadingType.CLEAR },
+            margins: { top: 120, bottom: 120, left: 200, right: 200 },
+            width: { size: 9360, type: WidthType.DXA },
+            children: [heading, new Paragraph({ children: bodyChildren })],
           }),
         ],
       }),
@@ -259,6 +347,13 @@ const gettingStarted = [
     "Every change you make is saved to a draft automatically. The live site doesn't update until you click the green Publish button at the bottom of the document. So you can edit freely and only publish when you're ready.",
   ),
 
+  spacer(),
+  videoCallout(
+    "Video — first login + studio tour",
+    "A 2-minute walkthrough showing how to sign in and the basics of where everything lives.",
+    VIDEOS.firstLogin,
+  ),
+
   pageBreak(),
 ];
 
@@ -356,6 +451,13 @@ const publishing = [
     "A yellow box means the studio doesn't recognise a field — usually because it was renamed or removed in an update. You can safely ignore it (or remove the field). A red box means there's a real validation error you need to fix before publishing.",
   ),
 
+  spacer(),
+  videoCallout(
+    "Video — your first edit, end to end",
+    "Open a document, change a heading, publish it, check the live site. Shows you the safe loop you'll use for every change.",
+    VIDEOS.publishFlow,
+  ),
+
   pageBreak(),
 ];
 
@@ -407,6 +509,13 @@ const mediaLibrary = [
   callout(
     "Why this is better than uploading inside the document",
     "Uploading inside a document attaches the image to that document only. If you later want to use the same shot somewhere else, you'd have to upload it again. Tagged images in the library are reusable, searchable, and never duplicated.",
+  ),
+
+  spacer(),
+  videoCallout(
+    "Video — bulk upload, tag, and pick from library",
+    "The full workflow with a real folder of project photos: tag → drop → open the document → Pick from library.",
+    VIDEOS.mediaWorkflow,
   ),
 
   h("Tag naming conventions", HeadingLevel.HEADING_3),
@@ -912,6 +1021,12 @@ const collections = [
     "How display order works (drag-and-drop)",
     "The Projects list in the sidebar is drag-and-drop. The order you set there is the order projects appear in three places: the /projects archive, the Featured Projects strip on the home page (top 6), and the Featured Projects column in the footer (top 5). To re-order: open Projects, hover over a row, grab the handle on the left, and drag it up or down. Order saves immediately.",
   ),
+  spacer(),
+  videoCallout(
+    "Video — re-ordering projects",
+    "How to drag rows to change the order on the site, including the knock-on effect on the home page and footer.",
+    VIDEOS.projectOrder,
+  ),
   h("Overview", HeadingLevel.HEADING_3),
   field("Project title", "Project name. Required."),
   field("Slug", "URL path after /projects/. Lowercase + hyphens. Click \"Generate\" to derive it from the title. Required."),
@@ -1029,12 +1144,24 @@ const tipsGotchas = [
     bold("Edit"),
     ", drag the round target to the most important part of the photo, and save. The site uses that hotspot whenever it crops the image.",
   ),
+  spacer(),
+  videoCallout(
+    "Video — setting an image hotspot",
+    "Quick demo on a portrait that's used at three different crops — shows what changes when you move the hotspot.",
+    VIDEOS.hotspotCropping,
+  ),
 
   h("If something goes wrong", HeadingLevel.HEADING_2),
   p(
     "Sanity has full version history — every published version is stored. Open the document, click the clock icon top-right, find a previous version, click ",
     bold("Restore"),
     ". You can always get back to where you were.",
+  ),
+  spacer(),
+  videoCallout(
+    "Video — rolling back a version",
+    "If you publish something you didn't mean to, here's how to find the previous version and restore it in under a minute.",
+    VIDEOS.versionRollback,
   ),
 
   h("Who to ask", HeadingLevel.HEADING_2),
@@ -1167,9 +1294,39 @@ const doc = new Document({
   ],
 });
 
+/* Write to the canonical path by default. If that path is locked
+   (e.g. you have the doc open in Word), fall through to a -v<N>
+   sibling so the run still succeeds — the canonical file is only
+   overwritten when nothing's holding it open. */
 const outDir = path.resolve(process.cwd());
-const outPath = path.join(outDir, "box-3-sanity-editing-guide.docx");
+const canonical = path.join(outDir, "box-3-sanity-editing-guide.docx");
 
+const pickWritablePath = () => {
+  try {
+    fs.closeSync(fs.openSync(canonical, "a"));
+    return canonical;
+  } catch (err) {
+    if (err.code !== "EBUSY" && err.code !== "EPERM") throw err;
+  }
+  for (let n = 2; n < 20; n++) {
+    const candidate = path.join(outDir, `box-3-sanity-editing-guide-v${n}.docx`);
+    try {
+      fs.closeSync(fs.openSync(candidate, "a"));
+      return candidate;
+    } catch (err) {
+      if (err.code !== "EBUSY" && err.code !== "EPERM") throw err;
+    }
+  }
+  throw new Error("Could not find a writable output path.");
+};
+
+const outPath = pickWritablePath();
 const buffer = await Packer.toBuffer(doc);
 fs.writeFileSync(outPath, buffer);
 console.log(`\nWrote ${outPath} (${buffer.length} bytes)`);
+if (outPath !== canonical) {
+  console.log(
+    `(${path.basename(canonical)} appears to be open — wrote a sibling instead. ` +
+      `Close Word and re-run to overwrite the canonical file.)`,
+  );
+}
