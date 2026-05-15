@@ -19,19 +19,35 @@
 
 const END_EVENT = "preloader:end";
 
+/* Module-scoped latch — flipped by endPreloader() so any consumer
+   that mounts AFTER the broadcast still reads "done" and doesn't sit
+   waiting for an event that already fired. Survives because this
+   module is a singleton in the bundle. */
+let released = false;
+
 /** True while the preloader cover is still painting (active or in
- *  the brief letter-reveal phase). False once it's done or skipped. */
+ *  the brief letter-reveal phase). False once it's done or skipped —
+ *  or once endPreloader() has been broadcast, even if the cover is
+ *  still finishing a tail beat (e.g. the step-7 morph onto the header
+ *  logo). The cover staying painted during that tail is intentional:
+ *  the reveal observers underneath have already started, so the morph
+ *  reads as a focal moment instead of dead time. */
 export function isPreloaderActive(): boolean {
   if (typeof document === "undefined") return false;
+  if (released) return false;
   const v = document.documentElement.getAttribute("data-preloader");
   return v === "active" || v === "reveal";
 }
 
-/** Called from the preloader's finish() — broadcasts the end event
- *  to any awaiter. The `data-preloader="skip"` attribute write is
- *  done by the caller. */
+/** Broadcasts "the preloader is no longer blocking reveals." Called
+ *  from HomePreloader at the start of the step-7 hand-off so the
+ *  hero text + header intro can animate IN PARALLEL with the morph
+ *  rather than waiting for the whole timeline to end. The
+ *  `data-preloader="skip"` attribute write (and unmount) happens
+ *  separately at timeline completion. */
 export function endPreloader(): void {
   if (typeof document === "undefined") return;
+  released = true;
   window.dispatchEvent(new Event(END_EVENT));
 }
 

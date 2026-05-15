@@ -88,6 +88,15 @@ export default function HomePreloader() {
       endPreloader();
     };
 
+    /* Broadcast-only: unblock anything that's `awaitPreloaderEnd()`-
+       gated (hero text reveal, header intro, scroll observers) so
+       they can run IN PARALLEL with the step-7 morph onto the header
+       logo. The cover stays painted during the morph — the CSS gate
+       keeps it visible while `data-preloader` is still "active". */
+    const release = () => {
+      endPreloader();
+    };
+
     /* Inline script may have already marked us "skip" — trust it. */
     if (html.getAttribute("data-preloader") === "skip") return;
 
@@ -313,6 +322,14 @@ export default function HomePreloader() {
          glyphs stagger up into place. Skipped only if the header
          logo isn't in the DOM. */
       if (headerRect) {
+        /* The statement is gone and the morph is about to begin —
+           unblock the hero text reveal and the header intro now so
+           they animate alongside the morph, instead of sitting frozen
+           through it (and the trailing glyph fade + held beat). The
+           cover stays painted via the CSS gate until the timeline's
+           onComplete flips data-preloader to "skip". */
+        tl.call(release, [], "+=0");
+
         /* Reset the glyphs to their rest position + hidden. They
            fade straight in here with NO slide: at the small header
            scale a yPercent lift is only ~1–2px, which reads as a
