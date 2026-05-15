@@ -54,8 +54,9 @@ interface FooterColumnLabels {
 
 interface FooterProps {
   pages: PageLink[];
-  /** Optional — when provided, rendered as a "Featured Projects"
-   *  column. Order is preserved as supplied. */
+  /** Optional — rendered as a "Featured Projects" column. Order is
+   *  preserved as supplied (currently the top N from the editor's
+   *  drag-and-drop order in Studio → Projects). */
   featuredProjects?: FeaturedProject[];
   contact: {
     addressLines: string[];

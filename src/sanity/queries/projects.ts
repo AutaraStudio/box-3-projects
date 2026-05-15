@@ -3,13 +3,16 @@
  * ==============
  * Lists every project with the bits the listing page needs:
  * title, slug, year, location, category (with title for filtering),
- * and the featured image. Ordered newest year first, then title.
+ * and the featured image. Ordered by the editor-managed drag-and-drop
+ * rank (`orderRank`, set via the orderable list view in Studio), with
+ * year-desc as a fallback for any projects that haven't been ranked
+ * yet so newly-added work still appears in a sensible place.
  */
 
 import { groq } from "next-sanity";
 
 export const PROJECTS_LIST_QUERY = groq`
-  *[_type == "project" && defined(featuredImage)] | order(year desc, title asc) {
+  *[_type == "project" && defined(featuredImage)] | order(orderRank asc, year desc, title asc) {
     _id,
     title,
     "slug": slug.current,
@@ -38,16 +41,14 @@ export const PROJECTS_LIST_QUERY = groq`
 `;
 
 /**
- * Featured projects — drives the site-wide menu and footer columns.
- * Only projects with `featured == true` flow through, ordered by
- * year desc so the newest signature work leads. Returns just the
- * fields the menu / footer render: title, slug, category title.
+ * Footer featured projects — top 5 from the editor-managed order.
+ * Drives the "Featured Projects" column in the site-wide footer.
+ * Returns just the shape that column renders.
  */
 export const FEATURED_PROJECTS_QUERY = groq`
   *[_type == "project"
-    && featured == true
     && defined(slug.current)]
-    | order(year desc, title asc) {
+    | order(orderRank asc, year desc, title asc) [0...5] {
       _id,
       title,
       "slug": slug.current,
@@ -55,19 +56,24 @@ export const FEATURED_PROJECTS_QUERY = groq`
     }
 `;
 
+export interface FeaturedProjectItem {
+  _id: string;
+  title: string;
+  slug: string;
+  categoryTitle?: string;
+}
+
 /**
- * Home featured projects — same `featured == true` filter as the
- * menu query, but returns the full ProjectListItem shape (image,
- * year, location, category) and caps at 6 so the home page section
- * doesn't grow unbounded as the editor adds more featured work.
- * 6 items fills two rows of the 12-col / 5+4+3 reshuffling grid.
+ * Home featured projects — takes the top 6 from the editor-managed
+ * order (drag-and-drop in Studio → Projects). Whatever the editor
+ * places at the top of the list leads the home page section. Cap of
+ * 6 fills two rows of the 12-col / 5+4+3 reshuffling grid.
  */
 export const HOME_FEATURED_PROJECTS_QUERY = groq`
   *[_type == "project"
-    && featured == true
     && defined(featuredImage)
     && defined(slug.current)]
-    | order(year desc, title asc) [0...6] {
+    | order(orderRank asc, year desc, title asc) [0...6] {
       _id,
       title,
       "slug": slug.current,
@@ -94,13 +100,6 @@ export const HOME_FEATURED_PROJECTS_QUERY = groq`
       }
     }
 `;
-
-export interface FeaturedProjectItem {
-  _id: string;
-  title: string;
-  slug: string;
-  categoryTitle?: string;
-}
 
 /**
  * Category list with per-category project counts. Counts respect

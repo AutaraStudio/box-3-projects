@@ -135,7 +135,6 @@ export default async function RootLayout({
   const featuredProjects = featuredFromCms.map((p) => ({
     title: p.title,
     href: `/projects/${p.slug}`,
-    category: p.categoryTitle,
   }));
 
   /* Resolve every editable surface — fall back to the FALLBACK

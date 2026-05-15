@@ -18,6 +18,7 @@
  */
 
 import { defineField, defineType } from "sanity";
+import { orderRankField } from "@sanity/orderable-document-list";
 
 import { TaggedMediaPicker } from "../../components/TaggedMediaPicker";
 import { TaggedMediaArrayPicker } from "../../components/TaggedMediaArrayPicker";
@@ -97,15 +98,11 @@ export default defineType({
       of: [{ type: "string" }],
       options: { layout: "tags" },
     }),
-    defineField({
-      name: "featured",
-      title: "Featured in menu",
-      description:
-        "When on, this project appears in the site-wide menu's Featured Projects column.",
-      type: "boolean",
-      group: "overview",
-      initialValue: false,
-    }),
+    /* Display order — managed by the drag-and-drop list view in the
+       Studio (Projects → drag to reorder). The field itself is hidden
+       from the document editor; editors only ever see it as the row
+       order in the list. */
+    orderRankField({ type: "project" }),
 
     /* ── Images ───────────────────────────────────────────── */
     defineField({

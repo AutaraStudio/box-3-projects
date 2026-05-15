@@ -18,6 +18,7 @@
  */
 
 import type { StructureResolver } from "sanity/structure";
+import { orderableDocumentListDeskItem } from "@sanity/orderable-document-list";
 
 /** Document types that should appear as singletons (one-per-site). */
 export const SINGLETON_TYPES = [
@@ -55,7 +56,7 @@ const HIDDEN_FROM_GENERIC = new Set<string>([
   "legalPage",
 ]);
 
-export const structure: StructureResolver = (S) =>
+export const structure: StructureResolver = (S, context) =>
   S.list()
     .title("Content")
     .items([
@@ -189,10 +190,16 @@ export const structure: StructureResolver = (S) =>
 
       /* ── Collections ──────────────────────────────────────────
          Repeatable content — each lands in a list view. */
-      S.listItem()
-        .title("Projects")
-        .schemaType("project")
-        .child(S.documentTypeList("project").title("Projects")),
+      /* Projects use a drag-and-drop list view (orderable plugin)
+         so editors can decide the display order on the site by
+         simply reordering rows. The frontend queries sort by the
+         hidden `orderRank` field this view maintains. */
+      orderableDocumentListDeskItem({
+        type: "project",
+        title: "Projects",
+        S,
+        context,
+      }),
       S.listItem()
         .title("Project Categories")
         .schemaType("projectCategory")
