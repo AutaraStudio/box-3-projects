@@ -92,6 +92,15 @@ export default defineType({
       description:
         "External application link (Workable, Greenhouse, mailto:, etc.). Leave empty to hide the apply button.",
       type: "url",
+      /* Allow http(s) for ATS links + mailto / tel for direct-contact
+         applications. Without this, Sanity's default url validator
+         rejects anything that isn't http/https — so the mailto: link
+         the description promises wouldn't actually save. */
+      validation: (rule) =>
+        rule.uri({
+          scheme: ["http", "https", "mailto", "tel"],
+          allowRelative: false,
+        }),
     }),
     defineField({
       name: "publishedAt",
