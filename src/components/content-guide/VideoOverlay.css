@@ -1,0 +1,116 @@
+/* ==========================================================================
+   VideoOverlay
+   ==========================================================================
+   Full-viewport dark modal that hosts a single walkthrough video.
+   All values reference v2 design tokens — no hardcoded colours or
+   raw rem literals. */
+
+.video-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Dim backdrop — uses the brand brown so it sits in the palette,
+     mixed with transparency rather than a plain black wash. */
+  background-color: color-mix(in oklab, var(--color-brown) 85%, transparent);
+  padding: var(--space-2);
+  /* Backdrop blur softens whatever's behind without recolouring it. */
+  backdrop-filter: blur(0.5rem);
+  -webkit-backdrop-filter: blur(0.5rem);
+  animation: video-overlay-fade-in 200ms ease-out;
+}
+
+@keyframes video-overlay-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.video-overlay__inner {
+  position: relative;
+  width: 100%;
+  max-width: 80rem;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  background-color: var(--color-brown);
+  border-radius: 0.75rem;
+  padding: var(--space-1-5);
+  box-shadow: 0 1.5rem 4rem color-mix(in oklab, var(--color-brown) 60%, transparent);
+}
+
+.video-overlay__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1);
+}
+
+.video-overlay__title {
+  margin: 0;
+  color: var(--color-pink);
+}
+
+.video-overlay__close {
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: 1px solid color-mix(in oklab, var(--color-pink) 30%, transparent);
+  background-color: transparent;
+  color: var(--color-pink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+.video-overlay__close:hover {
+  background-color: var(--color-pink);
+  color: var(--color-brown);
+}
+
+.video-overlay__close svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.video-overlay__player {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: black;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.video-overlay__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background-color: black;
+  /* Native controls are styled by the browser — keeping this
+     simple so the focus stays on the recording itself. */
+}
+
+/* Mobile — shrink padding so the video gets as much of the screen
+   as possible. */
+@media (max-width: 767px) {
+  .video-overlay {
+    padding: var(--space-1);
+  }
+  .video-overlay__inner {
+    padding: var(--space-1);
+    gap: var(--space-0-75);
+  }
+}

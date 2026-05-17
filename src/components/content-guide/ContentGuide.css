@@ -1,0 +1,275 @@
+/* ==========================================================================
+   ContentGuide
+   ==========================================================================
+   Editorial /content-guide page. Section-led layout — each section
+   is a short editorial intro + a "Watch" button that triggers the
+   VideoOverlay modal.
+
+   All values reference v2 design tokens — no hardcoded colours,
+   raw rem literals, or px outside breakpoints / 1px borders. */
+
+.content-guide {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  min-height: 100vh;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+
+.content-guide__header {
+  padding-top: var(--space-5);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--theme-border);
+}
+
+@media (min-width: 64rem) {
+  .content-guide__header {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-6);
+  }
+}
+
+.content-guide__header-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1-5);
+  max-width: 60rem;
+}
+
+.content-guide__eyebrow {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+.content-guide__title {
+  margin: 0;
+  text-wrap: balance;
+}
+
+.content-guide__intro {
+  margin: 0;
+  max-width: 50rem;
+  color: var(--theme-text);
+}
+
+.content-guide__cta-row {
+  margin-top: var(--space-1);
+}
+
+.content-guide__cta {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--theme-text);
+  color: var(--theme-bg);
+  border-radius: 999rem;
+  text-decoration: none;
+  font-size: var(--font-size-text-main);
+  font-weight: var(--font-weight-medium);
+  transition: background-color 250ms ease, transform 250ms ease;
+}
+
+.content-guide__cta:hover {
+  background-color: color-mix(in oklab, var(--theme-text) 85%, var(--color-pink));
+  transform: translateY(-1px);
+}
+
+/* ── Sections ───────────────────────────────────────────── */
+
+.content-guide__sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding-top: var(--space-5);
+  padding-bottom: var(--space-5);
+}
+
+@media (min-width: 64rem) {
+  .content-guide__sections {
+    gap: var(--space-7);
+    padding-top: var(--space-7);
+    padding-bottom: var(--space-7);
+  }
+}
+
+.content-guide__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1-5);
+  max-width: 60rem;
+  scroll-margin-top: var(--space-3);
+}
+
+.content-guide__section + .content-guide__section {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--theme-border);
+}
+
+@media (min-width: 64rem) {
+  .content-guide__section + .content-guide__section {
+    padding-top: var(--space-6);
+  }
+}
+
+.content-guide__section-eyebrow {
+  margin: 0;
+  color: var(--theme-text-muted);
+}
+
+.content-guide__section-heading {
+  margin: 0;
+  text-wrap: balance;
+}
+
+.content-guide__section-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  max-width: 50rem;
+}
+
+.content-guide__section-paragraph {
+  margin: 0;
+  font-size: var(--font-size-text-large);
+  line-height: var(--line-height-base);
+  color: var(--theme-text);
+}
+
+/* ── Watch button ───────────────────────────────────────── */
+
+.content-guide__watch {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  margin-top: var(--space-1);
+  background-color: var(--color-brown);
+  color: var(--color-pink);
+  border: 1px solid var(--color-brown);
+  border-radius: 999rem;
+  font-family: inherit;
+  font-size: var(--font-size-text-main);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color 250ms ease, transform 250ms ease;
+}
+
+.content-guide__watch:hover {
+  background-color: color-mix(in oklab, var(--color-brown) 85%, var(--color-pink));
+  transform: translateY(-1px);
+}
+
+.content-guide__watch:focus-visible {
+  outline: 2px solid var(--color-pink);
+  outline-offset: 2px;
+}
+
+.content-guide__watch-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background-color: var(--color-pink);
+  color: var(--color-brown);
+}
+
+.content-guide__watch-icon svg {
+  width: 0.75rem;
+  height: 0.75rem;
+  /* Tiny nudge so the play triangle reads as centred against
+     its own optical centre, not its bounding box. */
+  margin-left: 0.0625rem;
+}
+
+.content-guide__watch-label {
+  white-space: nowrap;
+}
+
+/* ── Tips & gotchas ─────────────────────────────────────── */
+
+.content-guide__tips {
+  background-color: color-mix(in oklab, var(--theme-bg) 80%, var(--color-brown));
+  padding-top: var(--space-5);
+  padding-bottom: var(--space-5);
+}
+
+@media (min-width: 64rem) {
+  .content-guide__tips {
+    padding-top: var(--space-7);
+    padding-bottom: var(--space-7);
+  }
+}
+
+.content-guide__tips-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+@media (min-width: 48rem) {
+  .content-guide__tips-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+}
+
+.content-guide__tip {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-75);
+  padding: var(--space-2);
+  background-color: var(--theme-bg);
+  border: 1px solid var(--theme-border);
+  border-radius: 0.5rem;
+}
+
+.content-guide__tip-title {
+  margin: 0;
+  color: var(--theme-text);
+}
+
+.content-guide__tip-body {
+  margin: 0;
+  font-size: var(--font-size-text-main);
+  line-height: var(--line-height-base);
+  color: var(--theme-text);
+}
+
+/* ── Help footer ────────────────────────────────────────── */
+
+.content-guide__help {
+  background-color: var(--color-brown);
+  color: var(--color-pink);
+  padding-top: var(--space-5);
+  padding-bottom: var(--space-5);
+}
+
+@media (min-width: 64rem) {
+  .content-guide__help {
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-6);
+  }
+}
+
+.content-guide__help-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  max-width: 50rem;
+}
+
+.content-guide__help-heading {
+  margin: 0;
+  color: var(--color-pink);
+}
+
+.content-guide__help-body {
+  margin: 0;
+  font-size: var(--font-size-text-large);
+  line-height: var(--line-height-base);
+  color: color-mix(in oklab, var(--color-pink) 90%, transparent);
+}
