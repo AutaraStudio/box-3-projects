@@ -11,6 +11,10 @@ import { defineField, defineType } from "sanity";
 
 import { TaggedMediaPicker } from "../../components/TaggedMediaPicker";
 
+/* Three-image scroll-driven hero — matches the careers + sustainability
+   pages. The centre image expands from ~50% width to full-bleed as the
+   user scrolls; left + right sit alongside on desktop. */
+
 export default defineType({
   name: "aboutPage",
   title: "About Page",
@@ -39,6 +43,32 @@ export default defineType({
         'Optional CTA pinned beside the title (e.g. "Meet the team" → #team).',
       type: "link",
       group: "hero",
+    }),
+    defineField({
+      name: "heroImageLeft",
+      title: "Hero image — left",
+      type: "image",
+      group: "hero",
+      options: { hotspot: true },
+      components: { input: TaggedMediaPicker },
+    }),
+    defineField({
+      name: "heroImageCentre",
+      title: "Hero image — centre (expanding)",
+      description:
+        "The image that grows from ~50% width to full-bleed as the user scrolls.",
+      type: "image",
+      group: "hero",
+      options: { hotspot: true },
+      components: { input: TaggedMediaPicker },
+    }),
+    defineField({
+      name: "heroImageRight",
+      title: "Hero image — right",
+      type: "image",
+      group: "hero",
+      options: { hotspot: true },
+      components: { input: TaggedMediaPicker },
     }),
 
     /* Intro */

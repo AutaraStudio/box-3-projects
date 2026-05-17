@@ -20,6 +20,9 @@ export const ABOUT_PAGE_QUERY = groq`
   *[_type == "aboutPage"][0] {
     heroTitle,
     heroCta { ${LINK_PROJECTION} },
+    heroImageLeft { ${IMAGE_PROJECTION} },
+    heroImageCentre { ${IMAGE_PROJECTION} },
+    heroImageRight { ${IMAGE_PROJECTION} },
     introHeading,
     introBody,
     teamLabel,
@@ -53,6 +56,9 @@ export interface AboutPageLink {
 export interface AboutPageData {
   heroTitle?: string;
   heroCta?: AboutPageLink;
+  heroImageLeft?: AboutPageImage;
+  heroImageCentre?: AboutPageImage;
+  heroImageRight?: AboutPageImage;
   introHeading?: string;
   introBody?: string;
   teamLabel?: string;

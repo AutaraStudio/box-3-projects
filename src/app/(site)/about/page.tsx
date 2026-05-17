@@ -134,6 +134,9 @@ export default async function AboutPage() {
         title={firstFilled(page?.heroTitle, FALLBACK.heroTitle)}
         ctaLabel={firstFilled(page?.heroCta?.label, FALLBACK.heroCtaLabel)}
         ctaHref={firstFilled(page?.heroCta?.href, FALLBACK.heroCtaHref)}
+        imageLeft={page?.heroImageLeft}
+        imageCentre={page?.heroImageCentre}
+        imageRight={page?.heroImageRight}
       />
 
       <AboutIntro

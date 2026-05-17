@@ -765,6 +765,7 @@ const aboutPage = [
   h("Hero", HeadingLevel.HEADING_3),
   field("Hero title", "The big display heading at the top of the page."),
   field("Hero CTA", "Optional CTA pinned beside the title — label + link + page name. Often points to #team to anchor down to the team grid."),
+  field("Hero image — left / centre / right", "Three-image scroll-driven hero (same pattern as Careers + Sustainability). The centre image expands from ~50% width to full-bleed as the user scrolls."),
 
   h("Intro", HeadingLevel.HEADING_3),
   field("Intro heading", "Display heading directly under the hero."),
