@@ -606,7 +606,11 @@ const siteSettings = [
   field("Brand name", "Used as the home logo's accessible name and in the footer copyright. Usually \"Box 3 Projects\".", "Don't change unless the brand renames."),
 
   h("Header", HeadingLevel.HEADING_2),
-  field("Primary nav links", "First column of nav links beside the logo. Up to 6 entries.", "Each link has a label, an href (the path on the site), and an optional page name shown briefly during page transitions."),
+  callout(
+    "How a link field works",
+    "Every link field on the site (nav items, footer columns, CTAs, buttons) shares the same shape: a Label, then either an Internal page dropdown (Home / About / Services / etc.) or a Custom link text field for external URLs (https://…), email (mailto:…), phone (tel:…), or in-page anchors (#process). Use the dropdown for site pages — no need to type the slug. The Custom link field is only for things outside the dropdown. If both are set, the dropdown wins. There's also an optional Transition label shown briefly during the page-transition wipe.",
+  ),
+  field("Primary nav links", "First column of nav links beside the logo. Up to 6 entries."),
   field("Secondary nav links", "Second column of nav links — typically Careers / Contact. Up to 4 entries."),
   field("Side menu — primary links", "The big editorial links at the top of the slide-in side menu (Home / About / Projects)."),
   field("Side menu — \"More\" links", "Smaller links beneath the primary list inside the side menu."),

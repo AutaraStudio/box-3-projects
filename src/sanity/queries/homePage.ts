@@ -13,7 +13,7 @@ import { groq } from "next-sanity";
 import { TESTIMONIALS_SECTION_PROJECTION } from "./testimonialsSection";
 import type { TestimonialsSectionData } from "./testimonialsSection";
 
-const LINK_PROJECTION = groq`label, href, pageName`;
+const LINK_PROJECTION = groq`label, "href": coalesce(internalPage, href), pageName`;
 
 const IMAGE_PROJECTION = groq`
   asset->{ _id, url, metadata { dimensions } },

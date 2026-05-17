@@ -8,7 +8,7 @@
 
 import { groq } from "next-sanity";
 
-const LINK_PROJECTION = groq`label, href, pageName`;
+const LINK_PROJECTION = groq`label, "href": coalesce(internalPage, href), pageName`;
 const IMAGE_PROJECTION = groq`
   asset->{ _id, url, metadata { dimensions } },
   alt,

@@ -11,7 +11,7 @@ import { groq } from "next-sanity";
 
 const LINK_PROJECTION = groq`
   label,
-  href,
+  "href": coalesce(internalPage, href),
   pageName
 `;
 
