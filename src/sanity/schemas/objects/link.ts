@@ -31,8 +31,9 @@ import { defineField, defineType } from "sanity";
 
 /* Keep this list in sync with the site's top-level routes. Adding
    a route? Drop it in here and editors get a dropdown entry for it
-   without touching anything else. */
-const INTERNAL_PAGES = [
+   without touching anything else. Exported so the ad-hoc CTA fields
+   on careersPage / sustainabilityPage can reuse the same list. */
+export const INTERNAL_PAGES = [
   { title: "Home (/)", value: "/" },
   { title: "About (/about)", value: "/about" },
   { title: "Services (/services)", value: "/services" },

@@ -48,8 +48,14 @@ const INTERNAL_HREFS = new Set([
   "/contact",
 ]);
 
-/* Every doc + field we need to walk. The shape is:
-   { id, links: [...object link field names], arrays: [...array link field names] } */
+/* Every doc + field we need to walk. Three shapes:
+   - links:       link-object fields on the doc (heroCta, etc.)
+   - arrays:      array-of-links fields on the doc
+   - pageLevelCtas: ad-hoc CTA pairs that live as separate top-level
+                    fields (e.g. heroCtaHref + heroCtaInternalPage on
+                    the careers / sustainability pages). These don't
+                    use the shared `link` object so we migrate them
+                    field-pair by field-pair. */
 const TARGETS = [
   {
     id: "siteSettings",
@@ -63,6 +69,7 @@ const TARGETS = [
       "footerSocial",
       "footerLegal",
     ],
+    pageLevelCtas: [],
   },
   {
     id: "homePage",
@@ -75,16 +82,40 @@ const TARGETS = [
       "finalCtaButton",
     ],
     arrays: [],
+    pageLevelCtas: [],
   },
   {
     id: "aboutPage",
     links: ["heroCta", "closingCta"],
     arrays: [],
+    pageLevelCtas: [],
   },
   {
     id: "servicesPage",
     links: ["heroCta", "servicesCta", "editorialCta"],
     arrays: [],
+    pageLevelCtas: [],
+  },
+  {
+    id: "careersPage",
+    links: [],
+    arrays: [],
+    /* Pairs are { hrefField, internalPageField }. */
+    pageLevelCtas: [
+      { hrefField: "heroCtaHref", internalPageField: "heroCtaInternalPage" },
+      { hrefField: "cultureCtaHref", internalPageField: "cultureCtaInternalPage" },
+      { hrefField: "whyWorkCtaHref", internalPageField: "whyWorkCtaInternalPage" },
+      { hrefField: "speculativeCtaHref", internalPageField: "speculativeCtaInternalPage" },
+    ],
+  },
+  {
+    id: "sustainabilityPage",
+    links: [],
+    arrays: [],
+    pageLevelCtas: [
+      { hrefField: "heroCtaHref", internalPageField: "heroCtaInternalPage" },
+      { hrefField: "featureCtaHref", internalPageField: "featureCtaInternalPage" },
+    ],
   },
 ];
 
@@ -127,6 +158,18 @@ function walkDoc(doc, target) {
       doc[arrayName] = nextArr;
       changed = true;
     }
+  }
+
+  /* Page-level CTA pairs — same rules as a link object, but the
+     href + internalPage live as separate top-level fields. */
+  for (const { hrefField, internalPageField } of target.pageLevelCtas ?? []) {
+    /* Already on the dropdown — nothing to do. */
+    if (doc[internalPageField]) continue;
+    const href = typeof doc[hrefField] === "string" ? doc[hrefField].trim() : "";
+    if (!href || !INTERNAL_HREFS.has(href)) continue;
+    doc[internalPageField] = href;
+    delete doc[hrefField];
+    changed = true;
   }
 
   return changed;

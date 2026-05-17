@@ -9,6 +9,13 @@
 import { defineField, defineType } from "sanity";
 
 import { TaggedMediaPicker } from "../../components/TaggedMediaPicker";
+import { INTERNAL_PAGES } from "../objects/link";
+
+/* Same dropdown helper as careersPage — see that file for the
+   rationale on the *InternalPage / *Href pair pattern. */
+const INTERNAL_PAGE_OPTIONS = { list: INTERNAL_PAGES, layout: "dropdown" as const };
+const INTERNAL_PAGE_DESCRIPTION =
+  "Pick a site page from the list. Leave blank if you're linking somewhere else — fill in the Custom link field below instead.";
 
 export default defineType({
   name: "sustainabilityPage",
@@ -42,10 +49,18 @@ export default defineType({
       initialValue: "Our principles",
     }),
     defineField({
+      name: "heroCtaInternalPage",
+      title: "CTA — internal page",
+      description: INTERNAL_PAGE_DESCRIPTION,
+      type: "string",
+      group: "hero",
+      options: INTERNAL_PAGE_OPTIONS,
+    }),
+    defineField({
       name: "heroCtaHref",
-      title: "CTA link",
+      title: "CTA link (custom)",
       description:
-        "In-page anchor (e.g. #principles) or path. Defaults to #principles.",
+        "Use for anything not in the dropdown above — external URLs, mailto:, tel:, or in-page anchors (e.g. #principles). Internal page wins if both are set.",
       type: "string",
       group: "hero",
       initialValue: "#principles",
@@ -190,9 +205,18 @@ export default defineType({
       group: "feature",
     }),
     defineField({
+      name: "featureCtaInternalPage",
+      title: "CTA — internal page",
+      description: INTERNAL_PAGE_DESCRIPTION,
+      type: "string",
+      group: "feature",
+      options: INTERNAL_PAGE_OPTIONS,
+    }),
+    defineField({
       name: "featureCtaHref",
-      title: "CTA link",
-      description: "Where the CTA points (relative path or full URL).",
+      title: "CTA link (custom)",
+      description:
+        "Use for anything not in the dropdown above — external URLs, mailto:, tel:, or anchors. Internal page wins if both are set.",
       type: "string",
       group: "feature",
     }),

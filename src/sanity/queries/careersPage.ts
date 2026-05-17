@@ -21,7 +21,7 @@ export const CAREERS_PAGE_QUERY = groq`
   *[_type == "careersPage"][0] {
     heroTitle,
     heroCtaLabel,
-    heroCtaHref,
+    "heroCtaHref": coalesce(heroCtaInternalPage, heroCtaHref),
     heroImageLeft { ${HERO_IMAGE_PROJECTION} },
     heroImageCentre { ${HERO_IMAGE_PROJECTION} },
     heroImageRight { ${HERO_IMAGE_PROJECTION} },
@@ -32,7 +32,7 @@ export const CAREERS_PAGE_QUERY = groq`
     cultureBody,
     cultureImage { ${HERO_IMAGE_PROJECTION} },
     cultureCtaLabel,
-    cultureCtaHref,
+    "cultureCtaHref": coalesce(cultureCtaInternalPage, cultureCtaHref),
     cultureCtaPageName,
     whyWorkHeading,
     whyWorkItems[] {
@@ -40,7 +40,7 @@ export const CAREERS_PAGE_QUERY = groq`
       body
     },
     whyWorkCtaLabel,
-    whyWorkCtaHref,
+    "whyWorkCtaHref": coalesce(whyWorkCtaInternalPage, whyWorkCtaHref),
     vacanciesHeading,
     vacanciesEmptyMessage,
     vacanciesApplyButtonLabel,
@@ -49,7 +49,7 @@ export const CAREERS_PAGE_QUERY = groq`
     speculativeBody,
     speculativeImage { ${HERO_IMAGE_PROJECTION} },
     speculativeCtaLabel,
-    speculativeCtaHref,
+    "speculativeCtaHref": coalesce(speculativeCtaInternalPage, speculativeCtaHref),
     speculativeCtaPageName,
     applyEyebrowLabel,
     applyCloseLabel,

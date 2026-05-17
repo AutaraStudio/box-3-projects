@@ -14,6 +14,15 @@
 import { defineField, defineType } from "sanity";
 
 import { TaggedMediaPicker } from "../../components/TaggedMediaPicker";
+import { INTERNAL_PAGES } from "../objects/link";
+
+/* Dropdown shared by every ad-hoc CTA on this page. Sits beside the
+   CTA's `href` field — pick a site page from the list, or leave it
+   blank and type a custom link (external URL, mailto:, tel:, anchor)
+   into href instead. GROQ coalesces internalPage → href. */
+const INTERNAL_PAGE_OPTIONS = { list: INTERNAL_PAGES, layout: "dropdown" as const };
+const INTERNAL_PAGE_DESCRIPTION =
+  "Pick a site page from the list. Leave blank if you're linking somewhere else — fill in the Custom link field below instead.";
 
 export default defineType({
   name: "careersPage",
@@ -49,10 +58,18 @@ export default defineType({
       initialValue: "See opportunities",
     }),
     defineField({
+      name: "heroCtaInternalPage",
+      title: "CTA — internal page",
+      description: INTERNAL_PAGE_DESCRIPTION,
+      type: "string",
+      group: "hero",
+      options: INTERNAL_PAGE_OPTIONS,
+    }),
+    defineField({
       name: "heroCtaHref",
-      title: "CTA link",
+      title: "CTA link (custom)",
       description:
-        "Where the CTA points. Use an in-page anchor (e.g. #jobs) or a relative path (e.g. /contact).",
+        "Use for anything not in the dropdown above — external URLs, mailto:, tel:, or in-page anchors (e.g. #jobs). Internal page wins if both are set.",
       type: "string",
       group: "hero",
       initialValue: "#jobs",
@@ -154,9 +171,18 @@ export default defineType({
       group: "culture",
     }),
     defineField({
+      name: "cultureCtaInternalPage",
+      title: "CTA — internal page",
+      description: INTERNAL_PAGE_DESCRIPTION,
+      type: "string",
+      group: "culture",
+      options: INTERNAL_PAGE_OPTIONS,
+    }),
+    defineField({
       name: "cultureCtaHref",
-      title: "CTA link",
-      description: "Where the CTA points (relative path or full URL).",
+      title: "CTA link (custom)",
+      description:
+        "Use for anything not in the dropdown above — external URLs, mailto:, tel:, or anchors. Internal page wins if both are set.",
       type: "string",
       group: "culture",
     }),
@@ -216,8 +242,18 @@ export default defineType({
       group: "whyWorkWithUs",
     }),
     defineField({
+      name: "whyWorkCtaInternalPage",
+      title: "Why-work-with-us CTA — internal page",
+      description: INTERNAL_PAGE_DESCRIPTION,
+      type: "string",
+      group: "whyWorkWithUs",
+      options: INTERNAL_PAGE_OPTIONS,
+    }),
+    defineField({
       name: "whyWorkCtaHref",
-      title: "Why-work-with-us CTA link",
+      title: "Why-work-with-us CTA link (custom)",
+      description:
+        "Use for anything not in the dropdown above — external URLs, mailto:, tel:, or anchors. Internal page wins if both are set.",
       type: "string",
       group: "whyWorkWithUs",
     }),
@@ -290,8 +326,18 @@ export default defineType({
       group: "speculative",
     }),
     defineField({
+      name: "speculativeCtaInternalPage",
+      title: "CTA — internal page",
+      description: INTERNAL_PAGE_DESCRIPTION,
+      type: "string",
+      group: "speculative",
+      options: INTERNAL_PAGE_OPTIONS,
+    }),
+    defineField({
       name: "speculativeCtaHref",
-      title: "CTA link",
+      title: "CTA link (custom)",
+      description:
+        "Use for anything not in the dropdown above — external URLs, mailto:, tel:, or anchors. Internal page wins if both are set.",
       type: "string",
       group: "speculative",
     }),

@@ -23,7 +23,7 @@ export const SUSTAINABILITY_PAGE_QUERY = groq`
   *[_type == "sustainabilityPage"][0] {
     heroTitle,
     heroCtaLabel,
-    heroCtaHref,
+    "heroCtaHref": coalesce(heroCtaInternalPage, heroCtaHref),
     heroImageLeft   { ${HERO_IMAGE_PROJECTION} },
     heroImageCentre { ${HERO_IMAGE_PROJECTION} },
     heroImageRight  { ${HERO_IMAGE_PROJECTION} },
@@ -69,7 +69,7 @@ export const SUSTAINABILITY_PAGE_QUERY = groq`
     certificationsLabel,
     certificationsItems,
     featureCtaLabel,
-    featureCtaHref,
+    "featureCtaHref": coalesce(featureCtaInternalPage, featureCtaHref),
     featureCtaPageName,
     seoTitle,
     seoDescription
