@@ -29,6 +29,8 @@
 
 import { defineField, defineType } from "sanity";
 
+import { InternalPagePicker } from "../../components/InternalPagePicker";
+
 /* Keep this list in sync with the site's top-level routes. Adding
    a route? Drop it in here and editors get a dropdown entry for it
    without touching anything else. Exported so the ad-hoc CTA fields
@@ -61,9 +63,10 @@ export default defineType({
       description:
         "Pick a site page from the list. Quicker than typing the " +
         "slug. Leave blank if you're linking somewhere else (use " +
-        "the Custom link field below).",
+        "the Custom link field below). Legal pages appear here too " +
+        "as you add them in the studio.",
       type: "string",
-      options: { list: INTERNAL_PAGES, layout: "dropdown" },
+      components: { input: InternalPagePicker },
     }),
     defineField({
       name: "href",

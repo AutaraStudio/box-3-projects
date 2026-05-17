@@ -9,11 +9,11 @@
 import { defineField, defineType } from "sanity";
 
 import { TaggedMediaPicker } from "../../components/TaggedMediaPicker";
-import { INTERNAL_PAGES } from "../objects/link";
+import { InternalPagePicker } from "../../components/InternalPagePicker";
 
-/* Same dropdown helper as careersPage — see that file for the
+/* Same picker helper as careersPage — see that file for the
    rationale on the *InternalPage / *Href pair pattern. */
-const INTERNAL_PAGE_OPTIONS = { list: INTERNAL_PAGES, layout: "dropdown" as const };
+const INTERNAL_PAGE_COMPONENTS = { input: InternalPagePicker };
 const INTERNAL_PAGE_DESCRIPTION =
   "Pick a site page from the list. Leave blank if you're linking somewhere else — fill in the Custom link field below instead.";
 
@@ -54,7 +54,7 @@ export default defineType({
       description: INTERNAL_PAGE_DESCRIPTION,
       type: "string",
       group: "hero",
-      options: INTERNAL_PAGE_OPTIONS,
+      components: INTERNAL_PAGE_COMPONENTS,
     }),
     defineField({
       name: "heroCtaHref",
@@ -210,7 +210,7 @@ export default defineType({
       description: INTERNAL_PAGE_DESCRIPTION,
       type: "string",
       group: "feature",
-      options: INTERNAL_PAGE_OPTIONS,
+      components: INTERNAL_PAGE_COMPONENTS,
     }),
     defineField({
       name: "featureCtaHref",

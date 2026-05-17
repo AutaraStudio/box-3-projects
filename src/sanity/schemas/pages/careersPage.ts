@@ -14,13 +14,13 @@
 import { defineField, defineType } from "sanity";
 
 import { TaggedMediaPicker } from "../../components/TaggedMediaPicker";
-import { INTERNAL_PAGES } from "../objects/link";
+import { InternalPagePicker } from "../../components/InternalPagePicker";
 
-/* Dropdown shared by every ad-hoc CTA on this page. Sits beside the
-   CTA's `href` field — pick a site page from the list, or leave it
-   blank and type a custom link (external URL, mailto:, tel:, anchor)
-   into href instead. GROQ coalesces internalPage → href. */
-const INTERNAL_PAGE_OPTIONS = { list: INTERNAL_PAGES, layout: "dropdown" as const };
+/* Custom picker shared by every ad-hoc CTA on this page. Sits beside
+   the CTA's `href` field — pick a site page (legal pages included
+   automatically) from the dropdown, or leave it blank and type a
+   custom link into href instead. GROQ coalesces internalPage → href. */
+const INTERNAL_PAGE_COMPONENTS = { input: InternalPagePicker };
 const INTERNAL_PAGE_DESCRIPTION =
   "Pick a site page from the list. Leave blank if you're linking somewhere else — fill in the Custom link field below instead.";
 
@@ -63,7 +63,7 @@ export default defineType({
       description: INTERNAL_PAGE_DESCRIPTION,
       type: "string",
       group: "hero",
-      options: INTERNAL_PAGE_OPTIONS,
+      components: INTERNAL_PAGE_COMPONENTS,
     }),
     defineField({
       name: "heroCtaHref",
@@ -176,7 +176,7 @@ export default defineType({
       description: INTERNAL_PAGE_DESCRIPTION,
       type: "string",
       group: "culture",
-      options: INTERNAL_PAGE_OPTIONS,
+      components: INTERNAL_PAGE_COMPONENTS,
     }),
     defineField({
       name: "cultureCtaHref",
@@ -247,7 +247,7 @@ export default defineType({
       description: INTERNAL_PAGE_DESCRIPTION,
       type: "string",
       group: "whyWorkWithUs",
-      options: INTERNAL_PAGE_OPTIONS,
+      components: INTERNAL_PAGE_COMPONENTS,
     }),
     defineField({
       name: "whyWorkCtaHref",
@@ -331,7 +331,7 @@ export default defineType({
       description: INTERNAL_PAGE_DESCRIPTION,
       type: "string",
       group: "speculative",
-      options: INTERNAL_PAGE_OPTIONS,
+      components: INTERNAL_PAGE_COMPONENTS,
     }),
     defineField({
       name: "speculativeCtaHref",
