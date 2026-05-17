@@ -18,6 +18,9 @@ const LINK_PROJECTION = groq`
 export const SITE_SETTINGS_QUERY = groq`
   *[_type == "siteSettings"][0] {
     brandName,
+    comingSoon,
+    comingSoonHeading,
+    comingSoonBody,
 
     headerPrimaryLinks[] { ${LINK_PROJECTION} },
     headerSecondaryLinks[] { ${LINK_PROJECTION} },
@@ -163,6 +166,9 @@ export interface TestimonialsLabels {
 
 export interface SiteSettingsData {
   brandName?: string;
+  comingSoon?: boolean;
+  comingSoonHeading?: string;
+  comingSoonBody?: string;
   headerPrimaryLinks?: SiteSettingsLink[];
   headerSecondaryLinks?: SiteSettingsLink[];
   menuPrimaryLinks?: SiteSettingsLink[];

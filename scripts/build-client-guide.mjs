@@ -590,6 +590,18 @@ const siteSettings = [
     "Site-wide content used on every page. Organised into tabs at the top of the document.",
   ),
 
+  h("Coming soon (site-wide kill switch)", HeadingLevel.HEADING_2),
+  p(
+    "Sits at the top of Site Settings. When ON, every page on the site — home, about, projects, careers, contact, legal, all of it — is replaced by the holding message. Useful for pre-launch holds or unscheduled maintenance. Turn OFF to bring the full site back.",
+  ),
+  field("Show coming-soon page", "Toggle. ON = every page renders the holding message only. OFF = normal site.", "Untick once you're live."),
+  field("Holding heading", "The big editorial line, e.g. \"Site updating.\" Optional — defaults to a sensible value if blank."),
+  field("Holding message", "Supporting paragraph beneath the heading."),
+  callout(
+    "What gets hidden",
+    "Header, footer, side menu, and the preloader are all skipped while the kill switch is ON — visitors only see the holding page no matter which URL they typed.",
+  ),
+
   h("Brand", HeadingLevel.HEADING_2),
   field("Brand name", "Used as the home logo's accessible name and in the footer copyright. Usually \"Box 3 Projects\".", "Don't change unless the brand renames."),
 
@@ -685,13 +697,8 @@ const pagesIntro = [
 const homePage = [
   h("Home Page", HeadingLevel.HEADING_2),
   p(
-    "Tabs: Coming soon · Hero · About statement · Introducing · Services · Featured projects · Stats · Why Box 3 · Testimonials · Final CTA · SEO.",
+    "Tabs: Hero · About statement · Introducing · Services · Featured projects · Stats · Why Box 3 · Testimonials · Final CTA · SEO.",
   ),
-
-  h("Coming soon", HeadingLevel.HEADING_3),
-  field("Coming soon enabled", "Tick to replace the home page with a holding page. Useful before launch.", "Untick once you go live."),
-  field("Coming soon heading", "Big heading on the holding page."),
-  field("Coming soon body", "Supporting copy under the heading."),
 
   h("Hero", HeadingLevel.HEADING_3),
   field("Background media", "Radio — Video (default) or Image. The matching field below appears once you pick."),

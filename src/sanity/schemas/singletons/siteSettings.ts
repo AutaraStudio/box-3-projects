@@ -18,7 +18,8 @@ export default defineType({
   title: "Site Settings",
   type: "document",
   groups: [
-    { name: "brand", title: "Brand", default: true },
+    { name: "comingSoon", title: "Coming soon", default: true },
+    { name: "brand", title: "Brand" },
     { name: "header", title: "Header" },
     { name: "footer", title: "Footer" },
     { name: "contact", title: "Contact info" },
@@ -26,6 +27,40 @@ export default defineType({
     { name: "seo", title: "SEO defaults" },
   ],
   fields: [
+    /* ── Coming-soon kill switch ────────────────────────────
+       Site-wide override. When ON, every route on the site
+       renders the holding page only — header, footer, menu,
+       and the page's own content are all hidden. Useful for
+       pre-launch holds or unscheduled maintenance. */
+    defineField({
+      name: "comingSoon",
+      title: "Show coming-soon page",
+      description:
+        "While ON, every page on the site is replaced by the " +
+        "holding message below. Turn OFF to make the full site " +
+        "live again.",
+      type: "boolean",
+      group: "comingSoon",
+      initialValue: false,
+    }),
+    defineField({
+      name: "comingSoonHeading",
+      title: "Holding heading",
+      description:
+        'The big editorial line, e.g. "Site updating." Optional — ' +
+        "defaults to a sensible value if blank.",
+      type: "string",
+      group: "comingSoon",
+    }),
+    defineField({
+      name: "comingSoonBody",
+      title: "Holding message",
+      description: "Supporting paragraph beneath the heading.",
+      type: "text",
+      rows: 3,
+      group: "comingSoon",
+    }),
+
     /* ── Brand ──────────────────────────────────────────── */
     defineField({
       name: "brandName",

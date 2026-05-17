@@ -31,8 +31,7 @@ export default defineType({
   title: "Home Page",
   type: "document",
   groups: [
-    { name: "comingSoon", title: "Coming soon", default: true },
-    { name: "hero", title: "Hero" },
+    { name: "hero", title: "Hero", default: true },
     { name: "statement", title: "About statement" },
     { name: "introducing", title: "Introducing" },
     { name: "services", title: "Services" },
@@ -44,37 +43,9 @@ export default defineType({
     { name: "seo", title: "SEO" },
   ],
   fields: [
-    /* ── 0. Coming Soon (holding page toggle) ───────────── */
-    defineField({
-      name: "comingSoon",
-      title: "Show coming-soon page",
-      description:
-        "While ON, the home page renders only the holding " +
-        "message below — every other section (Hero, About, " +
-        "Services, etc.) is hidden. Turn OFF to publish the " +
-        "full home page.",
-      type: "boolean",
-      group: "comingSoon",
-      initialValue: false,
-    }),
-    defineField({
-      name: "comingSoonHeading",
-      title: "Holding heading",
-      description:
-        'The big editorial line, e.g. "Site updating." Defaults ' +
-        "to that if left empty.",
-      type: "string",
-      group: "comingSoon",
-    }),
-    defineField({
-      name: "comingSoonBody",
-      title: "Holding message",
-      description:
-        "Supporting paragraph beneath the heading.",
-      type: "text",
-      rows: 3,
-      group: "comingSoon",
-    }),
+    /* Note: the coming-soon kill switch lives in Site Settings —
+       it's a site-wide override (blocks every page, not just home).
+       See `src/sanity/schemas/singletons/siteSettings.ts`. */
 
     /* ── 1. Hero ─────────────────────────────────────────── */
     defineField({

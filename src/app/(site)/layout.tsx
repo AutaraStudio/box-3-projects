@@ -11,6 +11,7 @@ import Header from "@/components/menu/Header";
 import MenuOverlay from "@/components/menu/MenuOverlay";
 import Footer from "@/components/footer/Footer";
 import HomePreloader from "@/components/preloader/HomePreloader";
+import HomeComingSoon from "@/components/home/HomeComingSoon";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
   FEATURED_PROJECTS_QUERY,
@@ -189,53 +190,71 @@ export default async function RootLayout({
         `}
       </Script>
       <body data-theme="cream">
-        {/* Synchronous flag for the home preloader — must run
-            before any paint so the dark cover (rendered in SSR
-            below) is either visible from the very first frame OR
-            never paints at all. Sets <html data-preloader> based
-            on sessionStorage; the CSS gate in HomePreloader.css
-            uses that attribute to decide whether to show the
-            cover. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var k="box3:preloader-played";var played=sessionStorage.getItem(k)==="1";document.documentElement.setAttribute("data-preloader",played?"skip":"active");}catch(e){document.documentElement.setAttribute("data-preloader","active");}})();`,
-          }}
-        />
-        <SmoothScroll>
-          <ScrollResetOnRoute />
-          <SiteSettingsProvider value={settings}>
-          <PageTransitionProvider>
-            <MenuProvider>
-              {/* Plays once per session: a dark cover holds a
-                  beat, then morphs to the header logo's bounds.
-                  Header logo glyphs are hidden via CSS while
-                  data-preloader=active is set on <html>. */}
-              <HomePreloader />
-              <Header
-                brand={brand}
-                primaryLinks={headerPrimary}
-                secondaryLinks={headerSecondary}
-              />
-              {children}
-              <Footer
-                pages={footerPages}
-                featuredProjects={featuredProjects}
-                contact={contact}
-                social={footerSocial}
-                legal={footerLegal}
-                brand={brand}
-                columnLabels={settings?.footerLabels}
-              />
-              <MenuOverlay
-                primaryLinks={menuPrimary}
-                moreLinks={menuMore}
-                contact={contact}
-              />
-              <PageTransitionOverlay />
-            </MenuProvider>
-          </PageTransitionProvider>
-          </SiteSettingsProvider>
-        </SmoothScroll>
+        {settings?.comingSoon ? (
+          /* Site-wide kill switch — when Coming soon is ON in
+             Site Settings, every route renders the holding page
+             only. Header, footer, menu, preloader and the page's
+             own content are all skipped so the URL the visitor
+             typed (/, /about, /careers, anything) yields the same
+             holding view. Toggle OFF in Site Settings to bring
+             the full site back. */
+          <main>
+            <HomeComingSoon
+              heading={settings.comingSoonHeading || undefined}
+              body={settings.comingSoonBody || undefined}
+            />
+          </main>
+        ) : (
+          <>
+            {/* Synchronous flag for the home preloader — must run
+                before any paint so the dark cover (rendered in SSR
+                below) is either visible from the very first frame OR
+                never paints at all. Sets <html data-preloader> based
+                on sessionStorage; the CSS gate in HomePreloader.css
+                uses that attribute to decide whether to show the
+                cover. */}
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `(function(){try{var k="box3:preloader-played";var played=sessionStorage.getItem(k)==="1";document.documentElement.setAttribute("data-preloader",played?"skip":"active");}catch(e){document.documentElement.setAttribute("data-preloader","active");}})();`,
+              }}
+            />
+            <SmoothScroll>
+              <ScrollResetOnRoute />
+              <SiteSettingsProvider value={settings}>
+              <PageTransitionProvider>
+                <MenuProvider>
+                  {/* Plays once per session: a dark cover holds a
+                      beat, then morphs to the header logo's bounds.
+                      Header logo glyphs are hidden via CSS while
+                      data-preloader=active is set on <html>. */}
+                  <HomePreloader />
+                  <Header
+                    brand={brand}
+                    primaryLinks={headerPrimary}
+                    secondaryLinks={headerSecondary}
+                  />
+                  {children}
+                  <Footer
+                    pages={footerPages}
+                    featuredProjects={featuredProjects}
+                    contact={contact}
+                    social={footerSocial}
+                    legal={footerLegal}
+                    brand={brand}
+                    columnLabels={settings?.footerLabels}
+                  />
+                  <MenuOverlay
+                    primaryLinks={menuPrimary}
+                    moreLinks={menuMore}
+                    contact={contact}
+                  />
+                  <PageTransitionOverlay />
+                </MenuProvider>
+              </PageTransitionProvider>
+              </SiteSettingsProvider>
+            </SmoothScroll>
+          </>
+        )}
       </body>
     </html>
   );
