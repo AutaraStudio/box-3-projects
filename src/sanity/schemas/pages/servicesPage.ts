@@ -9,6 +9,8 @@
 
 import { defineField, defineType } from "sanity";
 
+import { TaggedMediaPicker } from "../../components/TaggedMediaPicker";
+
 export default defineType({
   name: "servicesPage",
   title: "Services Page",
@@ -119,6 +121,7 @@ export default defineType({
       title: "Image",
       type: "image",
       options: { hotspot: true },
+      components: { input: TaggedMediaPicker },
       group: "editorial",
     }),
     defineField({

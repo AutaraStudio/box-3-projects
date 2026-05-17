@@ -5,14 +5,11 @@
  * the `team` field so each project can list the people who worked
  * on it.
  *
- * Note (v2): the master TaggedMediaPicker custom input has been
- * dropped for now — the image field uses the native Sanity image
- * input. The existing media-tagged assets can still be selected
- * via the asset browser; the picker can be reintroduced later if
- * the editor wants the tag-filtered shortcut back.
  */
 
 import { defineField, defineType } from "sanity";
+
+import { TaggedMediaPicker } from "../../components/TaggedMediaPicker";
 
 export default defineType({
   name: "teamMember",
@@ -71,6 +68,7 @@ export default defineType({
       title: "Photo",
       type: "image",
       options: { hotspot: true },
+      components: { input: TaggedMediaPicker },
       description: "Professional headshot.",
     }),
     defineField({

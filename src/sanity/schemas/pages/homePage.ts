@@ -22,6 +22,7 @@
 
 import { defineField, defineType } from "sanity";
 
+import { TaggedMediaPicker } from "../../components/TaggedMediaPicker";
 import { TESTIMONIALS_SECTION_PROJECTION } from "../../queries/testimonialsSection";
 
 void TESTIMONIALS_SECTION_PROJECTION; /* keep import — used by query */
@@ -88,6 +89,7 @@ export default defineType({
         '"Background media" above is set to "Image".',
       type: "image",
       options: { hotspot: true },
+      components: { input: TaggedMediaPicker },
       group: "hero",
       hidden: ({ parent }) => parent?.heroMediaType !== "image",
     }),
@@ -187,6 +189,7 @@ export default defineType({
         "the first featured project's image if left blank.",
       type: "image",
       options: { hotspot: true },
+      components: { input: TaggedMediaPicker },
       group: "introducing",
     }),
     defineField({
@@ -347,6 +350,7 @@ export default defineType({
       title: "Image",
       type: "image",
       options: { hotspot: true },
+      components: { input: TaggedMediaPicker },
       group: "why",
     }),
     defineField({

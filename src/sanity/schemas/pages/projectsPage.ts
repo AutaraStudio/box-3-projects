@@ -11,6 +11,8 @@
 
 import { defineField, defineType } from "sanity";
 
+import { TaggedMediaPicker } from "../../components/TaggedMediaPicker";
+
 export default defineType({
   name: "projectsPage",
   title: "Projects Page",
@@ -45,6 +47,7 @@ export default defineType({
         "scrolls. Wide landscape image, ~16:9 reads well.",
       type: "image",
       options: { hotspot: true },
+      components: { input: TaggedMediaPicker },
       group: "hero",
     }),
     defineField({
@@ -57,6 +60,7 @@ export default defineType({
         "automatically.",
       type: "image",
       options: { hotspot: true },
+      components: { input: TaggedMediaPicker },
       group: "hero",
     }),
     defineField({
