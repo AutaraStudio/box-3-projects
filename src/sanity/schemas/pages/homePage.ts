@@ -119,16 +119,6 @@ export default defineType({
       options: { hotspot: true },
       group: "hero",
       hidden: ({ parent }) => parent?.heroMediaType !== "image",
-      fields: [
-        defineField({
-          name: "alt",
-          title: "Alt text",
-          description:
-            "What's in the photo, in plain English. Used by " +
-            "screen readers + shown if the image fails to load.",
-          type: "string",
-        }),
-      ],
     }),
     defineField({
       name: "heroStatement",
@@ -227,16 +217,6 @@ export default defineType({
       type: "image",
       options: { hotspot: true },
       group: "introducing",
-      fields: [
-        defineField({
-          name: "alt",
-          title: "Alt text",
-          description:
-            "What's in the photo, in plain English. Used by " +
-            "screen readers + shown if the image fails to load.",
-          type: "string",
-        }),
-      ],
     }),
     defineField({
       name: "introducingCta",
@@ -397,13 +377,6 @@ export default defineType({
       type: "image",
       options: { hotspot: true },
       group: "why",
-      fields: [
-        defineField({
-          name: "alt",
-          title: "Alt text",
-          type: "string",
-        }),
-      ],
     }),
     defineField({
       name: "whyCta",

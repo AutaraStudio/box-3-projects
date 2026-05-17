@@ -114,15 +114,6 @@ export default defineType({
       group: "images",
       options: { hotspot: true },
       components: { input: TaggedMediaPicker },
-      fields: [
-        defineField({
-          name: "alt",
-          title: "Image description (for accessibility)",
-          description: "Describe the image for accessibility",
-          type: "string",
-          validation: (rule) => rule.required(),
-        }),
-      ],
     }),
     defineField({
       name: "additionalImages",
@@ -135,15 +126,6 @@ export default defineType({
         {
           type: "image",
           options: { hotspot: true },
-          fields: [
-            defineField({
-              name: "alt",
-              title: "Image description (for accessibility)",
-              description:
-                "Optional — a short description used by screen readers.",
-              type: "string",
-            }),
-          ],
         },
       ],
     }),

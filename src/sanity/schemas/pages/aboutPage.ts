@@ -152,9 +152,6 @@ export default defineType({
       type: "image",
       options: { hotspot: true },
       group: "closing",
-      fields: [
-        defineField({ name: "alt", title: "Alt text", type: "string" }),
-      ],
     }),
     defineField({
       name: "closingCta",

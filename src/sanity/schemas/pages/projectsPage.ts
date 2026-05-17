@@ -46,14 +46,6 @@ export default defineType({
       type: "image",
       options: { hotspot: true },
       group: "hero",
-      fields: [
-        defineField({
-          name: "alt",
-          title: "Alt text",
-          description: "What's in the photo, in plain English.",
-          type: "string",
-        }),
-      ],
     }),
     defineField({
       name: "overlayImage",
@@ -66,14 +58,6 @@ export default defineType({
       type: "image",
       options: { hotspot: true },
       group: "hero",
-      fields: [
-        defineField({
-          name: "alt",
-          title: "Alt text",
-          description: "Describe the sketch, e.g. 'Initial sketch — line drawing'.",
-          type: "string",
-        }),
-      ],
     }),
     defineField({
       name: "seoTitle",

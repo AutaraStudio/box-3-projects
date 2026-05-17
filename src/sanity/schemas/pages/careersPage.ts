@@ -15,14 +15,6 @@ import { defineField, defineType } from "sanity";
 
 import { TaggedMediaPicker } from "../../components/TaggedMediaPicker";
 
-const HERO_IMAGE_FIELDS = [
-  defineField({
-    name: "alt",
-    title: "Image description (for accessibility)",
-    type: "string",
-  }),
-];
-
 export default defineType({
   name: "careersPage",
   title: "Careers Page",
@@ -72,7 +64,7 @@ export default defineType({
       group: "hero",
       options: { hotspot: true },
       components: { input: TaggedMediaPicker },
-      fields: HERO_IMAGE_FIELDS,
+
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -84,7 +76,7 @@ export default defineType({
       group: "hero",
       options: { hotspot: true },
       components: { input: TaggedMediaPicker },
-      fields: HERO_IMAGE_FIELDS,
+
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -94,7 +86,7 @@ export default defineType({
       group: "hero",
       options: { hotspot: true },
       components: { input: TaggedMediaPicker },
-      fields: HERO_IMAGE_FIELDS,
+
       validation: (rule) => rule.required(),
     }),
 
@@ -152,7 +144,7 @@ export default defineType({
       group: "culture",
       options: { hotspot: true },
       components: { input: TaggedMediaPicker },
-      fields: HERO_IMAGE_FIELDS,
+
     }),
     defineField({
       name: "cultureCtaLabel",
@@ -288,7 +280,7 @@ export default defineType({
       group: "speculative",
       options: { hotspot: true },
       components: { input: TaggedMediaPicker },
-      fields: HERO_IMAGE_FIELDS,
+
     }),
     defineField({
       name: "speculativeCtaLabel",
