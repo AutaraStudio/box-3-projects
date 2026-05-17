@@ -24,7 +24,6 @@ import partner from "./collections/partner";
 import vacancy from "./collections/vacancy";
 
 import testimonialsSection from "./sections/testimonialsSection";
-import partnersSection from "./sections/partnersSection";
 import careersPage from "./pages/careersPage";
 import sustainabilityPage from "./pages/sustainabilityPage";
 import homePage from "./pages/homePage";
@@ -54,7 +53,6 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   legalPage,
   /* Reusable sections */
   testimonialsSection,
-  partnersSection,
   /* Collections */
   project,
   projectCategory,

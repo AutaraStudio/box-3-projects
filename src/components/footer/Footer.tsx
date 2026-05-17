@@ -99,9 +99,9 @@ export default async function Footer({
     legal: columnLabels?.legal ?? FOOTER_LABEL_FALLBACK.legal,
   };
   const year = new Date().getFullYear();
-  /* Pull the partners + their SVGs server-side. If the dataset has
-     no partnersSection singleton, loadPartners returns sensible
-     defaults and the marquee renders 0 cells (still 0px tall). */
+  /* Pull every partner doc + their SVGs server-side. Ordered by
+     the drag-and-drop list in Studio → Partners; heading comes
+     from Site Settings → Partners marquee. */
   const partners = await loadPartners();
 
   return (
@@ -111,7 +111,6 @@ export default async function Footer({
       {partners.partners.length > 0 ? (
         <PartnersSection
           heading={partners.heading}
-          sectionLabel={partners.sectionLabel}
           partners={partners.partners}
         />
       ) : null}

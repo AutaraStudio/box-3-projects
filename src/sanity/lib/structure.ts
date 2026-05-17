@@ -6,9 +6,9 @@
  * than a flat list of document types.
  *
  * Sections currently surfaced (extend as more schemas land):
- *   SECTIONS    → Partners Section (singleton)
  *   COLLECTIONS → Projects, Project Categories, Expertise, Team
- *                 Members, Partners, Testimonials
+ *                 Members, Partners (drag to reorder marquee),
+ *                 Testimonials
  *
  * Singletons open directly (no intermediate list view) and are
  * created on demand via S.document().documentId(...). The studio.ts
@@ -23,7 +23,6 @@ import { orderableDocumentListDeskItem } from "@sanity/orderable-document-list";
 /** Document types that should appear as singletons (one-per-site). */
 export const SINGLETON_TYPES = [
   "siteSettings",
-  "partnersSection",
   "homePage",
   "aboutPage",
   "servicesPage",
@@ -166,26 +165,6 @@ export const structure: StructureResolver = (S, context) =>
             ]),
         ),
 
-      /* ── Sections ─────────────────────────────────────────────
-         Singleton documents that drive a reusable section. */
-      S.listItem()
-        .title("Sections")
-        .child(
-          S.list()
-            .title("Sections")
-            .items([
-              S.listItem()
-                .title("Partners Section")
-                .id("partnersSection")
-                .child(
-                  S.document()
-                    .schemaType("partnersSection")
-                    .documentId("partnersSection")
-                    .title("Partners Section"),
-                ),
-            ]),
-        ),
-
       S.divider(),
 
       /* ── Collections ──────────────────────────────────────────
@@ -214,10 +193,16 @@ export const structure: StructureResolver = (S, context) =>
         .title("Team Members")
         .schemaType("teamMember")
         .child(S.documentTypeList("teamMember").title("Team Members")),
-      S.listItem()
-        .title("Partners")
-        .schemaType("partner")
-        .child(S.documentTypeList("partner").title("Partners")),
+      /* Partners use a drag-and-drop list view (orderable plugin)
+         — same pattern as Projects. The order set here is the order
+         logos appear in the site-wide marquee at the foot of every
+         page. */
+      orderableDocumentListDeskItem({
+        type: "partner",
+        title: "Partners",
+        S,
+        context,
+      }),
       S.listItem()
         .title("Testimonials")
         .schemaType("testimonial")

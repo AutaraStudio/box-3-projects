@@ -35,9 +35,9 @@
  * --- Type → path map ───────────────────────────────────────
  *
  * Everything top-level is mapped to its own page. Site-wide
- * documents (siteSettings, partnersSection) revalidate every
- * top-level route since the header + footer + partners marquee
- * appear on all of them.
+ * documents (siteSettings, partner) revalidate every top-level
+ * route since the header + footer + partners marquee appear on
+ * all of them.
  */
 
 import { revalidatePath } from "next/cache";
@@ -73,10 +73,9 @@ function pathsForType(type: string, slug?: string): string[] {
     case "contactPage":
       return ["/contact"];
 
-    /* Global — header / footer / SEO defaults / partners marquee
-       appear on every page. */
+    /* Global — header / footer / SEO defaults appear on every page.
+       Partner-marquee heading lives here too. */
     case "siteSettings":
-    case "partnersSection":
       return ALL_PAGES;
 
     /* Project documents — show up on the home (featured strip),

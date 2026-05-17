@@ -22,6 +22,7 @@ export default defineType({
     { name: "brand", title: "Brand" },
     { name: "header", title: "Header" },
     { name: "footer", title: "Footer" },
+    { name: "partners", title: "Partners marquee" },
     { name: "contact", title: "Contact info" },
     { name: "uiLabels", title: "UI labels" },
     { name: "seo", title: "SEO defaults" },
@@ -148,6 +149,20 @@ export default defineType({
       type: "array",
       of: [{ type: "link" }],
       group: "footer",
+    }),
+
+    /* ── Partners marquee ──────────────────────────────── */
+    defineField({
+      name: "partnersHeading",
+      title: "Marquee heading",
+      description:
+        "Heading shown above the partner-logo marquee at the foot " +
+        'of every page. Default: "Trusted By". The logos themselves ' +
+        "are drawn from the Partners collection — open Partners in " +
+        "the sidebar to add a new partner or change the order.",
+      type: "string",
+      group: "partners",
+      initialValue: "Trusted By",
     }),
 
     /* ── Contact info (used in footer + side menu) ─────── */

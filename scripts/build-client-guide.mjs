@@ -382,13 +382,6 @@ const studioOverview = [
   bullet("Contact Page"),
   bullet("Legal Pages (Privacy, Terms — you can add more)"),
 
-  h("Sections", HeadingLevel.HEADING_2),
-  p(
-    "Reusable blocks that appear on multiple pages. Right now the only one is ",
-    bold("Partners Section"),
-    " — the marquee of partner logos at the foot of every page.",
-  ),
-
   h("Collections", HeadingLevel.HEADING_2),
   p(
     "Repeatable content. Each collection is a list — add as many entries as you like, re-order, or hide individual entries.",
@@ -619,6 +612,10 @@ const siteSettings = [
   field("Footer — Pages column", "Links shown under the Pages heading."),
   field("Footer — Social column", "External links (Instagram, LinkedIn). Use full URLs starting with https://."),
   field("Footer — Legal column", "Privacy / Terms links."),
+
+  h("Partners marquee", HeadingLevel.HEADING_2),
+  p("The full-bleed band of partner logos at the foot of every page. Heading sits here; logos are managed via the Partners collection (drag to reorder)."),
+  field("Marquee heading", "Heading shown above the marquee, e.g. \"Trusted By\". Default \"Trusted By\"."),
 
   h("Contact info", HeadingLevel.HEADING_2),
   p("Used in the footer and the side menu's \"Stay in touch\" block."),
@@ -999,16 +996,7 @@ const legalPages = [
 ];
 
 /* Section: Sections */
-const sectionsBlock = [
-  h("Reusable Sections", HeadingLevel.HEADING_1),
-  lead("Blocks that appear on multiple pages. Edit once, applies everywhere."),
-  h("Partners Section", HeadingLevel.HEADING_2),
-  p("The marquee of partner logos at the foot of every page (the brown band above the footer columns)."),
-  field("Section label", "Eyebrow above the marquee. Default \"Our Partners\"."),
-  field("Heading", "Heading shown above the marquee. Default \"Trusted By\"."),
-  field("Partners list", "References to Partner documents in the Partners collection. Drag to reorder."),
-  pageBreak(),
-];
+const sectionsBlock = [];
 
 /* Collections */
 const collections = [
@@ -1075,7 +1063,11 @@ const collections = [
   field("Display Order", "Number controlling sort order within their group. Lower = earlier. Same order is used on About + project team grids."),
 
   h("Partners", HeadingLevel.HEADING_2),
-  p("Brand / company documents. Logos appear in the marquee at the foot of every page, and beside testimonials (when the testimonial links to a partner)."),
+  p("Brand / company documents. Logos appear in the marquee at the foot of every page (in the order you drag them), and beside testimonials when a testimonial links to a partner."),
+  callout(
+    "How display order works (drag-and-drop)",
+    "The Partners list in the sidebar is drag-and-drop — the order set there is the order logos appear in the site-wide marquee. To re-order: open Partners, hover over a row, grab the handle on the left, and drag it up or down. Order saves immediately. The marquee heading shown above the logos (e.g. \"Trusted By\") lives in Site Settings → Partners marquee.",
+  ),
   field("Partner name", "Brand or company name, e.g. \"Hugo Boss\", \"Meta\". Required."),
   field("Slug", "URL-friendly version — auto-generated. Used internally only."),
   field(

@@ -21,6 +21,7 @@ export const SITE_SETTINGS_QUERY = groq`
     comingSoon,
     comingSoonHeading,
     comingSoonBody,
+    partnersHeading,
 
     headerPrimaryLinks[] { ${LINK_PROJECTION} },
     headerSecondaryLinks[] { ${LINK_PROJECTION} },
@@ -169,6 +170,7 @@ export interface SiteSettingsData {
   comingSoon?: boolean;
   comingSoonHeading?: string;
   comingSoonBody?: string;
+  partnersHeading?: string;
   headerPrimaryLinks?: SiteSettingsLink[];
   headerSecondaryLinks?: SiteSettingsLink[];
   menuPrimaryLinks?: SiteSettingsLink[];

@@ -3,22 +3,29 @@
  * =======
  * A single client / partner brand. Holds the name and an SVG logo.
  * Referenced from `testimonial` (so the quote can show the company
- * logo) and any future partner-marquee section.
+ * logo) and drives the site-wide partners marquee at the foot of
+ * every page.
  *
- * Keeping partners as their own documents means a logo is uploaded
- * and named once, then reused everywhere it appears.
+ * Display order on the marquee comes from the drag-and-drop list
+ * view in Studio (managed by sanity-plugin-orderable-document-list,
+ * hidden orderRank field). The heading above the marquee lives on
+ * the Site Settings → Partners marquee tab.
  *
  * The logo field accepts an SVG file — SVGs should use `currentColor`
  * for fill and stroke so CSS can control the colour per context.
  */
 
 import { defineField, defineType } from "sanity";
+import { orderRankField } from "@sanity/orderable-document-list";
 
 export default defineType({
   name: "partner",
   title: "Partner",
   type: "document",
   fields: [
+    /* Hidden — managed by the drag-and-drop list view. Sets the
+       order partners appear in the marquee. */
+    orderRankField({ type: "partner" }),
     defineField({
       name: "name",
       title: "Partner name",

@@ -28,7 +28,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import Heading from "@/components/ui/Heading";
-import type { ResolvedPartner } from "@/sanity/queries/partnersSection";
+import type { ResolvedPartner } from "@/sanity/queries/partners";
 
 import "./PartnersSection.css";
 
@@ -73,9 +73,6 @@ function buildPanel(
 interface PartnersSectionProps {
   /** Top-left heading rendered above the marquee. */
   heading: string;
-  /** Kept on the prop surface for future / Sanity parity even if it
-   *  isn't currently rendered. */
-  sectionLabel?: string;
   partners: ResolvedPartner[];
 }
 

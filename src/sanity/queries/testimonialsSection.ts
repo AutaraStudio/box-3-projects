@@ -13,7 +13,7 @@
 
 import { groq } from "next-sanity";
 
-import { PARTNER_PROJECTION } from "./partnersSection";
+import { PARTNER_PROJECTION } from "./partners";
 
 /** Spreadable projection. */
 export const TESTIMONIALS_SECTION_PROJECTION = groq`
