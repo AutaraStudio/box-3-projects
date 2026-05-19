@@ -7,8 +7,7 @@
  * the base image, and as the wrapper scrubs through the viewport
  * the overlay's clip-path eats it away bottom→top, revealing the
  * base image (the photograph). The mask scales 1 → 1.1 across the
- * scrub, then drifts upward (yPercent 0 → 50) once the wrapper
- * exits for a parallax tail.
+ * scrub.
  *
  * Mobile: not sticky. Wrapper collapses to a 16:9 inline frame
  * and the same clip-path wipe scrubs from section top → centre.
@@ -67,7 +66,7 @@ export default function ProjectsHero({
   const maskRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLImageElement | HTMLDivElement | null>(null);
 
-  /* ── Clip-path wipe + scale + parallax ─────────────────────── */
+  /* ── Clip-path wipe + scale ──────────────────────────────── */
   useEffect(() => {
     const section = sectionRef.current;
     const wrapper = wrapperRef.current;
@@ -113,26 +112,6 @@ export default function ProjectsHero({
             { clipPath: "inset(0 0 100% 0)" },
           )
           .fromTo(mask, { scale: 1 }, { scale: 1.1 }, 0);
-
-        /* 2. Desktop only — once the wrapper has exited, the mask
-              continues to drift upward as a parallax tail. */
-        if (!isMobile) {
-          gsap.fromTo(
-            mask,
-            { yPercent: 0 },
-            {
-              yPercent: 50,
-              ease: "none",
-              scrollTrigger: {
-                trigger: section,
-                scrub: true,
-                start: "bottom bottom",
-                end: "bottom top",
-                invalidateOnRefresh: true,
-              },
-            },
-          );
-        }
       }, section);
     });
 

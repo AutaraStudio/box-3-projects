@@ -33,34 +33,15 @@
 
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import Image from "next/image";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import Button from "@/components/ui/Button";
 import Heading from "@/components/ui/Heading";
 import RevealImage from "@/components/ui/RevealImage";
 import RevealStack from "@/components/ui/RevealStack";
-import { awaitTransitionEnd } from "@/components/transition/transitionState";
 
 import "./AboutTeam.css";
-
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
-
-/* Per-tile parallax ranges — symmetric `+rem → -rem` so motion is
-   visible the moment a tile enters the viewport, not back-loaded.
-   The amplitude varies per slot so adjacent images in a row drift
-   at different rates, which is what reads as parallax. Cycles
-   across all media elements regardless of grouping. */
-const PARALLAX_RANGES: Array<{ from: string; to: string }> = [
-  { from: "1rem",    to: "-1rem"    },
-  { from: "2rem",    to: "-2rem"    },
-  { from: "0.75rem", to: "-0.75rem" },
-  { from: "1.5rem",  to: "-1.5rem"  },
-];
 
 export interface AboutTeamMember {
   name: string;
@@ -141,59 +122,6 @@ export default function AboutTeam({
       : GROUP_ORDER;
   const uncatTitle = uncategorisedTitle ?? UNCATEGORISED_TITLE;
   const sectionRef = useRef<HTMLElement>(null);
-
-  /* Parallax for each `.about-team__media` element. Tablet+
-     only — on mobile the grid collapses tighter and the drift
-     reads as jitter rather than parallax. Reduced-motion users
-     skip the animation entirely; the RevealImage clip-mask
-     entrance still plays since that's a one-shot reveal, not
-     ongoing motion. */
-  useEffect(() => {
-    const sec = sectionRef.current;
-    if (!sec) return;
-
-    let ctx: gsap.Context | null = null;
-    let cancelled = false;
-
-    awaitTransitionEnd().then(() => {
-      if (cancelled) return;
-      ctx = gsap.context(() => {
-        const mm = gsap.matchMedia();
-        mm.add(
-          "(min-width: 48rem) and (prefers-reduced-motion: no-preference)",
-          () => {
-            const media = gsap.utils.toArray<HTMLElement>(
-              ".about-team__media",
-              sec,
-            );
-            media.forEach((el, i) => {
-              const range = PARALLAX_RANGES[i % PARALLAX_RANGES.length];
-              gsap.fromTo(
-                el,
-                { y: range.from },
-                {
-                  y: range.to,
-                  ease: "none",
-                  scrollTrigger: {
-                    trigger: el,
-                    start: "top bottom",
-                    end: "bottom top",
-                    scrub: true,
-                    invalidateOnRefresh: true,
-                  },
-                },
-              );
-            });
-          },
-        );
-      }, sec);
-    });
-
-    return () => {
-      cancelled = true;
-      ctx?.revert();
-    };
-  }, [members]);
 
   if (members.length === 0) return null;
 

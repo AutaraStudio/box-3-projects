@@ -44,9 +44,6 @@
 .line-scroll__anchor {
   align-self: start;
   text-align: left;
-  /* Reserved for the GSAP scroll-parallax tween that runs only on
-     desktop. */
-  will-change: transform;
 }
 
 /* Anchor h2 — typography from the .text-h2 utility on the JSX. */

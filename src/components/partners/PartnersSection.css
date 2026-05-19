@@ -46,11 +46,9 @@
   margin: 0;
 }
 
-/* ── Scroll-drift wrapper ────────────────────────────────────────
-   GSAP animates `x` on page scroll for the parallax. */
+/* ── Outer marquee wrapper ───────────────────────────────────── */
 .partners-section__scroll {
   width: 100%;
-  will-change: transform;
 }
 
 /* ── Marquee track ───────────────────────────────────────────────

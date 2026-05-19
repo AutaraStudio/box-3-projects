@@ -26,23 +26,16 @@
 
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import Image from "next/image";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import Button from "@/components/ui/Button";
 import Heading from "@/components/ui/Heading";
 import RevealImage from "@/components/ui/RevealImage";
 import RevealStack from "@/components/ui/RevealStack";
-import { awaitTransitionEnd } from "@/components/transition/transitionState";
 import { urlFor } from "@/sanity/lib/image";
 
 import "./EditorialImageBlock.css";
-
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
 
 export interface EditorialImageBlockImage {
   asset?: {
@@ -86,53 +79,6 @@ export default function EditorialImageBlock({
 }: EditorialImageBlockProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
-
-  /* Body-side parallax — paragraph + CTA drift upward as the
-     section scrolls through the viewport. Symmetric `+rem → -rem`
-     range so motion is visible the moment the section enters,
-     not back-loaded. Only fires at tablet+ where the layout is
-     image-left / body-right; on mobile the column stacks and the
-     drift would read as jitter rather than parallax. */
-  useEffect(() => {
-    const sec = sectionRef.current;
-    const body = bodyRef.current;
-    if (!sec || !body) return;
-
-    let ctx: gsap.Context | null = null;
-    let cancelled = false;
-
-    awaitTransitionEnd().then(() => {
-      if (cancelled) return;
-      ctx = gsap.context(() => {
-        const mm = gsap.matchMedia();
-        mm.add(
-          "(min-width: 48rem) and (prefers-reduced-motion: no-preference)",
-          () => {
-            gsap.fromTo(
-              body,
-              { y: "4rem" },
-              {
-                y: "-4rem",
-                ease: "none",
-                scrollTrigger: {
-                  trigger: sec,
-                  start: "top bottom",
-                  end: "bottom top",
-                  scrub: true,
-                  invalidateOnRefresh: true,
-                },
-              },
-            );
-          },
-        );
-      }, sec);
-    });
-
-    return () => {
-      cancelled = true;
-      ctx?.revert();
-    };
-  }, []);
 
   if (!heading && !body && !image) return null;
 

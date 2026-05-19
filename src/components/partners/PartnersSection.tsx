@@ -12,8 +12,7 @@
  * every panel boundary without a visible jump.
  *
  * Scroll-direction aware — scrolling up flips the marquee timeScale
- * so the motion feels tied to reading direction. A subtle parallax
- * also drifts the whole scroll wrapper horizontally on page scroll.
+ * so the motion feels tied to reading direction.
  *
  * Client component — GSAP runs in the browser only. SVG markup is
  * fetched + sanitised server-side by lib/fetchPartners.ts and passed
@@ -90,12 +89,10 @@ export default function PartnersSection({
 
   useEffect(() => {
     const section = sectionRef.current;
-    const scroll = scrollRef.current;
     const track = trackRef.current;
-    if (!section || !scroll || !track) return;
+    if (!section || !track) return;
 
     let animation: gsap.core.Tween | null = null;
-    let scrollTween: gsap.core.Tween | null = null;
     let directionTrigger: ScrollTrigger | null = null;
 
     /* Wait one frame so the grid has its final layout before we read
@@ -140,30 +137,11 @@ export default function PartnersSection({
         },
       });
 
-      /* Subtle horizontal parallax — the whole scroll wrapper drifts
-         a little as the section moves through the viewport. */
-      const parallaxVw = 8;
-      scrollTween = gsap.fromTo(
-        scroll,
-        { x: `${parallaxVw}vw` },
-        {
-          x: `-${parallaxVw}vw`,
-          ease: "none",
-          scrollTrigger: {
-            trigger: section,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 0,
-          },
-        },
-      );
     });
 
     return () => {
       cancelAnimationFrame(raf);
       directionTrigger?.kill();
-      scrollTween?.scrollTrigger?.kill();
-      scrollTween?.kill();
       animation?.kill();
     };
   }, [partners]);

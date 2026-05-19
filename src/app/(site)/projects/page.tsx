@@ -4,7 +4,7 @@
  * Projects index. Server component — pulls every project from
  * Sanity, plus the projectsPage singleton (hero label / heading /
  * sketch + photo images), then renders the hero (sketch → photo
- * image wipe) + a three-up parallax grid.
+ * image wipe) + a three-up grid.
  *
  * Hero images flow from Sanity when present; the static
  * /reveal.webp + /sketch.webp in /public are kept as the launch
