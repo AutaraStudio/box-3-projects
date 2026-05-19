@@ -20,6 +20,9 @@ export const SERVICES_PAGE_QUERY = groq`
   *[_type == "servicesPage"][0] {
     heroTitle,
     heroCta { ${LINK_PROJECTION} },
+    heroImageLeft { ${IMAGE_PROJECTION} },
+    heroImageCentre { ${IMAGE_PROJECTION} },
+    heroImageRight { ${IMAGE_PROJECTION} },
     introHeading,
     introBody,
     servicesItems[] { title, description },
@@ -56,6 +59,9 @@ export interface ServicesPageLink {
 export interface ServicesPageData {
   heroTitle?: string;
   heroCta?: ServicesPageLink;
+  heroImageLeft?: ServicesPageImage;
+  heroImageCentre?: ServicesPageImage;
+  heroImageRight?: ServicesPageImage;
   introHeading?: string;
   introBody?: string;
   servicesItems?: Array<{ title?: string; description?: string }>;

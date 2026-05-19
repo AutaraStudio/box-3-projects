@@ -41,6 +41,35 @@ export default defineType({
       type: "link",
       group: "hero",
     }),
+    /* Three-image scroll-driven hero — same pattern as About,
+       Careers and Sustainability. Centre image expands from
+       ~50% width to full-bleed as the user scrolls. */
+    defineField({
+      name: "heroImageLeft",
+      title: "Hero image — left",
+      type: "image",
+      group: "hero",
+      options: { hotspot: true },
+      components: { input: TaggedMediaPicker },
+    }),
+    defineField({
+      name: "heroImageCentre",
+      title: "Hero image — centre (expanding)",
+      description:
+        "The image that grows from ~50% width to full-bleed as the user scrolls.",
+      type: "image",
+      group: "hero",
+      options: { hotspot: true },
+      components: { input: TaggedMediaPicker },
+    }),
+    defineField({
+      name: "heroImageRight",
+      title: "Hero image — right",
+      type: "image",
+      group: "hero",
+      options: { hotspot: true },
+      components: { input: TaggedMediaPicker },
+    }),
 
     /* Intro */
     defineField({

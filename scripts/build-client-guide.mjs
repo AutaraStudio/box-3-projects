@@ -802,6 +802,7 @@ const servicesPage = [
   h("Hero", HeadingLevel.HEADING_3),
   field("Hero title", "Display heading."),
   field("Hero CTA", "Optional CTA — label + link + page name. Often a fragment href like #process to scroll to a section."),
+  field("Hero image — left / centre / right", "Three-image scroll-driven hero (same pattern as About + Careers + Sustainability). The centre image expands from ~50% width to full-bleed as the user scrolls."),
   h("Intro", HeadingLevel.HEADING_3),
   field("Intro heading", "Display heading."),
   field("Intro body", "Multi-paragraph. Blank line between paragraphs."),
