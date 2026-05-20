@@ -21,6 +21,7 @@ import { useState } from "react";
 import { TrashIcon } from "@sanity/icons";
 import {
   useClient,
+  useDocumentOperation,
   type DocumentActionComponent,
   type DocumentActionDescription,
 } from "sanity";
@@ -99,6 +100,10 @@ export const CleanDeleteAction: DocumentActionComponent = (
 ): DocumentActionDescription => {
   const { id, type, draft, published, onComplete } = props;
   const client = useClient({ apiVersion: "2024-12-01" });
+  const { delete: deleteOp } = useDocumentOperation(
+    id.replace(/^drafts\./, ""),
+    type,
+  );
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -127,11 +132,11 @@ export const CleanDeleteAction: DocumentActionComponent = (
         { id: publishedId, draftId: `drafts.${publishedId}` },
       );
 
+      // 2. Detach references via a client transaction. We don't
+      //    delete the target here — that's handed off to Studio's own
+      //    delete operation below so the panes / lists react properly.
       const tx = client.transaction();
-
-      // 2. For each referrer, build unset operations for every ref
-      //    that points at our target — array items by _key (or index)
-      //    and single-reference fields by field path.
+      let touched = 0;
       for (const doc of referrers) {
         const docId = doc._id as string;
         const unsetPaths: string[] = [];
@@ -140,15 +145,16 @@ export const CleanDeleteAction: DocumentActionComponent = (
         }
         if (unsetPaths.length > 0) {
           tx.patch(docId, (p) => p.unset(unsetPaths));
+          touched += 1;
         }
       }
+      if (touched > 0) {
+        await tx.commit({ visibility: "sync" });
+      }
 
-      // 3. Delete the document itself (both draft + published variants).
-      tx.delete(publishedId);
-      tx.delete(`drafts.${publishedId}`);
-
-      await tx.commit({ visibility: "async" });
-
+      // 3. Hand off to Studio's built-in delete so the pane closes,
+      //    the list refreshes, and the user is navigated away.
+      deleteOp.execute();
       onComplete();
     } catch (err) {
       setError(
