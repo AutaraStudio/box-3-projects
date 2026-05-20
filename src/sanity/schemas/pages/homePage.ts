@@ -392,7 +392,14 @@ export default defineType({
             "Pick the testimonial documents to feature. Each one " +
             "carries its own quote / author / role / partner.",
           type: "array",
-          of: [{ type: "reference", to: [{ type: "testimonial" }] }],
+          of: [
+            {
+              type: "reference",
+              to: [{ type: "testimonial" }],
+              weak: true,
+              options: { onDelete: "setNull" },
+            },
+          ],
         }),
       ],
     }),

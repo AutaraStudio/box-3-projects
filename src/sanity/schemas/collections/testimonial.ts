@@ -48,6 +48,8 @@ export default defineType({
         "Link this quote to a Partner — the partner's logo will appear next to the testimonial.",
       type: "reference",
       to: [{ type: "partner" }],
+      weak: true,
+      options: { onDelete: "setNull" },
     }),
   ],
   preview: {

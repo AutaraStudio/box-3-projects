@@ -38,7 +38,14 @@ export default defineType({
       description:
         "Choose which testimonials to show, in order. Add new testimonials from the Testimonials collection in the sidebar.",
       type: "array",
-      of: [{ type: "reference", to: [{ type: "testimonial" }] }],
+      of: [
+        {
+          type: "reference",
+          to: [{ type: "testimonial" }],
+          weak: true,
+          options: { onDelete: "setNull" },
+        },
+      ],
       validation: (rule) => rule.min(1),
     }),
   ],
