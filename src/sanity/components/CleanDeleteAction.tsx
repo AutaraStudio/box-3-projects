@@ -106,13 +106,16 @@ export const CleanDeleteAction: DocumentActionComponent = (
   // Strip the "drafts." prefix; the published-id is what other docs
   // reference (drafts are never referenced).
   const publishedId = id.replace(/^drafts\./, "");
-  const title =
-    (published as { title?: string; name?: string; author?: string } | null)
-      ?.title ??
-    (published as { name?: string } | null)?.name ??
-    (published as { author?: string } | null)?.author ??
-    (draft as { title?: string } | null)?.title ??
-    "this document";
+  /* Field order picks the most human-recognisable label per doc type:
+     `author` for testimonials, `name` for partners / people, `title`
+     for everything else. Draft is checked as a final fallback for
+     never-published docs. */
+  const pick = (doc: unknown): string | undefined => {
+    if (!doc || typeof doc !== "object") return undefined;
+    const d = doc as Record<string, string | undefined>;
+    return d.author ?? d.name ?? d.title;
+  };
+  const title = pick(published) ?? pick(draft) ?? "this document";
 
   const handle = async () => {
     setBusy(true);
