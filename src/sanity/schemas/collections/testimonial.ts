@@ -49,7 +49,6 @@ export default defineType({
       type: "reference",
       to: [{ type: "partner" }],
       weak: true,
-      options: { onDelete: "setNull" },
     }),
   ],
   preview: {

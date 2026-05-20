@@ -43,7 +43,6 @@ export default defineType({
           type: "reference",
           to: [{ type: "testimonial" }],
           weak: true,
-          options: { onDelete: "setNull" },
         },
       ],
       validation: (rule) => rule.min(1),

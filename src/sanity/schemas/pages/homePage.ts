@@ -397,7 +397,6 @@ export default defineType({
               type: "reference",
               to: [{ type: "testimonial" }],
               weak: true,
-              options: { onDelete: "setNull" },
             },
           ],
         }),
