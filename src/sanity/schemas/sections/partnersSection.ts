@@ -39,7 +39,14 @@ export default defineType({
         "Select which partners appear in the marquee. To add a new partner (or change a logo), open the Partners collection in the sidebar.",
       type: "array",
       group: "content",
-      of: [{ type: "reference", to: [{ type: "partner" }] }],
+      of: [
+        {
+          type: "reference",
+          to: [{ type: "partner" }],
+          weak: true,
+          options: { onDelete: "setNull" },
+        },
+      ],
     }),
   ],
   preview: {
