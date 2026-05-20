@@ -32,9 +32,14 @@ import { visionTool } from "@sanity/vision";
 import { media } from "sanity-plugin-media";
 
 import BulkTaggedUploaderTool from "../components/BulkTaggedUploaderTool";
+import { CleanDeleteAction } from "../components/CleanDeleteAction";
 import { schemaTypes } from "../schemas";
 import { projectId, dataset, apiVersion } from "./client";
 import { structure, SINGLETON_TYPE_SET } from "./structure";
+
+/* Doc types whose delete action should auto-detach the doc from any
+   parent that references it (rather than refusing to delete). */
+const CLEAN_DELETE_TYPES = new Set(["partner", "testimonial"]);
 
 export default defineConfig({
   name: "box-3-projects",
@@ -63,13 +68,20 @@ export default defineConfig({
   document: {
     /* Strip duplicate / delete / unpublish on singletons so the
        client can't accidentally remove site-wide content. */
-    actions: (input, context) =>
-      SINGLETON_TYPE_SET.has(context.schemaType)
-        ? input.filter(
-            ({ action }) =>
-              action && !["duplicate", "delete", "unpublish"].includes(action),
-          )
-        : input,
+    actions: (input, context) => {
+      if (SINGLETON_TYPE_SET.has(context.schemaType)) {
+        return input.filter(
+          ({ action }) =>
+            action && !["duplicate", "delete", "unpublish"].includes(action),
+        );
+      }
+      if (CLEAN_DELETE_TYPES.has(context.schemaType)) {
+        return input.map((action) =>
+          action.action === "delete" ? CleanDeleteAction : action,
+        );
+      }
+      return input;
+    },
     /* Hide singletons from "Create new" menus — they're created
        implicitly via S.document().documentId(...) in the structure. */
     newDocumentOptions: (prev, { creationContext }) =>
