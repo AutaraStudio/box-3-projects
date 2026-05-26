@@ -2,9 +2,15 @@
  * LegalPage
  * =========
  * Editorial layout for the Privacy Policy / Terms & Conditions
- * pages. Two-column on desktop: sticky numbered table of contents
- * on the left, rich-text body on the right. Stacks to a single
- * column on mobile.
+ * pages. 12-column grid on desktop: sticky TOC rail in the left
+ * margin, numbered sections in the editorial column. Collapses to
+ * a stacked layout with a disclosure-style TOC on mobile.
+ *
+ * The TOC tracks the currently-visible section via an
+ * IntersectionObserver, paints an animated indicator next to the
+ * active item, and routes clicks through the page's Lenis instance
+ * so anchor jumps share the same smooth scrolling as the rest of
+ * the site.
  *
  * Content is rendered through `@portabletext/react` with custom
  * components mapped to v2's design tokens.
@@ -12,6 +18,14 @@
 
 "use client";
 
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MouseEvent,
+} from "react";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
 
 import Heading from "@/components/ui/Heading";
@@ -37,6 +51,10 @@ function formatDate(iso: string): string {
     month: "long",
     year: "numeric",
   });
+}
+
+function pad2(n: number): string {
+  return String(n).padStart(2, "0");
 }
 
 const portableTextComponents: PortableTextComponents = {
@@ -95,6 +113,103 @@ export default function LegalPage({
   sections,
 }: LegalPageProps) {
   const labels = useSiteSettings()?.legalPageLabels;
+  const [activeId, setActiveId] = useState<string | null>(
+    sections[0]?.anchorId ?? null,
+  );
+  const [progress, setProgress] = useState(0);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const sectionRefs = useRef<Map<string, HTMLElement>>(new Map());
+
+  const anchorIds = useMemo(() => sections.map((s) => s.anchorId), [sections]);
+
+  /* Scroll-spy: pick the section whose top has most recently crossed
+     the reading line (~25% from viewport top). Plain scroll listener
+     beats IntersectionObserver here because the "currently reading"
+     section is whichever heading is highest above the line — easy to
+     compute, hard to express as observer thresholds. Also drives an
+     overall reading-progress value used by the rail fill. */
+  useEffect(() => {
+    if (anchorIds.length === 0) return;
+
+    const update = () => {
+      const els = anchorIds
+        .map((id) => sectionRefs.current.get(id))
+        .filter((el): el is HTMLElement => Boolean(el));
+      if (els.length === 0) return;
+
+      const line = window.innerHeight * 0.25;
+      let current = els[0]!.id;
+      for (const el of els) {
+        const top = el.getBoundingClientRect().top;
+        if (top - line <= 0) current = el.id;
+        else break;
+      }
+      setActiveId(current);
+
+      const first = els[0]!.getBoundingClientRect().top + window.scrollY;
+      const lastEl = els[els.length - 1]!;
+      const last =
+        lastEl.getBoundingClientRect().bottom + window.scrollY - window.innerHeight;
+      const span = Math.max(1, last - first);
+      const p = (window.scrollY - first) / span;
+      setProgress(Math.min(1, Math.max(0, p)));
+    };
+
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [anchorIds]);
+
+  const handleTocClick = useCallback(
+    (event: MouseEvent<HTMLAnchorElement>, anchorId: string) => {
+      if (typeof window === "undefined") return;
+      const target = sectionRefs.current.get(anchorId);
+      if (!target) return;
+
+      event.preventDefault();
+      setMobileOpen(false);
+
+      /* Offset accounts for the fixed header + a little breathing
+         room so the heading doesn't collide with the nav. */
+      const headerVar = getComputedStyle(document.documentElement)
+        .getPropertyValue("--header-bottom")
+        .trim();
+      const fontVar = getComputedStyle(document.documentElement)
+        .getPropertyValue("--size-font")
+        .trim();
+      const fontPx = parseFloat(fontVar) || 16;
+      const headerRem = parseFloat(headerVar) || 6;
+      const offset = -(headerRem * fontPx + fontPx * 1.5);
+
+      if (window.__lenis) {
+        window.__lenis.scrollTo(target, { offset, duration: 1.1 });
+      } else {
+        const top =
+          target.getBoundingClientRect().top + window.scrollY + offset;
+        window.scrollTo({ top, behavior: "smooth" });
+      }
+
+      if (typeof history !== "undefined") {
+        history.replaceState(null, "", `#${anchorId}`);
+      }
+    },
+    [],
+  );
+
+  const setSectionRef = (anchorId: string) => (node: HTMLElement | null) => {
+    if (node) sectionRefs.current.set(anchorId, node);
+    else sectionRefs.current.delete(anchorId);
+  };
+
+  const activeIndex = Math.max(
+    0,
+    sections.findIndex((s) => s.anchorId === activeId),
+  );
+
   return (
     <main className="legal-page">
       <div className="container legal-page__inner">
@@ -107,14 +222,22 @@ export default function LegalPage({
           <Heading as="h1" className="legal-page__title text-display">
             {title}
           </Heading>
-          <p className="legal-page__meta text-small text-caps">
-            <span className="legal-page__meta-label">
-              {labels?.lastUpdatedLabel ?? "Last updated"}
-            </span>
-            <time dateTime={lastUpdated} className="legal-page__meta-value">
-              {formatDate(lastUpdated)}
-            </time>
-          </p>
+          <div className="legal-page__header-meta">
+            <p className="legal-page__meta text-small text-caps">
+              <span className="legal-page__meta-label">
+                {labels?.lastUpdatedLabel ?? "Last updated"}
+              </span>
+              <time dateTime={lastUpdated} className="legal-page__meta-value">
+                {formatDate(lastUpdated)}
+              </time>
+            </p>
+            <p className="legal-page__meta legal-page__meta--count text-small text-caps">
+              <span className="legal-page__meta-label">Sections</span>
+              <span className="legal-page__meta-value">
+                {pad2(sections.length)}
+              </span>
+            </p>
+          </div>
           {intro ? (
             <p className="legal-page__intro text-large">{intro}</p>
           ) : null}
@@ -125,40 +248,110 @@ export default function LegalPage({
             className="legal-page__toc"
             aria-label={labels?.tocAriaLabel ?? "Table of contents"}
           >
-            <div className="legal-page__toc-inner">
-              <h2 className="legal-page__toc-heading text-small text-caps">
-                {tocHeading}
-              </h2>
-              <ol className="legal-page__toc-list">
-                {sections.map((section, index) => (
-                  <li key={section._key} className="legal-page__toc-item">
-                    <a
-                      href={`#${section.anchorId}`}
-                      className="legal-page__toc-link"
-                    >
-                      <span className="legal-page__toc-index">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                      <span className="legal-page__toc-text">
-                        {section.heading}
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ol>
+            {/* Mobile disclosure trigger. Desktop hides the
+                button and shows the list permanently. */}
+            <button
+              type="button"
+              className="legal-page__toc-toggle"
+              aria-expanded={mobileOpen}
+              aria-controls="legal-page-toc-list"
+              onClick={() => setMobileOpen((open) => !open)}
+            >
+              <span className="legal-page__toc-toggle-label text-small text-caps">
+                <span className="legal-page__toc-toggle-heading">
+                  {tocHeading}
+                </span>
+                <span className="legal-page__toc-toggle-active">
+                  {pad2(activeIndex + 1)} —{" "}
+                  {sections[activeIndex]?.heading ?? ""}
+                </span>
+              </span>
+              <span className="legal-page__toc-toggle-icon" aria-hidden="true" />
+            </button>
+
+            <div
+              className="legal-page__toc-inner"
+              data-open={mobileOpen || undefined}
+            >
+              <div className="legal-page__toc-head">
+                <h2 className="legal-page__toc-heading text-small text-caps">
+                  {tocHeading}
+                </h2>
+                <span
+                  className="legal-page__toc-progress"
+                  aria-hidden="true"
+                  style={{ "--toc-progress": progress } as React.CSSProperties}
+                >
+                  <span className="legal-page__toc-progress-fill" />
+                </span>
+              </div>
+
+              <div
+                className="legal-page__toc-list-wrap"
+                style={
+                  {
+                    "--toc-active-index": activeIndex,
+                    "--toc-count": sections.length,
+                  } as React.CSSProperties
+                }
+              >
+                <span className="legal-page__toc-rail" aria-hidden="true">
+                  <span className="legal-page__toc-rail-indicator" />
+                </span>
+                <ol
+                  id="legal-page-toc-list"
+                  className="legal-page__toc-list"
+                >
+                {sections.map((section, index) => {
+                  const isActive = section.anchorId === activeId;
+                  return (
+                    <li key={section._key} className="legal-page__toc-item">
+                      <a
+                        href={`#${section.anchorId}`}
+                        className="legal-page__toc-link"
+                        data-active={isActive || undefined}
+                        aria-current={isActive ? "true" : undefined}
+                        onClick={(e) => handleTocClick(e, section.anchorId)}
+                      >
+                        <span className="legal-page__toc-index">
+                          {pad2(index + 1)}
+                        </span>
+                        <span className="legal-page__toc-text">
+                          {section.heading}
+                        </span>
+                      </a>
+                    </li>
+                  );
+                })}
+                </ol>
+              </div>
             </div>
           </aside>
 
           <div className="legal-page__content">
-            {sections.map((section) => (
+            {sections.map((section, index) => (
               <section
                 key={section._key}
                 id={section.anchorId}
+                ref={setSectionRef(section.anchorId)}
                 className="legal-page__section"
+                data-active={section.anchorId === activeId || undefined}
               >
-                <h2 className="legal-page__section-heading text-h3">
-                  {section.heading}
-                </h2>
+                <header className="legal-page__section-header">
+                  <span className="legal-page__section-index text-small text-caps">
+                    {pad2(index + 1)} / {pad2(sections.length)}
+                  </span>
+                  <h2 className="legal-page__section-heading text-h3">
+                    <a
+                      href={`#${section.anchorId}`}
+                      className="legal-page__section-anchor"
+                      aria-label={`Link to ${section.heading}`}
+                      onClick={(e) => handleTocClick(e, section.anchorId)}
+                    >
+                      {section.heading}
+                    </a>
+                  </h2>
+                </header>
                 <div className="legal-page__section-body">
                   <PortableText
                     value={section.body}
