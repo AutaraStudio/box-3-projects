@@ -222,25 +222,35 @@ export default function LegalPage({
           <Heading as="h1" className="legal-page__title text-display">
             {title}
           </Heading>
-          <div className="legal-page__header-meta">
-            <p className="legal-page__meta text-small text-caps">
-              <span className="legal-page__meta-label">
-                {labels?.lastUpdatedLabel ?? "Last updated"}
-              </span>
-              <time dateTime={lastUpdated} className="legal-page__meta-value">
-                {formatDate(lastUpdated)}
-              </time>
-            </p>
-            <p className="legal-page__meta legal-page__meta--count text-small text-caps">
-              <span className="legal-page__meta-label">Sections</span>
-              <span className="legal-page__meta-value">
-                {pad2(sections.length)}
-              </span>
-            </p>
-          </div>
           {intro ? (
             <p className="legal-page__intro text-large">{intro}</p>
           ) : null}
+          <dl className="legal-page__header-meta">
+            <div className="legal-page__meta">
+              <dt className="legal-page__meta-label text-small text-caps">
+                {labels?.lastUpdatedLabel ?? "Last updated"}
+              </dt>
+              <dd className="legal-page__meta-value">
+                <time dateTime={lastUpdated}>{formatDate(lastUpdated)}</time>
+              </dd>
+            </div>
+            <div className="legal-page__meta">
+              <dt className="legal-page__meta-label text-small text-caps">
+                Sections
+              </dt>
+              <dd className="legal-page__meta-value">
+                {pad2(sections.length)}
+              </dd>
+            </div>
+            <div className="legal-page__meta">
+              <dt className="legal-page__meta-label text-small text-caps">
+                Reading time
+              </dt>
+              <dd className="legal-page__meta-value">
+                ~{Math.max(1, Math.round(sections.length * 0.75))} min
+              </dd>
+            </div>
+          </dl>
         </header>
 
         <div className="legal-page__body">
