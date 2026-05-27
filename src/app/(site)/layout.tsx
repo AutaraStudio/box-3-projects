@@ -103,6 +103,11 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: settings?.seoTitle?.trim() || FALLBACK.brandName,
     description: settings?.seoDescription?.trim() || "Coming soon.",
+    icons: {
+      icon: [{ url: "/box3-favicon.png", type: "image/png" }],
+      shortcut: "/box3-favicon.png",
+      apple: "/box3-favicon.png",
+    },
   };
 }
 
