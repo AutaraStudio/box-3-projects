@@ -55,7 +55,9 @@ export const HOME_PAGE_QUERY = groq`
     whyCta { ${LINK_PROJECTION} },
     testimonialsSection { ${TESTIMONIALS_SECTION_PROJECTION} },
     finalCtaHeading,
-    finalCtaButton { ${LINK_PROJECTION} }
+    finalCtaButton { ${LINK_PROJECTION} },
+    seoTitle,
+    seoDescription
   }
 `;
 
@@ -128,4 +130,7 @@ export interface HomePageData {
 
   finalCtaHeading?: string;
   finalCtaButton?: HomeLink;
+
+  seoTitle?: string;
+  seoDescription?: string;
 }

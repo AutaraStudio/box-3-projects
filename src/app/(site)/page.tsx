@@ -10,6 +10,8 @@
  * the rest of the page going blank.
  */
 
+import type { Metadata } from "next";
+
 import HomeHero from "@/components/home/HomeHero";
 import HomeStatement from "@/components/home/HomeStatement";
 import HomeFeaturedProjects from "@/components/home/HomeFeaturedProjects";
@@ -31,10 +33,45 @@ import {
   type HomeLink,
   type HomePageData,
 } from "@/sanity/queries/homePage";
+import {
+  SITE_SETTINGS_QUERY,
+  type SiteSettingsData,
+} from "@/sanity/queries/siteSettings";
 
 /* Revalidate hourly so featured-flag toggles + new projects
    surface without a redeploy. */
 export const revalidate = 3600;
+
+const FALLBACK_SEO_TITLE = "Box 3 Projects";
+const FALLBACK_SEO_DESCRIPTION =
+  "Specialist commercial fit-outs in London — design and build under one roof, delivered end-to-end by a senior team.";
+
+/* SEO title + description for the home page. Resolution order:
+   homePage.seoTitle → siteSettings.seoTitle → static fallback.
+   Same precedence for the description. The root layout has its
+   own generateMetadata, but page-level metadata wins where set. */
+export async function generateMetadata(): Promise<Metadata> {
+  const [home, settings] = await Promise.all([
+    sanityFetch<HomePageData | null>({
+      query: HOME_PAGE_QUERY,
+      revalidate: 3600,
+    }),
+    sanityFetch<SiteSettingsData | null>({
+      query: SITE_SETTINGS_QUERY,
+      revalidate: 3600,
+    }),
+  ]);
+  return {
+    title:
+      home?.seoTitle?.trim() ||
+      settings?.seoTitle?.trim() ||
+      FALLBACK_SEO_TITLE,
+    description:
+      home?.seoDescription?.trim() ||
+      settings?.seoDescription?.trim() ||
+      FALLBACK_SEO_DESCRIPTION,
+  };
+}
 
 /* ─────────────────────────────────────────────────────────────────
    Fallback content
