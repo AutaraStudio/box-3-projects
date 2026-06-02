@@ -27,11 +27,11 @@ let released = false;
 
 /** True while the preloader cover is still painting (active or in
  *  the brief letter-reveal phase). False once it's done or skipped —
- *  or once endPreloader() has been broadcast, even if the cover is
- *  still finishing a tail beat (e.g. the step-7 morph onto the header
- *  logo). The cover staying painted during that tail is intentional:
- *  the reveal observers underneath have already started, so the morph
- *  reads as a focal moment instead of dead time. */
+ *  or once endPreloader() has been broadcast. The broadcast fires the
+ *  instant the cover has finished shrinking onto the header logo (the
+ *  page underneath is fully uncovered) — so reveal observers gated on
+ *  this stay parked until the cover has cleared the page, then run,
+ *  while the preloader's cosmetic tail finishes on the header logo. */
 export function isPreloaderActive(): boolean {
   if (typeof document === "undefined") return false;
   if (released) return false;
@@ -39,12 +39,14 @@ export function isPreloaderActive(): boolean {
   return v === "active" || v === "reveal";
 }
 
-/** Broadcasts "the preloader is no longer blocking reveals." Called
- *  from HomePreloader at the start of the step-7 hand-off so the
- *  hero text + header intro can animate IN PARALLEL with the morph
- *  rather than waiting for the whole timeline to end. The
- *  `data-preloader="skip"` attribute write (and unmount) happens
- *  separately at timeline completion. */
+/** Broadcasts "the preloader is no longer blocking reveals." In the
+ *  animated path it's called from the cover-morph's onComplete — the
+ *  instant the full-screen cover has cleared the page by landing on
+ *  the header logo — so the hero text + header intro reveal cleanly
+ *  AFTER the cover, with no wait for the recolour / glyph / hold tail
+ *  that plays out on the header logo. Also called (idempotently) from
+ *  settle() alongside the `data-preloader="skip"` write, which covers
+ *  the skip + reduced-motion paths where the timeline never runs. */
 export function endPreloader(): void {
   if (typeof document === "undefined") return;
   released = true;

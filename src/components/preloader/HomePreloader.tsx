@@ -74,10 +74,15 @@ export default function HomePreloader() {
 
     /* Side-effects-only "we're done here": mark the session as
        played, flip the attribute so the CSS gate hides the cover,
-       and broadcast so parked reveal observers fire. Deliberately
-       does NOT unmount — the markup is already `display:none` via
-       the gate, and calling setState synchronously from an effect
-       body trips React's cascading-render lint. */
+       and broadcast `preloader:end` so any still-parked reveal
+       observers fire. In the animated path the reveals are already
+       unblocked by the cover-morph's onComplete (see `release`
+       below); this call is the belt-and-braces that also covers the
+       skip + reduced-motion paths, where the timeline never runs.
+       Deliberately does NOT unmount — the markup is already
+       `display:none` via the gate, and calling setState
+       synchronously from an effect body trips React's cascading-
+       render lint. */
     const settle = () => {
       try {
         sessionStorage.setItem(SESSION_KEY, "1");
@@ -88,11 +93,15 @@ export default function HomePreloader() {
       endPreloader();
     };
 
-    /* Broadcast-only: unblock anything that's `awaitPreloaderEnd()`-
-       gated (hero text reveal, header intro, scroll observers) so
-       they can run IN PARALLEL with the step-7 morph onto the header
-       logo. The cover stays painted during the morph — the CSS gate
-       keeps it visible while `data-preloader` is still "active". */
+    /* Unblock the parked reveal observers (hero text, header intro,
+       scroll reveals). Fired from the cover-morph's onComplete — the
+       instant the full-screen cover has finished shrinking onto the
+       header logo and the page underneath is fully uncovered. The
+       reveals run AFTER the cover has cleared, but WITHOUT waiting
+       through the cosmetic tail that plays on the now-tiny header
+       logo (recolour, glyph fade-in, final hold) — so there's no
+       dead gap between the preloader clearing and the hero moving.
+       Idempotent, so settle()'s later call is a harmless repeat. */
     const release = () => {
       endPreloader();
     };
@@ -322,14 +331,6 @@ export default function HomePreloader() {
          glyphs stagger up into place. Skipped only if the header
          logo isn't in the DOM. */
       if (headerRect) {
-        /* The statement is gone and the morph is about to begin —
-           unblock the hero text reveal and the header intro now so
-           they animate alongside the morph, instead of sitting frozen
-           through it (and the trailing glyph fade + held beat). The
-           cover stays painted via the CSS gate until the timeline's
-           onComplete flips data-preloader to "skip". */
-        tl.call(release, [], "+=0");
-
         /* Reset the glyphs to their rest position + hidden. They
            fade straight in here with NO slide: at the small header
            scale a yPercent lift is only ~1–2px, which reads as a
@@ -342,7 +343,12 @@ export default function HomePreloader() {
            bounds, rounding its corners to 11.5% as it goes so it
            lands matching the header logo's radius. A layout
            animation rather than a transform — keeps the rounding
-           clean (no non-uniform-scale distortion). */
+           clean (no non-uniform-scale distortion).
+           onComplete fires `release` the instant the cover lands on
+           the header logo (page fully uncovered) — that's what
+           unblocks the hero + header reveals, with no wait for the
+           recolour / glyph / hold tail that follows on the tiny
+           header logo. */
         tl.to(
           cover,
           {
@@ -353,6 +359,7 @@ export default function HomePreloader() {
             borderRadius: "11.5%",
             duration: 1,
             ease: "power3.inOut",
+            onComplete: release,
           },
           "+=0.5",
         );
