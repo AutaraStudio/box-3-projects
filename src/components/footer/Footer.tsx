@@ -226,10 +226,25 @@ export default async function Footer({
           </section>
         </div>
 
-        {/* ── Bottom row — copyright ─────────────────────────────── */}
+        {/* ── Bottom row — copyright + studio credit ─────────────── */}
         <div className="footer__bottom">
           <p className="footer__copyright text-small text-caps">
             © {year} {brand}
+          </p>
+          {/* Studio credit — intentionally hardcoded (not CMS-driven).
+              External link, opens in a new tab like the social links;
+              the studio name carries the site's standard `.link`
+              roll-over via SplitText. */}
+          <p className="footer__credit text-small text-caps">
+            Built by{" "}
+            <a
+              className="footer__credit-link link"
+              href="https://autara.studio"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <SplitText>Autara Studio</SplitText>
+            </a>
           </p>
         </div>
       </div>

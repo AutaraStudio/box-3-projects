@@ -108,8 +108,13 @@
 
 .footer__bottom {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
+  /* Copyright at the start, studio credit at the end — one row,
+     space-between. Wraps to a stack (credit below the copyright)
+     when the viewport is too narrow to hold both on one line. */
+  flex-flow: row wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
   /* Top hairline separates the columns from the copyright line —
      same --theme-border-strong stroke as the marquee divider above
      so every line in the footer reads as one consistent system. */
@@ -120,4 +125,28 @@
 .footer__copyright {
   margin: 0;
   opacity: 0.6;
+}
+
+/* Studio credit — same muted caps treatment as the copyright,
+   paired directly beneath it. The studio name uses the site's
+   standard `.link` roll-over hover (see SplitText.css), matching
+   the social / legal links. */
+.footer__credit {
+  margin: 0;
+  opacity: 0.6;
+}
+
+/* Lone inline link inside the credit sentence. Reset the bare
+   anchor defaults so it inherits the muted caps line; the `.link`
+   roll-over provides the hover affordance. */
+.footer__credit-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* SplitText defaults to `vertical-align: top` (tuned for multi-line
+   headings); inline next to the "Built by" text it needs baseline
+   alignment so the linked name sits on the same line as the rest. */
+.footer__credit-link .split {
+  vertical-align: baseline;
 }
