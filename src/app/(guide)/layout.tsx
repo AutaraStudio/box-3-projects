@@ -10,6 +10,7 @@
 
 import localFont from "next/font/local";
 
+import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 import "../globals.css";
 
 const neueMontreal = localFont({
@@ -31,6 +32,9 @@ export default function GuideLayout({
 }) {
   return (
     <html lang="en" className={neueMontreal.variable}>
+      {/* Google Analytics (GA4) — same shared tag as the public site.
+          Only (studio) is excluded from tracking. */}
+      <GoogleAnalytics />
       <body data-theme="cream">{children}</body>
     </html>
   );

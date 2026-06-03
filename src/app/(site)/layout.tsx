@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import Script from "next/script";
+import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 import SmoothScroll from "@/components/scroll/SmoothScroll";
 import ScrollResetOnRoute from "@/components/scroll/ScrollResetOnRoute";
 import { SiteSettingsProvider } from "@/components/settings/SiteSettingsProvider";
@@ -13,6 +13,7 @@ import Footer from "@/components/footer/Footer";
 import HomePreloader from "@/components/preloader/HomePreloader";
 import HomeComingSoon from "@/components/home/HomeComingSoon";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import { SITE_URL } from "@/lib/site";
 import {
   FEATURED_PROJECTS_QUERY,
   type FeaturedProjectItem,
@@ -100,13 +101,43 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await sanityFetch<SiteSettingsData | null>({
     query: SITE_SETTINGS_QUERY,
   });
+
+  const title = settings?.seoTitle?.trim() || FALLBACK.brandName;
+  const description = settings?.seoDescription?.trim() || "Coming soon.";
+  /* Prefer a Site Settings → SEO image if the editor sets one; otherwise
+     fall back to the brand card shipped in /public. Either way there's
+     always a valid 1200×630 share image, so the card is never broken. */
+  const ogImage = settings?.seoOgImageUrl?.trim() || "/box-3-og-img.png";
+
   return {
-    title: settings?.seoTitle?.trim() || FALLBACK.brandName,
-    description: settings?.seoDescription?.trim() || "Coming soon.",
+    /* Resolves relative metadata (canonical, OG/Twitter image paths)
+       against the live origin. Per-page generateMetadata still
+       overrides title/description below it. */
+    metadataBase: new URL(SITE_URL),
+    title,
+    description,
     icons: {
       icon: [{ url: "/box3-favicon.png", type: "image/png" }],
       shortcut: "/box3-favicon.png",
       apple: "/box3-favicon.png",
+    },
+    /* Site-level social card. Pages that don't set their own
+       openGraph/twitter inherit these, so every URL shares a valid
+       card. The image comes from Site Settings → SEO (seoOgImage);
+       when it's empty we omit images rather than ship a broken link. */
+    openGraph: {
+      type: "website",
+      siteName: FALLBACK.brandName,
+      url: SITE_URL,
+      title,
+      description,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
     },
   };
 }
@@ -180,20 +211,9 @@ export default async function RootLayout({
       className={neueMontreal.variable}
       suppressHydrationWarning
     >
-      {/* Google Analytics (GA4) — loaded with `afterInteractive`
-          so it doesn't block first paint. */}
-      <Script
-        src="https://www.googletagmanager.com/gtag/js?id=G-5VFLZ1919K"
-        strategy="afterInteractive"
-      />
-      <Script id="gtag-init" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-5VFLZ1919K');
-        `}
-      </Script>
+      {/* Google Analytics (GA4) — shared component, also mounted in
+          the (guide) layout. Excluded from (studio). */}
+      <GoogleAnalytics />
       <body data-theme="cream">
         {settings?.comingSoon ? (
           /* Site-wide kill switch — when Coming soon is ON in
