@@ -8,10 +8,20 @@
  * tokens as the rest of the site so the page still feels of-a-piece.
  */
 
+import type { Metadata } from "next";
 import localFont from "next/font/local";
 
 import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 import "../globals.css";
+
+/* Google Search Console site-ownership token — renders
+   <meta name="google-site-verification" …> into the server <head>
+   so the internal guide pages carry it too. */
+export const metadata: Metadata = {
+  verification: {
+    google: "olDepRAvS3FnD-rT29wY5ERZv8ivpEYvQnloT9NJCSQ",
+  },
+};
 
 const neueMontreal = localFont({
   src: [

@@ -121,6 +121,11 @@ export async function generateMetadata(): Promise<Metadata> {
       shortcut: "/box3-favicon.png",
       apple: "/box3-favicon.png",
     },
+    /* Google Search Console site-ownership token — renders
+       <meta name="google-site-verification" …> into the server <head>. */
+    verification: {
+      google: "olDepRAvS3FnD-rT29wY5ERZv8ivpEYvQnloT9NJCSQ",
+    },
     /* Site-level social card. Pages that don't set their own
        openGraph/twitter inherit these, so every URL shares a valid
        card. The image comes from Site Settings → SEO (seoOgImage);
