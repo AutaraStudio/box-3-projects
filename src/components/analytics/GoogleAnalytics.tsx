@@ -6,30 +6,37 @@
  * once per root layout — NOT in the (studio) layout, since the Sanity
  * editor surface is excluded from tracking.
  *
- * Loaded with next/script `afterInteractive` so it injects into the
- * document without blocking first paint. Centralising the tag id here
- * means the two layouts can never drift apart.
+ * Rendered as plain <script> tags (NOT next/script's afterInteractive)
+ * so the loader is emitted directly into the server-rendered <head>.
+ * This matters for Google Search Console's "Google Analytics"
+ * site-ownership check, which fetches the raw HTML WITHOUT running
+ * JavaScript — afterInteractive only leaves a <link rel="preload">
+ * in the head and injects the real <script> on the client, which the
+ * verifier can't see. React 19 hoists the async loader into <head>;
+ * the inline init sits alongside it.
  */
-
-import Script from "next/script";
 
 const GA_MEASUREMENT_ID = "G-5VFLZ1919K";
 
 export default function GoogleAnalytics() {
   return (
     <>
-      <Script
+      <script
+        async
         src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-        strategy="afterInteractive"
       />
-      <Script id="gtag-init" strategy="afterInteractive">
-        {`
+      <script
+        id="gtag-init"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{
+          __html: `
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
           gtag('config', '${GA_MEASUREMENT_ID}');
-        `}
-      </Script>
+        `,
+        }}
+      />
     </>
   );
 }
