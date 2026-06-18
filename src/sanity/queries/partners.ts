@@ -42,4 +42,7 @@ export interface ResolvedPartner {
   _key: string;
   name: string;
   svgContent: string;
+  /** width ÷ height parsed from the logo's viewBox. Drives equal-area
+   *  sizing in the marquee so logos of any shape read at one size. */
+  aspectRatio: number;
 }

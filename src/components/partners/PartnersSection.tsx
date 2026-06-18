@@ -36,6 +36,46 @@ if (typeof window !== "undefined") {
 }
 
 /* --------------------------------------------------------------------------
+   Equal-area logo sizing
+   --------------------------------------------------------------------------
+   Partner logos span a ~6× aspect-ratio range (near-square brand marks →
+   ultra-wide wordmarks), so a fixed slot can't make them read as one
+   size — a square logo fills it while a wide one shrinks to a thin strip.
+   Instead each logo's box is sized from its own ratio so every logo
+   occupies the same optical AREA of its cell:
+
+       width ∝ √(area · ratio)        height ∝ √(area ÷ ratio)
+
+   The box matches the logo's ratio exactly, so the SVG fills it with no
+   letterboxing. TARGET_AREA is the single size dial. The MAX clamps stop
+   an ultra-wide logo from reaching the cell edges (it then sits a touch
+   under target area — imperceptible). Returned inline per cell. */
+const TARGET_AREA = 0.13; // share of each cell a logo's box aims to fill
+const MAX_LOGO_WIDTH = 0.88;
+const MAX_LOGO_HEIGHT = 0.6;
+
+function logoBoxStyle(aspectRatio: number): {
+  width: string;
+  height: string;
+} {
+  const ratio = aspectRatio > 0 ? aspectRatio : 3;
+  let width = Math.sqrt(TARGET_AREA * ratio);
+  let height = Math.sqrt(TARGET_AREA / ratio);
+  if (width > MAX_LOGO_WIDTH) {
+    width = MAX_LOGO_WIDTH;
+    height = width / ratio;
+  }
+  if (height > MAX_LOGO_HEIGHT) {
+    height = MAX_LOGO_HEIGHT;
+    width = height * ratio;
+  }
+  return {
+    width: `${(width * 100).toFixed(2)}%`,
+    height: `${(height * 100).toFixed(2)}%`,
+  };
+}
+
+/* --------------------------------------------------------------------------
    Panel builder
    --------------------------------------------------------------------------
    Builds one panel of the 2-row checkerboard. 12 cells total — the
@@ -181,9 +221,11 @@ export default function PartnersSection({
                   /* Inlining is intentional — currentColor only works
                      when the SVG is rendered directly in the DOM.
                      Content is fetched + sanitised server-side, so
-                     no untrusted markup reaches this point. */
+                     no untrusted markup reaches this point. Box is
+                     sized per-logo from its aspect ratio (equal area). */
                   <div
                     className="partners-section__svg"
+                    style={logoBoxStyle(item.aspectRatio)}
                     aria-hidden="true"
                     dangerouslySetInnerHTML={{ __html: item.svgContent }}
                   />

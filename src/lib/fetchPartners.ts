@@ -12,7 +12,7 @@
  * (one field, not a whole singleton).
  */
 
-import { fetchSvgContent } from "@/lib/svgLoader";
+import { fetchSvgContent, parseSvgAspectRatio } from "@/lib/svgLoader";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
   PARTNERS_QUERY,
@@ -25,6 +25,10 @@ import {
 } from "@/sanity/queries/siteSettings";
 
 const DEFAULT_HEADING = "Trusted By";
+
+/** Aspect ratio used when a logo's SVG has no readable viewBox — a
+ *  typical wordmark shape, so it still sizes sensibly. */
+const DEFAULT_LOGO_RATIO = 3;
 
 export interface LoadedPartners {
   heading: string;
@@ -40,11 +44,15 @@ export async function loadPartners(): Promise<LoadedPartners> {
 
   const rawPartners = partners ?? [];
   const resolvedPartners: ResolvedPartner[] = await Promise.all(
-    rawPartners.map(async (partner) => ({
-      _key: partner._id,
-      name: partner.name,
-      svgContent: await fetchSvgContent(partner.logoUrl ?? ""),
-    })),
+    rawPartners.map(async (partner) => {
+      const svgContent = await fetchSvgContent(partner.logoUrl ?? "");
+      return {
+        _key: partner._id,
+        name: partner.name,
+        svgContent,
+        aspectRatio: parseSvgAspectRatio(svgContent) ?? DEFAULT_LOGO_RATIO,
+      };
+    }),
   );
 
   return {

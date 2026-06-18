@@ -120,8 +120,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 50%;
-  height: 50%;
+  /* Size is set PER LOGO inline by the component — each logo's box is
+     scaled from its own aspect ratio so every logo fills the same
+     optical area (see logoBoxStyle in PartnersSection.tsx). These
+     values are only a fallback for a logo whose SVG never resolved. */
+  width: 60%;
+  height: 18%;
   color: var(--theme-text);
   transition: color 0.4s cubic-bezier(0.19, 1, 0.22, 1);
   pointer-events: none;
