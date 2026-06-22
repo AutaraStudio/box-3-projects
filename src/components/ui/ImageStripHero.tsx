@@ -242,7 +242,10 @@ function HeroItem({
               src={src}
               alt={alt}
               fill
-              sizes="(max-width: 64rem) 100vw, 50vw"
+              /* The centre image scrubs up to full-viewport width, so
+                 it needs the largest srcSet candidates; the side
+                 images stay at half-container. */
+              sizes={fluid ? "100vw" : "(max-width: 64rem) 100vw, 50vw"}
               className="image-strip-hero__image-el"
               priority={fluid}
             />
