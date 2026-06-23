@@ -187,7 +187,10 @@ body {
    editorial reference scale. Adjust here to retune the whole site. */
 
 :root {
-  --font-weight-regular: 400;
+  /* Single-weight site: "regular" is aliased to medium so every
+     token-based weight renders at 500. Restore to 400 to bring back
+     the two-weight system. */
+  --font-weight-regular: 500;
   --font-weight-medium:  500;
 
   /* Sizes — rem so they scale via Osmo. */
