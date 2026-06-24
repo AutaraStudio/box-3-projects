@@ -108,6 +108,16 @@ export default defineType({
       rows: 5,
       group: "intro",
     }),
+    defineField({
+      name: "introImage",
+      title: "Badges image (optional)",
+      description:
+        "Accreditation badges shown beneath the intro heading — e.g. the ISO 9001 / 14001 marks. Leave empty to use the built-in default badges.",
+      type: "image",
+      group: "intro",
+      options: { hotspot: true },
+      components: { input: TaggedMediaPicker },
+    }),
 
     /* ── Stats — large editorial impact numbers ──────────── */
     defineField({

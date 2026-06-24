@@ -25,6 +25,7 @@ import SustainabilityCommitment from "@/components/sustainability/Sustainability
 import SustainabilityPrinciples from "@/components/sustainability/SustainabilityPrinciples";
 import SustainabilityCertifications from "@/components/sustainability/SustainabilityCertifications";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import { urlFor } from "@/sanity/lib/image";
 import {
   SUSTAINABILITY_PAGE_QUERY,
   type SustainabilityPageData,
@@ -204,6 +205,20 @@ export default async function SustainabilityPage() {
       ? data.certificationsItems
       : DEFAULT_CERTIFICATIONS_ITEMS;
 
+  /* Badges below the intro heading. Falls back to the built-in
+     ISO 9001 / 14001 marks (665×310) until an editor uploads their
+     own — the local file is served untouched by the image loader. */
+  const introImg = data?.introImage;
+  const introImgDims = introImg?.asset?.metadata?.dimensions;
+  const introImage = {
+    src: introImg?.asset
+      ? urlFor(introImg as { asset: { _id: string } }).url()
+      : "/iso.png",
+    alt: introImg?.alt ?? "Box 3 is certified to ISO 9001 and ISO 14001",
+    width: introImgDims?.width ?? 665,
+    height: introImgDims?.height ?? 310,
+  };
+
   return (
     <main className="sustainability-page">
       <ImageStripHero
@@ -214,7 +229,11 @@ export default async function SustainabilityPage() {
         imageCentre={data?.heroImageCentre}
         imageRight={data?.heroImageRight}
       />
-      <SustainabilityIntro heading={introHeading} body={introBody} />
+      <SustainabilityIntro
+        heading={introHeading}
+        body={introBody}
+        image={introImage}
+      />
       <SustainabilityStats
         label={statsLabel}
         heading={statsHeading}

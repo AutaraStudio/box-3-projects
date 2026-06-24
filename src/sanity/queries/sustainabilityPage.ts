@@ -29,6 +29,7 @@ export const SUSTAINABILITY_PAGE_QUERY = groq`
     heroImageRight  { ${HERO_IMAGE_PROJECTION} },
     introHeading,
     introBody,
+    introImage { ${HERO_IMAGE_PROJECTION} },
     statsLabel,
     statsHeading,
     statsItems[] {
@@ -120,6 +121,7 @@ export interface SustainabilityPageData {
   heroImageRight?: SustainabilityImage;
   introHeading?: string;
   introBody?: string;
+  introImage?: SustainabilityImage;
   statsLabel?: string;
   statsHeading?: string;
   statsItems?: SustainabilityStatItem[];

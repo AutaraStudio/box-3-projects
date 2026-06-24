@@ -35,6 +35,21 @@
   }
 }
 
+/* Left column: heading with the accreditation badges stacked
+   beneath it. Wrapping them keeps the badges directly under the
+   heading regardless of the body column's height. */
+.sustainability-intro__lead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@media (min-width: 64rem) {
+  .sustainability-intro__lead {
+    grid-column: 1 / span 1;
+  }
+}
+
 .sustainability-intro__heading {
   margin: 0;
   /* `pretty` rather than `balance` to avoid mid-word breaks at
@@ -45,10 +60,10 @@
   max-width: 26ch;
 }
 
-@media (min-width: 64rem) {
-  .sustainability-intro__heading {
-    grid-column: 1 / span 1;
-  }
+.sustainability-intro__badges {
+  width: 100%;
+  max-width: 16rem;
+  height: auto;
 }
 
 .sustainability-intro__body {
