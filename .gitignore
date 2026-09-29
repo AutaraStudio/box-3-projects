@@ -45,3 +45,11 @@ next-env.d.ts
 # committed. See CLAUDE.md "Adapting external references".
 /reference/
 /refference/
+
+# Sanity content backup — full dump of the live dataset including
+# ~740MB of original-quality assets. Too big for git; keep a copy
+# on external storage/cloud instead. Re-generate any time with:
+#   node sanity-backup/backup.mjs
+/sanity-backup/*
+!/sanity-backup/backup.mjs
+~$*

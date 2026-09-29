@@ -1,0 +1,216 @@
+/* ==========================================================================
+   FLUID SCALING SYSTEM — full layout edition
+   Scaling engine · spacing scale · gaps · containers · section rhythm · grid
+   ==========================================================================
+   ONE idea drives everything: the base font-size on <html> is computed from
+   viewport width, so 1rem grows and shrinks fluidly. Because EVERY value in
+   this file is expressed in rem (sizes, spacing, gaps, container widths,
+   gutters, grid gaps), the whole layout scales together as one unit — with
+   NO clamp(), NO vw, and no per-property breakpoint maths.
+
+   Allowed px: media-query widths, 1px borders, SVG attributes. Nothing else.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   SECTION 1 — SCALING ENGINE  (the part that makes rem fluid)
+   --------------------------------------------------------------------------
+   --size-container = clamp(min, 100vw, max)
+   --size-font      = container / (ideal / 16)
+     · at the ideal width  → 1rem = 16px
+     · at max              → 1rem caps (stops growing)
+     · at min              → 1rem floors (stops shrinking at this breakpoint)
+   Each breakpoint overrides ideal/min/max so scaling restarts sensibly per
+   device class. Tune the FEEL of a breakpoint by changing its `ideal`:
+   lower ideal = everything looks bigger, higher ideal = smaller.
+   ========================================================================== */
+
+:root {
+  --size-unit: 16;
+  --size-container-ideal: 1600;
+  --size-container-min: 992px;
+  --size-container-max: 1600px;
+  --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
+  --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
+}
+
+@media (max-width: 991px) { /* Tablet */
+  :root { --size-container-ideal: 950; --size-container-min: 768px; --size-container-max: 991px; }
+}
+@media (max-width: 767px) { /* Mobile landscape */
+  :root { --size-container-ideal: 640; --size-container-min: 480px; --size-container-max: 767px; }
+}
+@media (max-width: 479px) { /* Mobile portrait */
+  :root { --size-container-ideal: 390; --size-container-min: 320px; --size-container-max: 479px; }
+}
+
+html,
+body {
+  font-size: var(--size-font);   /* MUST live on <html> — rem is relative to it */
+  margin: 0;
+  overflow-x: clip;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+
+/* ==========================================================================
+   SECTION 2 — SPACING SCALE
+   --------------------------------------------------------------------------
+   Numeric rem tokens — names mirror the rem value (decimals as hyphens).
+   Use for ALL padding / margin / gap. Every step scales via the engine.
+   ========================================================================== */
+
+:root {
+  --space-0-125: 0.125rem;
+  --space-0-25:  0.25rem;
+  --space-0-5:   0.5rem;
+  --space-0-75:  0.75rem;
+  --space-1:     1rem;
+  --space-1-25:  1.25rem;
+  --space-1-5:   1.5rem;
+  --space-2:     2rem;
+  --space-2-5:   2.5rem;
+  --space-3:     3rem;
+  --space-3-5:   3.5rem;
+  --space-4:     4rem;
+  --space-5:     5rem;
+  --space-6:     6rem;
+  --space-7:     7rem;
+  --space-8:     8rem;
+  --space-10:    10rem;
+  --space-12:    12rem;
+  --space-14:    14rem;
+  --space-16:    16rem;
+}
+
+
+/* ==========================================================================
+   SECTION 3 — SEMANTIC GAPS  (intent aliases over the raw scale)
+   --------------------------------------------------------------------------
+   Use these for flex/grid `gap` when you want to name the intent rather than
+   the value. Re-point them in one place to re-tune rhythm globally. You can
+   still use raw --space-* tokens directly anywhere.
+   ========================================================================== */
+
+:root {
+  --gap-2xs: var(--space-0-5);   /* tight inline groups (icon + label)   */
+  --gap-xs:  var(--space-0-75);  /* chips, small button rows             */
+  --gap-sm:  var(--space-1);     /* card internals                       */
+  --gap-md:  var(--space-2);     /* default grid / flow gap              */
+  --gap-lg:  var(--space-3);     /* between sub-sections                 */
+  --gap-xl:  var(--space-5);     /* major layout columns                 */
+}
+
+
+/* ==========================================================================
+   SECTION 4 — CONTAINERS  (max-width + centered + edge gutter)
+   --------------------------------------------------------------------------
+   Max-widths are in rem, so they scale with the engine AND freeze once the
+   engine caps (above --size-container-max). At the desktop ideal, 1rem = 16px,
+   so --container-max 75rem ≈ 1200px content column inside a 1600 viewport.
+   The gutter is the breathing room between content and the viewport edge; it
+   tightens on small screens so a proportional gutter doesn't eat the width.
+   ========================================================================== */
+
+:root {
+  --container-max:        75rem;  /* standard content width   ≈1200 at ideal */
+  --container-max-narrow: 48rem;  /* long-form reading measure ≈768           */
+  --container-max-wide:   90rem;  /* galleries / wide media   ≈1440           */
+  --container-gutter:     var(--space-3);  /* desktop edge gutter             */
+}
+
+@media (max-width: 767px) {
+  :root { --container-gutter: var(--space-1); }  /* tighter on phones */
+}
+
+.container {
+  width: 100%;
+  max-width: calc(var(--container-max) + var(--container-gutter) * 2);
+  margin-inline: auto;
+  padding-inline: var(--container-gutter);
+}
+.container--narrow { max-width: calc(var(--container-max-narrow) + var(--container-gutter) * 2); }
+.container--wide   { max-width: calc(var(--container-max-wide)   + var(--container-gutter) * 2); }
+.container--full   { max-width: none; }  /* full-bleed: gutters only, no cap */
+
+
+/* ==========================================================================
+   SECTION 5 — SECTION RHYTHM  (consistent vertical spacing between sections)
+   ========================================================================== */
+
+:root {
+  --section-space:    var(--space-8);  /* default block padding top/bottom */
+  --section-space-sm: var(--space-5);
+  --section-space-lg: var(--space-12);
+}
+
+.section    { padding-block: var(--section-space); }
+.section--sm { padding-block: var(--section-space-sm); }
+.section--lg { padding-block: var(--section-space-lg); }
+
+
+/* ==========================================================================
+   SECTION 6 — GRID  (token-driven, responsive columns)
+   --------------------------------------------------------------------------
+   A simple auto-fit grid plus an explicit 12-col grid. Gaps use the semantic
+   tokens, so they scale. Column counts drop at breakpoints (px in @media is
+   allowed). `--grid-min` is the smallest a card may get before wrapping.
+   ========================================================================== */
+
+:root {
+  --grid-gap:     var(--gap-md);
+  --grid-min:     18rem;   /* min card width before auto-fit wraps */
+  --grid-columns: 12;      /* base column count for the explicit grid */
+}
+
+/* Cards that wrap automatically — no media queries needed. */
+.grid-auto {
+  display: grid;
+  gap: var(--grid-gap);
+  grid-template-columns: repeat(auto-fit, minmax(var(--grid-min), 1fr));
+}
+
+/* Explicit 12-col grid; place children with grid-column. */
+.grid {
+  display: grid;
+  gap: var(--grid-gap);
+  grid-template-columns: repeat(var(--grid-columns), 1fr);
+}
+@media (max-width: 991px)  { :root { --grid-columns: 8; } }
+@media (max-width: 767px)  { :root { --grid-columns: 4; } }
+
+/* Flow utility — vertical stack with a consistent gap. */
+.stack { display: flex; flex-direction: column; gap: var(--gap-md); }
+.stack--sm { gap: var(--gap-sm); }
+.stack--lg { gap: var(--gap-lg); }
+
+
+/* ==========================================================================
+   USAGE CHEAT-SHEET (delete — illustration only)
+   --------------------------------------------------------------------------
+   <section class="section" data-theme="dark">
+     <div class="container">
+       <div class="grid">
+         <article style="grid-column: span 4">…</article>   3 cards on a 12-col
+         <article style="grid-column: span 4">…</article>
+         <article style="grid-column: span 4">…</article>
+       </div>
+     </div>
+   </section>
+
+   <section class="section--lg">
+     <div class="container--narrow stack">   long-form, comfortable measure
+       <p>…</p><p>…</p>
+     </div>
+   </section>
+
+   <div class="grid-auto">…</div>            cards that wrap on their own
+
+   How to extend:
+     · New spacing value      → add a --space-* token (don't inline rem).
+     · New named gap          → add a --gap-* alias pointing at a --space-*.
+     · New container width    → add a --container-max-* token + modifier class.
+     · Re-tune a breakpoint   → change its --size-container-ideal (SECTION 1).
+     · NEVER use clamp()/vw — the engine already makes every rem fluid.
+   ========================================================================== */

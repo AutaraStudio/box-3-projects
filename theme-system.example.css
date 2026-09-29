@@ -1,0 +1,109 @@
+/* ==========================================================================
+   THEME SYSTEM — example / starter
+   ==========================================================================
+   Multi-theme colour architecture.
+
+   The idea:
+     - A small primitive palette holds the ONLY raw colour values.
+     - Each named theme defines just THREE tokens: --theme-bg / --theme-text /
+       --theme-accent.
+     - Every other token (muted text, borders, surfaces, hover wash, overlay)
+       is DERIVED ONCE from those via color-mix(), so it auto-adapts to every
+       theme. Adding a new theme is a 3-line block.
+
+   Rules:
+     - Zero hardcoded colour values in component CSS — always go through a
+       --theme-* token (or a color-mix() of theme tokens).
+     - --color-* primitives are referenced ONLY by the theme blocks below,
+       never by components.
+     - Apply a theme with data-theme="…" on any element. Themes cascade, so a
+       section can swap the theme of its subtree.
+
+   Component-facing token groups:
+     Surfaces    → --theme-bg, --theme-surface, --theme-surface-strong
+     Text        → --theme-text, --theme-text-muted, --theme-text-soft
+     Borders     → --theme-border, --theme-border-strong
+     Interaction → --theme-hover-bg, --theme-overlay
+     Accent      → --theme-accent
+   ========================================================================== */
+
+:root {
+  /* Primitive palette — the ONLY place raw colour values live.
+     Replace these with the real brand palette. */
+  --color-neutral-dark:  #1a1a1a;
+  --color-neutral-light: #f5f1ea;
+  --color-accent:        #ff5a36;
+  --color-white:         #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   Per-theme base tokens — three lines each.
+   Each theme sets only bg / text / accent; the derived block does the rest.
+   -------------------------------------------------------------------------- */
+
+[data-theme="dark"] {
+  --theme-bg:     var(--color-neutral-dark);
+  --theme-text:   var(--color-neutral-light);
+  --theme-accent: var(--color-accent);
+}
+
+[data-theme="light"] {
+  --theme-bg:     var(--color-neutral-light);
+  --theme-text:   var(--color-neutral-dark);
+  --theme-accent: var(--color-accent);
+}
+
+[data-theme="accent"] {
+  --theme-bg:     var(--color-accent);
+  --theme-text:   var(--color-neutral-light);
+  --theme-accent: var(--color-neutral-light);
+}
+
+/* Add a new theme = one more 3-line block here. */
+
+/* --------------------------------------------------------------------------
+   Derived tokens — computed once, on the same element that sets bg/text so
+   color-mix() resolves against the active theme. :where([data-theme]) keeps
+   specificity at zero, so a section's own --theme-* overrides always win.
+   Re-tune the whole system by editing the mix percentages here in one place.
+   -------------------------------------------------------------------------- */
+
+:where([data-theme]) {
+  --theme-text-muted:     color-mix(in srgb, var(--theme-text) 65%, var(--theme-bg));
+  --theme-text-soft:      color-mix(in srgb, var(--theme-text) 40%, var(--theme-bg));
+  --theme-border:         color-mix(in srgb, var(--theme-text) 15%, var(--theme-bg));
+  --theme-border-strong:  color-mix(in srgb, var(--theme-text) 30%, var(--theme-bg));
+  --theme-surface:        color-mix(in srgb, var(--theme-text) 4%,  var(--theme-bg));
+  --theme-surface-strong: color-mix(in srgb, var(--theme-text) 8%,  var(--theme-bg));
+  --theme-hover-bg:       color-mix(in srgb, var(--theme-text) 8%,  var(--theme-bg));
+  --theme-overlay:        color-mix(in srgb, var(--theme-text) 50%, transparent);
+}
+
+/* --------------------------------------------------------------------------
+   Document default — give bare pages a theme so they render.
+   Set data-theme on <html> or <body> in your layout to change the default.
+   -------------------------------------------------------------------------- */
+
+body {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+}
+
+/* --------------------------------------------------------------------------
+   Usage example (delete — illustration only)
+   --------------------------------------------------------------------------
+   <section data-theme="dark">      theme applies to this subtree
+     <article data-theme="accent">  swaps theme for just this card
+       …
+     </article>
+   </section>
+
+   .card {
+     background-color: var(--theme-surface);
+     color:            var(--theme-text);
+     border:           1px solid var(--theme-border);
+   }
+   .card__meta  { color: var(--theme-text-muted); }
+   .card:hover  { background-color: var(--theme-hover-bg); }
+   .card__cta   { color: var(--theme-accent); }
+   -------------------------------------------------------------------------- */

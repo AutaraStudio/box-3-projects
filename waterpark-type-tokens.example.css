@@ -1,0 +1,98 @@
+/* ==========================================================================
+   WATERPARK RFC — TYPE TOKENS  (scaling-system edition)
+   Outfit (headings, all caps) · Hanken Grotesk (body) · Geist Mono (data).
+   Families injected by next/font; literals are fallbacks.
+   Pairs with color-tokens.css (uses --theme-text / --theme-accent).
+   ==========================================================================
+   DEPENDS ON the fluid scaling system: `--size-font` must be set on <html>.
+   That makes 1rem grow/shrink with the viewport, so EVERY rem size below is
+   already fluid — no clamp(), no vw on any individual property.
+
+   The "px" notes are the size AT THE DESKTOP IDEAL WIDTH (where 1rem = 16px).
+   On smaller viewports the scaling system shrinks them proportionally; at each
+   breakpoint it restarts from that device's ideal. To make a size bigger or
+   smaller everywhere, change the rem token here — do NOT add clamp()/vw.
+   ========================================================================== */
+
+:root {
+  --font-display: var(--font-outfit), "Outfit", system-ui, sans-serif;
+  --font-body:    var(--font-hanken), "Hanken Grotesk", system-ui, sans-serif;
+  --font-mono:    var(--font-geist-mono), "Geist Mono", ui-monospace, monospace;
+
+  /* Scale — plain rem, fluid via --size-font (was clamp/vw on display).
+     Display now scales on the SAME rhythm as the rest of the type, instead
+     of its own vw curve. 7.5rem = 120px at the desktop ideal; the scaling
+     system tapers it down on smaller screens. */
+  --text-display: 7.5rem;    /* 120 at ideal */
+  --text-h1:      3.5rem;    /* 56 */
+  --text-h2:      2.625rem;  /* 42 */
+  --text-h3:      2rem;      /* 32 */
+  --text-h4:      1.5rem;    /* 24 */
+  --text-h5:      1.1875rem; /* 19 */
+  --text-h6:      0.9375rem; /* 15 */
+  --text-body-lg: 1.25rem;   /* 20 */
+  --text-body:    1.0625rem; /* 17 */
+  --text-body-sm: 0.875rem;  /* 14 */
+  --text-eyebrow: 0.75rem;   /* 12 */
+
+  /* Line-heights — unitless, so they ride the font-size automatically. */
+  --leading-display: 0.9;
+  --leading-h1: 0.98;
+  --leading-h2: 1.02;
+  --leading-h3: 1.1;
+  --leading-h4: 1.18;
+  --leading-h5: 1.28;
+  --leading-h6: 1.4;
+  --leading-body: 1.7;
+  --leading-body-tight: 1.6;
+
+  /* Letter-spacings — em-based, so they track the (scaled) font-size. */
+  --tracking-display: -0.015em;
+  --tracking-h1: 0;
+  --tracking-h2: 0.005em;
+  --tracking-h3: 0.01em;
+  --tracking-h4: 0.02em;
+  --tracking-h5: 0.03em;
+  --tracking-h6: 0.06em;
+  --tracking-eyebrow: 0.2em;
+
+  --weight-heading: 800;
+  --weight-eyebrow: 600;
+  --weight-body: 400;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6, .display {
+  font-family: var(--font-display);
+  font-weight: var(--weight-heading);
+  text-transform: uppercase;   /* brand rule — .normal-case to opt out */
+  line-height: 1;
+  color: var(--theme-text);
+}
+
+.display { font-size: var(--text-display); line-height: var(--leading-display); letter-spacing: var(--tracking-display); }
+h1 { font-size: var(--text-h1); line-height: var(--leading-h1); letter-spacing: var(--tracking-h1); }
+h2 { font-size: var(--text-h2); line-height: var(--leading-h2); letter-spacing: var(--tracking-h2); }
+h3 { font-size: var(--text-h3); line-height: var(--leading-h3); letter-spacing: var(--tracking-h3); }
+h4 { font-size: var(--text-h4); line-height: var(--leading-h4); letter-spacing: var(--tracking-h4); }
+h5 { font-size: var(--text-h5); line-height: var(--leading-h5); letter-spacing: var(--tracking-h5); }
+h6 { font-size: var(--text-h6); line-height: var(--leading-h6); letter-spacing: var(--tracking-h6); }
+.normal-case { text-transform: none; }
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--text-eyebrow);
+  font-weight: var(--weight-eyebrow);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--theme-accent);
+}
+.body-lg { font-size: var(--text-body-lg); line-height: var(--leading-body-tight); }
+.body-sm { font-size: var(--text-body-sm); line-height: var(--leading-body-tight); color: var(--theme-text-muted); }
+.mono    { font-family: var(--font-mono); }
