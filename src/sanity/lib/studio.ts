@@ -2,7 +2,7 @@
  * Sanity Studio Configuration
  * ===========================
  * Defines the embedded Sanity Studio config served at /studio.
- * Connects to the live Box 3 dataset (project ID uwutffn5,
+ * Connects to the live Box 3 dataset (project ID 658ypfny,
  * dataset production).
  *
  * Plugins:

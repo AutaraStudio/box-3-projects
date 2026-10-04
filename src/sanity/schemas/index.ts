@@ -3,7 +3,7 @@
  * ======================
  * Every schema type used by the embedded Studio is registered here.
  * v2 starts with the minimum needed to surface the existing Project
- * content in the live Sanity dataset (uwutffn5/production):
+ * content in the live Sanity dataset (658ypfny/production):
  *
  *   Collections — project, projectCategory, teamMember, expertise,
  *                 testimonial, partner

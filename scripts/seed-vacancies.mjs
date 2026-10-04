@@ -5,7 +5,7 @@
  *   $env:SANITY_WRITE_TOKEN="<your editor token>"
  *   node ./scripts/seed-vacancies.mjs
  *
- * Get a token at https://www.sanity.io/manage → Project (uwutffn5)
+ * Get a token at https://www.sanity.io/manage → Project (658ypfny)
  *   → API → Tokens → Add API token → permissions: Editor.
  */
 
@@ -20,7 +20,7 @@ if (!token) {
 }
 
 const client = createClient({
-  projectId: "uwutffn5",
+  projectId: "658ypfny",
   dataset: "production",
   apiVersion: "2024-01-01",
   useCdn: false,

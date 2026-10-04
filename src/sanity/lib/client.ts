@@ -2,7 +2,7 @@
  * Sanity client
  * =============
  * Reuses the existing Box 3 Projects Sanity dataset (project ID
- * `uwutffn5`, dataset `production`) — same one master is wired to.
+ * `658ypfny`, dataset `production`) — same one master is wired to.
  * No re-import needed; v2 connects directly to the live data.
  *
  * `useCdn: false` so editor-side preview fetches always read the
@@ -13,7 +13,7 @@
 import { createClient } from "next-sanity";
 
 export const projectId =
-  process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "uwutffn5";
+  process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "658ypfny";
 export const dataset =
   process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
 export const apiVersion =
